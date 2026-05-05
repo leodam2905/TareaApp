@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
+import { createCertnInvitation } from "@/lib/certn";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", { apiVersion: "2024-06-20" });
 
@@ -19,6 +20,7 @@ export async function GET() {
     status: profile.backgroundCheckStatus,
     fee: BACKGROUND_CHECK_FEE,
     paidAt: profile.backgroundCheckPaidAt,
+    ref: profile.backgroundCheckRef,
   });
 }
 
@@ -30,46 +32,73 @@ export async function POST(req: NextRequest) {
   const profile = await prisma.handymanProfile.findUnique({ where: { userId: user.id } });
   if (!profile) return NextResponse.json({ error: "Profile not found" }, { status: 404 });
 
-  // Already processed
   if (["PAID", "IN_PROGRESS", "PASSED", "DEFERRED"].includes(profile.backgroundCheckStatus)) {
     return NextResponse.json({ status: profile.backgroundCheckStatus });
   }
 
   const { method } = await req.json();
+  if (!["now", "deferred"].includes(method)) {
+    return NextResponse.json({ error: "Invalid method" }, { status: 400 });
+  }
+
+  // Split name into first / last (best-effort)
+  const parts = user.name.trim().split(" ");
+  const firstName = parts[0];
+  const lastName = parts.slice(1).join(" ") || parts[0];
+
+  // Create Certn invitation regardless of payment method —
+  // Certn emails the handyman a link to submit their personal info
+  let certnRef: string | null = null;
+  if (process.env.CERTN_API_KEY) {
+    try {
+      const invitation = await createCertnInvitation({ email: user.email, firstName, lastName });
+      certnRef = invitation.id;
+    } catch (err) {
+      console.error("[background-check] Certn invitation failed:", err);
+      // Don't block the handyman — log and continue
+    }
+  }
 
   if (method === "deferred") {
     await prisma.handymanProfile.update({
       where: { userId: user.id },
-      data: { backgroundCheckStatus: "DEFERRED" },
+      data: {
+        backgroundCheckStatus: "DEFERRED",
+        backgroundCheckRef: certnRef,
+      },
     });
     return NextResponse.json({ status: "DEFERRED" });
   }
 
-  if (method === "now") {
-    // Create Stripe Checkout session for $29.99
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      customer_email: user.email,
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: "Background Check — Tarea",
-              description: "Mandatory one-time background check to activate your handyman account.",
-            },
-            unit_amount: Math.round(BACKGROUND_CHECK_FEE * 100),
+  // method === "now" — create Stripe Checkout for the fee
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    customer_email: user.email,
+    line_items: [
+      {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: "Background Check — Tarea (powered by Certn)",
+            description: "One-time mandatory background check. Certn will email you a secure link to complete your screening.",
           },
-          quantity: 1,
+          unit_amount: Math.round(BACKGROUND_CHECK_FEE * 100),
         },
-      ],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/handyman/onboarding?bg_check=success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/handyman/onboarding?bg_check=cancelled`,
-      metadata: { userId: user.id, type: "background_check" },
-    });
+        quantity: 1,
+      },
+    ],
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/handyman/onboarding?bg_check=success`,
+    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/handyman/onboarding?bg_check=cancelled`,
+    metadata: { userId: user.id, type: "background_check", certnRef: certnRef ?? "" },
+  });
 
-    return NextResponse.json({ checkoutUrl: session.url });
+  // Optimistically store Certn ref
+  if (certnRef) {
+    await prisma.handymanProfile.update({
+      where: { userId: user.id },
+      data: { backgroundCheckRef: certnRef },
+    });
   }
 
-  return NextResponse.json({ error: "Invalid method" }, { status: 400 });
+  return NextResponse.json({ checkoutUrl: session.url });
 }
