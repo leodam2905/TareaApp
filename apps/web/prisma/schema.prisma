@@ -24,6 +24,15 @@ enum BookingStatus {
   DISPUTED
 }
 
+enum BackgroundCheckStatus {
+  PENDING
+  DEFERRED
+  PAID
+  IN_PROGRESS
+  PASSED
+  FAILED
+}
+
 enum ServiceCategory {
   PLUMBING
   ELECTRICAL
@@ -110,6 +119,9 @@ model HandymanProfile {
   stripeSubStatus       String?
   verificationDocUrl    String?
   verificationStatus    String   @default("none") // none | pending | approved | rejected
+  backgroundCheckStatus BackgroundCheckStatus @default(PENDING)
+  backgroundCheckPaidAt DateTime?
+  backgroundCheckRef    String?  // Checkr report ID
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

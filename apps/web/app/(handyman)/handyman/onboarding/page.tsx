@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
-import { Check, ChevronRight, ChevronLeft, Wrench, Camera, Loader2, Clock } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, Wrench, Camera, Loader2, Clock, ShieldCheck, CreditCard, Clock3 } from "lucide-react";
+
+const BG_CHECK_FEE = 29.99;
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const HOURS = Array.from({ length: 24 }, (_, i) => {
@@ -36,8 +38,12 @@ type ServiceEntry = {
 
 export default function HandymanOnboarding() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [step, setStep] = useState(1);
+  // bg_check=success means Stripe redirected back after paying
+  const bgCheckResult = searchParams.get("bg_check");
+  const [step, setStep] = useState(bgCheckResult === "success" ? 4 : 1);
+  const [bgLoading, setBgLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Step 3 — availability
@@ -135,8 +141,8 @@ export default function HandymanOnboarding() {
     ]);
 
     if (onboardRes.ok && availRes.ok) {
-      toast.success("Profile set up! Welcome to Tarea.");
-      router.push("/handyman/dashboard");
+      toast.success("Profile set up!");
+      setStep(4); // move to background check step
     } else {
       toast.error("Something went wrong. Please try again.");
     }
@@ -164,14 +170,14 @@ export default function HandymanOnboarding() {
           </div>
           <div>
             <h1 className="text-2xl font-extrabold text-white">Set Up Your Profile</h1>
-            <p className="text-slate-400 text-sm">Step {step} of 3</p>
+            <p className="text-slate-400 text-sm">Step {step} of 4</p>
           </div>
         </div>
 
         {/* Progress bar */}
         <div className="w-full bg-white/10 rounded-full h-1.5 mb-8">
           <div className="bg-tarea-sky h-1.5 rounded-full transition-all duration-500"
-            style={{ width: step === 1 ? "33%" : step === 2 ? "66%" : "100%" }} />
+            style={{ width: step === 1 ? "25%" : step === 2 ? "50%" : step === 3 ? "75%" : "100%" }} />
         </div>
 
         <AnimatePresence mode="wait">
@@ -374,9 +380,90 @@ export default function HandymanOnboarding() {
                   className="flex-1 btn-primary flex items-center justify-center gap-2 disabled:opacity-50">
                   {saving
                     ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</>
-                    : "Finish Setup"}
+                    : "Continue"}
                 </button>
               </div>
+            </motion.div>
+          )}
+
+          {step === 4 && (
+            <motion.div key="step4" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
+              className="space-y-5">
+
+              {/* Header card */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+                <div className="flex items-center gap-2 mb-1">
+                  <ShieldCheck className="w-5 h-5 text-tarea-sky" />
+                  <h2 className="text-xl font-bold text-white">Background Check Required</h2>
+                </div>
+                <p className="text-slate-400 text-sm leading-relaxed">
+                  All Tarea handymen must pass a background check before accepting bookings.
+                  This protects customers and builds trust. The one-time fee is <strong className="text-white">${BG_CHECK_FEE}</strong>.
+                </p>
+              </div>
+
+              {/* Pay now */}
+              <button
+                disabled={bgLoading}
+                onClick={async () => {
+                  setBgLoading(true);
+                  const res = await fetch("/api/handyman/background-check", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ method: "now" }),
+                  });
+                  const data = await res.json();
+                  if (data.checkoutUrl) {
+                    window.location.href = data.checkoutUrl;
+                  } else {
+                    toast.error("Could not start payment. Try again.");
+                    setBgLoading(false);
+                  }
+                }}
+                className="w-full flex items-start gap-4 bg-tarea-sky/10 border-2 border-tarea-sky/40 hover:border-tarea-sky rounded-2xl p-5 text-left transition-all disabled:opacity-50"
+              >
+                <div className="w-10 h-10 bg-tarea-sky/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <CreditCard className="w-5 h-5 text-tarea-sky" />
+                </div>
+                <div>
+                  <p className="font-bold text-white mb-0.5">Pay now — ${BG_CHECK_FEE}</p>
+                  <p className="text-slate-400 text-sm">Pay by card via Stripe. Your check starts immediately and typically completes in 1–3 business days.</p>
+                </div>
+                {bgLoading && <Loader2 className="w-5 h-5 animate-spin text-tarea-sky ml-auto flex-shrink-0" />}
+              </button>
+
+              {/* Deduct from first pay */}
+              <button
+                disabled={bgLoading}
+                onClick={async () => {
+                  setBgLoading(true);
+                  const res = await fetch("/api/handyman/background-check", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ method: "deferred" }),
+                  });
+                  if (res.ok) {
+                    toast.success("Got it! $29.99 will be deducted from your first payout.");
+                    router.push("/handyman/dashboard");
+                  } else {
+                    toast.error("Something went wrong. Try again.");
+                    setBgLoading(false);
+                  }
+                }}
+                className="w-full flex items-start gap-4 bg-white/5 border border-white/10 hover:border-white/30 rounded-2xl p-5 text-left transition-all disabled:opacity-50"
+              >
+                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Clock3 className="w-5 h-5 text-slate-300" />
+                </div>
+                <div>
+                  <p className="font-bold text-white mb-0.5">Deduct from first payout</p>
+                  <p className="text-slate-400 text-sm">Start working now. The $29.99 fee will be automatically deducted from your first cashout.</p>
+                </div>
+              </button>
+
+              <p className="text-slate-600 text-xs text-center">
+                You can accept bookings while the check is processing. Tarea uses Checkr for all background screenings.
+              </p>
             </motion.div>
           )}
         </AnimatePresence>

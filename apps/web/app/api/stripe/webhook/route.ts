@@ -55,6 +55,28 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ ok: true });
       }
 
+      // Handle background check payment
+      if (session.metadata?.type === "background_check") {
+        const userId = session.metadata?.userId;
+        if (userId) {
+          await prisma.handymanProfile.updateMany({
+            where: { userId },
+            data: {
+              backgroundCheckStatus: "IN_PROGRESS",
+              backgroundCheckPaidAt: new Date(),
+            },
+          });
+          await createNotification({
+            userId,
+            title: "Background check initiated ✓",
+            body: "Payment received. Your background check is now in progress — usually takes 1–3 business days.",
+            type: "booking_accepted",
+            refId: userId,
+          });
+        }
+        return NextResponse.json({ ok: true });
+      }
+
       // Handle payment checkout
       const bookingId = session.metadata?.bookingId;
       if (!bookingId) return NextResponse.json({ ok: true });

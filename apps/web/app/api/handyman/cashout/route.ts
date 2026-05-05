@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { handymanNet } from "@/lib/fees";
 import { createNotification } from "@/lib/notify";
+import { BACKGROUND_CHECK_FEE } from "../background-check/route";
 
 export const MIN_CASHOUT = 10;
 
@@ -82,8 +83,21 @@ export async function POST(_req: NextRequest) {
     );
   }
 
+  // Deduct background check fee from first payout if deferred
+  const profile = await prisma.handymanProfile.findUnique({ where: { userId: user.id } });
+  let bgCheckDeduction = 0;
+  if (profile?.backgroundCheckStatus === "DEFERRED") {
+    if (gross <= BACKGROUND_CHECK_FEE) {
+      return NextResponse.json(
+        { error: `Your first payout must cover the $${BACKGROUND_CHECK_FEE} background check fee. Earn more before cashing out.` },
+        { status: 400 }
+      );
+    }
+    bgCheckDeduction = BACKGROUND_CHECK_FEE;
+  }
+
   const fee = calcInstantFee(gross);
-  const net = gross - fee;
+  const net = gross - fee - bgCheckDeduction;
 
   // Move gross from platform → connected account
   await stripe.transfers.create({
@@ -112,12 +126,21 @@ export async function POST(_req: NextRequest) {
     data: { handymanPaidOut: true, paidOutAt: now },
   });
 
+  // Mark background check as paid if it was deferred
+  if (bgCheckDeduction > 0) {
+    await prisma.handymanProfile.update({
+      where: { userId: user.id },
+      data: { backgroundCheckStatus: "IN_PROGRESS", backgroundCheckPaidAt: now },
+    });
+  }
+
+  const bgNote = bgCheckDeduction > 0 ? ` (includes $${bgCheckDeduction.toFixed(2)} background check deduction)` : "";
   await createNotification({
     userId: user.id,
     title: "Instant Payout Sent",
-    body: `$${net.toFixed(2)} is on its way to your debit card — arrives within 30 minutes. ($${fee.toFixed(2)} instant fee)`,
+    body: `$${net.toFixed(2)} is on its way to your debit card — arrives within 30 minutes. ($${fee.toFixed(2)} instant fee${bgNote})`,
     type: "payout",
   });
 
-  return NextResponse.json({ success: true, gross, fee, net, count: pending.length });
+  return NextResponse.json({ success: true, gross, fee, bgCheckDeduction, net, count: pending.length });
 }
