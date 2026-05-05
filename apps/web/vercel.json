@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/booking-reminders",
+      "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/api/cron/drip",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/weekly-payouts",
+      "schedule": "0 9 * * 1"
+    }
+  ]
+}
