@@ -37,7 +37,8 @@ html.dark {
   --text-primary:  #FFFFFF;
   --text-muted:    #94A3B8;
   --text-subtle:   #64748B;
-  --input-bg:      rgba(255, 255, 255, 0.10);
+  --input-bg:      #1E293B;
+  --input-text:    #F1F5F9;
   --scrollbar-track: #0F172A;
   --scrollbar-thumb: rgba(255, 255, 255, 0.15);
 }
@@ -121,10 +122,15 @@ html:not(.dark) main .bg-white\/10.border { background-color: #FFFFFF !important
   .input {
     background-color: var(--input-bg);
     border-color: var(--card-border);
-    color: var(--text-primary);
+    color: #0F172A;
     @apply w-full rounded-xl px-4 py-3 border
            placeholder:text-slate-400 focus:outline-none focus:ring-2
            focus:ring-tarea-sky focus:border-transparent transition-all duration-200;
+  }
+
+  html.dark .input {
+    color: #F1F5F9;
+    border-color: rgba(255, 255, 255, 0.15);
   }
 
   .label {
@@ -165,6 +171,22 @@ html:not(.dark) main .bg-white\/10.border { background-color: #FFFFFF !important
     color: var(--text-muted);
     @apply text-lg mt-2;
   }
+}
+
+/* Prevent browser autofill from making text invisible */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0F172A;
+  -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+html.dark input:-webkit-autofill,
+html.dark input:-webkit-autofill:hover,
+html.dark input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #F1F5F9;
+  -webkit-box-shadow: 0 0 0px 1000px #1E293B inset;
 }
 
 /* Custom scrollbar */
