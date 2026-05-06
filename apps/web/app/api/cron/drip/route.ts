@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
 import { headers } from "next/headers";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(_req: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
   if (cronSecret) {
@@ -54,7 +56,7 @@ export async function GET(_req: NextRequest) {
       role: "CUSTOMER",
       isActive: true,
       createdAt: { lte: sevenDaysAgo },
-      bookings: {
+      bookingsAsCustomer: {
         none: { createdAt: { gte: sevenDaysAgo } },
       },
       updatedAt: { gte: eightDaysAgo, lte: sevenDaysAgo },
