@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import Stripe from "stripe";
+import { stripe } from "@/lib/stripe";
 import { createCertnInvitation } from "@/lib/certn";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", { apiVersion: "2024-06-20" });
 
 export const BACKGROUND_CHECK_FEE = 29.99; // USD
 
