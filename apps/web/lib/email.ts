@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
-const FROM = "Tarea <noreply@tarea.app>";
+const FROM = "Tarea <noreply@taptarea.com>";
 
 function baseTemplate(title: string, body: string, cta?: { label: string; url: string }) {
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
