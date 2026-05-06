@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
-import { Wrench, Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
+import { Wrench, Eye, EyeOff, Loader2, ShieldCheck, Phone, RotateCcw } from "lucide-react";
 
 // ─── Step 1: credentials ───────────────────────────────────────────────────
 const credSchema = z.object({

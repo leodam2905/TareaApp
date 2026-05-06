@@ -146,7 +146,7 @@ export default function HandymanJobsPage() {
         </div>
       )}
 
-      {viewMode === "list" && /* Tabs */}
+      {viewMode === "list" && (
       <div className="flex gap-2 p-1 bg-white/5 border border-white/10 rounded-xl w-fit">
         {(["pending", "active", "done"] as const).map(t => (
           <button
@@ -163,6 +163,7 @@ export default function HandymanJobsPage() {
           </button>
         ))}
       </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 text-tarea-sky animate-spin" /></div>

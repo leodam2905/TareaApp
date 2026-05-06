@@ -98,12 +98,12 @@ export default function PrivacyPage() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .prose-custom p { margin-bottom: 12px; line-height: 1.7; }
         .prose-custom ul { list-style: disc; padding-left: 20px; margin: 8px 0 12px; }
         .prose-custom li { margin-bottom: 6px; }
         .prose-custom strong { color: #e2e8f0; font-weight: 600; }
-      `}</style>
+      ` }} />
     </div>
   );
 }
