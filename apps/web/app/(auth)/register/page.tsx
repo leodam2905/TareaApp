@@ -23,6 +23,9 @@ const schema = z.object({
   zipCode: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
+  agreedToTerms: z.boolean().refine((v) => v === true, {
+    message: "You must accept the Terms and Privacy Policy",
+  }),
 }).refine((d) => d.password === d.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -55,7 +58,7 @@ function RegisterForm() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { role: defaultRole },
+    defaultValues: { role: defaultRole, agreedToTerms: false },
   });
 
   const role = watch("role");
@@ -283,6 +286,24 @@ function RegisterForm() {
                 {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
               </div>
 
+              <div className="flex items-start gap-3 pt-1">
+                <input
+                  {...register("agreedToTerms")}
+                  type="checkbox"
+                  id="agreedToTerms"
+                  className="mt-0.5 w-4 h-4 rounded border-tarea-border text-tarea-sky accent-tarea-sky cursor-pointer"
+                />
+                <label htmlFor="agreedToTerms" className="text-tarea-ink-muted text-xs leading-relaxed cursor-pointer">
+                  I agree to the{" "}
+                  <Link href="/terms" className="text-tarea-dark hover:underline font-medium">Terms of Service</Link>{" "}
+                  and{" "}
+                  <Link href="/privacy" className="text-tarea-dark hover:underline font-medium">Privacy Policy</Link>
+                </label>
+              </div>
+              {errors.agreedToTerms && (
+                <p className="text-red-500 text-xs -mt-1">{errors.agreedToTerms.message}</p>
+              )}
+
               <button
                 type="submit"
                 disabled={loading}
@@ -292,12 +313,6 @@ function RegisterForm() {
                 {loading ? "Creating account..." : "Create Account"}
               </button>
             </form>
-
-            <p className="text-tarea-ink-subtle text-xs text-center mt-4">
-              By registering, you agree to our{" "}
-              <Link href="#" className="text-tarea-dark hover:underline">Terms</Link> and{" "}
-              <Link href="#" className="text-tarea-dark hover:underline">Privacy Policy</Link>.
-            </p>
 
             <div className="mt-5 text-center">
               <p className="text-tarea-ink-muted text-sm">

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { Star, MapPin, Clock, Zap, ArrowLeft, Loader2, CheckCircle2, Calendar } from "lucide-react";
+import { Star, MapPin, Clock, Zap, ArrowLeft, Loader2, CheckCircle2, Calendar, Tag, X, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
 import { formatCurrency, SERVICE_CATEGORY_LABELS, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
 import Link from "next/link";
@@ -22,6 +22,7 @@ type HandymanDetail = {
     hourlyRate: number;
     yearsExperience: number;
     responseTime: number;
+    backgroundCheckStatus: string | null;
     services: { id: string; title: string; category: string; minPrice: number; maxPrice: number; duration: number }[];
   } | null;
 };
@@ -57,6 +58,55 @@ function ProfileInner() {
     totalPrice: "",
     promoCode: "",
   });
+
+  const [promoInput, setPromoInput] = useState("");
+  const [promoValidating, setPromoValidating] = useState(false);
+  const [promoResult, setPromoResult] = useState<{
+    code: string;
+    discountType: "PERCENTAGE" | "FIXED";
+    discountValue: number;
+  } | null>(null);
+  const [promoError, setPromoError] = useState("");
+
+  const applyPromo = async () => {
+    if (!promoInput.trim()) return;
+    setPromoValidating(true);
+    setPromoError("");
+    setPromoResult(null);
+    try {
+      const res = await fetch("/api/promo-codes/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: promoInput.trim() }),
+      });
+      const body = await res.json();
+      if (body.valid) {
+        setPromoResult(body);
+        setForm(f => ({ ...f, promoCode: body.code }));
+      } else {
+        setPromoError(body.error || "Invalid promo code");
+      }
+    } catch {
+      setPromoError("Could not validate code");
+    } finally {
+      setPromoValidating(false);
+    }
+  };
+
+  const clearPromo = () => {
+    setPromoResult(null);
+    setPromoError("");
+    setPromoInput("");
+    setForm(f => ({ ...f, promoCode: "" }));
+  };
+
+  const basePrice = parseFloat(form.totalPrice) || 0;
+  const discount = promoResult
+    ? promoResult.discountType === "PERCENTAGE"
+      ? (basePrice * promoResult.discountValue) / 100
+      : Math.min(promoResult.discountValue, basePrice)
+    : 0;
+  const finalPrice = Math.max(0, basePrice - discount);
 
   useEffect(() => {
     fetch(`/api/users/${id}`)
@@ -143,7 +193,14 @@ function ProfileInner() {
             )}
           </div>
           <div className="flex-1">
-            <h1 className="text-2xl font-extrabold text-white">{handyman.name}</h1>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-2xl font-extrabold text-white">{handyman.name}</h1>
+              {profile.backgroundCheckStatus === "PASSED" && (
+                <span className="flex items-center gap-1 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold px-2 py-0.5 rounded-full">
+                  <ShieldCheck className="w-3 h-3" /> Verified
+                </span>
+              )}
+            </div>
             <div className="flex flex-wrap items-center gap-3 mt-1.5">
               <span className="flex items-center gap-1 text-amber-400 font-semibold">
                 <Star className="w-4 h-4 fill-current" />
@@ -324,14 +381,67 @@ function ProfileInner() {
         </div>
 
         <div>
-          <label className="text-slate-400 text-sm font-medium block mb-1.5">Promo Code (optional)</label>
-          <input
-            value={form.promoCode}
-            onChange={e => setForm(f => ({ ...f, promoCode: e.target.value.toUpperCase() }))}
-            placeholder="SAVE10"
-            className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-tarea-sky font-mono tracking-widest"
-          />
+          <label className="text-slate-400 text-sm font-medium block mb-1.5">
+            <Tag className="w-3.5 h-3.5 inline mr-1 mb-0.5" />
+            Promo Code (optional)
+          </label>
+          {promoResult ? (
+            <div className="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-emerald-300 font-mono font-bold text-sm">{promoResult.code}</p>
+                <p className="text-emerald-400/70 text-xs">
+                  {promoResult.discountType === "PERCENTAGE"
+                    ? `${promoResult.discountValue}% off`
+                    : `$${promoResult.discountValue.toFixed(2)} off`}
+                  {basePrice > 0 && ` — saving ${discount > 0 ? `$${discount.toFixed(2)}` : "$0.00"}`}
+                </p>
+              </div>
+              <button onClick={clearPromo} className="text-slate-500 hover:text-slate-300 transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                value={promoInput}
+                onChange={e => { setPromoInput(e.target.value.toUpperCase()); setPromoError(""); }}
+                onKeyDown={e => e.key === "Enter" && applyPromo()}
+                placeholder="SAVE10"
+                className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-tarea-sky font-mono tracking-widest"
+              />
+              <button
+                onClick={applyPromo}
+                disabled={promoValidating || !promoInput.trim()}
+                className="px-4 py-2.5 rounded-xl border border-tarea-sky/40 text-tarea-sky text-sm font-semibold hover:bg-tarea-sky/10 transition-colors disabled:opacity-40 flex items-center gap-1.5 whitespace-nowrap"
+              >
+                {promoValidating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                Apply
+              </button>
+            </div>
+          )}
+          {promoError && <p className="text-red-400 text-xs mt-1.5">{promoError}</p>}
         </div>
+
+        {/* Price summary */}
+        {basePrice > 0 && (
+          <div className="bg-white/5 rounded-xl px-4 py-3 space-y-1.5 text-sm">
+            <div className="flex justify-between text-slate-400">
+              <span>Service price</span>
+              <span>${basePrice.toFixed(2)}</span>
+            </div>
+            {discount > 0 && (
+              <div className="flex justify-between text-emerald-400">
+                <span>Promo discount</span>
+                <span>−${discount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-white font-bold pt-1.5 border-t border-white/10">
+              <span>Total</span>
+              <span>${finalPrice.toFixed(2)}</span>
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center gap-2 text-xs text-slate-500 bg-white/5 rounded-xl px-3 py-2.5">
           <Zap className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />

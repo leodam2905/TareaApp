@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Briefcase, DollarSign, Star, Clock } from "lucide-react";
+import { Briefcase, DollarSign, Star, Clock, ShieldCheck, ShieldAlert, ShieldOff } from "lucide-react";
 import { formatCurrency, formatDate, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
 import JobTimerSection from "@/components/ui/JobTimer";
 
@@ -74,6 +74,54 @@ export default async function HandymanDashboard() {
           </div>
         ))}
       </div>
+
+      {/* Background check banner */}
+      {profile.backgroundCheckStatus === "PENDING" && (
+        <div className="flex items-start gap-4 p-5 bg-amber-500/10 border border-amber-500/30 rounded-2xl">
+          <ShieldAlert className="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-amber-300 font-semibold">Background check required</p>
+            <p className="text-amber-400/70 text-sm mt-0.5">A background check is required to receive job requests. Complete it now from your onboarding page.</p>
+          </div>
+          <Link href="/handyman/onboarding" className="text-amber-300 text-sm font-semibold hover:underline whitespace-nowrap">Start →</Link>
+        </div>
+      )}
+      {profile.backgroundCheckStatus === "DEFERRED" && (
+        <div className="flex items-start gap-4 p-5 bg-blue-500/10 border border-blue-500/20 rounded-2xl">
+          <ShieldCheck className="w-6 h-6 text-blue-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-blue-300 font-semibold">Background check — fee deferred</p>
+            <p className="text-blue-400/70 text-sm mt-0.5">The $29.99 fee will be deducted from your first payout.</p>
+          </div>
+        </div>
+      )}
+      {profile.backgroundCheckStatus === "IN_PROGRESS" && (
+        <div className="flex items-start gap-4 p-5 bg-tarea-sky/10 border border-tarea-sky/20 rounded-2xl">
+          <ShieldCheck className="w-6 h-6 text-tarea-sky flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-tarea-sky font-semibold">Background check in progress</p>
+            <p className="text-slate-400 text-sm mt-0.5">We'll notify you once the results are ready (usually 1–3 business days).</p>
+          </div>
+        </div>
+      )}
+      {profile.backgroundCheckStatus === "FAILED" && (
+        <div className="flex items-start gap-4 p-5 bg-red-500/10 border border-red-500/30 rounded-2xl">
+          <ShieldOff className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-red-300 font-semibold">Background check flagged</p>
+            <p className="text-red-400/70 text-sm mt-0.5">Your background check came back with issues. Please contact support for next steps.</p>
+          </div>
+        </div>
+      )}
+      {profile.backgroundCheckStatus === "PASSED" && (
+        <div className="flex items-center gap-4 p-5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl">
+          <ShieldCheck className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+          <div>
+            <p className="text-emerald-300 font-semibold">Background check passed ✓</p>
+            <p className="text-emerald-400/70 text-sm">Your verified badge is now visible to customers.</p>
+          </div>
+        </div>
+      )}
 
       {/* Active jobs */}
       {activeCount > 0 && (

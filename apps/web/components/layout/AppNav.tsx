@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Wrench, LayoutDashboard, Search, CalendarCheck, User, Briefcase, DollarSign, LogOut, Bell, ClipboardList, Radar, Layers, CalendarDays, X, CheckCheck, Heart, Sun, Moon, Wallet } from "lucide-react";
+import { Wrench, LayoutDashboard, Search, CalendarCheck, User, Briefcase, DollarSign, LogOut, Bell, ClipboardList, Radar, Layers, CalendarDays, X, CheckCheck, Heart, Sun, Moon, Wallet, Gift, PieChart, HelpCircle } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
@@ -33,6 +33,8 @@ export default function AppNav({ role, userName }: NavProps) {
     { href: "/customer/favorites",  label: "Favorites",           icon: Heart           },
     { href: "/customer/requests",   label: t("nav_requests"),     icon: ClipboardList   },
     { href: "/customer/post-job",   label: t("nav_post_job"),     icon: Briefcase       },
+    { href: "/customer/spending",    label: "Spending Report",     icon: PieChart        },
+    { href: "/customer/referrals",  label: "Refer & Earn",        icon: Gift            },
     { href: "/customer/profile",    label: t("nav_profile"),      icon: User            },
   ];
 
@@ -44,6 +46,7 @@ export default function AppNav({ role, userName }: NavProps) {
     { href: "/handyman/earnings",        label: t("nav_earnings"),    icon: DollarSign  },
     { href: "/handyman/payout-methods", label: "Payout Methods",    icon: Wallet      },
     { href: "/handyman/schedule",        label: "Schedule",          icon: CalendarDays },
+    { href: "/handyman/referrals",       label: "Refer & Earn",      icon: Gift        },
     { href: "/handyman/profile",         label: t("nav_profile"),    icon: User        },
   ];
 
@@ -200,6 +203,12 @@ export default function AppNav({ role, userName }: NavProps) {
             </div>
           )}
         </div>
+        <Link href="/contact"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium"
+        >
+          <HelpCircle className="w-5 h-5" />
+          Help & Support
+        </Link>
         <button
           onClick={toggle}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium"

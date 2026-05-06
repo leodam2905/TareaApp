@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Save, User, Phone, MapPin, LocateFixed, DollarSign, FileText, ToggleLeft, ToggleRight, Camera } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Loader2, Save, User, Phone, MapPin, LocateFixed, DollarSign, FileText, ToggleLeft, ToggleRight, Camera, Crown, Zap, Star, Shield } from "lucide-react";
 import toast from "react-hot-toast";
 import { useT } from "@/contexts/LanguageContext";
 import NotifPrefs from "@/components/ui/NotifPrefs";
@@ -25,6 +26,7 @@ type Profile = {
 };
 
 export default function HandymanProfilePage() {
+  const searchParams = useSearchParams();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [form, setForm] = useState({
     name: "", phone: "", address: "", city: "", state: "", zipCode: "",
@@ -35,6 +37,32 @@ export default function HandymanProfilePage() {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useT();
+
+  const [sub, setSub] = useState<{ isPremium: boolean; stripeSubStatus: string | null } | null>(null);
+  const [subscribing, setSubscribing] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/stripe/subscription")
+      .then(r => r.json())
+      .then(d => setSub(d));
+
+    const result = searchParams.get("sub");
+    if (result === "success") toast.success("You're now a Tarea Pro member! 🎉");
+    if (result === "cancel") toast("Subscription cancelled — you can upgrade anytime.", { icon: "ℹ️" });
+  }, []);
+
+  const startSubscription = async () => {
+    setSubscribing(true);
+    try {
+      const res = await fetch("/api/stripe/subscription", { method: "POST" });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error);
+      window.location.href = body.url;
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Could not start checkout");
+      setSubscribing(false);
+    }
+  };
 
   useEffect(() => {
     fetch("/api/profile")
@@ -163,6 +191,57 @@ export default function HandymanProfilePage() {
           {form.isAvailable ? t("label_available") : t("label_unavailable")}
         </button>
       </div>
+
+      {/* Premium subscription card */}
+      {sub && (
+        sub.isPremium ? (
+          <div className="flex items-center gap-4 p-5 bg-amber-500/10 border border-amber-500/30 rounded-2xl">
+            <div className="w-12 h-12 bg-amber-400/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Crown className="w-6 h-6 text-amber-400" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <p className="text-amber-300 font-bold">Tarea Pro</p>
+                <span className="text-[10px] font-bold bg-amber-400 text-tarea-ink px-2 py-0.5 rounded-full">ACTIVE</span>
+              </div>
+              <p className="text-amber-400/70 text-xs mt-0.5">Priority listing · Verified badge · Unlimited bids</p>
+            </div>
+          </div>
+        ) : (
+          <div className="p-5 bg-gradient-to-br from-tarea-sky/10 to-purple-500/10 border border-tarea-sky/20 rounded-2xl space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-tarea-sky/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Crown className="w-6 h-6 text-tarea-sky" />
+              </div>
+              <div>
+                <p className="text-white font-bold">Upgrade to Tarea Pro</p>
+                <p className="text-slate-400 text-xs">$29/month — cancel anytime</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { icon: Star, text: "Priority in search results" },
+                { icon: Shield, text: "Verified Pro badge" },
+                { icon: Zap, text: "Unlimited job bids" },
+                { icon: Crown, text: "Featured profile" },
+              ].map(({ icon: Icon, text }) => (
+                <div key={text} className="flex items-center gap-2 text-xs text-slate-300">
+                  <Icon className="w-3.5 h-3.5 text-tarea-sky flex-shrink-0" />
+                  {text}
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={startSubscription}
+              disabled={subscribing}
+              className="w-full flex items-center justify-center gap-2 bg-tarea-sky text-tarea-ink font-bold py-2.5 rounded-xl hover:bg-sky-300 transition-all disabled:opacity-50 text-sm"
+            >
+              {subscribing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Crown className="w-4 h-4" />}
+              {subscribing ? "Redirecting…" : "Upgrade to Pro — $29/mo"}
+            </button>
+          </div>
+        )
+      )}
 
       <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-5">
         {/* Personal info */}

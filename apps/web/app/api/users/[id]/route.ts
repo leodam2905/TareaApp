@@ -20,6 +20,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
           hourlyRate: true,
           yearsExperience: true,
           responseTime: true,
+          backgroundCheckStatus: true,
           services: {
             where: { isActive: true },
             select: { id: true, title: true, category: true, minPrice: true, maxPrice: true, duration: true },

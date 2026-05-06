@@ -4,7 +4,7 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Calendar, ChevronRight, Star, Clock, Zap, ArrowLeft, Loader2, List, Map } from "lucide-react";
+import { MapPin, Calendar, ChevronRight, Star, Clock, Zap, ArrowLeft, Loader2, List, Map, ShieldCheck } from "lucide-react";
 import { SERVICE_CATEGORY_LABELS, SERVICE_CATEGORY_ICONS, formatCurrency } from "@/lib/utils";
 
 const HandymenMap = dynamic(() => import("@/components/ui/HandymenMap"), { ssr: false });
@@ -37,6 +37,7 @@ type Handyman = {
   yearsExperience: number;
   responseTime: number;
   isElite: boolean;
+  backgroundCheckStatus: string | null;
   distanceKm: number | null;
   score: number;
   latitude: number | null;
@@ -292,7 +293,14 @@ export default function BrowsePage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <p className="text-white font-bold group-hover:text-tarea-sky transition-colors">{h.name}</p>
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <p className="text-white font-bold group-hover:text-tarea-sky transition-colors">{h.name}</p>
+                                {h.backgroundCheckStatus === "PASSED" && (
+                                  <span className="flex items-center gap-0.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                    <ShieldCheck className="w-2.5 h-2.5" /> Verified
+                                  </span>
+                                )}
+                              </div>
                               <div className="flex flex-wrap items-center gap-3 mt-1">
                                 <StarRating rating={h.rating} count={h.totalJobs} />
                                 {h.totalJobs > 0 && (

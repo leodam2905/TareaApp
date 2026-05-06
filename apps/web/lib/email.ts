@@ -31,13 +31,26 @@ function baseTemplate(title: string, body: string, cta?: { label: string; url: s
   </body></html>`;
 }
 
-export async function sendEmail(to: string, subject: string, title: string, body: string, cta?: { label: string; url: string }) {
-  const html = baseTemplate(title, body, cta);
+export async function sendEmail(
+  toOrParams: string | { to: string; subject: string; html: string },
+  subject?: string,
+  title?: string,
+  body?: string,
+  cta?: { label: string; url: string }
+) {
+  let to: string, subj: string, html: string;
+  if (typeof toOrParams === "object") {
+    ({ to, subject: subj, html } = toOrParams);
+  } else {
+    to = toOrParams;
+    subj = subject!;
+    html = baseTemplate(title!, body!, cta);
+  }
   if (!resend) {
-    console.log(`[EMAIL → ${to}] ${subject}\n${title}: ${body}`);
+    console.log(`[EMAIL → ${to}] ${subj}`);
     return;
   }
-  await resend.emails.send({ from: FROM, to, subject, html });
+  await resend.emails.send({ from: FROM, to, subject: subj, html });
 }
 
 export async function sendInvoiceEmail(params: {

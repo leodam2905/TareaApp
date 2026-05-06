@@ -361,6 +361,12 @@ export default function LoginPage() {
                 {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
               </div>
 
+              <div className="flex justify-end">
+                <Link href="/forgot-password" className="text-tarea-ink-muted text-xs hover:text-tarea-dark transition-colors">
+                  Forgot password?
+                </Link>
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
@@ -370,7 +376,6 @@ export default function LoginPage() {
                 {loading ? "Checking…" : "Continue"}
               </button>
             </form>
-
 
             <div className="mt-6 text-center">
               <p className="text-tarea-ink-muted text-sm">

@@ -62,6 +62,7 @@ export async function GET(req: NextRequest) {
           take: 1,
         },
         availability: true,
+        // backgroundCheckStatus included as scalar via default select
       },
     });
     // Note: isPremium is a scalar field included by default via findMany
@@ -113,6 +114,7 @@ export async function GET(req: NextRequest) {
           serviceRadius: h.serviceRadius,
           isElite,
           isPremium: h.isPremium,
+          backgroundCheckStatus: h.backgroundCheckStatus,
           distanceKm,
           score,
           isAvailableOnDate,

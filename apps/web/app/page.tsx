@@ -742,7 +742,7 @@ export default function HomePage() {
               <h4 className="text-tarea-sky font-bold text-sm uppercase tracking-wider mb-4">Contact</h4>
               <ul className="space-y-3 text-slate-400 text-sm">
                 <li className="flex items-center gap-2.5"><Phone className="w-4 h-4 flex-shrink-0" /><span>+1 (800) TAREA-00</span></li>
-                <li className="flex items-center gap-2.5"><Mail className="w-4 h-4 flex-shrink-0" /><span>support@tarea.app</span></li>
+                <li className="flex items-center gap-2.5"><Mail className="w-4 h-4 flex-shrink-0" /><Link href="/contact" className="hover:text-white transition-colors">support@tarea.app</Link></li>
                 <li className="flex items-center gap-2.5"><MapPin className="w-4 h-4 flex-shrink-0" /><span>Miami, FL 33101</span></li>
               </ul>
             </div>
@@ -750,6 +750,7 @@ export default function HomePage() {
           <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-slate-400 text-sm">© 2026 Tarea. All rights reserved.</p>
             <div className="flex gap-6 text-slate-400 text-sm">
+              <Link href="/contact" className="hover:text-white transition-colors">Contact & Support</Link>
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
               <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
             </div>
