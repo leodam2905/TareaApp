@@ -371,3 +371,12 @@ model StripeWebhookEvent {
 
   @@map("stripe_webhook_events")
 }
+
+model ActiveState {
+  state       String    @id  // e.g. "FL", "CA"
+  isActive    Boolean   @default(false)
+  activatedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+
+  @@map("active_states")
+}

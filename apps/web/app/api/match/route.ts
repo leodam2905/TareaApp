@@ -39,10 +39,16 @@ export async function GET(req: NextRequest) {
       requestedHour = d.getUTCHours();
     }
 
+    // Restrict to active states (if any are configured)
+    const activeStates = await prisma.activeState.findMany({ where: { isActive: true }, select: { state: true } });
+    const activeStateList = activeStates.map((s) => s.state);
+    const stateFilter = activeStateList.length > 0 ? { in: activeStateList } : undefined;
+
     const handymen = await prisma.handymanProfile.findMany({
       where: {
         isAvailable: true,
         services: { some: { category: category as never, isActive: true } },
+        ...(stateFilter ? { user: { state: stateFilter } } : {}),
       },
       include: {
         user: {

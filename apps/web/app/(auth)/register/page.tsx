@@ -49,6 +49,7 @@ function RegisterForm() {
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [comingSoonState, setComingSoonState] = useState<string | null>(null);
 
   const {
     register,
@@ -101,6 +102,7 @@ function RegisterForm() {
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
+    setComingSoonState(null);
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
@@ -108,7 +110,13 @@ function RegisterForm() {
         body: JSON.stringify(data),
       });
       const body = await res.json();
-      if (!res.ok) throw new Error(body.error || "Registration failed");
+      if (!res.ok) {
+        if (body.code === "STATE_INACTIVE") {
+          setComingSoonState(data.state || "your state");
+          return;
+        }
+        throw new Error(body.error || "Registration failed");
+      }
       toast.success("Account created! Welcome to Tarea.");
       router.push(data.role === "HANDYMAN" ? "/handyman/onboarding" : "/customer/dashboard");
     } catch (err: unknown) {
@@ -302,6 +310,13 @@ function RegisterForm() {
               </div>
               {errors.agreedToTerms && (
                 <p className="text-red-500 text-xs -mt-1">{errors.agreedToTerms.message}</p>
+              )}
+
+              {comingSoonState && (
+                <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-center space-y-1">
+                  <p className="text-amber-800 font-semibold text-sm">🚀 Coming soon to {comingSoonState}!</p>
+                  <p className="text-amber-700 text-xs">We&apos;re not in your state yet but expanding fast. Follow us for updates.</p>
+                </div>
               )}
 
               <button

@@ -35,6 +35,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email already in use" }, { status: 409 });
     }
 
+    // Check if the user's state is active
+    if (data.state) {
+      const activeStates = await prisma.activeState.findMany({ where: { isActive: true } });
+      if (activeStates.length > 0) {
+        const isStateActive = activeStates.some((s) => s.state.toUpperCase() === data.state!.toUpperCase());
+        if (!isStateActive) {
+          return NextResponse.json(
+            { error: `Tarea is not yet available in ${data.state}. We're expanding soon — stay tuned!`, code: "STATE_INACTIVE" },
+            { status: 403 }
+          );
+        }
+      }
+    }
+
     const passwordHash = await hashPassword(data.password);
 
     const user = await prisma.user.create({

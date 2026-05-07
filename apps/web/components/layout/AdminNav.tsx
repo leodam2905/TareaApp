@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Users, Briefcase, Wrench, LogOut, ShieldCheck, AlertTriangle, DollarSign, Hammer, BarChart2, Tag, Settings, Zap, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, Wrench, LogOut, ShieldCheck, AlertTriangle, DollarSign, Hammer, BarChart2, Tag, Settings, Zap, Sun, Moon, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useT } from "@/contexts/LanguageContext";
@@ -26,6 +26,7 @@ export default function AdminNav({ userName }: { userName: string }) {
     { href: "/admin/payouts",   label: "Payouts",          icon: DollarSign },
     { href: "/admin/handymen",  label: "Handymen",         icon: Hammer },
     { href: "/admin/promo-codes", label: "Promo Codes",    icon: Tag },
+    { href: "/admin/states",     label: "State Coverage",  icon: MapPin },
     { href: "/admin/webhooks",   label: "Webhooks",        icon: Zap },
     { href: "/admin/settings",   label: "Settings",        icon: Settings },
   ];
