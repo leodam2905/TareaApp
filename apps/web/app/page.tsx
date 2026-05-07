@@ -7,11 +7,12 @@ import {
   useMotionValue, useSpring, animate,
 } from "framer-motion";
 import {
-  Wrench, Zap, Paintbrush, Droplets, Wind, TreePine,
+  Zap, Paintbrush, Droplets, Wind, TreePine, Wrench,
   Star, Shield, Clock, CheckCircle2, ArrowRight,
   Phone, Mail, MapPin, Sparkles, Users, TrendingUp,
   ChevronDown,
 } from "lucide-react";
+import Logo from "@/components/ui/Logo";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -178,10 +179,7 @@ export default function HomePage() {
         <div className="mx-4 mt-4">
           <div className="max-w-6xl mx-auto bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl px-6 h-14 flex items-center justify-between shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
             <div className="flex items-center gap-2.5">
-              <motion.div whileHover={{ rotate: 20 }} className="w-8 h-8 bg-tarea-sky rounded-xl flex items-center justify-center">
-                <Wrench className="w-4 h-4 text-tarea-ink" />
-              </motion.div>
-              <span className="text-lg font-bold tracking-tight">Tarea</span>
+              <Logo size={32} light />
             </div>
             <div className="hidden md:flex items-center gap-7 text-sm text-slate-400">
               {[["Services", "#services"], ["How it works", "#how-it-works"], ["Reviews", "#reviews"]].map(([l, h]) => (
@@ -711,10 +709,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-4 gap-10 mb-12">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-tarea-sky rounded-xl flex items-center justify-center">
-                  <Wrench className="w-4 h-4 text-tarea-ink" />
-                </div>
-                <span className="text-xl font-bold">Tarea</span>
+                <Logo size={32} light />
               </div>
               <p className="text-slate-400 text-sm leading-relaxed">
                 Your trusted platform for home maintenance and repair services.
