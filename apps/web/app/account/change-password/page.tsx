@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2, Lock, CheckCircle2, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
@@ -12,6 +12,15 @@ export default function ChangePasswordPage() {
   const [show, setShow] = useState({ current: false, new: false, confirm: false });
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  // Verify the user is logged in; redirect to login if not
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then(r => { if (!r.ok) router.replace("/login"); })
+      .catch(() => router.replace("/login"))
+      .finally(() => setChecking(false));
+  }, []);
 
   const set = (k: keyof typeof form, v: string) => setForm(f => ({ ...f, [k]: v }));
   const toggleShow = (k: keyof typeof show) => setShow(s => ({ ...s, [k]: !s[k] }));
@@ -56,6 +65,14 @@ export default function ChangePasswordPage() {
       setLoading(false);
     }
   };
+
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-tarea-surface flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-tarea-sky animate-spin" />
+      </div>
+    );
+  }
 
   if (done) {
     return (
