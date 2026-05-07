@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Loader2, Save, User, Phone, MapPin, LocateFixed, Camera } from "lucide-react";
+import { Loader2, Save, User, Phone, MapPin, LocateFixed, Camera, Building2, Globe } from "lucide-react";
 import toast from "react-hot-toast";
 import { useT } from "@/contexts/LanguageContext";
 import NotifPrefs from "@/components/ui/NotifPrefs";
@@ -15,11 +15,15 @@ type Profile = {
   state: string | null;
   zipCode: string | null;
   avatarUrl: string | null;
+  accountType: string;
+  companyName: string | null;
+  ein: string | null;
+  website: string | null;
 };
 
 export default function CustomerProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [form, setForm] = useState({ name: "", phone: "", address: "", city: "", state: "", zipCode: "" });
+  const [form, setForm] = useState({ name: "", phone: "", address: "", city: "", state: "", zipCode: "", companyName: "", ein: "", website: "" });
   const [saving, setSaving] = useState(false);
   const [locating, setLocating] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -38,6 +42,9 @@ export default function CustomerProfilePage() {
           city: d.city || "",
           state: d.state || "",
           zipCode: d.zipCode || "",
+          companyName: d.companyName || "",
+          ein: d.ein || "",
+          website: d.website || "",
         });
       });
   }, []);
@@ -155,6 +162,26 @@ export default function CustomerProfilePage() {
           </label>
           <input value={form.phone} onChange={e => set("phone", e.target.value)} placeholder="+1 (555) 000-0000" className={field} />
         </div>
+
+        {profile.accountType === "COMPANY" && (
+          <div className="border border-tarea-sky/20 rounded-xl p-4 space-y-3 bg-tarea-sky/5">
+            <label className="text-slate-300 text-sm font-medium flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-tarea-sky" /> Company Information
+            </label>
+            <div>
+              <label className="text-slate-400 text-xs mb-1 block">Company name</label>
+              <input value={form.companyName} onChange={e => set("companyName", e.target.value)} placeholder="Acme Corp LLC" className={field} />
+            </div>
+            <div>
+              <label className="text-slate-400 text-xs mb-1 block">EIN / Tax ID</label>
+              <input value={form.ein} onChange={e => set("ein", e.target.value)} placeholder="12-3456789" className={field} />
+            </div>
+            <div>
+              <label className="text-slate-400 text-xs mb-1 flex items-center gap-1"><Globe className="w-3 h-3" /> Website</label>
+              <input value={form.website} onChange={e => set("website", e.target.value)} placeholder="https://yourcompany.com" className={field} />
+            </div>
+          </div>
+        )}
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">

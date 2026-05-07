@@ -15,6 +15,11 @@ enum Role {
   ADMIN
 }
 
+enum AccountType {
+  INDIVIDUAL
+  COMPANY
+}
+
 enum BookingStatus {
   PENDING
   ACCEPTED
@@ -62,6 +67,11 @@ model User {
   zipCode      String?
   latitude     Float?
   longitude    Float?
+  accountType  AccountType @default(INDIVIDUAL)
+  companyName  String?
+  companyLogoUrl String?
+  ein          String?
+  website      String?
   isVerified   Boolean  @default(false)
   isActive     Boolean  @default(true)
   stripeAccountId     String?

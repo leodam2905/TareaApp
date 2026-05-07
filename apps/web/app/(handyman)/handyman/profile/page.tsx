@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { Loader2, Save, User, Phone, MapPin, LocateFixed, DollarSign, FileText, ToggleLeft, ToggleRight, Camera, Crown, Zap, Star, Shield } from "lucide-react";
+import { Loader2, Save, User, Phone, MapPin, LocateFixed, DollarSign, FileText, ToggleLeft, ToggleRight, Camera, Crown, Zap, Star, Shield, Building2, Globe } from "lucide-react";
 import toast from "react-hot-toast";
 import { useT } from "@/contexts/LanguageContext";
 import NotifPrefs from "@/components/ui/NotifPrefs";
@@ -16,6 +16,11 @@ type Profile = {
   state: string | null;
   zipCode: string | null;
   avatarUrl: string | null;
+  accountType: string;
+  companyName: string | null;
+  companyLogoUrl: string | null;
+  ein: string | null;
+  website: string | null;
   handymanProfile: {
     bio: string | null;
     hourlyRate: number;
@@ -31,6 +36,7 @@ export default function HandymanProfilePage() {
   const [form, setForm] = useState({
     name: "", phone: "", address: "", city: "", state: "", zipCode: "",
     bio: "", hourlyRate: "", isAvailable: true,
+    companyName: "", ein: "", website: "",
   });
   const [saving, setSaving] = useState(false);
   const [locating, setLocating] = useState(false);
@@ -79,6 +85,9 @@ export default function HandymanProfilePage() {
           bio: d.handymanProfile?.bio || "",
           hourlyRate: String(d.handymanProfile?.hourlyRate || ""),
           isAvailable: d.handymanProfile?.isAvailable ?? true,
+          companyName: d.companyName || "",
+          ein: d.ein || "",
+          website: d.website || "",
         });
       });
   }, []);
@@ -274,6 +283,27 @@ export default function HandymanProfilePage() {
             placeholder="Tell customers about your experience and skills…" rows={3}
             className={field + " resize-none"} />
         </div>
+
+        {/* Company info — only shown for company accounts */}
+        {profile.accountType === "COMPANY" && (
+          <div className="border border-tarea-sky/20 rounded-xl p-4 space-y-3 bg-tarea-sky/5">
+            <label className="text-slate-300 text-sm font-medium flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-tarea-sky" /> Company Information
+            </label>
+            <div>
+              <label className="text-slate-400 text-xs mb-1 block">Company name</label>
+              <input value={form.companyName} onChange={e => set("companyName", e.target.value)} placeholder="Acme Services LLC" className={field} />
+            </div>
+            <div>
+              <label className="text-slate-400 text-xs mb-1 block">EIN / Tax ID</label>
+              <input value={form.ein} onChange={e => set("ein", e.target.value)} placeholder="12-3456789" className={field} />
+            </div>
+            <div>
+              <label className="text-slate-400 text-xs mb-1 block flex items-center gap-1"><Globe className="w-3 h-3" /> Website</label>
+              <input value={form.website} onChange={e => set("website", e.target.value)} placeholder="https://yourcompany.com" className={field} />
+            </div>
+          </div>
+        )}
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">

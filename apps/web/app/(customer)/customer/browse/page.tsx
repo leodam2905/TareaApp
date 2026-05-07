@@ -4,7 +4,7 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Calendar, ChevronRight, Star, Clock, Zap, ArrowLeft, Loader2, List, Map, ShieldCheck } from "lucide-react";
+import { MapPin, Calendar, ChevronRight, Star, Clock, Zap, ArrowLeft, Loader2, List, Map, ShieldCheck, Building2 } from "lucide-react";
 import { SERVICE_CATEGORY_LABELS, SERVICE_CATEGORY_ICONS, formatCurrency } from "@/lib/utils";
 
 const HandymenMap = dynamic(() => import("@/components/ui/HandymenMap"), { ssr: false });
@@ -38,6 +38,9 @@ type Handyman = {
   responseTime: number;
   isElite: boolean;
   backgroundCheckStatus: string | null;
+  accountType?: string;
+  companyName?: string | null;
+  companyLogoUrl?: string | null;
   distanceKm: number | null;
   score: number;
   latitude: number | null;
@@ -294,7 +297,14 @@ export default function BrowsePage() {
                           <div className="flex items-start justify-between gap-2">
                             <div>
                               <div className="flex items-center gap-1.5 flex-wrap">
-                                <p className="text-white font-bold group-hover:text-tarea-sky transition-colors">{h.name}</p>
+                                <p className="text-white font-bold group-hover:text-tarea-sky transition-colors">
+                                  {h.accountType === "COMPANY" && h.companyName ? h.companyName : h.name}
+                                </p>
+                                {h.accountType === "COMPANY" && (
+                                  <span className="flex items-center gap-0.5 bg-tarea-sky/20 border border-tarea-sky/30 text-tarea-sky text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                    <Building2 className="w-2.5 h-2.5" /> Company
+                                  </span>
+                                )}
                                 {h.backgroundCheckStatus === "PASSED" && (
                                   <span className="flex items-center gap-0.5 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                                     <ShieldCheck className="w-2.5 h-2.5" /> Verified

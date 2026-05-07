@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
-import { Wrench, Eye, EyeOff, Loader2, User, Hammer, MapPin, LocateFixed } from "lucide-react";
+import { Wrench, Eye, EyeOff, Loader2, User, Hammer, MapPin, LocateFixed, Building2, UserCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const schema = z.object({
@@ -17,6 +17,10 @@ const schema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
   confirmPassword: z.string(),
   role: z.enum(["CUSTOMER", "HANDYMAN"]),
+  accountType: z.enum(["INDIVIDUAL", "COMPANY"]),
+  companyName: z.string().optional(),
+  ein: z.string().optional(),
+  website: z.string().optional(),
   address: z.string().optional(),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),
@@ -29,6 +33,9 @@ const schema = z.object({
 }).refine((d) => d.password === d.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
+}).refine((d) => d.accountType !== "COMPANY" || (d.companyName && d.companyName.length >= 2), {
+  message: "Company name is required",
+  path: ["companyName"],
 });
 
 type FormData = z.infer<typeof schema>;
@@ -59,10 +66,11 @@ function RegisterForm() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { role: defaultRole, agreedToTerms: false },
+    defaultValues: { role: defaultRole, accountType: "INDIVIDUAL", agreedToTerms: false },
   });
 
   const role = watch("role");
+  const accountType = watch("accountType");
 
   const detectLocation = () => {
     if (!navigator.geolocation) {
@@ -179,7 +187,7 @@ function RegisterForm() {
             <p className="text-tarea-ink-muted mb-6">Join Tarea for free today</p>
 
             {/* Role selector */}
-            <div className="grid grid-cols-2 gap-3 mb-6 p-1 bg-tarea-surface rounded-xl">
+            <div className="grid grid-cols-2 gap-3 mb-4 p-1 bg-tarea-surface rounded-xl">
               {[
                 { value: "CUSTOMER", label: "I need a Handyman", icon: User },
                 { value: "HANDYMAN", label: "I'm a Handyman", icon: Hammer },
@@ -191,6 +199,29 @@ function RegisterForm() {
                   className={cn(
                     "flex items-center gap-2 justify-center py-3 px-2 rounded-lg text-sm font-semibold transition-all duration-200",
                     role === value
+                      ? "bg-white text-tarea-dark shadow-card border border-tarea-border"
+                      : "text-tarea-ink-muted hover:text-tarea-ink"
+                  )}
+                >
+                  <Icon className="w-4 h-4" />
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* Account type selector */}
+            <div className="grid grid-cols-2 gap-3 mb-6 p-1 bg-tarea-surface rounded-xl">
+              {[
+                { value: "INDIVIDUAL", label: "Individual", icon: UserCircle2 },
+                { value: "COMPANY", label: "Company", icon: Building2 },
+              ].map(({ value, label, icon: Icon }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setValue("accountType", value as "INDIVIDUAL" | "COMPANY")}
+                  className={cn(
+                    "flex items-center gap-2 justify-center py-3 px-2 rounded-lg text-sm font-semibold transition-all duration-200",
+                    accountType === value
                       ? "bg-white text-tarea-dark shadow-card border border-tarea-border"
                       : "text-tarea-ink-muted hover:text-tarea-ink"
                   )}
@@ -218,6 +249,29 @@ function RegisterForm() {
                 <input {...register("phone")} type="tel" placeholder="+1 (555) 000-0000" className="input" autoComplete="tel" />
                 {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
               </div>
+
+              {/* Company fields */}
+              {accountType === "COMPANY" && (
+                <div className="border border-tarea-border rounded-xl p-4 space-y-3 bg-tarea-surface">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Building2 className="w-4 h-4 text-tarea-sky" />
+                    <span className="text-sm font-semibold text-tarea-ink">Company Information</span>
+                  </div>
+                  <div>
+                    <label className="label">Company name <span className="text-red-400">*</span></label>
+                    <input {...register("companyName")} placeholder="Acme Services LLC" className="input" />
+                    {errors.companyName && <p className="text-red-500 text-xs mt-1">{errors.companyName.message}</p>}
+                  </div>
+                  <div>
+                    <label className="label">EIN / Tax ID <span className="text-tarea-ink-subtle text-xs">(optional)</span></label>
+                    <input {...register("ein")} placeholder="12-3456789" className="input" />
+                  </div>
+                  <div>
+                    <label className="label">Website <span className="text-tarea-ink-subtle text-xs">(optional)</span></label>
+                    <input {...register("website")} type="url" placeholder="https://yourcompany.com" className="input" />
+                  </div>
+                </div>
+              )}
 
               {/* Location */}
               <div className="border-t border-tarea-border pt-4 space-y-3">
