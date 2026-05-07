@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { Loader2, Save, User, Phone, MapPin, LocateFixed, DollarSign, FileText, ToggleLeft, ToggleRight, Camera, Crown, Zap, Star, Shield, Building2, Globe } from "lucide-react";
+import { Loader2, Save, User, Phone, MapPin, LocateFixed, DollarSign, FileText, ToggleLeft, ToggleRight, Camera, Crown, Zap, Star, Shield, Building2, Globe, Lock } from "lucide-react";
+import Link from "next/link";
 import toast from "react-hot-toast";
 import { useT } from "@/contexts/LanguageContext";
 import NotifPrefs from "@/components/ui/NotifPrefs";
@@ -329,6 +330,11 @@ export default function HandymanProfilePage() {
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           {saving ? t("btn_saving") : t("btn_save")}
         </button>
+
+        <Link href="/account/change-password"
+          className="w-full flex items-center justify-center gap-2 border border-tarea-border text-tarea-ink-muted py-3 rounded-xl hover:border-tarea-sky hover:text-tarea-sky transition-all text-sm font-semibold">
+          <Lock className="w-4 h-4" /> Change Password
+        </Link>
       </div>
 
       {/* Notification preferences */}

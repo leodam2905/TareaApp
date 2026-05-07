@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Users, Briefcase, Wrench, LogOut, ShieldCheck, AlertTriangle, DollarSign, Hammer, BarChart2, Tag, Settings, Zap, Sun, Moon, MapPin } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, Wrench, LogOut, ShieldCheck, AlertTriangle, DollarSign, Hammer, BarChart2, Tag, Settings, Zap, Sun, Moon, MapPin, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useT } from "@/contexts/LanguageContext";
@@ -83,6 +83,16 @@ export default function AdminNav({ userName }: { userName: string }) {
       </div>
 
       <div className="p-4 border-t border-white/10 space-y-1">
+        <Link href="/account/change-password">
+          <motion.div
+            whileHover={{ x: 4 }}
+            className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-200"
+          >
+            <Lock className="w-5 h-5 flex-shrink-0" />
+            Change Password
+          </motion.div>
+        </Link>
+
         <button
           onClick={toggle}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium"
