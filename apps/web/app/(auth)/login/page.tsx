@@ -7,7 +7,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
-import { Wrench, Eye, EyeOff, Loader2, ShieldCheck, Phone, RotateCcw } from "lucide-react";
+import { Eye, EyeOff, Loader2, ShieldCheck, Phone, RotateCcw } from "lucide-react";
+import Logo from "@/components/ui/Logo";
 
 // ─── Step 1: credentials ───────────────────────────────────────────────────
 const credSchema = z.object({
@@ -163,12 +164,7 @@ export default function LoginPage() {
   // ────────────────────────────────────────────────────────────────────────
   const leftPanel = (
     <div className="hidden lg:flex lg:w-1/2 bg-hero-gradient flex-col justify-between p-12">
-      <div className="flex items-center gap-2">
-        <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
-          <Wrench className="w-5 h-5 text-white" />
-        </div>
-        <span className="text-2xl font-bold text-white">Tarea</span>
-      </div>
+      <Logo size={36} light />
       <div className="space-y-6">
         <h2 className="text-4xl font-extrabold text-white leading-tight">Your trusted handyman platform</h2>
         <p className="text-blue-100 text-lg leading-relaxed">
@@ -316,11 +312,8 @@ export default function LoginPage() {
       {leftPanel}
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
-          <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-9 h-9 bg-hero-gradient rounded-xl flex items-center justify-center">
-              <Wrench className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-tarea-dark">Tarea</span>
+          <div className="lg:hidden mb-8">
+            <Logo size={36} />
           </div>
 
           <div className="card">

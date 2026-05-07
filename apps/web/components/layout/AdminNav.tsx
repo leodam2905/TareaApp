@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { LayoutDashboard, Users, Briefcase, Wrench, LogOut, ShieldCheck, AlertTriangle, DollarSign, Hammer, BarChart2, Tag, Settings, Zap, Sun, Moon, MapPin, Lock } from "lucide-react";
+import Logo from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useT } from "@/contexts/LanguageContext";
@@ -41,13 +42,8 @@ export default function AdminNav({ userName }: { userName: string }) {
     <nav className="h-screen w-64 bg-tarea-ink border-r border-white/10 flex flex-col fixed left-0 top-0 z-40">
       <div className="p-6 border-b border-white/10">
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-9 h-9 bg-red-500/20 rounded-xl flex items-center justify-center">
-            <ShieldCheck className="w-5 h-5 text-red-400" />
-          </div>
-          <div>
-            <span className="text-xl font-bold text-white">Tarea</span>
-            <p className="text-red-400 text-xs font-semibold">Admin Panel</p>
-          </div>
+          <Logo size={28} light />
+          <p className="text-red-400 text-xs font-semibold ml-1">Admin Panel</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-red-500/20 rounded-full flex items-center justify-center text-red-400 font-bold text-sm">

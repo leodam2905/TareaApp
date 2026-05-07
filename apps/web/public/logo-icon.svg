@@ -1,0 +1,24 @@
+<svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1E3A8A"/>
+      <stop offset="60%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#38BDF8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="56" height="56" rx="14" fill="url(#g)"/>
+
+  <!-- Horizontal bar of T (wrench shape) -->
+  <rect x="10" y="12" width="36" height="10" rx="5" fill="white"/>
+
+  <!-- Wrench jaw opening on left side -->
+  <path d="M 20 12 Q 10 12 10 17 Q 10 22 20 22" fill="url(#g)"/>
+
+  <!-- Vertical stem -->
+  <rect x="23" y="18" width="10" height="26" rx="5" fill="white"/>
+
+  <!-- Sky accent dot -->
+  <circle cx="28" cy="48" r="3.5" fill="#38BDF8"/>
+</svg>

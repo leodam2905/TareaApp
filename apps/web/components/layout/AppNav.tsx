@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Wrench, LayoutDashboard, Search, CalendarCheck, User, Briefcase, DollarSign, LogOut, Bell, ClipboardList, Radar, Layers, CalendarDays, X, CheckCheck, Heart, Sun, Moon, Wallet, Gift, PieChart, HelpCircle } from "lucide-react";
+import { LayoutDashboard, Search, CalendarCheck, User, Briefcase, DollarSign, LogOut, Bell, ClipboardList, Radar, Layers, CalendarDays, X, CheckCheck, Heart, Sun, Moon, Wallet, Gift, PieChart, HelpCircle } from "lucide-react";
+import Logo from "@/components/ui/Logo";
 import { useTheme } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
@@ -99,11 +100,8 @@ export default function AppNav({ role, userName }: NavProps) {
     <nav className="h-screen w-64 bg-tarea-ink border-r border-white/10 flex flex-col fixed left-0 top-0 z-40">
       {/* Logo */}
       <div className="p-6 border-b border-white/10">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-9 h-9 bg-hero-gradient rounded-xl flex items-center justify-center">
-            <Wrench className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-xl font-bold text-white">Tarea</span>
+        <Link href="/">
+          <Logo size={32} light />
         </Link>
         <div className="mt-4 flex items-center gap-3">
           <div className="w-9 h-9 bg-tarea-sky rounded-full flex items-center justify-center text-tarea-ink font-bold text-sm">

@@ -1,0 +1,43 @@
+<svg viewBox="0 0 220 56" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <defs>
+    <linearGradient id="iconGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1E3A8A"/>
+      <stop offset="60%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#38BDF8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon background -->
+  <rect width="56" height="56" rx="14" fill="url(#iconGrad)"/>
+
+  <!-- Wrench-T icon: vertical stem of T -->
+  <rect x="23" y="18" width="10" height="26" rx="5" fill="white"/>
+
+  <!-- Wrench-T icon: horizontal bar (wrench body) -->
+  <rect x="10" y="12" width="36" height="10" rx="5" fill="white"/>
+
+  <!-- Wrench jaw cutout left — makes it look like a wrench opening -->
+  <rect x="10" y="12" width="10" height="10" rx="0" fill="url(#iconGrad)"/>
+  <rect x="10" y="12" width="10" height="10" rx="3" fill="url(#iconGrad)"/>
+
+  <!-- Wrench jaw opening (C-shape on left of crossbar) -->
+  <path d="M 20 12 Q 10 12 10 17 Q 10 22 20 22" fill="url(#iconGrad)"/>
+  <path d="M 20 14 Q 13 14 13 17 Q 13 20 20 20" fill="white" opacity="0"/>
+
+  <!-- Sky blue dot accent bottom of stem -->
+  <circle cx="28" cy="48" r="3.5" fill="#38BDF8"/>
+
+  <!-- Wordmark: T in dark blue, rest lighter -->
+  <text x="70" y="39"
+    font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+    font-size="30"
+    font-weight="900"
+    fill="#1E3A8A"
+    letter-spacing="-1">T</text>
+  <text x="89" y="39"
+    font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+    font-size="30"
+    font-weight="700"
+    fill="#0F172A"
+    letter-spacing="-0.5">area</text>
+</svg>
