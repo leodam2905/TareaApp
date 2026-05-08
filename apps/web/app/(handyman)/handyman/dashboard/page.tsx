@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Briefcase, DollarSign, Star, Clock, ShieldCheck, ShieldAlert, ShieldOff } from "lucide-react";
+import { Briefcase, DollarSign, Star, Clock, ShieldCheck, ShieldAlert, ShieldOff, Camera } from "lucide-react";
 import { formatCurrency, formatDate, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
 import JobTimerSection from "@/components/ui/JobTimer";
 
@@ -74,6 +74,18 @@ export default async function HandymanDashboard() {
           </div>
         ))}
       </div>
+
+      {/* Profile photo banner */}
+      {!user.avatarUrl && (
+        <div className="flex items-start gap-4 p-5 bg-orange-500/10 border border-orange-500/30 rounded-2xl">
+          <Camera className="w-6 h-6 text-orange-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-orange-300 font-semibold">Profile photo required</p>
+            <p className="text-orange-400/70 text-sm mt-0.5">You won't appear in customer searches or be able to apply to jobs until you add a profile photo.</p>
+          </div>
+          <Link href="/handyman/profile" className="text-orange-300 text-sm font-semibold hover:underline whitespace-nowrap">Add photo →</Link>
+        </div>
+      )}
 
       {/* Background check banner */}
       {profile.backgroundCheckStatus === "PENDING" && (

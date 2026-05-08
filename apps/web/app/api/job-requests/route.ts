@@ -44,11 +44,14 @@ export async function GET() {
   });
   const myCategories = myServices.map(s => s.category);
 
+  // Block handymen without a profile photo from seeing/applying to jobs
+  const handymanUser = await prisma.user.findUnique({ where: { id: user.id }, select: { avatarUrl: true } });
+  if (!handymanUser?.avatarUrl) return NextResponse.json({ requiresPhoto: true, jobs: [] });
+
   const requests = await prisma.jobRequest.findMany({
     where: {
       status: "OPEN",
       category: { in: myCategories as never[] },
-      // Exclude requests the handyman already applied to
       applications: { none: { handymanId: profile.id } },
     },
     include: {

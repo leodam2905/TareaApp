@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapPin, Clock, DollarSign, Loader2, Send, ChevronDown, ChevronUp, Zap } from "lucide-react";
+import { MapPin, Clock, DollarSign, Loader2, Send, ChevronDown, ChevronUp, Zap, Camera } from "lucide-react";
+import Link from "next/link";
 import toast from "react-hot-toast";
 import { formatCurrency, formatDate, SERVICE_CATEGORY_ICONS, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
 import { useT } from "@/contexts/LanguageContext";
@@ -101,12 +102,17 @@ export default function FindJobsPage() {
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [applied, setApplied] = useState<Set<string>>(new Set());
+  const [requiresPhoto, setRequiresPhoto] = useState(false);
   const { t } = useT();
 
   useEffect(() => {
     fetch("/api/job-requests")
       .then(r => r.json())
-      .then(d => { if (Array.isArray(d)) setJobs(d); setLoading(false); });
+      .then(d => {
+        if (d?.requiresPhoto) { setRequiresPhoto(true); setLoading(false); return; }
+        if (Array.isArray(d)) setJobs(d);
+        setLoading(false);
+      });
   }, []);
 
   const markApplied = (id: string) => {
@@ -123,6 +129,19 @@ export default function FindJobsPage() {
 
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 text-orange-400 animate-spin" /></div>
+      ) : requiresPhoto ? (
+        <div className="bg-white border border-orange-200 rounded-2xl p-10 text-center space-y-4 shadow-sm">
+          <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto">
+            <Camera className="w-8 h-8 text-orange-500" />
+          </div>
+          <h2 className="text-gray-900 font-bold text-xl">Profile photo required</h2>
+          <p className="text-gray-500 text-sm max-w-sm mx-auto">
+            You need a profile photo before you can browse and apply to jobs. Customers are more likely to hire workers with a clear photo.
+          </p>
+          <Link href="/handyman/profile" className="btn-primary inline-flex items-center gap-2">
+            <Camera className="w-4 h-4" /> Add Profile Photo
+          </Link>
+        </div>
       ) : jobs.length === 0 ? (
         <div className="bg-white border border-orange-100 rounded-2xl p-16 text-center space-y-3 shadow-sm">
           <p className="text-3xl">🎉</p>

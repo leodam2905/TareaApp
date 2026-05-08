@@ -48,7 +48,10 @@ export async function GET(req: NextRequest) {
       where: {
         isAvailable: true,
         services: { some: { category: category as never, isActive: true } },
-        ...(stateFilter ? { user: { state: stateFilter } } : {}),
+        user: {
+          avatarUrl: { not: null },
+          ...(stateFilter ? { state: stateFilter } : {}),
+        },
       },
       include: {
         user: {
