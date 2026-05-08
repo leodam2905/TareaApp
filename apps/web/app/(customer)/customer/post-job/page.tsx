@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, MapPin, LocateFixed } from "lucide-react";
+import { Loader2, MapPin, LocateFixed, Camera, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { SERVICE_CATEGORY_LABELS, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
 import { useT } from "@/contexts/LanguageContext";
@@ -14,6 +14,9 @@ export default function PostJobPage() {
   const { t } = useT();
   const [saving, setSaving] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     category: "PLUMBING",
     title: "",
@@ -28,6 +31,22 @@ export default function PostJobPage() {
   });
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+
+  const uploadPhoto = async (file: File) => {
+    if (imageUrls.length >= 4) { toast.error("Max 4 photos"); return; }
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("folder", "tarea/job-requests");
+    const res = await fetch("/api/upload/image", { method: "POST", body: fd });
+    if (res.ok) {
+      const { url } = await res.json();
+      setImageUrls(prev => [...prev, url]);
+    } else {
+      toast.error("Upload failed");
+    }
+    setUploading(false);
+  };
 
   const detectLocation = () => {
     if (!navigator.geolocation) { toast.error("Geolocation not supported"); return; }
@@ -56,7 +75,7 @@ export default function PostJobPage() {
     const res = await fetch("/api/job-requests", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, scheduledAt: new Date(form.scheduledAt).toISOString() }),
+      body: JSON.stringify({ ...form, scheduledAt: new Date(form.scheduledAt).toISOString(), imageUrls }),
     });
     if (res.ok) {
       toast.success("Job posted! Handymen near you will be notified.");
@@ -101,6 +120,43 @@ export default function PostJobPage() {
             placeholder="Describe the problem in detail — what's broken, how long it's been an issue, any relevant details…"
             rows={4}
             className="input resize-none"
+          />
+        </div>
+
+        {/* Photos */}
+        <div>
+          <label className="label">Photos <span className="text-gray-400 font-normal">(optional, max 4)</span></label>
+          <div className="flex flex-wrap gap-3">
+            {imageUrls.map((url, i) => (
+              <div key={url} className="relative w-20 h-20 rounded-xl overflow-hidden border border-orange-200">
+                <img src={url} alt="" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => setImageUrls(prev => prev.filter((_, j) => j !== i))}
+                  className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center"
+                >
+                  <X className="w-3 h-3 text-white" />
+                </button>
+              </div>
+            ))}
+            {imageUrls.length < 4 && (
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+                className="w-20 h-20 rounded-xl border-2 border-dashed border-orange-300 flex flex-col items-center justify-center gap-1 text-orange-400 hover:border-orange-400 hover:bg-orange-50 transition-all disabled:opacity-50"
+              >
+                {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
+                <span className="text-xs font-medium">{uploading ? "Uploading" : "Add photo"}</span>
+              </button>
+            )}
+          </div>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={e => { const f = e.target.files?.[0]; if (f) uploadPhoto(f); e.target.value = ""; }}
           />
         </div>
 

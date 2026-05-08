@@ -264,6 +264,7 @@ model JobRequest {
   budgetMin   Float
   budgetMax   Float
   status      String          @default("OPEN") // OPEN, ASSIGNED, CLOSED
+  imageUrls   String[]        @default([])
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 

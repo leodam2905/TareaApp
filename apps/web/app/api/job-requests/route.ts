@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user || user.role !== "CUSTOMER") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { category, title, description, address, city, scheduledAt, budgetMin, budgetMax, latitude, longitude } = await req.json();
+  const { category, title, description, address, city, scheduledAt, budgetMin, budgetMax, latitude, longitude, imageUrls } = await req.json();
 
   if (!category || !title || !description || !address || !city || !scheduledAt || !budgetMin || !budgetMax) {
     return NextResponse.json({ error: "All fields are required" }, { status: 400 });
@@ -100,6 +100,7 @@ export async function POST(req: NextRequest) {
       scheduledAt: new Date(scheduledAt),
       budgetMin: parseFloat(budgetMin),
       budgetMax: parseFloat(budgetMax),
+      imageUrls: Array.isArray(imageUrls) ? imageUrls : [],
     },
   });
 

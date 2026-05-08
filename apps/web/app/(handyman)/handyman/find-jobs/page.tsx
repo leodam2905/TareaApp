@@ -18,6 +18,7 @@ type JobRequest = {
   budgetMax: number;
   status: string;
   createdAt: string;
+  imageUrls: string[];
   distanceKm: number | null;
   score: number;
   customer: { name: string; city: string | null; avatarUrl: string | null };
@@ -205,6 +206,13 @@ export default function FindJobsPage() {
 
                   {isExpanded && (
                     <div className="mt-4 space-y-3">
+                      {job.imageUrls?.length > 0 && (
+                        <div className="flex gap-2 flex-wrap">
+                          {job.imageUrls.map((url, i) => (
+                            <img key={i} src={url} alt="" className="w-24 h-24 rounded-xl object-cover border border-orange-100" />
+                          ))}
+                        </div>
+                      )}
                       <div className="bg-orange-50 rounded-xl p-3 text-sm text-gray-600">
                         <p className="font-medium text-gray-900 mb-1">Location</p>
                         <p>{job.address}, {job.city}</p>

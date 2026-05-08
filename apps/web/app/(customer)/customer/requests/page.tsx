@@ -27,6 +27,7 @@ type JobRequest = {
   budgetMin: number;
   budgetMax: number;
   status: string;
+  imageUrls: string[];
   createdAt: string;
   applications: Application[];
 };
@@ -128,6 +129,15 @@ export default function CustomerRequestsPage() {
                   <p className="text-gray-400 text-xs">{r.applications.length === 1 ? t("label_applicants", { n: r.applications.length }) : t("label_applicants_plural", { n: r.applications.length })}</p>
                 </div>
               </div>
+
+              {/* Photos */}
+              {r.imageUrls?.length > 0 && (
+                <div className="px-5 pb-3 flex gap-2">
+                  {r.imageUrls.map((url, i) => (
+                    <img key={i} src={url} alt="" className="w-16 h-16 rounded-xl object-cover border border-orange-100" />
+                  ))}
+                </div>
+              )}
 
               {/* Applications */}
               {r.applications.length > 0 && (
