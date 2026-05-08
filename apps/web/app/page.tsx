@@ -55,17 +55,17 @@ function MeshBackground() {
       <motion.div
         animate={{ x: [0, 120, 0], y: [0, -60, 0] }}
         transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -top-32 left-1/4 w-[700px] h-[700px] rounded-full bg-tarea-sky/15 blur-[140px]"
+        className="absolute -top-32 left-1/4 w-[700px] h-[700px] rounded-full bg-tarea-sky/20 blur-[140px]"
       />
       <motion.div
         animate={{ x: [0, -100, 0], y: [0, 80, 0] }}
         transition={{ duration: 28, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-        className="absolute top-1/2 right-0 w-[600px] h-[600px] rounded-full bg-blue-700/10 blur-[120px]"
+        className="absolute top-1/2 right-0 w-[600px] h-[600px] rounded-full bg-orange-700/10 blur-[120px]"
       />
       <motion.div
         animate={{ x: [0, 70, 0], y: [0, 50, 0] }}
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 8 }}
-        className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-violet-600/10 blur-[100px]"
+        className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-orange-500/10 blur-[100px]"
       />
       {/* Grid overlay */}
       <div
@@ -228,7 +228,7 @@ export default function HomePage() {
                 Your Home,{" "}
                 <span
                   className="text-transparent bg-clip-text"
-                  style={{ backgroundImage: "linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #38BDF8 100%)", backgroundSize: "200%", animation: "shimmer 4s linear infinite" }}
+                  style={{ backgroundImage: "linear-gradient(135deg, #FB923C 0%, #F97316 50%, #FB923C 100%)", backgroundSize: "200%", animation: "shimmer 4s linear infinite" }}
                 >
                   Perfectly
                 </span>
@@ -598,7 +598,7 @@ export default function HomePage() {
 
       {/* ── For handymen ── */}
       <section className="py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-tarea-sky/5 to-blue-600/5" />
+        <div className="absolute inset-0 bg-gradient-to-r from-tarea-sky/5 to-orange-600/5" />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -659,12 +659,12 @@ export default function HomePage() {
 
       {/* ── CTA ── */}
       <section className="relative py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0F2560] via-[#1E3A8A] to-[#0F2560]" />
-        <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(ellipse at 50% 50%, rgba(56,189,248,0.2) 0%, transparent 65%)" }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#7C2D12] via-[#9A3412] to-[#7C2D12]" />
+        <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(ellipse at 50% 50%, rgba(251,146,60,0.25) 0%, transparent 65%)" }} />
         <motion.div
           animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-tarea-sky/10 blur-3xl"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-orange-500/15 blur-3xl"
         />
 
         <motion.div
@@ -675,7 +675,7 @@ export default function HomePage() {
         >
           <h2 className="text-6xl font-extrabold text-white mb-5 leading-tight">
             Ready to Get<br />
-            <span className="text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(135deg, #38BDF8, #818CF8)" }}>
+            <span className="text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(135deg, #FB923C, #FDBA74)" }}>
               Things Fixed?
             </span>
           </h2>
