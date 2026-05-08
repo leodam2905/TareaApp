@@ -18,9 +18,9 @@ export default function Logo({ variant = "full", size = 36, light = false }: Log
     >
       <defs>
         <linearGradient id="tarea-grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#9A3412" />
-          <stop offset="60%" stopColor="#EA580C" />
-          <stop offset="100%" stopColor="#FB923C" />
+          <stop offset="0%" stopColor="#1E3A8A" />
+          <stop offset="60%" stopColor="#0284C7" />
+          <stop offset="100%" stopColor="#38BDF8" />
         </linearGradient>
       </defs>
       <rect width="56" height="56" rx="14" fill="url(#tarea-grad)" />
