@@ -12,18 +12,18 @@
 /* ── Theme variables ────────────────────────────────────────────────────── */
 :root {
   /* Day (default) */
-  --app-bg:        #F0F9FF;
-  --app-bg-body:   #F0F9FF;
+  --app-bg:        #FFF7ED;
+  --app-bg-body:   #FFF7ED;
   --card-bg:       #FFFFFF;
-  --card-bg-alt:   #F8FAFC;
-  --card-border:   #E0F2FE;
-  --card-border-2: #BAE6FD;
+  --card-bg-alt:   #FFF7ED;
+  --card-border:   #FFEDD5;
+  --card-border-2: #FED7AA;
   --text-primary:  #0F172A;
   --text-muted:    #334155;
   --text-subtle:   #64748B;
   --input-bg:      #FFFFFF;
-  --scrollbar-track: #F0F9FF;
-  --scrollbar-thumb: #BAE6FD;
+  --scrollbar-track: #FFF7ED;
+  --scrollbar-thumb: #FED7AA;
 }
 
 html.dark {

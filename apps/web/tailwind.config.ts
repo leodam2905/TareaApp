@@ -20,8 +20,8 @@ const config: Config = {
           ink: "#0F172A",
           "ink-muted": "#334155",
           "ink-subtle": "#64748B",
-          surface: "#F0F9FF",
-          border: "#E0F2FE",
+          surface: "#FFF7ED",
+          border: "#FFEDD5",
         },
       },
       fontFamily: {
