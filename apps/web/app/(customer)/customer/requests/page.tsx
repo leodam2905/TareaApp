@@ -32,9 +32,9 @@ type JobRequest = {
 };
 
 const STATUS_STYLE: Record<string, string> = {
-  OPEN: "bg-tarea-sky/20 text-tarea-sky",
-  ASSIGNED: "bg-emerald-500/20 text-emerald-400",
-  CLOSED: "bg-slate-500/20 text-slate-400",
+  OPEN: "bg-orange-100 text-orange-600",
+  ASSIGNED: "bg-emerald-100 text-emerald-600",
+  CLOSED: "bg-gray-100 text-gray-500",
 };
 
 function timeAgo(dateStr: string) {
@@ -85,11 +85,11 @@ export default function CustomerRequestsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-extrabold text-white">{t("page_requests")}</h1>
-          <p className="text-slate-400 mt-1">{t("page_requests_sub")}</p>
+          <h1 className="text-3xl font-extrabold text-gray-900">{t("page_requests")}</h1>
+          <p className="text-gray-500 mt-1">{t("page_requests_sub")}</p>
         </div>
         <Link href="/customer/post-job"
-          className="flex items-center gap-2 bg-tarea-sky text-tarea-ink font-semibold px-4 py-2.5 rounded-xl hover:bg-sky-300 transition-all text-sm">
+          className="flex items-center gap-2 btn-primary transition-all text-sm">
           <Plus className="w-4 h-4" /> {t("nav_post_job")}
         </Link>
       </div>
@@ -97,24 +97,24 @@ export default function CustomerRequestsPage() {
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 text-tarea-sky animate-spin" /></div>
       ) : requests.length === 0 ? (
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-16 text-center space-y-4">
-          <p className="text-slate-400">{t("empty_requests")}</p>
+        <div className="bg-white border border-orange-100 rounded-2xl p-16 text-center shadow-sm space-y-4">
+          <p className="text-gray-500">{t("empty_requests")}</p>
           <Link href="/customer/post-job" className="btn-secondary inline-block">{t("btn_post_first")}</Link>
         </div>
       ) : (
         <div className="space-y-5">
           {requests.map(r => (
-            <div key={r.id} className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+            <div key={r.id} className="bg-white border border-orange-100 rounded-2xl overflow-hidden shadow-sm">
               {/* Job header */}
               <div className="p-5 flex items-start justify-between gap-3">
                 <div className="flex gap-3">
                   <span className="text-2xl mt-0.5">{SERVICE_CATEGORY_ICONS[r.category] || "🛠️"}</span>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-white font-bold">{r.title}</p>
+                      <p className="text-gray-900 font-bold">{r.title}</p>
                       <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLE[r.status]}`}>{r.status}</span>
                     </div>
-                    <p className="text-slate-400 text-xs mt-0.5">{SERVICE_CATEGORY_LABELS[r.category]}</p>
+                    <p className="text-gray-500 text-xs mt-0.5">{SERVICE_CATEGORY_LABELS[r.category]}</p>
                     <div className="flex flex-wrap gap-3 mt-2 text-xs text-slate-400">
                       <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{r.city}</span>
                       <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDate(new Date(r.scheduledAt))}</span>
@@ -124,32 +124,32 @@ export default function CustomerRequestsPage() {
                   </div>
                 </div>
                 <div className="flex-shrink-0 text-right">
-                  <p className="text-white font-bold text-lg">{r.applications.length}</p>
-                  <p className="text-slate-500 text-xs">{r.applications.length === 1 ? t("label_applicants", { n: r.applications.length }) : t("label_applicants_plural", { n: r.applications.length })}</p>
+                  <p className="text-gray-900 font-bold text-lg">{r.applications.length}</p>
+                  <p className="text-gray-400 text-xs">{r.applications.length === 1 ? t("label_applicants", { n: r.applications.length }) : t("label_applicants_plural", { n: r.applications.length })}</p>
                 </div>
               </div>
 
               {/* Applications */}
               {r.applications.length > 0 && (
-                <div className="border-t border-white/10 divide-y divide-white/5">
+                <div className="border-t border-orange-100 divide-y divide-orange-50">
                   {r.applications.map(a => (
                     <div key={a.id} className={`p-4 flex items-center gap-4 ${a.status === "ACCEPTED" ? "bg-emerald-500/5" : a.status === "REJECTED" ? "opacity-50" : ""}`}>
-                      <div className="w-10 h-10 rounded-xl bg-tarea-sky/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
                         {a.user.avatarUrl
                           ? <img src={a.user.avatarUrl} alt="" className="w-full h-full object-cover" />
-                          : <span className="text-tarea-sky font-bold">{a.user.name[0]}</span>}
+                          : <span className="text-orange-600 font-bold">{a.user.name[0]}</span>}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="text-white font-semibold text-sm">{a.user.name}</p>
+                          <p className="text-gray-900 font-semibold text-sm">{a.user.name}</p>
                           <span className="flex items-center gap-0.5 text-amber-400 text-xs">
                             <Star className="w-3 h-3 fill-current" />{a.handyman.rating.toFixed(1)}
                           </span>
                           <span className="text-slate-500 text-xs">{a.handyman.totalJobs} jobs</span>
                         </div>
-                        {a.message && <p className="text-slate-400 text-xs mt-0.5 truncate">"{a.message}"</p>}
+                        {a.message && <p className="text-gray-500 text-xs mt-0.5 truncate">"{a.message}"</p>}
                         {a.proposedPrice && (
-                          <p className="text-tarea-sky text-xs font-semibold mt-0.5">Offers: {formatCurrency(a.proposedPrice)}</p>
+                          <p className="text-orange-500 text-xs font-semibold mt-0.5">Offers: {formatCurrency(a.proposedPrice)}</p>
                         )}
                       </div>
                       <div className="flex-shrink-0">
