@@ -12,8 +12,8 @@
 /* ── Theme variables ────────────────────────────────────────────────────── */
 :root {
   /* Day (default) */
-  --app-bg:        #FFF7ED;
-  --app-bg-body:   #FFF7ED;
+  --app-bg:        #FED7AA;
+  --app-bg-body:   #FED7AA;
   --card-bg:       #FFFFFF;
   --card-bg-alt:   #FFF7ED;
   --card-border:   #FFEDD5;
@@ -22,8 +22,8 @@
   --text-muted:    #334155;
   --text-subtle:   #64748B;
   --input-bg:      #FFFFFF;
-  --scrollbar-track: #FFF7ED;
-  --scrollbar-thumb: #FED7AA;
+  --scrollbar-track: #FED7AA;
+  --scrollbar-thumb: #FB923C;
 }
 
 html.dark {

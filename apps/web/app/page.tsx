@@ -60,12 +60,12 @@ function MeshBackground() {
       <motion.div
         animate={{ x: [0, -100, 0], y: [0, 80, 0] }}
         transition={{ duration: 28, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-        className="absolute top-1/2 right-0 w-[600px] h-[600px] rounded-full bg-blue-700/10 blur-[120px]"
+        className="absolute top-1/2 right-0 w-[600px] h-[600px] rounded-full bg-orange-700/10 blur-[120px]"
       />
       <motion.div
         animate={{ x: [0, 70, 0], y: [0, 50, 0] }}
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 8 }}
-        className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-violet-600/10 blur-[100px]"
+        className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-orange-500/10 blur-[100px]"
       />
       {/* Grid overlay */}
       <div
@@ -141,7 +141,7 @@ function Marquee() {
             <div className="flex text-tarea-sky mb-3 text-sm">{"★".repeat(r.rating)}</div>
             <p className="text-slate-300 text-sm leading-relaxed mb-5">"{r.text}"</p>
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-tarea-sky to-blue-600 flex items-center justify-center text-white text-xs font-bold">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-tarea-sky to-orange-600 flex items-center justify-center text-white text-xs font-bold">
                 {r.name[0]}
               </div>
               <div>
@@ -283,7 +283,7 @@ export default function HomePage() {
                       initial={mounted ? { scale: 0 } : false}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.9 + i * 0.08 }}
-                      className="w-9 h-9 rounded-full border-2 border-tarea-ink bg-gradient-to-br from-tarea-sky to-blue-600 flex items-center justify-center text-white text-xs font-bold"
+                      className="w-9 h-9 rounded-full border-2 border-tarea-ink bg-gradient-to-br from-tarea-sky to-orange-600 flex items-center justify-center text-white text-xs font-bold"
                     >
                       {l}
                     </motion.div>
@@ -318,7 +318,7 @@ export default function HomePage() {
 
                   {/* Pro info */}
                   <div className="flex items-center gap-3 p-3.5 bg-white/5 rounded-xl border border-white/10 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-tarea-sky to-blue-600 flex items-center justify-center text-white font-bold text-sm">M</div>
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-tarea-sky to-orange-600 flex items-center justify-center text-white font-bold text-sm">M</div>
                     <div className="flex-1">
                       <p className="text-white font-semibold text-sm">Marcus Rivera</p>
                       <div className="flex items-center gap-1.5 mt-0.5">
@@ -532,7 +532,7 @@ export default function HomePage() {
               >
                 <motion.div
                   whileHover={{ scale: 1.08, rotate: 3 }}
-                  className="w-20 h-20 bg-gradient-to-br from-tarea-sky/20 to-blue-600/20 border border-tarea-sky/30 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(56,189,248,0.15)]"
+                  className="w-20 h-20 bg-gradient-to-br from-tarea-sky/20 to-orange-600/20 border border-tarea-sky/30 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(251,146,60,0.15)]"
                 >
                   <span className="text-tarea-sky font-extrabold text-2xl">{n}</span>
                 </motion.div>
@@ -598,7 +598,7 @@ export default function HomePage() {
 
       {/* ── For handymen ── */}
       <section className="py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-tarea-sky/5 to-blue-600/5" />
+        <div className="absolute inset-0 bg-gradient-to-r from-tarea-sky/5 to-orange-600/5" />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -659,8 +659,8 @@ export default function HomePage() {
 
       {/* ── CTA ── */}
       <section className="relative py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0F2560] via-[#1E3A8A] to-[#0F2560]" />
-        <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(ellipse at 50% 50%, rgba(56,189,248,0.2) 0%, transparent 65%)" }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#7C2D12] via-[#9A3412] to-[#7C2D12]" />
+        <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(ellipse at 50% 50%, rgba(251,146,60,0.25) 0%, transparent 65%)" }} />
         <motion.div
           animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
