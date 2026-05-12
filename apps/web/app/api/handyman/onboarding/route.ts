@@ -34,3 +34,18 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true });
 }
+
+export async function PATCH(req: NextRequest) {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "HANDYMAN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const { idFrontUrl, idBackUrl } = await req.json();
+
+  await prisma.handymanProfile.upsert({
+    where: { userId: user.id },
+    update: { idFrontUrl, idBackUrl },
+    create: { userId: user.id, hourlyRate: 0, idFrontUrl, idBackUrl },
+  });
+
+  return NextResponse.json({ ok: true });
+}

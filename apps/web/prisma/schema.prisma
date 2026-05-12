@@ -134,6 +134,8 @@ model HandymanProfile {
   backgroundCheckRef    String?
   icaSignedAt           DateTime?
   icaSignedIp           String?
+  idFrontUrl            String?
+  idBackUrl             String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

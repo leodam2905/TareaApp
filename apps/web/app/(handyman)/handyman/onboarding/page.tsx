@@ -86,6 +86,15 @@ export default function HandymanOnboarding() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
+  // ID upload
+  const idFrontRef = useRef<HTMLInputElement>(null);
+  const idBackRef = useRef<HTMLInputElement>(null);
+  const [idFrontPreview, setIdFrontPreview] = useState<string | null>(null);
+  const [idBackPreview, setIdBackPreview] = useState<string | null>(null);
+  const [idFrontFile, setIdFrontFile] = useState<File | null>(null);
+  const [idBackFile, setIdBackFile] = useState<File | null>(null);
+  const [uploadingId, setUploadingId] = useState(false);
+
   // Step 1 — profile info
   const [bio, setBio] = useState("");
   const [hourlyRate, setHourlyRate] = useState("50");
@@ -114,11 +123,34 @@ export default function HandymanOnboarding() {
     return res.ok;
   };
 
+  const uploadIdPhoto = async (file: File): Promise<string | null> => {
+    const form = new FormData();
+    form.append("file", file);
+    form.append("folder", "tarea/id-docs");
+    const res = await fetch("/api/upload/image", { method: "POST", body: form });
+    if (!res.ok) return null;
+    const { url } = await res.json();
+    return url;
+  };
+
   const handleNext = async () => {
     if (!avatarFile) { toast.error("Please upload a profile picture"); return; }
     if (!bio.trim()) { toast.error("Please add a short bio"); return; }
-    const ok = await uploadAvatar();
-    if (!ok) { toast.error("Image upload failed, try again"); return; }
+    if (!idFrontFile) { toast.error("Please upload the front of your ID"); return; }
+    if (!idBackFile) { toast.error("Please upload the back of your ID"); return; }
+    setUploadingId(true);
+    const [avatarOk, idFrontUrl, idBackUrl] = await Promise.all([
+      uploadAvatar(),
+      uploadIdPhoto(idFrontFile),
+      uploadIdPhoto(idBackFile),
+    ]);
+    setUploadingId(false);
+    if (!avatarOk || !idFrontUrl || !idBackUrl) { toast.error("Upload failed, try again"); return; }
+    await fetch("/api/handyman/onboarding", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idFrontUrl, idBackUrl }),
+    });
     setStep(2);
   };
 
@@ -399,6 +431,56 @@ export default function HandymanOnboarding() {
                 </div>
               </div>
 
+              {/* ID Upload */}
+              <div>
+                <label className="label">Government-Issued ID <span className="text-red-400">*</span></label>
+                <p className="text-slate-500 text-xs mb-3">Upload both sides of your driver's license, passport, or state ID. Images are stored securely and only reviewed by Tarea admins.</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Front */}
+                  <div>
+                    <p className="text-xs text-slate-400 font-medium mb-1.5">Front (Recto)</p>
+                    <button type="button" onClick={() => idFrontRef.current?.click()}
+                      className="relative w-full h-28 rounded-xl overflow-hidden border-2 border-dashed border-white/20 hover:border-tarea-sky flex items-center justify-center bg-white/5 transition-all">
+                      {idFrontPreview ? (
+                        <img src={idFrontPreview} alt="ID Front" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="flex flex-col items-center gap-1 text-slate-400">
+                          <FileText className="w-6 h-6" />
+                          <span className="text-xs">Upload front</span>
+                        </div>
+                      )}
+                    </button>
+                    <input ref={idFrontRef} type="file" accept="image/*" className="hidden"
+                      onChange={e => {
+                        const f = e.target.files?.[0]; if (!f) return;
+                        setIdFrontFile(f);
+                        const r = new FileReader(); r.onload = () => setIdFrontPreview(r.result as string); r.readAsDataURL(f);
+                      }} />
+                  </div>
+                  {/* Back */}
+                  <div>
+                    <p className="text-xs text-slate-400 font-medium mb-1.5">Back (Verso)</p>
+                    <button type="button" onClick={() => idBackRef.current?.click()}
+                      className="relative w-full h-28 rounded-xl overflow-hidden border-2 border-dashed border-white/20 hover:border-tarea-sky flex items-center justify-center bg-white/5 transition-all">
+                      {idBackPreview ? (
+                        <img src={idBackPreview} alt="ID Back" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="flex flex-col items-center gap-1 text-slate-400">
+                          <FileText className="w-6 h-6" />
+                          <span className="text-xs">Upload back</span>
+                        </div>
+                      )}
+                    </button>
+                    <input ref={idBackRef} type="file" accept="image/*" className="hidden"
+                      onChange={e => {
+                        const f = e.target.files?.[0]; if (!f) return;
+                        setIdBackFile(f);
+                        const r = new FileReader(); r.onload = () => setIdBackPreview(r.result as string); r.readAsDataURL(f);
+                      }} />
+                  </div>
+                </div>
+              </div>
+
               {/* Bio */}
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1.5">Bio <span className="text-red-400">*</span></label>
@@ -423,9 +505,9 @@ export default function HandymanOnboarding() {
                 </div>
               </div>
 
-              <button onClick={handleNext} disabled={uploading}
+              <button onClick={handleNext} disabled={uploading || uploadingId}
                 className="w-full btn-primary flex items-center justify-center gap-2 mt-2 disabled:opacity-60">
-                {uploading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <>Next — Choose Services <ChevronRight className="w-4 h-4" /></>}
+                {(uploading || uploadingId) ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <>Next — Choose Services <ChevronRight className="w-4 h-4" /></>}
               </button>
             </motion.div>
           )}
