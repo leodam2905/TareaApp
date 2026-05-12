@@ -2,6 +2,9 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Dancing_Script } from "next/font/google";
+
+const dancingScript = Dancing_Script({ subsets: ["latin"], weight: "700" });
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { Check, ChevronRight, ChevronLeft, Wrench, Camera, Loader2, Clock, ShieldCheck, CreditCard, Clock3, FileText, ScrollText } from "lucide-react";
@@ -323,7 +326,11 @@ export default function HandymanOnboarding() {
                 <div className="border-t border-white/10 pt-4 space-y-2">
                   <p className="text-white font-semibold text-center">EXECUTION</p>
                   <p className="text-slate-400 text-xs text-center">By clicking "Sign &amp; Continue" below, you electronically sign this Agreement on behalf of yourself or your business entity. Your electronic signature, IP address, and timestamp will be recorded as legally binding evidence of your acceptance.</p>
-                  <p className="text-slate-500 text-xs text-center">FOR TAREA US LLC: Debohi Jean Jacques Dah, Chief Executive Officer</p>
+                  <div className="flex flex-col items-center gap-0.5">
+                    <p className={`${dancingScript.className} text-2xl text-tarea-sky`}>Debohi Jean Jacques Dah</p>
+                    <p className="text-slate-500 text-xs">Debohi Jean Jacques Dah — Chief Executive Officer, Tarea US LLC</p>
+                    <p className="text-slate-600 text-xs">Signed electronically on behalf of Tarea US LLC</p>
+                  </div>
                   <p className="text-center text-slate-600 text-xs">© 2026 Tarea US LLC · 400 N Oakland Ave, Apt 209, Pasadena, CA 91101 · legal@tarea.app</p>
                 </div>
               </div>
