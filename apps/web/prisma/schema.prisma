@@ -131,7 +131,9 @@ model HandymanProfile {
   verificationStatus    String   @default("none") // none | pending | approved | rejected
   backgroundCheckStatus BackgroundCheckStatus @default(PENDING)
   backgroundCheckPaidAt DateTime?
-  backgroundCheckRef    String?  // Checkr report ID
+  backgroundCheckRef    String?
+  icaSignedAt           DateTime?
+  icaSignedIp           String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
