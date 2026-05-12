@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, MapPin, LocateFixed, Camera, X } from "lucide-react";
+import { Loader2, MapPin, LocateFixed, Camera, X, Sparkles, DollarSign } from "lucide-react";
 import toast from "react-hot-toast";
 import { SERVICE_CATEGORY_LABELS, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
 import { useT } from "@/contexts/LanguageContext";
@@ -14,6 +14,9 @@ export default function PostJobPage() {
   const { t } = useT();
   const [saving, setSaving] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [aiAssisting, setAiAssisting] = useState(false);
+  const [aiEstimating, setAiEstimating] = useState(false);
+  const [priceNote, setPriceNote] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -67,6 +70,44 @@ export default function PostJobPage() {
     }, () => { toast.error("Location access denied"); setLocating(false); });
   };
 
+  const aiAssist = async () => {
+    if (!form.description.trim()) { toast.error("Write a description first"); return; }
+    setAiAssisting(true);
+    const res = await fetch("/api/ai/job-assist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category: form.category, rawDescription: form.description }),
+    });
+    if (res.ok) {
+      const { title, description } = await res.json();
+      if (title) set("title", title);
+      if (description) set("description", description);
+      toast.success("Description improved!");
+    } else {
+      toast.error("AI assist failed, try again");
+    }
+    setAiAssisting(false);
+  };
+
+  const aiEstimate = async () => {
+    if (!form.description.trim()) { toast.error("Write a description first"); return; }
+    setAiEstimating(true);
+    const res = await fetch("/api/ai/price-estimate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category: form.category, description: form.description, city: form.city }),
+    });
+    if (res.ok) {
+      const { min, max, note } = await res.json();
+      set("budgetMin", String(min));
+      set("budgetMax", String(max));
+      setPriceNote(note);
+    } else {
+      toast.error("Could not estimate price");
+    }
+    setAiEstimating(false);
+  };
+
   const submit = async () => {
     if (!form.title || !form.description || !form.address || !form.city || !form.scheduledAt || !form.budgetMin || !form.budgetMax) {
       toast.error("Please fill in all required fields"); return;
@@ -113,7 +154,14 @@ export default function PostJobPage() {
 
         {/* Description */}
         <div>
-          <label className="label">Description <span className="text-red-400">*</span></label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="label mb-0">Description <span className="text-red-400">*</span></label>
+            <button type="button" onClick={aiAssist} disabled={aiAssisting || !form.description.trim()}
+              className="flex items-center gap-1.5 text-xs font-semibold text-orange-500 hover:text-orange-600 disabled:opacity-40 transition-colors">
+              {aiAssisting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+              {aiAssisting ? "Improving…" : "AI improve"}
+            </button>
+          </div>
           <textarea
             value={form.description}
             onChange={e => set("description", e.target.value)}
@@ -183,15 +231,24 @@ export default function PostJobPage() {
         </div>
 
         {/* Budget */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="label">Min Budget ($) <span className="text-red-400">*</span></label>
-            <input type="number" min="0" value={form.budgetMin} onChange={e => set("budgetMin", e.target.value)} placeholder="50" className="input" />
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="label mb-0">Budget ($) <span className="text-red-400">*</span></label>
+            <button type="button" onClick={aiEstimate} disabled={aiEstimating || !form.description.trim()}
+              className="flex items-center gap-1.5 text-xs font-semibold text-orange-500 hover:text-orange-600 disabled:opacity-40 transition-colors">
+              {aiEstimating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <DollarSign className="w-3.5 h-3.5" />}
+              {aiEstimating ? "Estimating…" : "AI estimate"}
+            </button>
           </div>
-          <div>
-            <label className="label">Max Budget ($) <span className="text-red-400">*</span></label>
-            <input type="number" min="0" value={form.budgetMax} onChange={e => set("budgetMax", e.target.value)} placeholder="200" className="input" />
+          <div className="grid grid-cols-2 gap-3">
+            <input type="number" min="0" value={form.budgetMin} onChange={e => set("budgetMin", e.target.value)} placeholder="Min (e.g. 50)" className="input" />
+            <input type="number" min="0" value={form.budgetMax} onChange={e => set("budgetMax", e.target.value)} placeholder="Max (e.g. 200)" className="input" />
           </div>
+          {priceNote && (
+            <p className="text-xs text-orange-500 mt-1.5 flex items-center gap-1">
+              <Sparkles className="w-3 h-3 flex-shrink-0" /> {priceNote}
+            </p>
+          )}
         </div>
 
         <button onClick={submit} disabled={saving}

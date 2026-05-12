@@ -2,20 +2,22 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { LayoutDashboard, Users, Briefcase, Wrench, LogOut, ShieldCheck, AlertTriangle, DollarSign, Hammer, BarChart2, Tag, Settings, Zap, Sun, Moon, MapPin, Lock } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { LayoutDashboard, Users, Briefcase, Wrench, LogOut, AlertTriangle, DollarSign, Hammer, BarChart2, Tag, Settings, Zap, Sun, Moon, MapPin, Lock, Menu, X } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { useT } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useState, useEffect } from "react";
 
 export default function AdminNav({ userName }: { userName: string }) {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useT();
   const { theme, toggle } = useTheme();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const links = [
     { href: "/admin/dashboard", label: t("nav_dashboard"), icon: LayoutDashboard },
@@ -32,14 +34,18 @@ export default function AdminNav({ userName }: { userName: string }) {
     { href: "/admin/settings",   label: "Settings",        icon: Settings },
   ];
 
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     toast.success(t("toast_signed_out"));
     router.push("/");
   };
 
-  return (
-    <nav className="h-screen w-64 bg-tarea-ink border-r border-white/10 flex flex-col fixed left-0 top-0 z-40">
+  const SidebarContent = () => (
+    <>
       <div className="p-6 border-b border-white/10">
         <div className="flex items-center gap-2 mb-4">
           <Logo size={28} light />
@@ -88,7 +94,6 @@ export default function AdminNav({ userName }: { userName: string }) {
             Change Password
           </motion.div>
         </Link>
-
         <button
           onClick={toggle}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium"
@@ -107,6 +112,59 @@ export default function AdminNav({ userName }: { userName: string }) {
           {t("nav_sign_out")}
         </button>
       </div>
-    </nav>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <nav className="h-screen w-64 bg-tarea-ink border-r border-white/10 hidden lg:flex flex-col fixed left-0 top-0 z-40">
+        <SidebarContent />
+      </nav>
+
+      {/* Mobile top bar */}
+      <div className="lg:hidden fixed top-0 inset-x-0 h-14 bg-tarea-ink border-b border-white/10 flex items-center justify-between px-4 z-40">
+        <div className="flex items-center gap-2">
+          <Logo size={24} light />
+          <span className="text-red-400 text-xs font-semibold">Admin</span>
+        </div>
+        <button onClick={() => setMobileOpen(true)} className="text-slate-400 hover:text-white p-1">
+          <Menu className="w-6 h-6" />
+        </button>
+      </div>
+
+      {/* Mobile drawer */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileOpen(false)}
+              className="lg:hidden fixed inset-0 bg-black/60 z-50"
+            />
+            <motion.nav
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "tween", duration: 0.25 }}
+              className="lg:hidden fixed left-0 top-0 bottom-0 w-72 bg-tarea-ink flex flex-col z-50 overflow-y-auto"
+            >
+              <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <Logo size={24} light />
+                  <span className="text-red-400 text-xs font-semibold">Admin</span>
+                </div>
+                <button onClick={() => setMobileOpen(false)} className="text-slate-400 hover:text-white">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <SidebarContent />
+            </motion.nav>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

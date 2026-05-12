@@ -101,9 +101,9 @@ export default function ChatPage() {
   const backHref = me?.role === "HANDYMAN" ? "/handyman/jobs" : "/customer/bookings";
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-tarea-ink">
       {/* Header */}
-      <div className="flex items-center gap-3 px-6 py-4 border-b border-white/10 bg-tarea-ink/80 backdrop-blur flex-shrink-0">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-tarea-ink flex-shrink-0 safe-top">
         <Link href={backHref} className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all">
           <ArrowLeft className="w-5 h-5" />
         </Link>

@@ -47,6 +47,7 @@ export async function GET(req: NextRequest) {
     const handymen = await prisma.handymanProfile.findMany({
       where: {
         isAvailable: true,
+        backgroundCheckStatus: "PASSED",
         services: { some: { category: category as never, isActive: true } },
         user: {
           avatarUrl: { not: null },

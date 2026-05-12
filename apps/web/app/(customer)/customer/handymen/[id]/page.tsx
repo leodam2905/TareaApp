@@ -49,6 +49,7 @@ function ProfileInner() {
   const [booking, setBooking] = useState(false);
   const [portfolio, setPortfolio] = useState<{ id: string; url: string; caption: string | null }[]>([]);
   const [lightbox, setLightbox] = useState<string | null>(null);
+  const [reviews, setReviews] = useState<{ id: string; rating: number; comment: string | null; createdAt: string; author: { name: string; avatarUrl: string | null } }[]>([]);
 
   const [form, setForm] = useState({
     scheduledAt: prefillDate,
@@ -119,6 +120,9 @@ function ProfileInner() {
             .then(r => r.json())
             .then(photos => setPortfolio(Array.isArray(photos) ? photos : []));
         }
+        fetch(`/api/reviews/handyman/${id}`)
+          .then(r => r.json())
+          .then(data => setReviews(Array.isArray(data) ? data : []));
       });
   }, [id]);
 
@@ -293,6 +297,39 @@ function ProfileInner() {
           onClick={() => setLightbox(null)}
         >
           <img src={lightbox} alt="Portfolio" className="max-w-full max-h-full rounded-2xl object-contain" />
+        </div>
+      )}
+
+      {/* Reviews */}
+      {reviews.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+            <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
+            Reviews ({reviews.length})
+          </h2>
+          <div className="space-y-3">
+            {reviews.map(r => (
+              <div key={r.id} className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-tarea-sky/20 flex items-center justify-center text-tarea-sky text-sm font-bold overflow-hidden flex-shrink-0">
+                      {r.author.avatarUrl
+                        ? <img src={r.author.avatarUrl} alt="" className="w-full h-full object-cover" />
+                        : r.author.name[0]}
+                    </div>
+                    <p className="text-white text-sm font-semibold">{r.author.name}</p>
+                  </div>
+                  <div className="flex items-center gap-0.5">
+                    {[1,2,3,4,5].map(n => (
+                      <Star key={n} className={`w-3.5 h-3.5 ${n <= r.rating ? "text-amber-400 fill-amber-400" : "text-slate-600"}`} />
+                    ))}
+                  </div>
+                </div>
+                {r.comment && <p className="text-slate-300 text-sm leading-relaxed">{r.comment}</p>}
+                <p className="text-slate-600 text-xs">{new Date(r.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

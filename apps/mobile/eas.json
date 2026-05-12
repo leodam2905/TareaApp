@@ -13,14 +13,14 @@
       "ios": { "simulator": true },
       "android": { "buildType": "apk" },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://tarea.app/api"
+        "EXPO_PUBLIC_API_URL": "https://taptarea.com/api"
       }
     },
     "production": {
       "ios": { "buildType": "release" },
       "android": { "buildType": "app-bundle" },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://tarea.app/api"
+        "EXPO_PUBLIC_API_URL": "https://taptarea.com/api"
       }
     }
   },

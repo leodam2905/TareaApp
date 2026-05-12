@@ -10,7 +10,7 @@ export default async function HandymanLayout({ children }: { children: React.Rea
   return (
     <div className="app-layout flex min-h-screen">
       <AppNav role="HANDYMAN" userName={user.name} />
-      <main className="flex-1 ml-64 p-8 overflow-y-auto">
+      <main className="flex-1 lg:ml-64 p-4 lg:p-8 pt-16 lg:pt-8 overflow-y-auto">
         {children}
       </main>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapPin, Clock, DollarSign, Loader2, Send, ChevronDown, ChevronUp, Zap, Camera } from "lucide-react";
+import { MapPin, Clock, DollarSign, Loader2, Send, ChevronDown, ChevronUp, Zap, Camera, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { formatCurrency, formatDate, SERVICE_CATEGORY_ICONS, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
@@ -103,6 +103,7 @@ export default function FindJobsPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [applied, setApplied] = useState<Set<string>>(new Set());
   const [requiresPhoto, setRequiresPhoto] = useState(false);
+  const [requiresCheck, setRequiresCheck] = useState(false);
   const { t } = useT();
 
   useEffect(() => {
@@ -110,6 +111,7 @@ export default function FindJobsPage() {
       .then(r => r.json())
       .then(d => {
         if (d?.requiresPhoto) { setRequiresPhoto(true); setLoading(false); return; }
+        if (d?.requiresCheck) { setRequiresCheck(true); setLoading(false); return; }
         if (Array.isArray(d)) setJobs(d);
         setLoading(false);
       });
@@ -140,6 +142,19 @@ export default function FindJobsPage() {
           </p>
           <Link href="/handyman/profile" className="btn-primary inline-flex items-center gap-2">
             <Camera className="w-4 h-4" /> Add Profile Photo
+          </Link>
+        </div>
+      ) : requiresCheck ? (
+        <div className="bg-white border border-amber-200 rounded-2xl p-10 text-center space-y-4 shadow-sm">
+          <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto">
+            <ShieldAlert className="w-8 h-8 text-amber-500" />
+          </div>
+          <h2 className="text-gray-900 font-bold text-xl">Background check required</h2>
+          <p className="text-gray-500 text-sm max-w-sm mx-auto">
+            You must pass a background check before you can browse and apply to jobs. It typically takes 1–3 business days.
+          </p>
+          <Link href="/handyman/onboarding" className="btn-primary inline-flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4" /> Start Background Check
           </Link>
         </div>
       ) : jobs.length === 0 ? (

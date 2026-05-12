@@ -10,7 +10,7 @@ export default async function CustomerLayout({ children }: { children: React.Rea
   return (
     <div className="app-layout flex min-h-screen">
       <AppNav role="CUSTOMER" userName={user.name} />
-      <main className="flex-1 ml-64 p-8 overflow-y-auto">
+      <main className="flex-1 lg:ml-64 p-4 lg:p-8 pt-16 lg:pt-8 overflow-y-auto">
         {children}
       </main>
     </div>

@@ -6,7 +6,6 @@ const fromNumber = process.env.TWILIO_PHONE_NUMBER;
 
 export async function sendSms(to: string, body: string): Promise<void> {
   if (!accountSid || !authToken || !fromNumber) {
-    // Dev fallback: print to console so the app works without Twilio creds
     console.log(`[SMS to ${to}]: ${body}`);
     return;
   }

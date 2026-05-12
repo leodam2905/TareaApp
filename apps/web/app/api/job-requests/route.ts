@@ -44,9 +44,10 @@ export async function GET() {
   });
   const myCategories = myServices.map(s => s.category);
 
-  // Block handymen without a profile photo from seeing/applying to jobs
+  // Block handymen without a photo or passed background check
   const handymanUser = await prisma.user.findUnique({ where: { id: user.id }, select: { avatarUrl: true } });
-  if (!handymanUser?.avatarUrl) return NextResponse.json({ requiresPhoto: true, jobs: [] });
+  if (!handymanUser?.avatarUrl) return NextResponse.json({ requiresPhoto: true });
+  if (profile.backgroundCheckStatus !== "PASSED") return NextResponse.json({ requiresCheck: true });
 
   const requests = await prisma.jobRequest.findMany({
     where: {

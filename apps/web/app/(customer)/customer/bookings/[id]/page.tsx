@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft, Loader2, MapPin, Calendar, DollarSign,
-  MessageCircle, SendHorizontal, User, CheckCircle2, XCircle, Star, CreditCard, ShieldCheck
+  MessageCircle, SendHorizontal, User, CheckCircle2, XCircle, Star, CreditCard, ShieldCheck, ShieldAlert, Sparkles
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { formatCurrency, formatDate, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
@@ -75,6 +75,9 @@ export default function BookingDetailPage() {
   const [paying, setPaying] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [disputeStatement, setDisputeStatement] = useState("");
+  const [disputeSubmitting, setDisputeSubmitting] = useState(false);
+  const [disputeAnalysis, setDisputeAnalysis] = useState<{ summary: string; recommendation: string; priority: string } | null>(null);
 
   const loadBooking = useCallback(async () => {
     const res = await fetch(`/api/bookings/${id}`);
@@ -159,6 +162,24 @@ export default function BookingDetailPage() {
       toast.error(e instanceof Error ? e.message : "Payment failed");
       setPaying(false);
     }
+  };
+
+  const submitDispute = async () => {
+    if (!disputeStatement.trim()) { toast.error("Please describe your issue"); return; }
+    setDisputeSubmitting(true);
+    const res = await fetch("/api/ai/dispute", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookingId: id, customerStatement: disputeStatement }),
+    });
+    if (res.ok) {
+      const { analysis } = await res.json();
+      setDisputeAnalysis(analysis);
+      toast.success("Dispute submitted. Our team will review it shortly.");
+    } else {
+      toast.error("Failed to submit dispute");
+    }
+    setDisputeSubmitting(false);
   };
 
   const changeStatus = async (status: string) => {
@@ -358,6 +379,54 @@ export default function BookingDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Dispute Helper */}
+      {booking.status === "DISPUTED" && (
+        <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-5 space-y-4">
+          <div className="flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5 text-red-400" />
+            <p className="text-white font-semibold">Dispute Filed</p>
+          </div>
+
+          {disputeAnalysis ? (
+            <div className="space-y-3">
+              <div className="bg-white/5 rounded-xl p-4 space-y-2">
+                <p className="text-slate-300 text-sm leading-relaxed">{disputeAnalysis.summary}</p>
+                <p className="text-tarea-sky text-sm"><span className="font-semibold text-white">Recommendation: </span>{disputeAnalysis.recommendation}</p>
+                <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                  disputeAnalysis.priority === "high" ? "bg-red-400/20 text-red-400" :
+                  disputeAnalysis.priority === "medium" ? "bg-amber-400/20 text-amber-400" :
+                  "bg-slate-400/20 text-slate-400"
+                }`}>
+                  {disputeAnalysis.priority.toUpperCase()} PRIORITY
+                </span>
+              </div>
+              <p className="text-slate-500 text-xs flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3" /> AI-assisted analysis sent to our support team. We'll reach out within 24–48 hours.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-slate-400 text-sm">Describe the issue with this booking. Our AI will analyze your statement and route it to the right support agent.</p>
+              <textarea
+                value={disputeStatement}
+                onChange={e => setDisputeStatement(e.target.value)}
+                placeholder="What went wrong? Describe the issue in detail…"
+                rows={4}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-red-400/50 resize-none"
+              />
+              <button
+                onClick={submitDispute}
+                disabled={disputeSubmitting || !disputeStatement.trim()}
+                className="flex items-center gap-2 px-4 py-2.5 bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl text-sm font-semibold hover:bg-red-500/30 transition-all disabled:opacity-40"
+              >
+                {disputeSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldAlert className="w-4 h-4" />}
+                {disputeSubmitting ? "Submitting…" : "Submit Dispute Statement"}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
