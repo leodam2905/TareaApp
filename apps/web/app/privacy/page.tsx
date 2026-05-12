@@ -3,98 +3,205 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Privacy Policy – Tarea",
-  description: "How Tarea collects, uses, and protects your personal information.",
+  description: "How Tarea US LLC collects, uses, shares, and protects your personal information. CCPA & CPRA compliant.",
 };
-
-const EFFECTIVE_DATE = "May 1, 2026";
 
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-tarea-ink text-slate-300">
       <div className="max-w-3xl mx-auto px-6 py-16">
+
         {/* Header */}
         <div className="mb-12">
           <Link href="/" className="text-tarea-sky text-sm font-medium hover:underline">
             ← Back to Tarea
           </Link>
-          <h1 className="text-4xl font-extrabold text-white mt-6 mb-2">Privacy Policy</h1>
-          <p className="text-slate-500 text-sm">Effective date: {EFFECTIVE_DATE}</p>
+          <div className="mt-6 mb-2">
+            <p className="text-tarea-sky text-xs font-semibold uppercase tracking-widest mb-2">taptarea.com</p>
+            <h1 className="text-4xl font-extrabold text-white">Privacy Policy</h1>
+          </div>
+          <p className="text-slate-500 text-sm mt-2">Effective Date: May 12, 2026 &nbsp;|&nbsp; Version 2.0</p>
+          <p className="text-slate-500 text-sm">California Consumer Privacy Act (CCPA) &amp; CPRA Compliant</p>
         </div>
 
         <div className="space-y-10 prose-custom">
-          <Section title="1. Information We Collect">
-            <p>We collect information you provide directly to us when you create an account, book a service, or communicate through the platform:</p>
+
+          <p>This Privacy Policy describes how <strong>Tarea US LLC</strong> collects, uses, shares, and protects your personal information, and explains your rights under California and federal law. Please read it carefully.</p>
+
+          <Section title="1. Who We Are">
+            <p>Tarea US LLC ("Tarea," "we," "us," or "our") operates the Tarea marketplace platform at taptarea.com and associated mobile applications. Tarea is a California limited liability company with its principal office at 400 N Oakland Avenue, Apt 209, Pasadena, California 91101.</p>
+            <p>This Privacy Policy applies to all users of the Platform, including Customers (homeowners, renters, and businesses), Pros (independent service professionals), and visitors to our website.</p>
+          </Section>
+
+          <Section title="2. Information We Collect">
+            <h3>2.1 — Information You Provide Directly</h3>
             <ul>
-              <li><strong>Account data:</strong> name, email address, phone number, password hash, and profile photo.</li>
-              <li><strong>Location data:</strong> city, state, and zip code at registration; GPS coordinates during active bookings (handymen only, with your permission).</li>
-              <li><strong>Payment data:</strong> billing information is processed by Stripe. We never store full card numbers.</li>
-              <li><strong>Usage data:</strong> pages visited, bookings made, reviews submitted, and device information.</li>
+              <li><strong>Account registration:</strong> name, email address, phone number, password, profile photo.</li>
+              <li><strong>Pro onboarding:</strong> business name, professional licenses, insurance documents, background check consent, service categories, service areas, and pricing.</li>
+              <li><strong>Booking and transactions:</strong> service requests, booking details, payment information (processed by Stripe — Tarea does not store card numbers).</li>
+              <li><strong>Communications:</strong> messages sent through the Platform between Customers and Pros, support tickets, and feedback.</li>
+              <li><strong>Reviews and ratings:</strong> content submitted about Pros or Customers after completed bookings.</li>
+            </ul>
+            <h3>2.2 — Information Collected Automatically</h3>
+            <ul>
+              <li><strong>Device information:</strong> IP address, browser type, operating system, device identifiers.</li>
+              <li><strong>Usage data:</strong> pages viewed, features used, search queries, booking flow interactions, time spent on the Platform.</li>
+              <li><strong>Location data:</strong> approximate location inferred from IP address; precise location if you grant permission via your device.</li>
+              <li><strong>Cookies and tracking technologies:</strong> see Section 7 for details.</li>
+            </ul>
+            <h3>2.3 — Information from Third Parties</h3>
+            <ul>
+              <li>Background check results from third-party verification providers (Pros only).</li>
+              <li>Payment processing data from Stripe, Inc.</li>
+              <li>Identity verification data from third-party KYC providers (where applicable).</li>
+              <li>Social login data if you choose to register via Google or Apple.</li>
             </ul>
           </Section>
 
-          <Section title="2. How We Use Your Information">
+          <Section title="3. Categories of Personal Information — CCPA Disclosure">
+            <p>Tarea collects identifiers (name, email, phone, IP address), commercial information (booking and transaction history), geolocation data, internet activity, and professional information (Pros only). We collect this information to operate the Platform, process bookings and payments, verify Pros, ensure safety, and improve our services.</p>
+            <p><strong>Tarea does not sell personal information to third parties.</strong> Tarea does not share personal information for cross-context behavioral advertising without your explicit consent.</p>
+          </Section>
+
+          <Section title="4. How We Use Your Information">
+            <h3>4.1 — To Provide and Operate the Platform</h3>
             <ul>
-              <li>To create and manage your account and bookings.</li>
-              <li>To match customers with nearby handymen using location data.</li>
-              <li>To process payments and send receipts via email.</li>
-              <li>To send booking confirmations, reminders, and service updates.</li>
-              <li>To detect and prevent fraud and abuse.</li>
-              <li>To improve our platform through aggregated, anonymized analytics.</li>
+              <li>Create and manage your account.</li>
+              <li>Process bookings, payments, and payouts.</li>
+              <li>Match Customers with Pros based on location, availability, and service category.</li>
+              <li>Facilitate communications between Customers and Pros.</li>
+              <li>Process refunds, cancellations, and disputes.</li>
+            </ul>
+            <h3>4.2 — To Verify and Ensure Safety</h3>
+            <ul>
+              <li>Conduct background checks and license verification for Pros.</li>
+              <li>Detect and prevent fraud, abuse, and unauthorized access.</li>
+              <li>Investigate complaints and disputes between users.</li>
+              <li>Comply with legal obligations, court orders, and law enforcement requests.</li>
+            </ul>
+            <h3>4.3 — To Improve the Platform</h3>
+            <ul>
+              <li>Analyze usage patterns to improve features and user experience.</li>
+              <li>Conduct internal research, testing, and analytics.</li>
+              <li>Develop new services and platform features.</li>
+            </ul>
+            <h3>4.4 — To Communicate with You</h3>
+            <ul>
+              <li>Send booking confirmations, reminders, and receipts.</li>
+              <li>Notify you of updates to these Terms or the Privacy Policy.</li>
+              <li>Respond to customer support inquiries.</li>
+              <li>Send promotional communications (only with your consent — you may opt out at any time).</li>
             </ul>
           </Section>
 
-          <Section title="3. Information Sharing">
-            <p>We do not sell your personal information. We share data only as follows:</p>
+          <Section title="5. How We Share Your Information">
+            <p>We do not sell your personal information. We share your information only in the following limited circumstances:</p>
+            <h3>5.1 — With Other Users</h3>
+            <p>When a booking is made, we share limited profile information between the Customer and Pro to facilitate the service — such as name, contact information, service address, and booking details. This sharing is limited to what is necessary to complete the transaction.</p>
+            <h3>5.2 — With Service Providers</h3>
+            <p>We share information with vetted third-party service providers who assist us in operating the Platform, subject to contractual obligations to protect your data:</p>
             <ul>
-              <li><strong>Between users:</strong> when a booking is created, your name, phone number, and relevant booking details are visible to the other party.</li>
-              <li><strong>Service providers:</strong> Stripe (payments), Cloudinary (media storage), Resend (email), and Expo (push notifications) process data on our behalf under confidentiality agreements.</li>
-              <li><strong>Legal requirements:</strong> we may disclose information when required by law or to protect our users.</li>
+              <li>Stripe, Inc. — payment processing and payouts.</li>
+              <li>Background check providers — Pro verification (Pros only).</li>
+              <li>Cloud hosting and infrastructure providers.</li>
+              <li>Analytics providers (anonymized/aggregated data only).</li>
+              <li>Customer support software providers.</li>
             </ul>
+            <h3>5.3 — For Legal Compliance</h3>
+            <p>We may disclose information when required by law, legal process, or government request, including to comply with a subpoena, court order, or regulatory investigation. We will notify you of such requests where legally permitted.</p>
+            <h3>5.4 — Business Transfers</h3>
+            <p>In the event of a merger, acquisition, or sale of all or substantially all of Tarea's assets, your information may be transferred to the successor entity. We will notify you of any such transfer and your options under applicable law.</p>
+            <h3>5.5 — With Your Consent</h3>
+            <p>We may share your information for any other purpose with your explicit prior consent.</p>
           </Section>
 
-          <Section title="4. Data Retention">
-            <p>We retain your account data for as long as your account is active. You may request deletion of your account and associated data by contacting us at <a href="mailto:privacy@tarea.app" className="text-tarea-sky hover:underline">privacy@tarea.app</a>. Booking records may be retained for up to 7 years for financial and legal compliance.</p>
-          </Section>
-
-          <Section title="5. Location Data">
-            <p>Handymen may optionally share live GPS location during an active booking via the "I'm On My Way" feature. This data is transmitted to the booked customer only and is not stored beyond the active booking session.</p>
-          </Section>
-
-          <Section title="6. Cookies">
-            <p>We use a single HTTP-only session cookie to keep you signed in. We do not use third-party tracking or advertising cookies.</p>
-          </Section>
-
-          <Section title="7. Your Rights">
-            <p>Depending on your jurisdiction, you may have the right to:</p>
+          <Section title="6. Your California Privacy Rights — CCPA / CPRA">
+            <p>If you are a California resident, you have the following rights under the California Consumer Privacy Act (CCPA) and California Privacy Rights Act (CPRA), effective January 1, 2023:</p>
             <ul>
-              <li>Access the personal data we hold about you.</li>
-              <li>Correct inaccurate data.</li>
-              <li>Request deletion of your data.</li>
-              <li>Opt out of marketing emails (unsubscribe link in every email).</li>
+              <li><strong>Right to Know (Cal. Civ. Code § 1798.110):</strong> You may request disclosure of the categories and specific pieces of personal information we have collected about you, the sources, our business purpose, and the categories of third parties with whom we share it.</li>
+              <li><strong>Right to Delete (Cal. Civ. Code § 1798.105):</strong> You may request deletion of your personal information, subject to certain exceptions (such as completing a transaction or complying with a legal obligation).</li>
+              <li><strong>Right to Correct (Cal. Civ. Code § 1798.106):</strong> You may request correction of inaccurate personal information we maintain about you.</li>
+              <li><strong>Right to Opt Out of Sale or Sharing:</strong> Tarea does not sell personal information and does not share it for cross-context behavioral advertising. You may contact us to confirm our practices at any time.</li>
+              <li><strong>Right to Limit Use of Sensitive Personal Information:</strong> You may direct us to limit use and disclosure of your sensitive personal information to what is necessary to perform the requested services.</li>
+              <li><strong>Right to Non-Discrimination (Cal. Civ. Code § 1798.125):</strong> We will not deny services, charge different prices, or provide a different quality of service as a result of exercising your rights.</li>
             </ul>
-            <p>To exercise any of these rights, contact <a href="mailto:privacy@tarea.app" className="text-tarea-sky hover:underline">privacy@tarea.app</a>.</p>
+            <p>To submit a privacy rights request, email <a href="mailto:support@taptarea.com" className="text-tarea-sky hover:underline">support@taptarea.com</a> with subject line <strong>"California Privacy Rights Request"</strong>. We will acknowledge receipt within 10 business days and respond within 45 days as required by the CCPA. You may also designate an authorized agent to make a request on your behalf by providing written authorization.</p>
           </Section>
 
-          <Section title="8. Security">
-            <p>We use industry-standard encryption (TLS) in transit and bcrypt hashing for passwords. Stripe handles all payment card data in their PCI-DSS compliant environment.</p>
+          <Section title="7. Cookies and Tracking Technologies">
+            <p>Tarea uses cookies and similar tracking technologies to operate and improve the Platform:</p>
+            <ul>
+              <li><strong>Essential cookies:</strong> required for authentication and platform functionality. Cannot be disabled.</li>
+              <li><strong>Analytics cookies:</strong> help us understand usage patterns (anonymized). You may opt out via browser settings.</li>
+              <li><strong>Marketing cookies:</strong> only used with your explicit consent.</li>
+            </ul>
+            <p>You can control cookies through your browser settings. Disabling certain cookies may affect Platform functionality. For California residents, our use of analytics cookies does not constitute a "sale" of personal information under the CCPA.</p>
           </Section>
 
-          <Section title="9. Children">
-            <p>Tarea is not directed at children under 13. We do not knowingly collect personal information from anyone under 13.</p>
+          <Section title="8. Data Retention">
+            <ul>
+              <li><strong>Account information:</strong> retained for the duration of your account and for 3 years after account closure.</li>
+              <li><strong>Transaction records:</strong> retained for 7 years for tax and accounting purposes.</li>
+              <li><strong>Background check data (Pros):</strong> retained for 5 years or as required by applicable law.</li>
+              <li><strong>Communications and support records:</strong> retained for 3 years.</li>
+              <li><strong>Analytics data:</strong> retained in anonymized form indefinitely; identifiable data retained for 2 years.</li>
+            </ul>
+            <p>Upon a verified deletion request, we will delete or anonymize your personal information within 45 days, subject to applicable legal exceptions.</p>
           </Section>
 
-          <Section title="10. Changes to This Policy">
-            <p>We may update this policy from time to time. We will notify you of material changes via email and by updating the effective date above.</p>
+          <Section title="9. Data Security">
+            <p>We implement commercially reasonable technical, administrative, and physical safeguards including:</p>
+            <ul>
+              <li>Encryption of data in transit (TLS/SSL) and at rest.</li>
+              <li>Access controls limiting employee access to personal information on a need-to-know basis.</li>
+              <li>Regular security assessments and vulnerability testing.</li>
+              <li>Incident response procedures for detecting and responding to data breaches.</li>
+            </ul>
+            <p>In the event of a data breach affecting your personal information, we will notify you and applicable regulatory authorities as required by California law (Cal. Civ. Code § 1798.29 and § 1798.82) within 72 hours of discovery where feasible.</p>
           </Section>
 
-          <Section title="11. Contact">
-            <p>Questions about this privacy policy? Contact us at <a href="mailto:privacy@tarea.app" className="text-tarea-sky hover:underline">privacy@tarea.app</a>.</p>
+          <Section title="10. Children's Privacy">
+            <p>The Tarea Platform is not directed at children under the age of 13, and we do not knowingly collect personal information from children under 13. If we discover that we have inadvertently collected personal information from a child under 13, we will promptly delete it. Contact us at <a href="mailto:support@taptarea.com" className="text-tarea-sky hover:underline">support@taptarea.com</a> if you believe we have collected such information.</p>
+            <p>Users between the ages of 13 and 18 may only use the Platform with the consent and supervision of a parent or legal guardian. By registering, users affirm that they are at least 18 years of age or have obtained required parental consent.</p>
           </Section>
+
+          <Section title="11. Third-Party Links and Services">
+            <p>The Platform may contain links to third-party websites or integrate with third-party services (such as Stripe for payments). This Privacy Policy does not apply to third-party sites or services. We encourage you to review the privacy policies of any third parties you interact with through the Platform. Tarea is not responsible for the privacy practices of third parties.</p>
+          </Section>
+
+          <Section title="12. Do Not Track Signals">
+            <p>California law (Cal. Bus. &amp; Prof. Code § 22575) requires us to disclose how we respond to "Do Not Track" (DNT) signals. Currently, the Tarea Platform does not respond to DNT signals from web browsers because there is no industry-wide standard for how DNT signals should be interpreted. We will update this section if a standard is adopted.</p>
+          </Section>
+
+          <Section title="13. Changes to This Privacy Policy">
+            <p>We may update this Privacy Policy from time to time. We will notify you of material changes by:</p>
+            <ul>
+              <li>Posting the updated policy at taptarea.com/privacy with an updated effective date.</li>
+              <li>Sending an email notification to your registered email address at least 14 days before the changes take effect.</li>
+            </ul>
+            <p>Your continued use of the Platform after the effective date constitutes acceptance of the updated Privacy Policy.</p>
+          </Section>
+
+          <Section title="14. Contact Us — Privacy Inquiries">
+            <ul>
+              <li><strong>Company:</strong> Tarea US LLC</li>
+              <li><strong>Email:</strong> <a href="mailto:support@taptarea.com" className="text-tarea-sky hover:underline">support@taptarea.com</a></li>
+              <li><strong>Legal Email:</strong> <a href="mailto:legal@tarea.app" className="text-tarea-sky hover:underline">legal@tarea.app</a></li>
+              <li><strong>Mailing Address:</strong> 400 N Oakland Avenue, Apt 209, Pasadena, California 91101</li>
+              <li><strong>Phone:</strong> <a href="tel:+18005555555" className="text-tarea-sky hover:underline">+1 (800) 555-5555</a></li>
+            </ul>
+            <p>For California privacy rights requests, use subject line: <strong>"California Privacy Rights Request."</strong> We will acknowledge receipt within 10 business days.</p>
+          </Section>
+
         </div>
 
-        <div className="mt-16 pt-8 border-t border-white/10 flex gap-6 text-sm text-slate-500">
-          <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-          <Link href="/" className="hover:text-white transition-colors">Back to Tarea</Link>
+        {/* Footer */}
+        <div className="mt-16 pt-8 border-t border-white/10 space-y-2">
+          <p className="text-slate-600 text-xs">Document: Privacy Policy v2.0 &nbsp;|&nbsp; Effective: May 12, 2026 &nbsp;|&nbsp; Governed by CCPA, Cal. Civ. Code §§ 1798.100–1798.199 &nbsp;|&nbsp; Also compliant with CPRA, CalOPPA, COPPA</p>
+          <div className="flex gap-6 text-sm text-slate-500">
+            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link href="/" className="hover:text-white transition-colors">Back to Tarea</Link>
+          </div>
         </div>
       </div>
 
@@ -103,6 +210,7 @@ export default function PrivacyPage() {
         .prose-custom ul { list-style: disc; padding-left: 20px; margin: 8px 0 12px; }
         .prose-custom li { margin-bottom: 6px; }
         .prose-custom strong { color: #e2e8f0; font-weight: 600; }
+        .prose-custom h3 { color: #cbd5e1; font-weight: 600; font-size: 0.95rem; margin: 16px 0 8px; }
       ` }} />
     </div>
   );
