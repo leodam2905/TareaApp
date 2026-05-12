@@ -136,6 +136,7 @@ export default function HandymanOnboarding() {
   const handleNext = async () => {
     if (!avatarFile) { toast.error("Please upload a profile picture"); return; }
     if (!bio.trim()) { toast.error("Please add a short bio"); return; }
+    if (!hourlyRate || parseFloat(hourlyRate) < 10) { toast.error("Please set a valid hourly rate"); return; }
     if (!idFrontFile) { toast.error("Please upload the front of your ID"); return; }
     if (!idBackFile) { toast.error("Please upload the back of your ID"); return; }
     setUploadingId(true);
@@ -146,6 +147,7 @@ export default function HandymanOnboarding() {
     ]);
     setUploadingId(false);
     if (!avatarOk || !idFrontUrl || !idBackUrl) { toast.error("Upload failed, try again"); return; }
+    // Save ID URLs — profile may not exist yet so we upsert via PATCH
     await fetch("/api/handyman/onboarding", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -233,7 +235,7 @@ export default function HandymanOnboarding() {
             <h1 className="text-2xl font-extrabold text-white">
               {step === 0 ? "Independent Contractor Agreement" : "Set Up Your Profile"}
             </h1>
-            <p className="text-slate-400 text-sm">{step === 0 ? "Required before you can continue" : `Step ${step} of 4`}</p>
+            <p className="text-slate-400 text-sm">{step === 0 ? "Required before you can continue" : `Step ${step} of 4 — ${["", "Profile & ID", "Services", "Availability", "Background Check"][step] ?? ""}`}</p>
           </div>
         </div>
 
