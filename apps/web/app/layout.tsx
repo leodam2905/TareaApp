@@ -3,9 +3,14 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import dynamic from "next/dynamic";
+
+const AiSupportChat = dynamic(() => import("@/components/ui/AiSupportChat"), { ssr: false });
 
 export const viewport: Viewport = {
   themeColor: "#38BDF8",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export const metadata: Metadata = {
@@ -33,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
         <LanguageProvider>
         {children}
+        <AiSupportChat />
         <Toaster
           position="top-right"
           toastOptions={{
