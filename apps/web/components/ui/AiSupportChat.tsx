@@ -113,10 +113,19 @@ export default function AiSupportChat() {
               <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                 <Bot className="w-4 h-4 text-white" />
               </div>
-              <div>
+              <div className="flex-1">
                 <p className="text-white font-bold text-sm">Tarea AI</p>
                 <p className="text-blue-200 text-xs">Typically replies instantly</p>
               </div>
+              <a
+                href="https://www.anthropic.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-[10px] text-blue-300/70 hover:text-blue-200 transition-colors"
+              >
+                Powered by
+                <span className="font-semibold text-white/80">Claude</span>
+              </a>
             </div>
 
             {/* Messages */}
