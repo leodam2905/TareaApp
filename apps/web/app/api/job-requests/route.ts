@@ -2,6 +2,8 @@ import { createNotification } from "@/lib/notify";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { sendEmail } from "@/lib/email";
+import { sendPush } from "@/lib/push";
 
 function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371;
@@ -108,23 +110,61 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  // Notify matching handymen
+  // Notify matching handymen — only PASSED background check + photo + available + matching service
   const handymen = await prisma.handymanProfile.findMany({
-    where: { isAvailable: true, services: { some: { category: category as never, isActive: true } } },
-    include: { user: { select: { id: true, city: true } } },
+    where: {
+      isAvailable: true,
+      backgroundCheckStatus: "PASSED",
+      user: { avatarUrl: { not: null } },
+      services: { some: { category: category as never, isActive: true } },
+    },
+    include: { user: { select: { id: true, city: true, email: true, name: true, expoPushToken: true } } },
   });
 
   const nearby = handymen.filter(h => h.user.city?.toLowerCase() === city.toLowerCase());
+
   if (nearby.length > 0) {
+    // In-app notifications (bulk)
     await prisma.notification.createMany({
       data: nearby.map(h => ({
         userId: h.user.id,
         title: "New Job Near You",
-        body: `"${title}" posted in ${city}. Check Find Jobs to apply!`,
+        body: `"${title}" posted in ${city}. Apply before it's taken!`,
         type: "booking_request",
         refId: jobRequest.id,
       })),
     });
+
+    // Email + push per handyman (fire and forget)
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://taptarea.com";
+    const jobUrl = `${appUrl}/handyman/find-jobs`;
+    const budgetStr = `$${parseFloat(budgetMin).toFixed(0)}–$${parseFloat(budgetMax).toFixed(0)}`;
+    const categoryLabel = category.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase());
+
+    await Promise.allSettled(nearby.map(async h => {
+      // Push notification
+      if (h.user.expoPushToken) {
+        await sendPush(
+          h.user.expoPushToken,
+          "New Job Near You 🔧",
+          `${title} in ${city} — Budget ${budgetStr}`,
+          { screen: "FindJobs", jobId: jobRequest.id }
+        );
+      }
+
+      // Email notification
+      await sendEmail(
+        h.user.email,
+        `New ${categoryLabel} job near you — ${city}`,
+        "New Job Opportunity Near You",
+        `A customer just posted a <strong>${categoryLabel}</strong> job in <strong>${city}</strong>.<br><br>
+        <strong>${title}</strong><br>
+        Budget: ${budgetStr}<br><br>
+        ${description.slice(0, 200)}${description.length > 200 ? "…" : ""}<br><br>
+        Apply now before another Pro takes it!`,
+        { label: "View Job & Apply", url: jobUrl }
+      );
+    }));
   }
 
   return NextResponse.json(jobRequest, { status: 201 });
