@@ -111,7 +111,7 @@ export default function ContactPage() {
         {/* Quick contact options */}
         <div className="grid md:grid-cols-3 gap-4 mb-16">
           {[
-            { icon: Mail, title: "Email support", body: "support@tarea.app", sub: "Replies within 1 business day" },
+            { icon: Mail, title: "Email support", body: "support@taptarea.com", sub: "Replies within 1 business day" },
             { icon: MessageSquare, title: "Live chat", body: "Available in the app", sub: "For logged-in users" },
             { icon: Clock, title: "Response time", body: "< 24 hours", sub: "Monday – Friday" },
           ].map(({ icon: Icon, title, body, sub }) => (

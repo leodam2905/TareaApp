@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
     const token = signToken({ userId: user.id, email: user.email, role: user.role });
     setAuthCookie(token);
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://tarea.app";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://taptarea.com";
     const dashPath = data.role === "HANDYMAN" ? "/handyman/dashboard" : "/customer/dashboard";
     sendEmail(
       user.email,

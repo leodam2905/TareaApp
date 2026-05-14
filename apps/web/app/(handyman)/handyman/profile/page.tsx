@@ -1,6 +1,19 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+
+const US_STATES = [
+  ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
+  ["CO","Colorado"],["CT","Connecticut"],["DE","Delaware"],["FL","Florida"],["GA","Georgia"],
+  ["HI","Hawaii"],["ID","Idaho"],["IL","Illinois"],["IN","Indiana"],["IA","Iowa"],
+  ["KS","Kansas"],["KY","Kentucky"],["LA","Louisiana"],["ME","Maine"],["MD","Maryland"],
+  ["MA","Massachusetts"],["MI","Michigan"],["MN","Minnesota"],["MS","Mississippi"],["MO","Missouri"],
+  ["MT","Montana"],["NE","Nebraska"],["NV","Nevada"],["NH","New Hampshire"],["NJ","New Jersey"],
+  ["NM","New Mexico"],["NY","New York"],["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],
+  ["OK","Oklahoma"],["OR","Oregon"],["PA","Pennsylvania"],["RI","Rhode Island"],["SC","South Carolina"],
+  ["SD","South Dakota"],["TN","Tennessee"],["TX","Texas"],["UT","Utah"],["VT","Vermont"],
+  ["VA","Virginia"],["WA","Washington"],["WV","West Virginia"],["WI","Wisconsin"],["WY","Wyoming"],["DC","Washington D.C."],
+] as const;
 import { useSearchParams } from "next/navigation";
 import { Loader2, Save, User, Phone, MapPin, LocateFixed, DollarSign, FileText, ToggleLeft, ToggleRight, Camera, Crown, Zap, Star, Shield, Building2, Globe, Lock } from "lucide-react";
 import Link from "next/link";
@@ -320,7 +333,12 @@ export default function HandymanProfilePage() {
           <input value={form.address} onChange={e => set("address", e.target.value)} placeholder="Street address" className={field} />
           <div className="grid grid-cols-2 gap-3">
             <input value={form.city} onChange={e => set("city", e.target.value)} placeholder="City" className={field} />
-            <input value={form.state} onChange={e => set("state", e.target.value)} placeholder="State" className={field} />
+            <select value={form.state} onChange={e => set("state", e.target.value)} className={field}>
+              <option value="">Select state</option>
+              {US_STATES.map(([code, name]) => (
+                <option key={code} value={code}>{name}</option>
+              ))}
+            </select>
           </div>
           <input value={form.zipCode} onChange={e => set("zipCode", e.target.value)} placeholder="ZIP Code" className={field} />
         </div>

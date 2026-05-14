@@ -191,7 +191,7 @@ export default function TermsPage() {
               <li><strong>Severability:</strong> If any provision is found invalid or unenforceable, the remaining provisions continue in full force and effect.</li>
               <li><strong>Waiver:</strong> Tarea's failure to enforce any provision shall not constitute a waiver of future enforcement rights.</li>
               <li><strong>No Assignment:</strong> You may not assign your rights under these Terms without Tarea's prior written consent. Tarea may assign these Terms without restriction.</li>
-              <li><strong>Contact:</strong> For questions about these Terms, contact us at <a href="mailto:support@taptarea.com" className="text-tarea-sky hover:underline">support@taptarea.com</a> or <a href="mailto:legal@tarea.app" className="text-tarea-sky hover:underline">legal@tarea.app</a>.</li>
+              <li><strong>Contact:</strong> For questions about these Terms, contact us at <a href="mailto:support@taptarea.com" className="text-tarea-sky hover:underline">support@taptarea.com</a> or <a href="mailto:legal@taptarea.com" className="text-tarea-sky hover:underline">legal@taptarea.com</a>.</li>
             </ul>
           </Section>
 

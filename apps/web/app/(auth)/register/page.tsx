@@ -11,6 +11,21 @@ import { Eye, EyeOff, Loader2, User, Hammer, MapPin, LocateFixed, Building2, Use
 import Logo from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
 
+const US_STATES = [
+  ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
+  ["CO","Colorado"],["CT","Connecticut"],["DE","Delaware"],["FL","Florida"],["GA","Georgia"],
+  ["HI","Hawaii"],["ID","Idaho"],["IL","Illinois"],["IN","Indiana"],["IA","Iowa"],
+  ["KS","Kansas"],["KY","Kentucky"],["LA","Louisiana"],["ME","Maine"],["MD","Maryland"],
+  ["MA","Massachusetts"],["MI","Michigan"],["MN","Minnesota"],["MS","Mississippi"],["MO","Missouri"],
+  ["MT","Montana"],["NE","Nebraska"],["NV","Nevada"],["NH","New Hampshire"],["NJ","New Jersey"],
+  ["NM","New Mexico"],["NY","New York"],["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],
+  ["OK","Oklahoma"],["OR","Oregon"],["PA","Pennsylvania"],["RI","Rhode Island"],["SC","South Carolina"],
+  ["SD","South Dakota"],["TN","Tennessee"],["TX","Texas"],["UT","Utah"],["VT","Vermont"],
+  ["VA","Virginia"],["WA","Washington"],["WV","West Virginia"],["WI","Wisconsin"],["WY","Wyoming"],["DC","Washington D.C."],
+] as const;
+
+const STATE_NAME_TO_CODE: Record<string, string> = Object.fromEntries(US_STATES.map(([code, name]) => [name, code]));
+
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Enter a valid email"),
@@ -94,7 +109,10 @@ function RegisterForm() {
           const road = [a.house_number, a.road].filter(Boolean).join(" ");
           if (road) setValue("address", road);
           if (a.city || a.town || a.village) setValue("city", a.city || a.town || a.village);
-          if (a.state) setValue("state", a.state);
+          if (a.state) {
+            const abbr = STATE_NAME_TO_CODE[a.state] ?? a.state;
+            setValue("state", abbr);
+          }
           if (a.postcode) setValue("zipCode", a.postcode);
           toast.success("Location detected!");
         } catch {
@@ -299,7 +317,12 @@ function RegisterForm() {
                   </div>
                   <div>
                     <label className="label">State <span className="text-red-400">*</span></label>
-                    <input {...register("state")} placeholder="FL" className="input" />
+                    <select {...register("state")} className="input">
+                      <option value="">Select state</option>
+                      {US_STATES.map(([code, name]) => (
+                        <option key={code} value={code}>{name}</option>
+                      ))}
+                    </select>
                     {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state.message}</p>}
                   </div>
                 </div>

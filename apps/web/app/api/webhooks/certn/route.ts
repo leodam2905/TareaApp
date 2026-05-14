@@ -69,7 +69,7 @@ async function handleEvent(payload: Record<string, unknown>) {
     await createNotification({
       userId: profile.userId,
       title: "Background check — action required",
-      body: "Your background check requires review. Contact support@tarea.app for next steps.",
+      body: "Your background check requires review. Contact support@taptarea.com for next steps.",
       type: "booking_accepted",
       refId: profile.userId,
     });

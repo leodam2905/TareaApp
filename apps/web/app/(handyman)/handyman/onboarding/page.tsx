@@ -365,7 +365,7 @@ export default function HandymanOnboarding() {
                     <p className="text-slate-500 text-xs">Debohi Jean Jacques Dah — Chief Executive Officer, Tarea US LLC</p>
                     <p className="text-slate-600 text-xs">Signed electronically on behalf of Tarea US LLC</p>
                   </div>
-                  <p className="text-center text-slate-600 text-xs">© 2026 Tarea US LLC · 400 N Oakland Ave, Apt 209, Pasadena, CA 91101 · legal@tarea.app</p>
+                  <p className="text-center text-slate-600 text-xs">© 2026 Tarea US LLC · 400 N Oakland Ave, Apt 209, Pasadena, CA 91101 · legal@taptarea.com</p>
                 </div>
               </div>
 

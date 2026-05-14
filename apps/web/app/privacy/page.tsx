@@ -186,7 +186,7 @@ export default function PrivacyPage() {
             <ul>
               <li><strong>Company:</strong> Tarea US LLC</li>
               <li><strong>Email:</strong> <a href="mailto:support@taptarea.com" className="text-tarea-sky hover:underline">support@taptarea.com</a></li>
-              <li><strong>Legal Email:</strong> <a href="mailto:legal@tarea.app" className="text-tarea-sky hover:underline">legal@tarea.app</a></li>
+              <li><strong>Legal Email:</strong> <a href="mailto:legal@taptarea.com" className="text-tarea-sky hover:underline">legal@taptarea.com</a></li>
               <li><strong>Mailing Address:</strong> 400 N Oakland Avenue, Apt 209, Pasadena, California 91101</li>
               <li><strong>Phone:</strong> <a href="tel:+18005555555" className="text-tarea-sky hover:underline">+1 (800) 555-5555</a></li>
             </ul>

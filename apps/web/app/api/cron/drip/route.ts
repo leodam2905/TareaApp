@@ -14,7 +14,7 @@ export async function GET(_req: NextRequest) {
     }
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://tarea.app";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://taptarea.com";
   const now = new Date();
   let reviewSent = 0;
   let reengageSent = 0;

@@ -14,6 +14,64 @@ import {
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 
+// ─── Video Reel ───────────────────────────────────────────────────────────────
+
+const VIDEO_SRCS = [
+  "https://videos.pexels.com/video-files/9890450/9890450-hd_1920_1080_30fps.mp4",
+  "https://videos.pexels.com/video-files/4334561/4334561-hd_1920_1080_24fps.mp4",
+  "https://videos.pexels.com/video-files/5973234/5973234-hd_1920_1080_25fps.mp4",
+  "https://videos.pexels.com/video-files/6474085/6474085-hd_1920_1080_25fps.mp4",
+];
+
+function VideoBg() {
+  const [active, setActive] = useState(0);
+  const [next, setNext] = useState<number | null>(null);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setNext(p => ((p ?? active) + 1) % VIDEO_SRCS.length);
+    }, 7000);
+    return () => clearInterval(id);
+  }, [active]);
+
+  useEffect(() => {
+    if (next === null) return;
+    const v = videoRefs.current[next];
+    if (v) { v.currentTime = 0; v.play().catch(() => {}); }
+    const t = setTimeout(() => { setActive(next); setNext(null); }, 800);
+    return () => clearTimeout(t);
+  }, [next]);
+
+  useEffect(() => {
+    const v = videoRefs.current[active];
+    if (v) { v.currentTime = 0; v.play().catch(() => {}); }
+  }, [active]);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {VIDEO_SRCS.map((src, i) => (
+        <motion.video
+          key={src}
+          ref={el => { videoRefs.current[i] = el; }}
+          src={src}
+          muted
+          loop
+          playsInline
+          initial={false}
+          animate={{ opacity: i === active ? 1 : i === next ? 1 : 0 }}
+          transition={{ duration: 0.8 }}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      ))}
+      {/* Dark overlay so text stays readable */}
+      <div className="absolute inset-0 bg-black/55" />
+      {/* Subtle vignette */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+    </div>
+  );
+}
+
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const services = [
@@ -192,194 +250,98 @@ export default function HomePage() {
 
       {/* ── Hero ── */}
       <section ref={heroRef} className="relative min-h-screen flex items-center">
-        <motion.div style={{ y: heroY, opacity: heroOp }} className="absolute inset-0">
-          <MeshBackground />
+        {/* Video background */}
+        <motion.div style={{ y: heroY }} className="absolute inset-0">
+          <VideoBg />
         </motion.div>
 
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 w-full">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 w-full text-center">
 
-            {/* Left */}
-            <div>
-              <motion.div
-                initial={mounted ? { opacity: 0, y: 20 } : false}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="inline-flex items-center gap-2 bg-orange-100 border border-orange-200 rounded-full px-4 py-1.5 text-orange-700 text-sm font-semibold mb-8"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                Trusted by 10,000+ homeowners
-              </motion.div>
-
-              <motion.h1
-                initial={mounted ? { opacity: 0, y: 30 } : false}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35, duration: 0.8 }}
-                className="text-6xl lg:text-7xl font-extrabold leading-[1.04] tracking-tight mb-6 text-gray-900"
-              >
-                Your Home,{" "}
-                <span
-                  className="text-transparent bg-clip-text"
-                  style={{ backgroundImage: "linear-gradient(135deg, #FB923C 0%, #EA580C 50%, #FB923C 100%)", backgroundSize: "200%", animation: "shimmer 4s linear infinite" }}
-                >
-                  Perfectly
-                </span>
-                <br />
-                Maintained.
-              </motion.h1>
-
-              <motion.p
-                initial={mounted ? { opacity: 0, y: 20 } : false}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="text-gray-600 text-lg leading-relaxed max-w-md mb-10"
-              >
-                Connect with verified, skilled handymen in your area — from plumbing to painting, booked in minutes.
-              </motion.p>
-
-              <motion.div
-                initial={mounted ? { opacity: 0, y: 20 } : false}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.65 }}
-                className="flex flex-col sm:flex-row gap-4 mb-12"
-              >
-                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                  <Link
-                    href="/register"
-                    className="flex items-center justify-center gap-2 bg-tarea-dark text-white font-bold px-8 py-4 rounded-2xl text-base shadow-[0_0_40px_rgba(194,65,12,0.3)] hover:shadow-[0_0_60px_rgba(194,65,12,0.5)] transition-all duration-300"
-                  >
-                    Book a Handyman <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                  <Link
-                    href="/register?role=HANDYMAN"
-                    className="flex items-center justify-center gap-2 border-2 border-orange-300 text-gray-800 font-bold px-8 py-4 rounded-2xl text-base hover:bg-orange-100 transition-all duration-300"
-                  >
-                    Join as a Pro
-                  </Link>
-                </motion.div>
-              </motion.div>
-
-              {/* Social proof */}
-              <motion.div
-                initial={mounted ? { opacity: 0 } : false}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.85 }}
-                className="flex items-center gap-4"
-              >
-                <div className="flex -space-x-2.5">
-                  {["J", "M", "A", "S", "D"].map((l, i) => (
-                    <motion.div
-                      key={l}
-                      initial={mounted ? { scale: 0 } : false}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.9 + i * 0.08 }}
-                      className="w-9 h-9 rounded-full border-2 border-[#FFF7ED] bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-xs font-bold"
-                    >
-                      {l}
-                    </motion.div>
-                  ))}
-                </div>
-                <div>
-                  <div className="flex text-orange-400 text-sm">★★★★★</div>
-                  <p className="text-gray-500 text-xs mt-0.5">4.9 · 3,200+ reviews</p>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Right — floating glass booking card */}
             <motion.div
-              initial={mounted ? { opacity: 0, x: 60 } : false}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5, duration: 0.9 }}
-              className="hidden lg:block"
+              initial={mounted ? { opacity: 0, y: 20 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/30 rounded-full px-4 py-1.5 text-white text-sm font-semibold mb-8"
             >
-              <TiltCard className="relative">
-                <div className="bg-white border border-orange-200 rounded-3xl p-6 shadow-[0_40px_80px_rgba(251,146,60,0.15)]" style={{ transformStyle: "preserve-3d" }}>
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider">New Booking</p>
-                      <p className="text-gray-900 font-bold text-lg mt-0.5">Plumbing Repair</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-xl bg-orange-100 border border-orange-200 flex items-center justify-center">
-                      <Droplets className="w-5 h-5 text-orange-500" />
-                    </div>
-                  </div>
-
-                  {/* Pro info */}
-                  <div className="flex items-center gap-3 p-3.5 bg-orange-50 rounded-xl border border-orange-100 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm">M</div>
-                    <div className="flex-1">
-                      <p className="text-gray-900 font-semibold text-sm">Marcus Rivera</p>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <Star className="w-3 h-3 text-orange-400 fill-current" />
-                        <span className="text-orange-500 text-xs font-semibold">4.97</span>
-                        <span className="text-gray-400 text-xs">· 342 jobs</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 bg-emerald-50 border border-emerald-200 rounded-lg px-2 py-1">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-emerald-600 text-xs font-semibold">Available</span>
-                    </div>
-                  </div>
-
-                  {/* Time slots */}
-                  <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">Today's Slots</p>
-                  <div className="grid grid-cols-3 gap-2 mb-5">
-                    {["9:00 AM", "11:00 AM", "2:00 PM"].map((t, i) => (
-                      <div
-                        key={t}
-                        className={`text-center py-2 rounded-lg text-xs font-semibold border transition-all ${
-                          i === 1
-                            ? "bg-tarea-dark text-white border-tarea-dark"
-                            : "bg-orange-50 text-gray-500 border-orange-100"
-                        }`}
-                      >
-                        {t}
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Price + button */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <p className="text-gray-400 text-xs">Estimated cost</p>
-                      <p className="text-gray-900 font-extrabold text-2xl">$85<span className="text-gray-400 text-sm font-normal">/hr</span></p>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-gray-500 bg-orange-50 border border-orange-100 rounded-lg px-3 py-1.5">
-                      <Shield className="w-3.5 h-3.5 text-orange-400" />
-                      Verified
-                    </div>
-                  </div>
-
-                  <motion.button
-                    whileTap={{ scale: 0.97 }}
-                    className="w-full py-3 bg-tarea-dark text-white font-bold rounded-xl text-sm hover:bg-tarea-dark-deeper transition-colors"
-                  >
-                    Confirm Booking
-                  </motion.button>
-                </div>
-
-                {/* Floating badge */}
-                <motion.div
-                  animate={{ y: [-6, 6, -6] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute -top-5 -right-5 bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-2xl shadow-lg shadow-emerald-500/30"
-                >
-                  ✓ Instant confirm
-                </motion.div>
-                <motion.div
-                  animate={{ y: [5, -5, 5] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                  className="absolute -bottom-4 -left-4 bg-white border border-orange-200 text-gray-800 text-xs font-semibold px-4 py-2 rounded-2xl shadow-lg"
-                >
-                  📍 0.8 mi away
-                </motion.div>
-              </TiltCard>
+              <Sparkles className="w-3.5 h-3.5" />
+              Trusted by 10,000+ homeowners
             </motion.div>
-          </div>
+
+            <motion.h1
+              initial={mounted ? { opacity: 0, y: 30 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.8 }}
+              className="text-6xl lg:text-7xl font-extrabold leading-[1.04] tracking-tight mb-6 text-white"
+            >
+              Your Home,{" "}
+              <span
+                className="text-transparent bg-clip-text"
+                style={{ backgroundImage: "linear-gradient(135deg, #FB923C 0%, #FDBA74 50%, #FB923C 100%)", backgroundSize: "200%", animation: "shimmer 4s linear infinite" }}
+              >
+                Perfectly
+              </span>
+              <br />
+              Maintained.
+            </motion.h1>
+
+            <motion.p
+              initial={mounted ? { opacity: 0, y: 20 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="text-white/80 text-lg leading-relaxed max-w-xl mx-auto mb-10"
+            >
+              Connect with verified, skilled handymen in your area — from plumbing to painting, booked in minutes.
+            </motion.p>
+
+            <motion.div
+              initial={mounted ? { opacity: 0, y: 20 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.65 }}
+              className="flex flex-col sm:flex-row gap-4 mb-12 justify-center"
+            >
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                <Link
+                  href="/register"
+                  className="flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-4 rounded-2xl text-base shadow-[0_0_40px_rgba(249,115,22,0.5)] hover:shadow-[0_0_60px_rgba(249,115,22,0.7)] transition-all duration-300"
+                >
+                  Book a Handyman <ArrowRight className="w-4 h-4" />
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                <Link
+                  href="/register?role=HANDYMAN"
+                  className="flex items-center justify-center gap-2 border-2 border-white/40 text-white font-bold px-8 py-4 rounded-2xl text-base hover:bg-white/10 backdrop-blur-sm transition-all duration-300"
+                >
+                  Join as a Pro
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            {/* Social proof */}
+            <motion.div
+              initial={mounted ? { opacity: 0 } : false}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.85 }}
+              className="flex items-center gap-4 justify-center"
+            >
+              <div className="flex -space-x-2.5">
+                {["J", "M", "A", "S", "D"].map((l, i) => (
+                  <motion.div
+                    key={l}
+                    initial={mounted ? { scale: 0 } : false}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.9 + i * 0.08 }}
+                    className="w-9 h-9 rounded-full border-2 border-white/30 bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-xs font-bold"
+                  >
+                    {l}
+                  </motion.div>
+                ))}
+              </div>
+              <div className="text-left">
+                <div className="flex text-orange-400 text-sm">★★★★★</div>
+                <p className="text-white/60 text-xs mt-0.5">4.9 · 3,200+ reviews</p>
+              </div>
+            </motion.div>
 
           {/* Scroll indicator */}
           <motion.div
@@ -389,7 +351,7 @@ export default function HomePage() {
             className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
           >
             <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 1.6 }}>
-              <ChevronDown className="w-5 h-5 text-gray-400" />
+              <ChevronDown className="w-5 h-5 text-white/50" />
             </motion.div>
           </motion.div>
         </div>

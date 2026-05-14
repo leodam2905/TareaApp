@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "All fields are required" }, { status: 400 });
   }
 
-  const supportEmail = "support@tarea.app";
+  const supportEmail = "support@taptarea.com";
 
   await sendEmail({
     to: supportEmail,

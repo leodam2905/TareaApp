@@ -1,14 +1,23 @@
-import twilio from "twilio";
-
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken  = process.env.TWILIO_AUTH_TOKEN;
-const fromNumber = process.env.TWILIO_PHONE_NUMBER;
-
 export async function sendSms(to: string, body: string): Promise<void> {
-  if (!accountSid || !authToken || !fromNumber) {
+  const apiKey = process.env.TELNYX_API_KEY;
+  const from   = process.env.TELNYX_PHONE_NUMBER;
+
+  if (!apiKey || !from) {
     console.log(`[SMS to ${to}]: ${body}`);
     return;
   }
-  const client = twilio(accountSid, authToken);
-  await client.messages.create({ body, from: fromNumber, to });
+
+  const res = await fetch("https://api.telnyx.com/v2/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({ from, to, text: body }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(`Telnyx SMS failed: ${JSON.stringify(err)}`);
+  }
 }
