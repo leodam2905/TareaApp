@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { hashPassword, signToken, setAuthCookie } from "@/lib/auth";
+import { hashPassword, signPendingToken } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { sendEmail } from "@/lib/email";
+import { createAndSendOtp } from "@/lib/otp";
 
 const schema = z.object({
   name: z.string().min(2),
@@ -80,9 +81,11 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const token = signToken({ userId: user.id, email: user.email, role: user.role });
-    setAuthCookie(token);
+    // Send OTP to phone for verification
+    await createAndSendOtp(user.id, data.phone);
+    const pendingToken = signPendingToken(user.id);
 
+    // Send welcome email (fire and forget)
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://taptarea.com";
     const dashPath = data.role === "HANDYMAN" ? "/handyman/dashboard" : "/customer/dashboard";
     sendEmail(
@@ -93,7 +96,7 @@ export async function POST(req: NextRequest) {
       { label: "Go to Dashboard", url: `${appUrl}${dashPath}` },
     ).catch(() => {});
 
-    return NextResponse.json({ id: user.id, name: user.name, role: user.role }, { status: 201 });
+    return NextResponse.json({ pendingToken, role: user.role }, { status: 201 });
   } catch (err) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: err.errors[0].message }, { status: 400 });

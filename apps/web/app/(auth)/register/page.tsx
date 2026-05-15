@@ -73,6 +73,11 @@ function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
   const [comingSoonState, setComingSoonState] = useState<string | null>(null);
+  const [pendingToken, setPendingToken] = useState<string | null>(null);
+  const [pendingRole, setPendingRole] = useState<string | null>(null);
+  const [otpCode, setOtpCode] = useState("");
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [resending, setResending] = useState(false);
 
   const {
     register,
@@ -144,14 +149,93 @@ function RegisterForm() {
         }
         throw new Error(body.error || "Registration failed");
       }
-      toast.success("Account created! Welcome to Tarea.");
-      router.push(data.role === "HANDYMAN" ? "/handyman/onboarding" : "/customer/dashboard");
+      setPendingToken(body.pendingToken);
+      setPendingRole(body.role);
+      toast.success("Code sent to your phone!");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Registration failed");
     } finally {
       setLoading(false);
     }
   };
+
+  const submitOtp = async () => {
+    if (otpCode.length !== 6) return;
+    setOtpLoading(true);
+    try {
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pendingToken, code: otpCode }),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || "Invalid code");
+      toast.success("Phone verified! Welcome to Tarea.");
+      router.push(pendingRole === "HANDYMAN" ? "/handyman/onboarding" : "/customer/dashboard");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Verification failed");
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const resendOtp = async () => {
+    setResending(true);
+    try {
+      const res = await fetch("/api/auth/resend-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pendingToken }),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error);
+      setPendingToken(body.pendingToken);
+      toast.success("New code sent!");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to resend");
+    } finally {
+      setResending(false);
+    }
+  };
+
+  if (pendingToken) {
+    return (
+      <div className="min-h-screen bg-tarea-surface flex items-center justify-center px-4">
+        <div className="w-full max-w-sm">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-tarea-sky/10 border border-tarea-sky/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">📱</span>
+            </div>
+            <h1 className="text-2xl font-extrabold text-white mb-2">Verify your phone</h1>
+            <p className="text-slate-400 text-sm">We sent a 6-digit code to your phone. Enter it below to complete registration.</p>
+          </div>
+          <input
+            type="text"
+            inputMode="numeric"
+            maxLength={6}
+            value={otpCode}
+            onChange={e => setOtpCode(e.target.value.replace(/\D/g, ""))}
+            placeholder="000000"
+            className="w-full text-center text-3xl font-bold tracking-[0.5em] bg-white/5 border border-white/10 rounded-2xl px-4 py-5 text-white placeholder-slate-600 focus:outline-none focus:border-tarea-sky mb-4"
+          />
+          <button
+            onClick={submitOtp}
+            disabled={otpCode.length !== 6 || otpLoading}
+            className="w-full py-3.5 bg-tarea-sky text-tarea-ink font-bold rounded-xl text-sm hover:bg-sky-300 transition-all disabled:opacity-50 mb-3"
+          >
+            {otpLoading ? "Verifying…" : "Verify & Continue"}
+          </button>
+          <button
+            onClick={resendOtp}
+            disabled={resending}
+            className="w-full py-2.5 text-slate-400 text-sm hover:text-white transition-colors"
+          >
+            {resending ? "Sending…" : "Didn't receive it? Resend code"}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-tarea-surface flex">
