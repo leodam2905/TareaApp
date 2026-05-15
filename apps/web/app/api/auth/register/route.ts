@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Send OTP to phone for verification
-    await createAndSendOtp(user.id, data.phone);
+    await createAndSendOtp(user.id, data.phone, user.email);
     const pendingToken = signPendingToken(user.id);
 
     // Send welcome email (fire and forget)

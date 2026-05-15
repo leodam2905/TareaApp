@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No phone number on file." }, { status: 400 });
     }
 
-    await createAndSendOtp(user.id, user.phone);
+    await createAndSendOtp(user.id, user.phone, user.email);
 
     // Issue a fresh 10-min pending token
     return NextResponse.json({ pendingToken: signPendingToken(user.id) });

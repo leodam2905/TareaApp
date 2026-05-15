@@ -151,7 +151,7 @@ function RegisterForm() {
       }
       setPendingToken(body.pendingToken);
       setPendingRole(body.role);
-      toast.success("Code sent to your phone!");
+      toast.success("Code sent to your phone and email!");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Registration failed");
     } finally {
@@ -206,8 +206,8 @@ function RegisterForm() {
             <div className="w-16 h-16 bg-tarea-sky/10 border border-tarea-sky/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl">📱</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-white mb-2">Verify your phone</h1>
-            <p className="text-slate-400 text-sm">We sent a 6-digit code to your phone. Enter it below to complete registration.</p>
+            <h1 className="text-2xl font-extrabold text-white mb-2">Verify your account</h1>
+            <p className="text-slate-400 text-sm">We sent a 6-digit code to your phone and email. Enter it below to complete registration.</p>
           </div>
           <input
             type="text"
@@ -230,7 +230,7 @@ function RegisterForm() {
             disabled={resending}
             className="w-full py-2.5 text-slate-400 text-sm hover:text-white transition-colors"
           >
-            {resending ? "Sending…" : "Didn't receive it? Resend code"}
+            {resending ? "Sending…" : "Didn't receive it? Resend to phone & email"}
           </button>
         </div>
       </div>
