@@ -690,7 +690,7 @@ export default function HomePage() {
               <ul className="space-y-3 text-gray-500 text-sm">
                 <li className="flex items-center gap-2.5"><Phone className="w-4 h-4 flex-shrink-0" /><a href="tel:+15304391054" className="hover:text-gray-900 transition-colors">+1 (530) 439-1054</a></li>
                 <li className="flex items-center gap-2.5"><Mail className="w-4 h-4 flex-shrink-0" /><Link href="/contact" className="hover:text-gray-900 transition-colors">support@taptarea.com</Link></li>
-                <li className="flex items-center gap-2.5"><MapPin className="w-4 h-4 flex-shrink-0" /><span>Miami, FL 33101</span></li>
+                <li className="flex items-center gap-2.5"><MapPin className="w-4 h-4 flex-shrink-0" /><span>Pasadena, California</span></li>
               </ul>
             </div>
           </div>
