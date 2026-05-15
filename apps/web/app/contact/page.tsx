@@ -112,15 +112,19 @@ export default function ContactPage() {
         <div className="grid md:grid-cols-3 gap-4 mb-16">
           {[
             { icon: Mail, title: "Email support", body: "support@taptarea.com", sub: "Replies within 1 business day" },
-            { icon: MessageSquare, title: "Live chat", body: "Available in the app", sub: "For logged-in users" },
+            { icon: MessageSquare, title: "Call us", body: "+1 (530) 439-1054", sub: "Monday – Friday, 9am–6pm ET", href: "tel:+15304391054" },
             { icon: Clock, title: "Response time", body: "< 24 hours", sub: "Monday – Friday" },
-          ].map(({ icon: Icon, title, body, sub }) => (
+          ].map(({ icon: Icon, title, body, sub, href }) => (
             <div key={title} className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
               <div className="w-12 h-12 bg-tarea-sky/10 border border-tarea-sky/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Icon className="w-6 h-6 text-tarea-sky" />
               </div>
               <p className="text-white font-semibold">{title}</p>
-              <p className="text-tarea-sky text-sm mt-1">{body}</p>
+              {href ? (
+                <a href={href} className="text-tarea-sky text-sm mt-1 block hover:underline">{body}</a>
+              ) : (
+                <p className="text-tarea-sky text-sm mt-1">{body}</p>
+              )}
               <p className="text-slate-500 text-xs mt-0.5">{sub}</p>
             </div>
           ))}
