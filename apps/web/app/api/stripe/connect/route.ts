@@ -30,8 +30,8 @@ export async function POST(_req: NextRequest) {
 
   const link = await stripe.accountLinks.create({
     account: accountId,
-    refresh_url: `${APP_URL}/handyman/profile?stripe=refresh`,
-    return_url:  `${APP_URL}/handyman/profile?stripe=connected`,
+    refresh_url: `${APP_URL}/handyman/payout-methods?stripe=refresh`,
+    return_url:  `${APP_URL}/handyman/payout-methods?stripe=connected`,
     type: "account_onboarding",
   });
 

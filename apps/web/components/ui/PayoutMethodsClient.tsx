@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import { CreditCard, Building2, Plus, Trash2, Loader2, Zap, CalendarClock, Star, AlertCircle, CheckCircle2 } from "lucide-react";
+import { CreditCard, Building2, Plus, Trash2, Loader2, Zap, CalendarClock, Star, AlertCircle, CheckCircle2, ShieldCheck, ExternalLink } from "lucide-react";
 import toast from "react-hot-toast";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
@@ -166,6 +167,9 @@ function Inner() {
   const [showAddCard, setShowAddCard] = useState(false);
   const [showAddBank, setShowAddBank] = useState(false);
   const [removing, setRemoving] = useState<string | null>(null);
+  const [stripeStatus, setStripeStatus] = useState<string | null>(null);
+  const [connecting, setConnecting] = useState(false);
+  const searchParams = useSearchParams();
 
   const load = useCallback(() => {
     fetch("/api/handyman/payout-methods")
@@ -173,7 +177,33 @@ function Inner() {
       .then(setMethods);
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+    fetch("/api/stripe/connect")
+      .then(r => r.json())
+      .then(d => setStripeStatus(d.status ?? "not_connected"));
+
+    const stripeReturn = searchParams.get("stripe");
+    if (stripeReturn === "connected") toast.success("Stripe account connected! Add a payout method below.");
+    if (stripeReturn === "refresh") toast("Verification session expired — please try again.", { icon: "⚠️" });
+  }, [load, searchParams]);
+
+  const startConnectOnboarding = async () => {
+    setConnecting(true);
+    try {
+      const res = await fetch("/api/stripe/connect", { method: "POST" });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error("Could not start verification. Try again.");
+      }
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setConnecting(false);
+    }
+  };
 
   const remove = async (id: string) => {
     if (!confirm("Remove this payout method?")) return;
@@ -203,6 +233,51 @@ function Inner() {
 
   return (
     <div className="space-y-8">
+      {/* Stripe Connect identity verification */}
+      {stripeStatus === "active" ? (
+        <div className="flex items-center gap-3 px-5 py-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+          <div>
+            <p className="text-white font-semibold text-sm">Identity verified</p>
+            <p className="text-slate-400 text-xs">Your Stripe account is active. You can add payout methods and cash out.</p>
+          </div>
+        </div>
+      ) : stripeStatus === "pending" ? (
+        <div className="flex items-start gap-4 px-5 py-5 bg-amber-500/10 border border-amber-500/20 rounded-2xl">
+          <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-white font-semibold text-sm mb-1">Verification in progress</p>
+            <p className="text-slate-400 text-sm mb-3">Stripe is reviewing your identity. This usually takes a few minutes. If it's been a while, click below to resume.</p>
+            <button
+              onClick={startConnectOnboarding}
+              disabled={connecting}
+              className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-xl transition-all text-sm"
+            >
+              {connecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
+              Resume Verification
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-start gap-4 px-5 py-5 bg-tarea-sky/10 border border-tarea-sky/20 rounded-2xl">
+          <ShieldCheck className="w-6 h-6 text-tarea-sky flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-white font-semibold mb-1">Verify your identity to get paid</p>
+            <p className="text-slate-400 text-sm mb-4">
+              We use Stripe to securely send your earnings. Complete a quick identity check (takes ~2 min) to activate your payout account.
+            </p>
+            <button
+              onClick={startConnectOnboarding}
+              disabled={connecting}
+              className="flex items-center gap-2 px-5 py-2.5 bg-tarea-sky hover:bg-sky-400 text-tarea-ink font-bold rounded-xl transition-all text-sm"
+            >
+              {connecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+              {connecting ? "Redirecting to Stripe…" : "Verify Identity with Stripe"}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Info banner */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="flex items-start gap-3 p-4 bg-violet-500/10 border border-violet-500/20 rounded-xl">
@@ -383,8 +458,10 @@ function Inner() {
 
 export default function PayoutMethodsClient() {
   return (
-    <Elements stripe={stripePromise}>
-      <Inner />
-    </Elements>
+    <Suspense>
+      <Elements stripe={stripePromise}>
+        <Inner />
+      </Elements>
+    </Suspense>
   );
 }
