@@ -3,7 +3,8 @@ import bcrypt from "bcryptjs";
 import { cookies, headers } from "next/headers";
 import { prisma } from "./prisma";
 
-const JWT_SECRET = process.env.JWT_SECRET || "tarea-dev-secret-change-in-prod";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) throw new Error("JWT_SECRET environment variable is not set");
 const COOKIE_NAME = "tarea_token";
 
 export interface TokenPayload {
@@ -85,5 +86,11 @@ export function setAuthCookie(token: string) {
 }
 
 export function clearAuthCookie() {
-  cookies().set(COOKIE_NAME, "", { maxAge: 0, path: "/" });
+  cookies().set(COOKIE_NAME, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 0,
+    path: "/",
+  });
 }
