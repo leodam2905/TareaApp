@@ -7,8 +7,14 @@ export function generateCode(): string {
   return String(Math.floor(100000 + Math.random() * 900000));
 }
 
+function normalizePhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
+  return `+${digits}`;
+}
+
 export async function createAndSendOtp(userId: string, phone: string): Promise<void> {
-  // Invalidate any unused codes for this user first
   await prisma.otpCode.updateMany({
     where: { userId, used: false },
     data: { used: true },
@@ -19,7 +25,7 @@ export async function createAndSendOtp(userId: string, phone: string): Promise<v
 
   await prisma.otpCode.create({ data: { userId, code, expiresAt } });
 
-  await sendSms(phone, `Your Tarea verification code is: ${code}. It expires in ${OTP_TTL_MINUTES} minutes.`);
+  await sendSms(normalizePhone(phone), `Your Tarea verification code is: ${code}. It expires in ${OTP_TTL_MINUTES} minutes.`);
 }
 
 export async function verifyOtp(userId: string, code: string): Promise<boolean> {
