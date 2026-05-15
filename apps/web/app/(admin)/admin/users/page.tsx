@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ShieldCheck, ShieldOff, UserCheck, UserX, Search } from "lucide-react";
+import { ShieldCheck, ShieldOff, UserCheck, UserX, Search, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { formatDate } from "@/lib/utils";
 
@@ -15,6 +15,8 @@ export default function AdminUsersPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("ALL");
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmId, setConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/users").then(r => r.json()).then(data => {
@@ -32,6 +34,20 @@ export default function AdminUsersPage() {
       const updated = await res.json();
       setUsers(prev => prev.map(u => u.id === id ? { ...u, ...updated } : u));
     } else toast.error("Action failed");
+  };
+
+  const deleteUser = async (id: string) => {
+    setDeleting(id);
+    const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setUsers(prev => prev.filter(u => u.id !== id));
+      toast.success("User deleted");
+    } else {
+      const err = await res.json();
+      toast.error(err.error || "Delete failed");
+    }
+    setDeleting(null);
+    setConfirmId(null);
   };
 
   const filtered = users.filter(u => {
@@ -69,6 +85,32 @@ export default function AdminUsersPage() {
           </button>
         ))}
       </div>
+
+      {/* Delete confirmation modal */}
+      {confirmId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <Trash2 className="w-6 h-6 text-red-400" />
+            </div>
+            <h3 className="text-white font-bold text-lg text-center mb-1">Delete user?</h3>
+            <p className="text-slate-400 text-sm text-center mb-6">
+              This will permanently delete <span className="text-white font-semibold">{users.find(u => u.id === confirmId)?.name}</span> and all their data. This cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => setConfirmId(null)}
+                className="flex-1 py-2.5 rounded-xl bg-white/5 text-slate-300 font-semibold hover:bg-white/10 transition-all">
+                Cancel
+              </button>
+              <button onClick={() => deleteUser(confirmId)}
+                disabled={deleting === confirmId}
+                className="flex-1 py-2.5 rounded-xl bg-red-500 text-white font-semibold hover:bg-red-600 transition-all disabled:opacity-50">
+                {deleting === confirmId ? "Deleting…" : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Table */}
       <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
@@ -118,6 +160,11 @@ export default function AdminUsersPage() {
                       title={u.isVerified ? "Remove verification" : "Verify"}
                       className={`p-2 rounded-lg transition-all ${u.isVerified ? "text-slate-400 hover:bg-white/5" : "text-tarea-sky hover:bg-tarea-sky/10"}`}>
                       {u.isVerified ? <ShieldOff className="w-4 h-4" /> : <ShieldCheck className="w-4 h-4" />}
+                    </button>
+                    <button onClick={() => setConfirmId(u.id)}
+                      title="Delete user"
+                      className="p-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-all">
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </td>
