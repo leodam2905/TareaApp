@@ -34,15 +34,16 @@ export default function AppNav({ role, userName }: NavProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const customerLinks = [
-    { href: "/customer/dashboard",  label: t("nav_dashboard"),   icon: LayoutDashboard },
-    { href: "/customer/browse",     label: t("nav_browse"),       icon: Search          },
-    { href: "/customer/bookings",   label: t("nav_bookings"),     icon: CalendarCheck   },
-    { href: "/customer/favorites",  label: "Favorites",           icon: Heart           },
-    { href: "/customer/requests",   label: t("nav_requests"),     icon: ClipboardList   },
-    { href: "/customer/post-job",   label: t("nav_post_job"),     icon: Briefcase       },
-    { href: "/customer/spending",    label: "Spending Report",     icon: PieChart        },
-    { href: "/customer/referrals",  label: "Refer & Earn",        icon: Gift            },
-    { href: "/customer/profile",    label: t("nav_profile"),      icon: User            },
+    { href: "/customer/dashboard",        label: t("nav_dashboard"),   icon: LayoutDashboard },
+    { href: "/customer/browse",           label: t("nav_browse"),       icon: Search          },
+    { href: "/customer/bookings",         label: t("nav_bookings"),     icon: CalendarCheck   },
+    { href: "/customer/favorites",        label: "Favorites",           icon: Heart           },
+    { href: "/customer/requests",         label: t("nav_requests"),     icon: ClipboardList   },
+    { href: "/customer/post-job",         label: t("nav_post_job"),     icon: Briefcase       },
+    { href: "/customer/payment-methods",  label: "Payment Methods",     icon: Wallet          },
+    { href: "/customer/spending",         label: "Spending Report",     icon: PieChart        },
+    { href: "/customer/referrals",        label: "Refer & Earn",        icon: Gift            },
+    { href: "/customer/profile",          label: t("nav_profile"),      icon: User            },
   ];
 
   const handymanLinks = [
