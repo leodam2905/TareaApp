@@ -36,12 +36,12 @@ function VideoBg() {
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const services = [
-  { icon: Droplets, label: "Plumbing",     desc: "Leaks, pipes & installations",    href: "/browse?category=PLUMBING",    from: "#3B82F6", to: "#06B6D4" },
-  { icon: Zap,      label: "Electrical",   desc: "Wiring, panels & smart home",     href: "/browse?category=ELECTRICAL",  from: "#F59E0B", to: "#EF4444" },
-  { icon: Wrench,   label: "Carpentry",    desc: "Furniture, floors & custom work",  href: "/browse?category=CARPENTRY",   from: "#F97316", to: "#F59E0B" },
-  { icon: Paintbrush, label: "Painting",   desc: "Interior & exterior finishes",    href: "/browse?category=PAINTING",    from: "#EC4899", to: "#A855F7" },
-  { icon: Wind,     label: "HVAC",         desc: "AC, heating & air quality",       href: "/browse?category=HVAC",        from: "#06B6D4", to: "#38BDF8" },
-  { icon: TreePine, label: "Landscaping",  desc: "Lawn care & garden design",       href: "/browse?category=LANDSCAPING", from: "#22C55E", to: "#10B981" },
+  { icon: Droplets,   label: "Plumbing",    desc: "Leaks, pipes & installations",   href: "/register?category=PLUMBING",    from: "#3B82F6", to: "#06B6D4" },
+  { icon: Zap,        label: "Electrical",  desc: "Wiring, panels & smart home",    href: "/register?category=ELECTRICAL",  from: "#F59E0B", to: "#EF4444" },
+  { icon: Wrench,     label: "Carpentry",   desc: "Furniture, floors & custom work", href: "/register?category=CARPENTRY",   from: "#F97316", to: "#F59E0B" },
+  { icon: Paintbrush, label: "Painting",    desc: "Interior & exterior finishes",   href: "/register?category=PAINTING",    from: "#EC4899", to: "#A855F7" },
+  { icon: Wind,       label: "HVAC",        desc: "AC, heating & air quality",      href: "/register?category=HVAC",        from: "#06B6D4", to: "#38BDF8" },
+  { icon: TreePine,   label: "Landscaping", desc: "Lawn care & garden design",      href: "/register?category=LANDSCAPING", from: "#22C55E", to: "#10B981" },
 ];
 
 const steps = [
@@ -633,7 +633,7 @@ export default function HomePage() {
               <ul className="space-y-2.5 text-gray-500 text-sm">
                 {["Plumbing", "Electrical", "Carpentry", "Painting", "HVAC"].map(s => (
                   <li key={s}>
-                    <Link href={`/browse?category=${s.toUpperCase()}`} className="hover:text-gray-900 transition-colors">{s}</Link>
+                    <Link href={`/register?category=${s.toUpperCase()}`} className="hover:text-gray-900 transition-colors">{s}</Link>
                   </li>
                 ))}
               </ul>
