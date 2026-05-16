@@ -14,59 +14,20 @@ import {
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 
-// ─── Video Reel ───────────────────────────────────────────────────────────────
-
-const VIDEO_SRCS = [
-  "https://videos.pexels.com/video-files/9890450/9890450-hd_1920_1080_30fps.mp4",
-  "https://videos.pexels.com/video-files/4334561/4334561-hd_1920_1080_24fps.mp4",
-  "https://videos.pexels.com/video-files/5973234/5973234-hd_1920_1080_25fps.mp4",
-  "https://videos.pexels.com/video-files/6474085/6474085-hd_1920_1080_25fps.mp4",
-];
+// ─── Video Background ─────────────────────────────────────────────────────────
 
 function VideoBg() {
-  const [active, setActive] = useState(0);
-  const [next, setNext] = useState<number | null>(null);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setNext(p => ((p ?? active) + 1) % VIDEO_SRCS.length);
-    }, 7000);
-    return () => clearInterval(id);
-  }, [active]);
-
-  useEffect(() => {
-    if (next === null) return;
-    const v = videoRefs.current[next];
-    if (v) { v.currentTime = 0; v.play().catch(() => {}); }
-    const t = setTimeout(() => { setActive(next); setNext(null); }, 800);
-    return () => clearTimeout(t);
-  }, [next]);
-
-  useEffect(() => {
-    const v = videoRefs.current[active];
-    if (v) { v.currentTime = 0; v.play().catch(() => {}); }
-  }, [active]);
-
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {VIDEO_SRCS.map((src, i) => (
-        <motion.video
-          key={src}
-          ref={el => { videoRefs.current[i] = el; }}
-          src={src}
-          muted
-          loop
-          playsInline
-          initial={false}
-          animate={{ opacity: i === active ? 1 : i === next ? 1 : 0 }}
-          transition={{ duration: 0.8 }}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-      ))}
-      {/* Dark overlay so text stays readable */}
+      <video
+        src="https://res.cloudinary.com/damk2dpd4/video/upload/v1778893570/hero-video.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+      />
       <div className="absolute inset-0 bg-black/55" />
-      {/* Subtle vignette */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
     </div>
   );
