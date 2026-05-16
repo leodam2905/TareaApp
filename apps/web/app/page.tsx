@@ -381,8 +381,8 @@ export default function HomePage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08 }}
               >
-                <TiltCard>
-                  <Link href={href}>
+                <Link href={href}>
+                  <TiltCard>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       className="relative group bg-white border border-orange-100 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-orange-200 hover:shadow-md transition-all duration-300"
@@ -400,11 +400,11 @@ export default function HomePage() {
                       <h3 className="text-gray-900 font-bold text-lg mb-1">{label}</h3>
                       <p className="text-gray-500 text-sm mb-4">{desc}</p>
                       <div className="flex items-center gap-1 text-sm font-semibold" style={{ color: from }}>
-                        Browse <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        Book Now <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </motion.div>
-                  </Link>
-                </TiltCard>
+                  </TiltCard>
+                </Link>
               </motion.div>
             ))}
           </div>
