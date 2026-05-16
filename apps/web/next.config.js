@@ -1,22 +1,6 @@
 const withPWA = require("@ducanh2912/next-pwa").default({
   dest: "public",
-  cacheOnFrontEndNav: false,
-  aggressiveFrontEndNavCaching: false,
-  reloadOnOnline: true,
-  disable: process.env.NODE_ENV === "development",
-  workboxOptions: {
-    disableDevLogs: true,
-    runtimeCaching: [
-      {
-        urlPattern: /^https:\/\/res\.cloudinary\.com\/.*/i,
-        handler: "CacheFirst",
-        options: {
-          cacheName: "cloudinary-media",
-          expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 7 },
-        },
-      },
-    ],
-  },
+  disable: true,
 });
 
 const securityHeaders = [
