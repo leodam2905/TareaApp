@@ -29,7 +29,7 @@ const securityHeaders = [
       "font-src 'self' data:",
       "frame-src https://js.stripe.com https://hooks.stripe.com",
       "connect-src 'self' https://api.stripe.com https://api.telnyx.com https://nominatim.openstreetmap.org wss://*.pusher.com",
-      "media-src 'self' https://videos.pexels.com blob:",
+      "media-src 'self' https://res.cloudinary.com blob:",
       "worker-src 'self' blob:",
     ].join("; "),
   },
