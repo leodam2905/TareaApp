@@ -151,7 +151,7 @@ export default function HandymanDashboard() {
               { label: "Complete background check", done: checklist.hasBackgroundCheck, onPress: () => router.push("/(handyman)/background-check" as never) },
               { label: "Connect Stripe to get paid", done: checklist.hasStripe, onPress: () => router.push("/(handyman)/tabs/profile" as never) },
               { label: "Add your first service", done: checklist.hasService, onPress: () => router.push("/(handyman)/tabs/services" as never) },
-              { label: "Upload a portfolio photo", done: checklist.hasPortfolio, onPress: () => router.push("/(handyman)/tabs/profile" as never) },
+              { label: "Upload a profile picture", done: checklist.hasPortfolio, onPress: () => router.push("/(handyman)/tabs/profile" as never) },
             ].map(({ label, done, onPress }) => (
               <Pressable key={label} style={styles.checklistRow} onPress={done ? undefined : onPress}>
                 <View style={[styles.checkCircle, done && styles.checkCircleDone]}>
