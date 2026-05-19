@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Text, Pressable, StyleSheet, ActivityIndicator, Alert } from "react-native";
+import { View, Text, Pressable, StyleSheet, ActivityIndicator, Alert, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
@@ -88,7 +88,7 @@ export default function BackgroundCheckScreen() {
         </Text>
       </LinearGradient>
 
-      <View style={styles.content}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Fee highlight */}
         <View style={styles.feeCard}>
           <Text style={styles.feeLabel}>One-time fee</Text>
@@ -147,7 +147,7 @@ export default function BackgroundCheckScreen() {
         <Text style={styles.disclaimer}>
           You can accept bookings while your check is processing. Results are shared only with Tarea and never with customers.
         </Text>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   iconCircle: { width: 72, height: 72, borderRadius: 36, backgroundColor: "rgba(56,189,248,0.15)", borderWidth: 1, borderColor: "rgba(56,189,248,0.3)", alignItems: "center", justifyContent: "center", marginBottom: spacing.md },
   title: { fontSize: fontSize["2xl"], fontWeight: "900", color: colors.white, textAlign: "center", marginBottom: 10 },
   subtitle: { fontSize: fontSize.sm, color: colors.inkSubtle, textAlign: "center", lineHeight: 20 },
-  content: { flex: 1, padding: spacing.xl, gap: spacing.md },
+  content: { padding: spacing.xl, gap: spacing.md, paddingBottom: 48 },
   feeCard: { backgroundColor: "rgba(56,189,248,0.1)", borderRadius: radius.xl, padding: spacing.lg, borderWidth: 1, borderColor: "rgba(56,189,248,0.25)", alignItems: "center" },
   feeLabel: { fontSize: fontSize.xs, color: colors.skyBlue, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" },
   feeAmount: { fontSize: 40, fontWeight: "900", color: colors.white, marginVertical: 4 },
