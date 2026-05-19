@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, TextInput } from "react-native";
+import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, TextInput, Image } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import * as Location from "expo-location";
-import MapView, { Marker, Callout } from "react-native-maps";
 import { api } from "../../../constants/api";
 import { colors, fontSize, radius, spacing } from "../../../constants/theme";
 
@@ -240,47 +238,11 @@ export default function BrowseScreen() {
 
       {/* Map view */}
       {viewMode === "map" && (
-        userCoords ? (
-          <MapView
-            style={{ flex: 1 }}
-            initialRegion={{
-              latitude: userCoords.latitude,
-              longitude: userCoords.longitude,
-              latitudeDelta: 0.5,
-              longitudeDelta: 0.5,
-            }}
-            showsUserLocation
-          >
-            {filtered
-              .filter(s => s.handyman?.user.latitude && s.handyman?.user.longitude)
-              .map(s => (
-                <Marker
-                  key={s.id}
-                  coordinate={{
-                    latitude: s.handyman!.user.latitude!,
-                    longitude: s.handyman!.user.longitude!,
-                  }}
-                  pinColor={s.handyman?.isPremium ? "#F59E0B" : colors.skyBlue}
-                >
-                  <Callout onPress={() => router.push(`/service/${s.id}`)}>
-                    <View style={styles.callout}>
-                      <Text style={styles.calloutTitle} numberOfLines={1}>{s.title}</Text>
-                      <Text style={styles.calloutMeta}>{s.handyman?.user.name}{s.handyman?.user.isVerified ? " ✓" : ""}</Text>
-                      <Text style={styles.calloutPrice}>${s.minPrice}–${s.maxPrice}</Text>
-                      <Text style={styles.calloutTap}>Tap to view →</Text>
-                    </View>
-                  </Callout>
-                </Marker>
-              ))}
-          </MapView>
-        ) : (
-          <View style={styles.mapPlaceholder}>
-            <ActivityIndicator color={colors.skyBlue} size="large" />
-            <Text style={styles.mapSub}>
-              {cityName === "Unknown location" ? "Location permission denied" : "Detecting your location…"}
-            </Text>
-          </View>
-        )
+        <View style={styles.mapPlaceholder}>
+          <Ionicons name="map-outline" size={52} color={colors.inkSubtle} />
+          <Text style={styles.mapTitle}>Map view coming soon</Text>
+          <Text style={styles.mapSub}>Available in the full app build</Text>
+        </View>
       )}
 
       {viewMode === "list" && loading ? (
@@ -288,7 +250,7 @@ export default function BrowseScreen() {
       ) : viewMode === "list" ? (
         <ScrollView contentContainerStyle={styles.scroll}>
           {filtered.map((s, i) => (
-            <Animated.View key={s.id} entering={FadeInDown.delay(i * 40)}>
+            <View key={s.id} entering={FadeInDown.delay(i * 40)}>
               <Pressable style={styles.card} onPress={() => router.push(`/service/${s.id}`)}>
                 <View style={styles.cardLeft}>
                   <Text style={styles.cardCat}>{CATEGORIES.find(c => c.key === s.category)?.icon} {CATEGORIES.find(c => c.key === s.category)?.label}</Text>
@@ -317,7 +279,7 @@ export default function BrowseScreen() {
                   <Ionicons name="chevron-forward" size={16} color={colors.inkSubtle} />
                 </View>
               </Pressable>
-            </Animated.View>
+            </View>
           ))}
           {filtered.length === 0 && (
             <Text style={styles.empty}>No services found.</Text>
@@ -367,7 +329,8 @@ const styles = StyleSheet.create({
   filterApplyBtn: { backgroundColor: colors.skyBlue },
   filterApplyText: { color: colors.ink, fontWeight: "700", fontSize: fontSize.sm },
   mapPlaceholder: { flex: 1, alignItems: "center", justifyContent: "center", gap: spacing.sm },
-  mapSub: { color: colors.inkSubtle, fontSize: fontSize.sm, marginTop: 8 },
+  mapTitle: { color: colors.white, fontSize: fontSize.lg, fontWeight: "700" },
+  mapSub: { color: colors.inkSubtle, fontSize: fontSize.sm },
   callout: { width: 180, padding: 8, gap: 3 },
   calloutTitle: { fontWeight: "700", fontSize: 13, color: "#0F172A" },
   calloutMeta: { fontSize: 11, color: "#64748B" },

@@ -71,8 +71,17 @@ export default function BrowsePage() {
   const [handymen, setHandymen] = useState<Handyman[]>([]);
   const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
+  const [sortBy, setSortBy] = useState<"best" | "rating" | "price_low" | "price_high" | "distance">("best");
 
   const selectedCat = CATEGORIES.find(c => c.key === category);
+
+  const sortedHandymen = [...handymen].sort((a, b) => {
+    if (sortBy === "rating") return b.rating - a.rating;
+    if (sortBy === "price_low") return (a.service?.minPrice ?? a.hourlyRate) - (b.service?.minPrice ?? b.hourlyRate);
+    if (sortBy === "price_high") return (b.service?.maxPrice ?? b.hourlyRate) - (a.service?.maxPrice ?? a.hourlyRate);
+    if (sortBy === "distance") return (a.distanceKm ?? 999) - (b.distanceKm ?? 999);
+    return b.score - a.score; // "best"
+  });
 
   const search = async () => {
     setLoading(true);
@@ -224,14 +233,25 @@ export default function BrowsePage() {
         {step === 3 && (
           <motion.div key="step3" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
             className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
               <button onClick={() => setStep(2)} className="flex items-center gap-1.5 text-slate-400 hover:text-white text-sm transition-colors">
                 <ArrowLeft className="w-4 h-4" /> Back
               </button>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-slate-400 text-sm">
                   <span className="text-white font-semibold">{handymen.length}</span> available
                 </p>
+                <select
+                  value={sortBy}
+                  onChange={e => setSortBy(e.target.value as typeof sortBy)}
+                  className="bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-slate-300 text-xs focus:outline-none focus:border-tarea-sky"
+                >
+                  <option value="best">Best Match</option>
+                  <option value="rating">Top Rated</option>
+                  <option value="price_low">Price: Low to High</option>
+                  <option value="price_high">Price: High to Low</option>
+                  <option value="distance">Nearest First</option>
+                </select>
                 <div className="flex bg-white/5 border border-white/10 rounded-xl p-1 gap-1">
                   <button
                     onClick={() => setViewMode("list")}
@@ -268,7 +288,7 @@ export default function BrowsePage() {
               />
             ) : (
               <div className="space-y-3">
-                {handymen.map((h, i) => (
+                {sortedHandymen.map((h, i) => (
                   <motion.div key={h.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                     <button
                       onClick={() => {

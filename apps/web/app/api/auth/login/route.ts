@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     const token = signToken({ userId: user.id, email: user.email, role: user.role });
     await setAuthCookie(token);
 
-    return NextResponse.json({ success: true, role: user.role, token });
+    return NextResponse.json({ success: true, id: user.id, name: user.name, email: user.email, role: user.role, token });
   } catch (err) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: err.errors[0].message }, { status: 400 });

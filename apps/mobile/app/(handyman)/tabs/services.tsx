@@ -4,7 +4,6 @@ import {
   ActivityIndicator, Alert, RefreshControl, Switch, Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import * as ImagePicker from "expo-image-picker";
 import * as SecureStore from "expo-secure-store";
 import { api, API_BASE } from "../../../constants/api";
@@ -232,7 +231,7 @@ export default function HandymanServicesScreen() {
         ) : services.map((s, i) => {
           const cat = CATEGORIES.find(c => c.key === s.category);
           return (
-            <Animated.View key={s.id} entering={FadeInDown.delay(i * 40)}>
+            <View key={s.id} entering={FadeInDown.delay(i * 40)}>
               <View style={[styles.card, !s.isActive && { opacity: 0.55 }]}>
                 <View style={styles.cardTop}>
                   <Text style={styles.catEmoji}>{cat?.emoji || "🛠️"}</Text>
@@ -266,7 +265,7 @@ export default function HandymanServicesScreen() {
                   </Pressable>
                 </View>
               </View>
-            </Animated.View>
+            </View>
           );
         })}
       </ScrollView>

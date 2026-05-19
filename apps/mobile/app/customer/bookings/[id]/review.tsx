@@ -4,8 +4,8 @@ import {
   ScrollView, Alert, ActivityIndicator, KeyboardAvoidingView, Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { colors, spacing, radius, fontSize } from "@/constants/Colors";
-import api from "@/constants/api";
+import { colors, spacing, radius, fontSize } from "../../../../constants/theme";
+import { api } from "../../../../constants/api";
 
 export default function ReviewScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -41,7 +41,6 @@ export default function ReviewScreen() {
         <Text style={styles.title}>Leave a Review</Text>
         <Text style={styles.subtitle}>How did your handyman do?</Text>
 
-        {/* Star rating */}
         <View style={styles.stars}>
           {[1, 2, 3, 4, 5].map(n => (
             <Pressable key={n} onPress={() => setRating(n)} style={styles.star}>
@@ -57,7 +56,6 @@ export default function ReviewScreen() {
           </Text>
         )}
 
-        {/* Comment */}
         <Text style={styles.label}>Comment (optional)</Text>
         <TextInput
           style={styles.input}

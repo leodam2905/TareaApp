@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Briefcase, DollarSign, Star, Clock, ShieldCheck, ShieldAlert, ShieldOff, Camera } from "lucide-react";
 import { formatCurrency, formatDate, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
 import JobTimerSection from "@/components/ui/JobTimer";
+import AvailabilityToggle from "@/components/ui/AvailabilityToggle";
 
 export default async function HandymanDashboard() {
   const user = await getCurrentUser();
@@ -54,7 +55,10 @@ export default async function HandymanDashboard() {
           </h1>
           <p className="text-slate-400 mt-1">Manage your jobs and earnings from here.</p>
         </div>
-        <Link href="/handyman/onboarding" className="btn-secondary">✏️ Edit Services</Link>
+        <div className="flex items-center gap-3">
+          <AvailabilityToggle initial={profile.isAvailable} />
+          <Link href="/handyman/onboarding" className="btn-secondary">✏️ Edit Services</Link>
+        </div>
       </div>
 
       {/* Stats */}

@@ -4,7 +4,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import { api } from "../../constants/api";
 import { colors, fontSize, radius, spacing } from "../../constants/theme";
 
@@ -89,7 +88,7 @@ export default function HandymanDashboard() {
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll}>
         {/* Quick actions */}
-        <Animated.View entering={FadeInDown.delay(100)} style={styles.quickActions}>
+        <View style={styles.quickActions}>
           {[
             { label: "Jobs", icon: "briefcase", color: colors.skyBlue, onPress: () => router.push("/(handyman)/jobs") },
             { label: "Earnings", icon: "cash", color: "#10B981", onPress: () => router.push("/(handyman)/earnings") },
@@ -102,10 +101,10 @@ export default function HandymanDashboard() {
               <Text style={styles.quickLabel}>{label}</Text>
             </Pressable>
           ))}
-        </Animated.View>
+        </View>
 
         {/* Job requests */}
-        <Animated.View entering={FadeInDown.delay(200)}>
+        <View>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Job Requests</Text>
             <Pressable onPress={() => router.push("/(handyman)/jobs")}>
@@ -137,7 +136,7 @@ export default function HandymanDashboard() {
               ))}
             </View>
           )}
-        </Animated.View>
+        </View>
       </ScrollView>
 
       {/* FAB — add service */}

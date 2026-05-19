@@ -1,9 +1,10 @@
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { TrendingUp, DollarSign, CheckCircle2, Star, Clock, ArrowDownCircle } from "lucide-react";
+import { TrendingUp, DollarSign, CheckCircle2, Star, Clock, ArrowDownCircle, FileDown } from "lucide-react";
 import EarningsChart from "@/components/ui/EarningsChart";
 import CashoutButton from "@/components/ui/CashoutButton";
+import TaxReportDownload from "@/components/ui/TaxReportDownload";
 import { handymanNet } from "@/lib/fees";
 
 const MIN_CASHOUT = 10;
@@ -93,6 +94,9 @@ export default async function HandymanEarningsPage() {
 
       {/* Interactive chart */}
       <EarningsChart />
+
+      {/* Tax / 1099 annual report */}
+      <TaxReportDownload />
 
       {/* Payout history */}
       {paidOutBookings.length > 0 && (

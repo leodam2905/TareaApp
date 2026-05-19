@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import { useRouter } from "expo-router";
 import { api } from "../../../constants/api";
 import { colors, fontSize, radius, spacing } from "../../../constants/theme";
@@ -94,7 +93,7 @@ export default function EarningsScreen() {
 
         {/* ── Cashout widget ── */}
         {cashout && (
-          <Animated.View entering={FadeInDown.delay(50)}>
+          <View>
             {noStripe ? (
               <Pressable
                 style={styles.setupBanner}
@@ -151,7 +150,7 @@ export default function EarningsScreen() {
                 </Pressable>
               </View>
             )}
-          </Animated.View>
+          </View>
         )}
 
         {/* ── Stat cards ── */}
@@ -172,7 +171,7 @@ export default function EarningsScreen() {
         )}
 
         {/* ── Chart ── */}
-        <Animated.View entering={FadeInDown.delay(100)} style={styles.chartCard}>
+        <View style={styles.chartCard}>
           <View style={styles.chartHeader}>
             <Text style={styles.chartTitle}>
               {view === "earnings" ? `$${total.toFixed(0)}` : `${totalJobs} jobs`}
@@ -215,11 +214,11 @@ export default function EarningsScreen() {
               })}
             </View>
           )}
-        </Animated.View>
+        </View>
 
         {/* ── Payout history ── */}
         {history.length > 0 && (
-          <Animated.View entering={FadeInDown.delay(200)}>
+          <View>
             <Text style={styles.sectionTitle}>Payout History</Text>
             {history.map(h => (
               <View key={h.id} style={styles.paymentRow}>
@@ -235,11 +234,11 @@ export default function EarningsScreen() {
                 <Text style={[styles.payAmount, { color: colors.skyBlue }]}>+${h.net.toFixed(2)}</Text>
               </View>
             ))}
-          </Animated.View>
+          </View>
         )}
 
         {/* ── Recent jobs ── */}
-        <Animated.View entering={FadeInDown.delay(300)}>
+        <View>
           <Text style={styles.sectionTitle}>Recent Payments</Text>
           {chart.filter(b => b.jobs > 0).length === 0 ? (
             <Text style={styles.empty}>No completed jobs yet.</Text>
@@ -255,7 +254,7 @@ export default function EarningsScreen() {
               <Text style={styles.payAmount}>+${b.earnings.toFixed(0)}</Text>
             </View>
           ))}
-        </Animated.View>
+        </View>
 
       </ScrollView>
     </View>

@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import * as Location from "expo-location";
 import { api } from "../../../constants/api";
 import { colors, fontSize, radius, spacing } from "../../../constants/theme";
@@ -101,7 +100,7 @@ export default function HandymanMyJobsScreen() {
         {visible.length === 0 ? (
           <Text style={styles.empty}>No {tab} jobs yet.</Text>
         ) : visible.map((b, i) => (
-          <Animated.View key={b.id} entering={FadeInDown.delay(i * 50)}>
+          <View key={b.id} entering={FadeInDown.delay(i * 50)}>
             <View style={[styles.card, b.status === "PENDING" && styles.pendingCard]}>
               <View style={styles.cardRow}>
                 <Text style={styles.icon}>{CATEGORY_ICONS[b.service.category] || "🛠️"}</Text>
@@ -151,7 +150,7 @@ export default function HandymanMyJobsScreen() {
                 )}
               </View>
             </View>
-          </Animated.View>
+          </View>
         ))}
       </ScrollView>
     </View>

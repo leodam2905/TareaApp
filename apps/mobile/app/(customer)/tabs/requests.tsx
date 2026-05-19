@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import { api } from "../../../constants/api";
 import { colors, fontSize, radius, spacing } from "../../../constants/theme";
 
@@ -81,7 +80,7 @@ export default function RequestsScreen() {
             </Pressable>
           </View>
         ) : requests.map((r, i) => (
-          <Animated.View key={r.id} entering={FadeInDown.delay(i * 60)}>
+          <View key={r.id} entering={FadeInDown.delay(i * 60)}>
             <View style={styles.card}>
               <View style={styles.cardHeader}>
                 <Text style={styles.icon}>{CATEGORY_ICONS[r.category] || "🛠️"}</Text>
@@ -122,7 +121,7 @@ export default function RequestsScreen() {
                 </View>
               )}
             </View>
-          </Animated.View>
+          </View>
         ))}
       </ScrollView>
     </View>

@@ -17,7 +17,7 @@
       }
     },
     "production": {
-      "ios": { "buildType": "release" },
+      "ios": {},
       "android": { "buildType": "app-bundle" },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://taptarea.com/api"
@@ -27,9 +27,7 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "asclepiosleo@gmail.com",
-        "ascAppId": "",
-        "appleTeamId": ""
+        "appleId": "asclepiosleo@gmail.com"
       },
       "android": {
         "serviceAccountKeyPath": "./google-service-account.json",

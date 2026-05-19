@@ -4,7 +4,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,6 +44,7 @@ export default function LoginScreen() {
       const { role, token } = res.data;
       if (token) await SecureStore.setItemAsync("tarea_token", token);
       if (role) await SecureStore.setItemAsync("tarea_role", role);
+      await SecureStore.setItemAsync("tarea_user", JSON.stringify(res.data));
       router.replace(role === "HANDYMAN" ? "/(handyman)/tabs/dashboard" : "/(customer)/tabs/dashboard");
     } catch (e: unknown) {
       setError((e as { response?: { data?: { error?: string } } }).response?.data?.error || "Login failed");
@@ -133,14 +133,14 @@ export default function LoginScreen() {
             <Pressable onPress={() => { setRequiresPhone(false); setPendingToken(null); }} style={styles.back}>
               <Ionicons name="arrow-back" size={22} color={colors.white} />
             </Pressable>
-            <Animated.View entering={FadeInDown.delay(100).springify()} style={styles.header}>
+            <View style={styles.header}>
               <View style={styles.shieldWrap}>
                 <Ionicons name="phone-portrait" size={36} color={colors.skyBlue} />
               </View>
               <Text style={styles.title}>Add your phone</Text>
               <Text style={styles.subtitle}>We'll send a verification code each time you sign in.</Text>
-            </Animated.View>
-            <Animated.View entering={FadeInDown.delay(200).springify()} style={styles.form}>
+            </View>
+            <View style={styles.form}>
               {error ? <Text style={styles.errorBanner}>{error}</Text> : null}
               <View style={styles.fieldWrap}>
                 <Text style={styles.label}>Phone number</Text>
@@ -161,7 +161,7 @@ export default function LoginScreen() {
               >
                 <Text style={styles.btnPrimaryText}>{loading ? "Sending…" : "Send Verification Code"}</Text>
               </Pressable>
-            </Animated.View>
+            </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </LinearGradient>
@@ -178,7 +178,7 @@ export default function LoginScreen() {
               <Ionicons name="arrow-back" size={22} color={colors.white} />
             </Pressable>
 
-            <Animated.View entering={FadeInDown.delay(100).springify()} style={styles.header}>
+            <View style={styles.header}>
               <View style={styles.shieldWrap}>
                 <Ionicons name="shield-checkmark" size={36} color={colors.skyBlue} />
               </View>
@@ -186,9 +186,9 @@ export default function LoginScreen() {
               <Text style={styles.subtitle}>
                 We sent a 6-digit code to {phoneMask || "your phone"}
               </Text>
-            </Animated.View>
+            </View>
 
-            <Animated.View entering={FadeInDown.delay(200).springify()} style={styles.form}>
+            <View style={styles.form}>
               {error ? <Text style={styles.errorBanner}>{error}</Text> : null}
 
               {/* OTP boxes */}
@@ -226,7 +226,7 @@ export default function LoginScreen() {
                   </Text>
                 </Pressable>
               </View>
-            </Animated.View>
+            </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </LinearGradient>
@@ -242,12 +242,12 @@ export default function LoginScreen() {
             <Ionicons name="arrow-back" size={22} color={colors.white} />
           </Pressable>
 
-          <Animated.View entering={FadeInDown.delay(100).springify()} style={styles.header}>
+          <View style={styles.header}>
             <Text style={styles.title}>Welcome back</Text>
             <Text style={styles.subtitle}>Sign in to your Tarea account</Text>
-          </Animated.View>
+          </View>
 
-          <Animated.View entering={FadeInDown.delay(200).springify()} style={styles.form}>
+          <View style={styles.form}>
             {error ? <Text style={styles.errorBanner}>{error}</Text> : null}
 
             <View style={styles.fieldWrap}>
@@ -305,7 +305,7 @@ export default function LoginScreen() {
                 <Text style={styles.link}>Create one</Text>
               </Pressable>
             </View>
-          </Animated.View>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </LinearGradient>

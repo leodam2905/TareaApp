@@ -19,16 +19,18 @@ export async function POST(req: NextRequest) {
   const file = formData.get("file") as File | null;
   if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
 
-  if (!["image/jpeg", "image/png", "image/webp", "application/pdf"].includes(file.type)) {
-    return NextResponse.json({ error: "Only JPEG, PNG, WebP, or PDF allowed" }, { status: 400 });
+  const mimeType = file.type || "image/jpeg";
+  if (!mimeType.startsWith("image/") && mimeType !== "application/pdf") {
+    return NextResponse.json({ error: "Only image or PDF files allowed" }, { status: 400 });
   }
-  if (file.size > 10 * 1024 * 1024) {
+  if (file.size > 0 && file.size > 10 * 1024 * 1024) {
     return NextResponse.json({ error: "File too large (max 10 MB)" }, { status: 400 });
   }
 
   const bytes = await file.arrayBuffer();
+  if (!bytes.byteLength) return NextResponse.json({ error: "Empty file received" }, { status: 400 });
   const base64 = Buffer.from(bytes).toString("base64");
-  const dataUri = `data:${file.type};base64,${base64}`;
+  const dataUri = `data:${mimeType};base64,${base64}`;
 
   const result = await cloudinary.uploader.upload(dataUri, {
     folder: "tarea/verification",

@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { CUSTOMER_FEE_RATE } from "@/lib/fees";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const FROM = "Tarea <noreply@taptarea.com>";
@@ -66,7 +67,7 @@ export async function sendInvoiceEmail(params: {
 }) {
   const { to, bookingId, serviceTitle, serviceCategory, handymanName, scheduledAt, address, city, totalPrice } = params;
   const shortId = bookingId.slice(-8).toUpperCase();
-  const treaFee = totalPrice * 0.1;
+  const treaFee = totalPrice * CUSTOMER_FEE_RATE;
   const total = totalPrice + treaFee;
   const dateStr = scheduledAt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   const category = serviceCategory.replace(/_/g, " ");
@@ -107,13 +108,19 @@ export async function sendInvoiceEmail(params: {
         </table>
         <div class="totals">
           <div class="totals-row"><span>Service price</span><span>$${totalPrice.toFixed(2)}</span></div>
-          <div class="totals-row"><span>Tarea fee (10%)</span><span>$${treaFee.toFixed(2)}</span></div>
+          <div class="totals-row"><span>Tarea fee (${Math.round(CUSTOMER_FEE_RATE * 100)}%)</span><span>$${treaFee.toFixed(2)}</span></div>
           <div class="totals-row total"><span>Total charged</span><span>$${total.toFixed(2)}</span></div>
         </div>
         <p class="thank-you">Thank you for using Tarea!</p>
         <p class="thank-sub">We hope you're satisfied with the service. Book again anytime.</p>
+        <div style="text-align:center;margin:16px 0">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://taptarea.com"}/customer/bookings/${bookingId}/invoice"
+            style="background:#38BDF8;color:#0F172A;font-weight:700;font-size:14px;padding:12px 28px;border-radius:12px;text-decoration:none;display:inline-block">
+            View Full Invoice →
+          </a>
+        </div>
       </div>
-      <div class="footer">© 2026 Tarea. You received this because you completed a booking on Tarea.</div>
+      <div class="footer">© 2026 Tarea US LLC · You received this because you completed a booking on Tarea.</div>
     </div>
   </body></html>`;
 

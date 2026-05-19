@@ -4,7 +4,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import { api } from "../../../constants/api";
 import { colors, fontSize, radius, spacing } from "../../../constants/theme";
 
@@ -72,7 +71,7 @@ export default function CustomerDashboard() {
             <Text style={styles.greeting}>Good day, {user?.name?.split(" ")[0] || "there"} 👋</Text>
             <Text style={styles.headerSub}>What do you need fixed today?</Text>
           </View>
-          <Pressable onPress={() => router.push("/(customer)/notifications")} style={styles.bell}>
+          <Pressable onPress={() => router.push("/notifications" as never)} style={styles.bell}>
             <Ionicons name="notifications" size={22} color={colors.white} />
           </Pressable>
         </View>
@@ -95,12 +94,12 @@ export default function CustomerDashboard() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={colors.skyBlue} />}
       >
         {/* Quick actions */}
-        <Animated.View entering={FadeInDown.delay(100)} style={styles.quickActions}>
+        <View style={styles.quickActions}>
           {[
-            { label: "Browse", icon: "search", color: colors.skyBlue, onPress: () => router.push("/(customer)/browse") },
+            { label: "Browse", icon: "search", color: colors.skyBlue, onPress: () => router.push("/(customer)/tabs/browse") },
             { label: "Post Job", icon: "add-circle", color: "#F59E0B", onPress: () => router.push("/post-job/index" as never) },
-            { label: "Bookings", icon: "calendar", color: "#A78BFA", onPress: () => router.push("/(customer)/bookings") },
-            { label: "Profile", icon: "person", color: "#10B981", onPress: () => router.push("/(customer)/profile") },
+            { label: "Bookings", icon: "calendar", color: "#A78BFA", onPress: () => router.push("/(customer)/tabs/bookings") },
+            { label: "Profile", icon: "person", color: "#10B981", onPress: () => router.push("/(customer)/tabs/profile") },
           ].map(({ label, icon, color, onPress }) => (
             <Pressable key={label} style={({ pressed }) => [styles.quickBtn, pressed && { opacity: 0.8 }]} onPress={onPress}>
               <View style={[styles.quickIcon, { backgroundColor: `${color}20`, borderColor: `${color}30` }]}>
@@ -109,13 +108,13 @@ export default function CustomerDashboard() {
               <Text style={styles.quickLabel}>{label}</Text>
             </Pressable>
           ))}
-        </Animated.View>
+        </View>
 
         {/* Recent bookings */}
-        <Animated.View entering={FadeInDown.delay(200)}>
+        <View>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Recent Bookings</Text>
-            <Pressable onPress={() => router.push("/(customer)/bookings")}>
+            <Pressable onPress={() => router.push("/(customer)/tabs/bookings")}>
               <Text style={styles.seeAll}>See all</Text>
             </Pressable>
           </View>
@@ -123,7 +122,7 @@ export default function CustomerDashboard() {
           {bookings.length === 0 ? (
             <View style={styles.emptyCard}>
               <Text style={styles.emptyText}>No bookings yet.</Text>
-              <Pressable style={styles.emptyBtn} onPress={() => router.push("/(customer)/browse")}>
+              <Pressable style={styles.emptyBtn} onPress={() => router.push("/(customer)/tabs/browse")}>
                 <Text style={styles.emptyBtnText}>Browse Services</Text>
               </Pressable>
             </View>
@@ -146,11 +145,11 @@ export default function CustomerDashboard() {
               ))}
             </View>
           )}
-        </Animated.View>
+        </View>
       </ScrollView>
 
       {/* FAB */}
-      <Pressable style={styles.fab} onPress={() => router.push("/(customer)/browse")}>
+      <Pressable style={styles.fab} onPress={() => router.push("/(customer)/tabs/browse")}>
         <LinearGradient colors={["#0284C7", "#38BDF8"]} style={styles.fabGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
           <Ionicons name="search" size={26} color={colors.ink} />
         </LinearGradient>

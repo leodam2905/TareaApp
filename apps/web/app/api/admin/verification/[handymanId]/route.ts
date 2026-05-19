@@ -20,7 +20,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { handymanId
 
   await prisma.handymanProfile.update({
     where: { id: params.handymanId },
-    data: { verificationStatus: decision === "approve" ? "approved" : "rejected" },
+    data: {
+      verificationStatus: decision === "approve" ? "approved" : "rejected",
+      // Manually approve background check while Certn API access is pending
+      ...(decision === "approve" && { backgroundCheckStatus: "PASSED" }),
+    },
   });
 
   if (decision === "approve") {

@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import { api } from "../../../constants/api";
 import { colors, fontSize, radius, spacing } from "../../../constants/theme";
 
@@ -59,7 +58,7 @@ export default function CustomerBookingsScreen() {
             </Pressable>
           </View>
         ) : bookings.map((b, i) => (
-          <Animated.View key={b.id} entering={FadeInDown.delay(i * 50)}>
+          <View key={b.id} entering={FadeInDown.delay(i * 50)}>
             <Pressable style={styles.card} onPress={() => router.push(`/booking/${b.id}` as never)}>
               <Text style={styles.icon}>{CATEGORY_ICONS[b.service.category] || "🛠️"}</Text>
               <View style={{ flex: 1 }}>
@@ -82,7 +81,7 @@ export default function CustomerBookingsScreen() {
                 )}
               </View>
             </Pressable>
-          </Animated.View>
+          </View>
         ))}
       </ScrollView>
     </View>

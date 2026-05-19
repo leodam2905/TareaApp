@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft, Loader2, MapPin, Calendar, DollarSign,
-  MessageCircle, SendHorizontal, User, CheckCircle2, XCircle, Star, CreditCard, ShieldCheck, ShieldAlert, Sparkles
+  MessageCircle, SendHorizontal, User, CheckCircle2, XCircle, Star, CreditCard, ShieldCheck, ShieldAlert, Sparkles, FileText, RefreshCw
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { formatCurrency, formatDate, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
@@ -78,6 +78,12 @@ export default function BookingDetailPage() {
   const [disputeStatement, setDisputeStatement] = useState("");
   const [disputeSubmitting, setDisputeSubmitting] = useState(false);
   const [disputeAnalysis, setDisputeAnalysis] = useState<{ summary: string; recommendation: string; priority: string } | null>(null);
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [rebooking, setRebooking] = useState(false);
+  const [rebookModalOpen, setRebookModalOpen] = useState(false);
+  const [rebookDate, setRebookDate] = useState("");
+  const [rebookTime, setRebookTime] = useState("09:00");
 
   const loadBooking = useCallback(async () => {
     const res = await fetch(`/api/bookings/${id}`);
@@ -182,22 +188,50 @@ export default function BookingDetailPage() {
     setDisputeSubmitting(false);
   };
 
-  const changeStatus = async (status: string) => {
-    if (status === "CANCELLED" && !confirm("Cancel this booking?")) return;
+  const changeStatus = async (status: string, reason?: string) => {
     setActing(true);
     const res = await fetch(`/api/bookings/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ status, cancelReason: reason }),
     });
     if (res.ok) {
       const updated = await res.json();
-      setBooking(prev => prev ? { ...prev, status: updated.status } : prev);
+      setBooking(prev => prev ? { ...prev, status: updated.status, cancelReason: reason ?? prev.cancelReason } : prev);
       toast.success(`Booking ${status.toLowerCase()}`);
     } else {
       toast.error("Action failed");
     }
     setActing(false);
+  };
+
+  const confirmCancel = async () => {
+    if (!cancelReason.trim()) { toast.error("Please provide a cancellation reason"); return; }
+    setCancelModalOpen(false);
+    await changeStatus("CANCELLED", cancelReason.trim());
+    setCancelReason("");
+  };
+
+  const confirmRebook = async () => {
+    if (!booking || !rebookDate) return;
+    const scheduledAt = new Date(`${rebookDate}T${rebookTime}`);
+    if (isNaN(scheduledAt.getTime())) { toast.error("Invalid date"); return; }
+    setRebooking(true);
+    setRebookModalOpen(false);
+    try {
+      const res = await fetch(`/api/bookings/${id}/repeat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scheduledAt: scheduledAt.toISOString() }),
+      });
+      if (!res.ok) throw new Error("Failed to rebook");
+      const newBooking = await res.json();
+      toast.success("New booking created!");
+      router.push(`/customer/bookings/${newBooking.id}`);
+    } catch {
+      toast.error("Rebook failed. Please try again.");
+      setRebooking(false);
+    }
   };
 
   if (loading) {
@@ -247,9 +281,17 @@ export default function BookingDetailPage() {
           </div>
           <div className="text-right">
             <p className="text-tarea-sky font-bold text-xl">{formatCurrency(booking.totalPrice)}</p>
-            {booking.isPaid
-              ? <span className="flex items-center gap-1 text-xs text-emerald-400 font-semibold mt-1 justify-end"><ShieldCheck className="w-3.5 h-3.5" /> Paid</span>
-              : <span className="text-xs text-amber-400 font-semibold mt-1 block">Awaiting payment</span>}
+            {booking.isPaid ? (
+              <div className="flex flex-col items-end gap-1 mt-1">
+                <span className="flex items-center gap-1 text-xs text-emerald-400 font-semibold"><ShieldCheck className="w-3.5 h-3.5" /> Paid</span>
+                <Link href={`/customer/bookings/${booking.id}/invoice`} target="_blank"
+                  className="flex items-center gap-1 text-xs text-slate-400 hover:text-tarea-sky transition-colors">
+                  <FileText className="w-3 h-3" /> Invoice
+                </Link>
+              </div>
+            ) : (
+              <span className="text-xs text-amber-400 font-semibold mt-1 block">Awaiting payment</span>
+            )}
           </div>
         </div>
 
@@ -309,10 +351,10 @@ export default function BookingDetailPage() {
         </button>
       )}
 
-      {(canCancel || (booking.status === "COMPLETED" && !booking.review)) && (
+      {(canCancel || booking.status === "COMPLETED") && (
         <div className="flex gap-3">
           {canCancel && (
-            <button onClick={() => changeStatus("CANCELLED")} disabled={acting}
+            <button onClick={() => setCancelModalOpen(true)} disabled={acting}
               className="flex items-center gap-2 px-4 py-2.5 border border-red-400/30 text-red-400 rounded-xl text-sm font-semibold hover:bg-red-400/10 transition-all disabled:opacity-50">
               {acting ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
               Cancel Booking
@@ -323,6 +365,16 @@ export default function BookingDetailPage() {
               className="flex items-center gap-2 px-4 py-2.5 bg-amber-400/10 border border-amber-400/30 text-amber-400 rounded-xl text-sm font-semibold hover:bg-amber-400/20 transition-all">
               <Star className="w-4 h-4" /> Leave a Review
             </Link>
+          )}
+          {booking.status === "COMPLETED" && (
+            <button
+              onClick={() => setRebookModalOpen(true)}
+              disabled={rebooking}
+              className="flex items-center gap-2 px-4 py-2.5 bg-tarea-sky/10 border border-tarea-sky/30 text-tarea-sky rounded-xl text-sm font-semibold hover:bg-tarea-sky/20 transition-all disabled:opacity-50"
+            >
+              {rebooking ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+              Rebook
+            </button>
           )}
         </div>
       )}
@@ -425,6 +477,139 @@ export default function BookingDetailPage() {
               </button>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Rebook modal */}
+      {rebookModalOpen && booking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-tarea-ink border border-white/10 rounded-2xl p-6 w-full max-w-md space-y-5 shadow-2xl">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-tarea-sky/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                <RefreshCw className="w-5 h-5 text-tarea-sky" />
+              </div>
+              <div>
+                <h2 className="text-white font-bold">Book Again</h2>
+                <p className="text-slate-400 text-sm">{booking.service.title} with {booking.handyman.name}</p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <label className="text-slate-300 text-sm font-medium">New date</label>
+                <input
+                  type="date"
+                  value={rebookDate}
+                  min={new Date().toISOString().split("T")[0]}
+                  onChange={e => setRebookDate(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-tarea-sky"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-slate-300 text-sm font-medium">Preferred time</label>
+                <select
+                  value={rebookTime}
+                  onChange={e => setRebookTime(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-tarea-sky"
+                >
+                  {[8,9,10,11,12,13,14,15,16,17,18,19].map(h => (
+                    <option key={h} value={`${String(h).padStart(2,"0")}:00`}>
+                      {h < 12 ? `${h}:00 AM` : h === 12 ? "12:00 PM" : `${h-12}:00 PM`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="bg-white/5 rounded-xl p-3 text-sm text-slate-400">
+              <p>Same address: <span className="text-white">{booking.address}, {booking.city}</span></p>
+              <p className="mt-1">Price: <span className="text-tarea-sky font-semibold">{formatCurrency(booking.totalPrice)}</span></p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setRebookModalOpen(false)}
+                className="flex-1 py-2.5 border border-white/10 text-slate-400 rounded-xl text-sm font-semibold hover:bg-white/5 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmRebook}
+                disabled={!rebookDate}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-tarea-sky text-tarea-ink rounded-xl text-sm font-bold hover:bg-sky-300 transition-all disabled:opacity-40"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Confirm Rebook
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel booking modal */}
+      {cancelModalOpen && booking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="bg-tarea-ink border border-white/10 rounded-2xl p-6 w-full max-w-md space-y-5 shadow-2xl">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                <XCircle className="w-5 h-5 text-red-400" />
+              </div>
+              <div>
+                <h2 className="text-white font-bold">Cancel Booking</h2>
+                <p className="text-slate-400 text-sm">This action cannot be undone</p>
+              </div>
+            </div>
+
+            {/* Fee warning */}
+            {booking.isPaid && (() => {
+              const hoursUntil = (new Date(booking.scheduledAt).getTime() - Date.now()) / (1000 * 60 * 60);
+              return hoursUntil < 24 ? (
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 space-y-1">
+                  <p className="text-amber-400 font-semibold text-sm">⚠ Late cancellation fee applies</p>
+                  <p className="text-amber-500/80 text-xs">
+                    Since you're cancelling within 24 hours of the scheduled time, a 50% cancellation fee applies.
+                    You'll receive a partial refund of {formatCurrency(booking.totalPrice * 1.15 * 0.5)} within 5–10 business days.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 space-y-1">
+                  <p className="text-emerald-400 font-semibold text-sm">✓ Full refund</p>
+                  <p className="text-emerald-600/80 text-xs">
+                    You'll receive a full refund of {formatCurrency(booking.totalPrice * 1.15)} within 5–10 business days.
+                  </p>
+                </div>
+              );
+            })()}
+
+            {/* Reason input */}
+            <div className="space-y-2">
+              <label className="text-slate-300 text-sm font-medium">Reason for cancellation</label>
+              <textarea
+                value={cancelReason}
+                onChange={e => setCancelReason(e.target.value)}
+                placeholder="Please tell us why you're cancelling…"
+                rows={3}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-red-400/50 resize-none"
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setCancelModalOpen(false); setCancelReason(""); }}
+                className="flex-1 py-2.5 border border-white/10 text-slate-400 rounded-xl text-sm font-semibold hover:bg-white/5 transition-all"
+              >
+                Keep Booking
+              </button>
+              <button
+                onClick={confirmCancel}
+                disabled={acting || !cancelReason.trim()}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl text-sm font-semibold hover:bg-red-500/30 transition-all disabled:opacity-40"
+              >
+                {acting ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
+                {acting ? "Cancelling…" : "Confirm Cancel"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

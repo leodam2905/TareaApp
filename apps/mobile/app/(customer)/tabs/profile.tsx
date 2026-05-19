@@ -90,7 +90,7 @@ export default function CustomerProfileScreen() {
       setAvatarUrl(data.url);
       Alert.alert("Photo updated!");
     } catch (e: unknown) {
-      Alert.alert("Upload failed", e instanceof Error ? e.message : "Please try again.");
+      Alert.alert("Upload failed", e instanceof Error ? e.message : String(e));
     }
     setUploading(false);
   };

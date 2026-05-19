@@ -130,7 +130,7 @@ export default function HandymanProfileScreen() {
       const formData = new FormData();
       formData.append("file", {
         uri: asset.uri,
-        type: asset.mimeType || "image/jpeg",
+        type: "image/jpeg",
         name: "avatar.jpg",
       } as never);
 
@@ -140,11 +140,11 @@ export default function HandymanProfileScreen() {
         body: formData,
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload failed");
+      if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
       setAvatarUrl(data.url);
       Alert.alert("Photo updated!");
     } catch (e: unknown) {
-      Alert.alert("Upload failed", e instanceof Error ? e.message : "Please try again.");
+      Alert.alert("Upload failed", e instanceof Error ? e.message : String(e));
     }
     setUploading(false);
   };
@@ -190,7 +190,7 @@ export default function HandymanProfileScreen() {
       setPortfolioPhotos(prev => [portfolioRes.data, ...prev]);
       Alert.alert("Photo added!");
     } catch (e: unknown) {
-      Alert.alert("Upload failed", e instanceof Error ? e.message : "Please try again.");
+      Alert.alert("Upload failed", e instanceof Error ? e.message : String(e));
     }
     setUploadingPhoto(false);
   };

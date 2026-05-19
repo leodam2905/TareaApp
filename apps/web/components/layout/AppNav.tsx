@@ -180,8 +180,8 @@ export default function AppNav({ role, userName }: NavProps) {
 
   return (
     <>
-      {/* ── Desktop sidebar (hidden on mobile) ── */}
-      <nav className="h-screen w-64 bg-tarea-ink border-r border-white/10 hidden lg:flex flex-col fixed left-0 top-0 z-40">
+      {/* ── Desktop sidebar (hidden on mobile, hidden when printing) ── */}
+      <nav className="h-screen w-64 bg-tarea-ink border-r border-white/10 hidden lg:flex flex-col fixed left-0 top-0 z-40 print:hidden">
         <div className="p-6 border-b border-white/10">
           <Link href="/"><Logo size={32} light /></Link>
           <div className="mt-4 flex items-center gap-3">
@@ -229,7 +229,7 @@ export default function AppNav({ role, userName }: NavProps) {
       </nav>
 
       {/* ── Mobile top bar ── */}
-      <div className="lg:hidden fixed top-0 inset-x-0 h-14 bg-tarea-ink border-b border-white/10 flex items-center justify-between px-4 z-40">
+      <div className="lg:hidden fixed top-0 inset-x-0 h-14 bg-tarea-ink border-b border-white/10 flex items-center justify-between px-4 z-40 print:hidden">
         <Link href="/"><Logo size={24} light /></Link>
         <div className="flex items-center gap-3">
           <div className="relative">

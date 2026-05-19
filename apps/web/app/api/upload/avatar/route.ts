@@ -17,16 +17,18 @@ export async function POST(req: NextRequest) {
   const file = formData.get("file") as File | null;
   if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
 
-  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-    return NextResponse.json({ error: "Only JPEG, PNG, or WebP allowed" }, { status: 400 });
+  const mimeType = file.type || "image/jpeg";
+  if (!mimeType.startsWith("image/")) {
+    return NextResponse.json({ error: "Only image files allowed" }, { status: 400 });
   }
-  if (file.size > 5 * 1024 * 1024) {
-    return NextResponse.json({ error: "File too large (max 5 MB)" }, { status: 400 });
+  if (file.size > 0 && file.size > 8 * 1024 * 1024) {
+    return NextResponse.json({ error: "File too large (max 8 MB)" }, { status: 400 });
   }
 
   const bytes = await file.arrayBuffer();
+  if (!bytes.byteLength) return NextResponse.json({ error: "Empty file received" }, { status: 400 });
   const base64 = Buffer.from(bytes).toString("base64");
-  const dataUri = `data:${file.type};base64,${base64}`;
+  const dataUri = `data:${mimeType};base64,${base64}`;
 
   const result = await cloudinary.uploader.upload(dataUri, {
     folder: "tarea/avatars",

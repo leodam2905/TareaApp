@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl, TextInput, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import { api } from "../../../constants/api";
 import { colors, fontSize, radius, spacing } from "../../../constants/theme";
 
@@ -77,7 +76,7 @@ export default function FindJobsScreen() {
         ) : jobs.map((job, i) => {
           const isExpanded = expanded === job.id;
           return (
-            <Animated.View key={job.id} entering={FadeInDown.delay(i * 50)}>
+            <View key={job.id} entering={FadeInDown.delay(i * 50)}>
               <View style={[styles.card, i === 0 && styles.bestCard]}>
                 {i === 0 && (
                   <View style={styles.bestBadge}><Text style={styles.bestBadgeText}>⭐ Best match</Text></View>
@@ -126,7 +125,7 @@ export default function FindJobsScreen() {
                   <Text style={styles.detailBtnText}>{isExpanded ? "Collapse" : "Apply"}</Text>
                 </Pressable>
               </View>
-            </Animated.View>
+            </View>
           );
         })}
       </ScrollView>

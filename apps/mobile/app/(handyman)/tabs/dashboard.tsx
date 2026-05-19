@@ -4,7 +4,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import { api } from "../../../constants/api";
 import { colors, fontSize, radius, spacing } from "../../../constants/theme";
 
@@ -78,7 +77,7 @@ export default function HandymanDashboard() {
             <Text style={styles.greeting}>Hey, {user?.name?.split(" ")[0] || "Pro"} 🔧</Text>
             <Text style={styles.headerSub}>Here's your job overview</Text>
           </View>
-          <Pressable style={styles.bell}>
+          <Pressable style={styles.bell} onPress={() => router.push("/notifications" as never)}>
             <Ionicons name="notifications" size={22} color={colors.white} />
           </Pressable>
         </View>
@@ -104,11 +103,11 @@ export default function HandymanDashboard() {
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scroll}>
         {/* Quick actions */}
-        <Animated.View entering={FadeInDown.delay(100)} style={styles.quickActions}>
+        <View style={styles.quickActions}>
           {[
-            { label: "Jobs", icon: "briefcase", color: colors.skyBlue, onPress: () => router.push("/(handyman)/jobs") },
-            { label: "Earnings", icon: "cash", color: "#10B981", onPress: () => router.push("/(handyman)/earnings") },
-            { label: "Profile", icon: "person", color: "#A78BFA", onPress: () => router.push("/(handyman)/profile") },
+            { label: "Jobs", icon: "briefcase", color: colors.skyBlue, onPress: () => router.push("/(handyman)/tabs/my-jobs") },
+            { label: "Earnings", icon: "cash", color: "#10B981", onPress: () => router.push("/(handyman)/tabs/earnings") },
+            { label: "Profile", icon: "person", color: "#A78BFA", onPress: () => router.push("/(handyman)/tabs/profile") },
           ].map(({ label, icon, color, onPress }) => (
             <Pressable key={label} style={({ pressed }) => [styles.quickBtn, pressed && { opacity: 0.8 }]} onPress={onPress}>
               <View style={[styles.quickIcon, { backgroundColor: `${color}20`, borderColor: `${color}30` }]}>
@@ -117,11 +116,11 @@ export default function HandymanDashboard() {
               <Text style={styles.quickLabel}>{label}</Text>
             </Pressable>
           ))}
-        </Animated.View>
+        </View>
 
         {/* Onboarding checklist */}
         {checklist && !(checklist.hasStripe && checklist.hasService && checklist.hasPortfolio) && (
-          <Animated.View entering={FadeInDown.delay(150)} style={styles.checklistCard}>
+          <View style={styles.checklistCard}>
             <Text style={styles.checklistTitle}>Get started</Text>
             <Text style={styles.checklistSub}>Complete these steps to attract more customers</Text>
             {[
@@ -137,14 +136,14 @@ export default function HandymanDashboard() {
                 {!done && <Ionicons name="chevron-forward" size={14} color={colors.inkSubtle} />}
               </Pressable>
             ))}
-          </Animated.View>
+          </View>
         )}
 
         {/* Job requests */}
-        <Animated.View entering={FadeInDown.delay(200)}>
+        <View>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Job Requests</Text>
-            <Pressable onPress={() => router.push("/(handyman)/jobs")}>
+            <Pressable onPress={() => router.push("/(handyman)/tabs/my-jobs")}>
               <Text style={styles.seeAll}>Manage all</Text>
             </Pressable>
           </View>
@@ -173,11 +172,11 @@ export default function HandymanDashboard() {
               ))}
             </View>
           )}
-        </Animated.View>
+        </View>
       </ScrollView>
 
       {/* FAB — add service */}
-      <Pressable style={styles.fab}>
+      <Pressable style={styles.fab} onPress={() => router.push("/(handyman)/tabs/services")}>
         <LinearGradient colors={["#1E3A8A", "#38BDF8"]} style={styles.fabGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
           <Ionicons name="add" size={30} color={colors.white} />
         </LinearGradient>

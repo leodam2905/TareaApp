@@ -8,6 +8,7 @@ import { formatCurrency } from "@/lib/utils";
 type Handyman = {
   id: string; rating: number; totalJobs: number; totalEarnings: number;
   serviceRadius: number; verificationStatus: string; verificationDocUrl: string | null;
+  backgroundCheckStatus: string | null;
   user: { name: string; email: string; isVerified: boolean; stripeAccountStatus: string | null };
 };
 
@@ -71,7 +72,7 @@ export default function AdminHandymenPage() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/10">
-              {["Name / Email", "Rating", "Jobs", "Earnings", "Radius", "Verification", "Stripe", "Actions"].map(h => (
+              {["Name / Email", "Rating", "Jobs", "Earnings", "Radius", "Verification", "In Search", "Stripe", "Actions"].map(h => (
                 <th key={h} className="text-left text-slate-400 text-xs font-semibold uppercase tracking-wider px-4 py-4">{h}</th>
               ))}
             </tr>
@@ -112,6 +113,13 @@ export default function AdminHandymenPage() {
                     <span className="badge-red">Rejected</span>
                   ) : (
                     <span className="text-slate-500 text-xs">None</span>
+                  )}
+                </td>
+                <td className="px-4 py-4">
+                  {h.backgroundCheckStatus === "PASSED" ? (
+                    <span className="badge-green">✓ Live</span>
+                  ) : (
+                    <span className="badge-red">Not Live</span>
                   )}
                 </td>
                 <td className="px-4 py-4">
