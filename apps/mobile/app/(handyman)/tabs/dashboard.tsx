@@ -53,15 +53,16 @@ export default function HandymanDashboard() {
 
         const hasIca = icaRes.data?.signed === true;
         const bgStatus = bgRes.data?.status ?? "NONE";
-        const hasBackgroundCheck = ["PAID", "IN_PROGRESS", "PASSED", "DEFERRED"].includes(bgStatus);
+        const hasBackgroundCheck = ["PASSED"].includes(bgStatus);
 
         // Gate: redirect to ICA if not signed
         if (!hasIca) {
           router.replace("/(handyman)/ica" as never);
           return;
         }
-        // Gate: redirect to background check if not done
-        if (!hasBackgroundCheck) {
+        // Gate: redirect to background check screen only if never paid
+        const bgPending = ["PAID", "IN_PROGRESS"].includes(bgStatus);
+        if (!hasBackgroundCheck && !bgPending) {
           router.replace("/(handyman)/background-check" as never);
           return;
         }
