@@ -22,6 +22,8 @@ interface Booking {
 }
 
 interface Checklist {
+  hasIca: boolean;
+  hasBackgroundCheck: boolean;
   hasStripe: boolean;
   hasService: boolean;
   hasPortfolio: boolean;
@@ -37,16 +39,36 @@ export default function HandymanDashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [userStr, res, stripeRes, servicesRes, portfolioRes] = await Promise.all([
+        const [userStr, res, icaRes, bgRes, stripeRes, servicesRes, portfolioRes] = await Promise.all([
           SecureStore.getItemAsync("tarea_user"),
           api.get("/bookings"),
+          api.get("/handyman/ica").catch(() => ({ data: { signed: false } })),
+          api.get("/handyman/background-check").catch(() => ({ data: { status: "NONE" } })),
           api.get("/stripe/connect").catch(() => ({ data: {} })),
           api.get("/services?mine=1").catch(() => ({ data: { services: [] } })),
           api.get("/portfolio").catch(() => ({ data: [] })),
         ]);
         if (userStr) setUser(JSON.parse(userStr));
         setBookings(res.data.slice(0, 6));
+
+        const hasIca = icaRes.data?.signed === true;
+        const bgStatus = bgRes.data?.status ?? "NONE";
+        const hasBackgroundCheck = ["PAID", "IN_PROGRESS", "PASSED", "DEFERRED"].includes(bgStatus);
+
+        // Gate: redirect to ICA if not signed
+        if (!hasIca) {
+          router.replace("/(handyman)/ica" as never);
+          return;
+        }
+        // Gate: redirect to background check if not done
+        if (!hasBackgroundCheck) {
+          router.replace("/(handyman)/background-check" as never);
+          return;
+        }
+
         setChecklist({
+          hasIca,
+          hasBackgroundCheck,
           hasStripe: stripeRes.data?.status === "active",
           hasService: (servicesRes.data?.services?.length ?? servicesRes.data?.length ?? 0) > 0,
           hasPortfolio: (portfolioRes.data?.length ?? 0) > 0,
@@ -119,11 +141,13 @@ export default function HandymanDashboard() {
         </View>
 
         {/* Onboarding checklist */}
-        {checklist && !(checklist.hasStripe && checklist.hasService && checklist.hasPortfolio) && (
+        {checklist && !(checklist.hasIca && checklist.hasBackgroundCheck && checklist.hasStripe && checklist.hasService && checklist.hasPortfolio) && (
           <View style={styles.checklistCard}>
             <Text style={styles.checklistTitle}>Get started</Text>
             <Text style={styles.checklistSub}>Complete these steps to attract more customers</Text>
             {[
+              { label: "Sign contractor agreement", done: checklist.hasIca, onPress: () => router.push("/(handyman)/ica" as never) },
+              { label: "Complete background check", done: checklist.hasBackgroundCheck, onPress: () => router.push("/(handyman)/background-check" as never) },
               { label: "Connect Stripe to get paid", done: checklist.hasStripe, onPress: () => router.push("/(handyman)/tabs/profile" as never) },
               { label: "Add your first service", done: checklist.hasService, onPress: () => router.push("/(handyman)/tabs/services" as never) },
               { label: "Upload a portfolio photo", done: checklist.hasPortfolio, onPress: () => router.push("/(handyman)/tabs/profile" as never) },
