@@ -10,9 +10,9 @@ export default function HandymanTabsLayout() {
         tabBarStyle: {
           backgroundColor: "#1E293B",
           borderTopColor: "rgba(255,255,255,0.08)",
-          paddingBottom: 8,
-          paddingTop: 4,
-          height: 64,
+          paddingBottom: 0,
+          paddingTop: 6,
+          height: 54,
         },
         tabBarActiveTintColor: colors.skyBlue,
         tabBarInactiveTintColor: colors.inkSubtle,
