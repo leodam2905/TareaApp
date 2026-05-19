@@ -37,7 +37,8 @@
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.VIBRATE",
-        "android.permission.RECEIVE_BOOT_COMPLETED"
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -46,7 +47,8 @@
     "plugins": [
       "expo-router",
       "expo-secure-store",
-[
+      "expo-video",
+      [
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Tarea uses your location to show nearby handymen and share your position with booked customers."
@@ -62,11 +64,13 @@
     ],
     "scheme": "tarea",
     "extra": {
-      "eas": {
-        "projectId": "tarea-app"
-      },
       "privacyPolicyUrl": "https://taptarea.com/privacy",
-      "termsOfServiceUrl": "https://taptarea.com/terms"
-    }
+      "termsOfServiceUrl": "https://taptarea.com/terms",
+      "router": {},
+      "eas": {
+        "projectId": "3a6f73e3-7b6a-4a56-ae3d-cfbe407bd26b"
+      }
+    },
+    "owner": "leodam"
   }
 }
