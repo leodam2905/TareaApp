@@ -1,7 +1,8 @@
 // Tarea - Handyman App Database Schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -136,6 +137,9 @@ model HandymanProfile {
   icaSignedIp           String?
   idFrontUrl            String?
   idBackUrl             String?
+  licenseNumber         String?
+  licenseDocUrl         String?
+  insuranceDocUrl       String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -208,6 +212,8 @@ model Booking {
   disputedAt       DateTime?
   resolutionNote   String?
   resolvedAt       DateTime?
+  materialsEstimate Float         @default(0)
+  jobStartedAt     DateTime?
   handymanPaidOut  Boolean       @default(false)
   paidOutAt        DateTime?
   createdAt        DateTime      @default(now())
@@ -220,8 +226,37 @@ model Booking {
   review    Review?
   phases    BookingPhase[]
   messages  Message[]
+  tips      Tip[]
+  extensions BookingExtension[]
 
   @@map("bookings")
+}
+
+model BookingExtension {
+  id                String    @id @default(cuid())
+  bookingId         String
+  additionalMinutes Int
+  extraAmount       Float     @default(0)
+  reason            String?
+  status            String    @default("PENDING") // PENDING, APPROVED, DECLINED
+  createdAt         DateTime  @default(now())
+  respondedAt       DateTime?
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@map("booking_extensions")
+}
+
+model Tip {
+  id               String   @id @default(cuid())
+  bookingId        String
+  amount           Float
+  stripeSessionId  String?
+  createdAt        DateTime @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@map("tips")
 }
 
 model BookingPhase {
@@ -283,9 +318,10 @@ model JobApplication {
   jobRequestId  String
   handymanId    String
   userId        String
-  message       String?
-  proposedPrice Float?
-  status        String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  message           String?
+  proposedPrice     Float?
+  materialsEstimate Float?
+  status            String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
   createdAt     DateTime @default(now())
 
   jobRequest JobRequest      @relation(fields: [jobRequestId], references: [id], onDelete: Cascade)
