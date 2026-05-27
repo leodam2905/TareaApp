@@ -31,8 +31,9 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
+            -f apps/web/Dockerfile \
             -t us-central1-docker.pkg.dev/splendid-drake-497611-h6/cloud-run-source-deploy/tarea-web:${{ github.sha }} \
-            ./apps/web
+            apps/web
 
       - name: Push Docker image
         run: |
