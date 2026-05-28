@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { Star, MapPin, Clock, Zap, ArrowLeft, Loader2, CheckCircle2, Calendar, Tag, X, ShieldCheck } from "lucide-react";
+import { Star, MapPin, Clock, Zap, ArrowLeft, Loader2, CheckCircle2, Calendar, Tag, X, ShieldCheck, Camera } from "lucide-react";
 import toast from "react-hot-toast";
-import { formatCurrency, SERVICE_CATEGORY_LABELS, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
+import { formatCurrency, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
+import CategoryIcon from "@/components/ui/CategoryIcon";
 import Link from "next/link";
 
 type HandymanDetail = {
@@ -43,6 +44,35 @@ function ProfileInner() {
   const category = searchParams.get("category") || "";
   const prefillDate = searchParams.get("date") || "";
   const prefillCity = searchParams.get("city") || "";
+  const prefillNotes = searchParams.get("notes") || "";
+  const prefillPhoto = searchParams.get("photo") || "";
+
+  const [taskPhotoUrl, setTaskPhotoUrl] = useState(prefillPhoto);
+  const [taskPhotoPreview, setTaskPhotoPreview] = useState(prefillPhoto);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadPhoto = async (file: File) => {
+    setUploadingPhoto(true);
+    setTaskPhotoPreview(URL.createObjectURL(file));
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("folder", "tarea/job-requests");
+      const res = await fetch("/api/upload/image", { method: "POST", body: fd });
+      if (res.ok) {
+        const { url } = await res.json();
+        setTaskPhotoUrl(url);
+      } else {
+        toast.error("Photo upload failed");
+        setTaskPhotoPreview(taskPhotoUrl);
+      }
+    } catch {
+      toast.error("Photo upload failed");
+      setTaskPhotoPreview(taskPhotoUrl);
+    }
+    setUploadingPhoto(false);
+  };
 
   const [handyman, setHandyman] = useState<HandymanDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,7 +85,7 @@ function ProfileInner() {
     scheduledAt: prefillDate,
     address: "",
     city: prefillCity,
-    notes: "",
+    notes: prefillNotes,
     totalPrice: "",
     promoCode: "",
   });
@@ -146,7 +176,7 @@ function ProfileInner() {
         scheduledAt: new Date(form.scheduledAt).toISOString(),
         address: form.address,
         city: form.city,
-        notes: form.notes,
+        notes: [form.notes.trim(), taskPhotoUrl ? `Photo: ${taskPhotoUrl}` : ""].filter(Boolean).join("\n\n"),
         totalPrice: parseFloat(form.totalPrice),
         ...(form.promoCode.trim() && { promoCode: form.promoCode.trim().toUpperCase() }),
       }),
@@ -258,7 +288,9 @@ function ProfileInner() {
           {profile.services.map(s => (
             <div key={s.id}
               className={`flex items-center gap-3 p-4 rounded-xl border transition-all ${s.category === category ? "border-tarea-sky/40 bg-tarea-sky/10" : "border-white/10 bg-white/5"}`}>
-              <span className="text-xl">{SERVICE_CATEGORY_ICONS[s.category] || "🛠️"}</span>
+              <div className="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center flex-shrink-0">
+                <CategoryIcon catKey={s.category} className="w-5 h-5" />
+              </div>
               <div className="flex-1">
                 <p className="text-white text-sm font-semibold">{s.title}</p>
                 <p className="text-slate-500 text-xs">{SERVICE_CATEGORY_LABELS[s.category]}</p>
@@ -341,7 +373,7 @@ function ProfileInner() {
 
         {service && (
           <div className="flex items-center gap-3 p-3 bg-tarea-sky/10 border border-tarea-sky/20 rounded-xl text-sm">
-            <span>{SERVICE_CATEGORY_ICONS[service.category] || "🛠️"}</span>
+            <CategoryIcon catKey={service.category} active className="w-5 h-5 flex-shrink-0" />
             <span className="text-white font-medium">{service.title}</span>
             <span className="ml-auto text-tarea-sky font-bold">
               {formatCurrency(service.minPrice)}–{formatCurrency(service.maxPrice)}
@@ -418,6 +450,59 @@ function ProfileInner() {
         </div>
 
         <div>
+          <label className="text-slate-400 text-sm font-medium block mb-2">
+            Task photo <span className="text-slate-500 font-normal">(optional)</span>
+          </label>
+          <input
+            ref={photoInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={e => { const f = e.target.files?.[0]; if (f) uploadPhoto(f); e.target.value = ""; }}
+          />
+          {taskPhotoPreview ? (
+            <div className="flex items-center gap-3">
+              <div className="relative group flex-shrink-0">
+                <img src={taskPhotoPreview} alt="Task" className="w-20 h-20 rounded-xl object-cover border border-white/20" />
+                {uploadingPhoto && (
+                  <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center">
+                    <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => { setTaskPhotoPreview(""); setTaskPhotoUrl(""); }}
+                  className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X className="w-3 h-3 text-white" />
+                </button>
+              </div>
+              <div>
+                {uploadingPhoto
+                  ? <p className="text-slate-400 text-xs">Uploading…</p>
+                  : <p className="text-emerald-400 text-xs font-medium">✓ Photo attached</p>
+                }
+                <button
+                  type="button"
+                  onClick={() => photoInputRef.current?.click()}
+                  className="text-tarea-sky text-xs mt-1 hover:underline"
+                >
+                  Change photo
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => photoInputRef.current?.click()}
+              className="flex items-center gap-2 px-4 py-2.5 border border-dashed border-white/20 rounded-xl text-slate-400 hover:border-tarea-sky/50 hover:text-tarea-sky transition-all text-sm"
+            >
+              <Camera className="w-4 h-4" /> Add a photo
+            </button>
+          )}
+        </div>
+
+        <div>
           <label className="text-slate-400 text-sm font-medium block mb-1.5">
             <Tag className="w-3.5 h-3.5 inline mr-1 mb-0.5" />
             Promo Code (optional)
@@ -487,11 +572,11 @@ function ProfileInner() {
 
         <button
           onClick={submitBooking}
-          disabled={booking}
+          disabled={booking || uploadingPhoto}
           className="w-full flex items-center justify-center gap-2 bg-tarea-sky text-tarea-ink font-bold py-3.5 rounded-xl hover:bg-sky-300 transition-all disabled:opacity-50"
         >
-          {booking && <Loader2 className="w-4 h-4 animate-spin" />}
-          {booking ? "Sending request…" : "Request Booking"}
+          {(booking || uploadingPhoto) && <Loader2 className="w-4 h-4 animate-spin" />}
+          {uploadingPhoto ? "Uploading photo…" : booking ? "Sending request…" : "Request Booking"}
         </button>
       </div>
     </div>

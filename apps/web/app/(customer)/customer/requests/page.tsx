@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { Star, MapPin, Clock, CheckCircle2, XCircle, Loader2, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import { formatCurrency, formatDate, SERVICE_CATEGORY_ICONS, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
+import { formatCurrency, formatDate, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
+import CategoryIcon from "@/components/ui/CategoryIcon";
 import { useT } from "@/contexts/LanguageContext";
 
 type Application = {
@@ -109,7 +110,9 @@ export default function CustomerRequestsPage() {
               {/* Job header */}
               <div className="p-5 flex items-start justify-between gap-3">
                 <div className="flex gap-3">
-                  <span className="text-2xl mt-0.5">{SERVICE_CATEGORY_ICONS[r.category] || "🛠️"}</span>
+                  <div className="w-10 h-10 bg-orange-50 border border-orange-100 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <CategoryIcon catKey={r.category} className="w-6 h-6" />
+                  </div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-gray-900 font-bold">{r.title}</p>

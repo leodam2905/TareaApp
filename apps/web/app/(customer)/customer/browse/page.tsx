@@ -1,26 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Calendar, ChevronRight, Star, Clock, Zap, ArrowLeft, Loader2, List, Map, ShieldCheck, Building2 } from "lucide-react";
-import { SERVICE_CATEGORY_LABELS, SERVICE_CATEGORY_ICONS, formatCurrency } from "@/lib/utils";
+import { MapPin, Calendar, ChevronRight, Star, Clock, Zap, ArrowLeft, Loader2, List, Map, ShieldCheck, Building2, Camera, X } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
+import CategoryIcon from "@/components/ui/CategoryIcon";
 
 const HandymenMap = dynamic(() => import("@/components/ui/HandymenMap"), { ssr: false });
 
 const CATEGORIES = [
-  { key: "PLUMBING",         emoji: "🔧", label: "Plumbing",         desc: "Pipes, leaks, faucets" },
-  { key: "ELECTRICAL",       emoji: "⚡", label: "Electrical",       desc: "Wiring, outlets, lighting" },
-  { key: "CARPENTRY",        emoji: "🔨", label: "Carpentry",        desc: "Furniture, doors, framing" },
-  { key: "PAINTING",         emoji: "🎨", label: "Painting",         desc: "Interior & exterior" },
-  { key: "CLEANING",         emoji: "🧹", label: "Cleaning",         desc: "Deep clean, move-in/out" },
-  { key: "HVAC",             emoji: "❄️", label: "HVAC",             desc: "AC, heating, ventilation" },
-  { key: "ROOFING",          emoji: "🏠", label: "Roofing",          desc: "Repairs, gutters" },
-  { key: "LANDSCAPING",      emoji: "🌿", label: "Landscaping",      desc: "Lawn, trimming, planting" },
-  { key: "MOVING",           emoji: "📦", label: "Moving",           desc: "Packing, hauling" },
-  { key: "APPLIANCE_REPAIR", emoji: "🔌", label: "Appliance Repair", desc: "Washer, fridge, dryer" },
-  { key: "GENERAL",          emoji: "🛠️", label: "General",          desc: "Odd jobs & fixes" },
+  { key: "PLUMBING",         label: "Plumbing",         desc: "Pipes, leaks, faucets",       emoji: "🔧" },
+  { key: "ELECTRICAL",       label: "Electrical",       desc: "Wiring, outlets, lighting",    emoji: "⚡" },
+  { key: "CARPENTRY",        label: "Carpentry",        desc: "Furniture, doors, framing",    emoji: "🔨" },
+  { key: "PAINTING",         label: "Painting",         desc: "Interior & exterior",          emoji: "🎨" },
+  { key: "CLEANING",         label: "Cleaning",         desc: "Deep clean, move-in/out",      emoji: "🧹" },
+  { key: "HVAC",             label: "HVAC",             desc: "AC, heating, ventilation",     emoji: "❄️" },
+  { key: "ROOFING",          label: "Roofing",          desc: "Repairs, gutters",             emoji: "🏠" },
+  { key: "LANDSCAPING",      label: "Landscaping",      desc: "Lawn, trimming, planting",     emoji: "🌿" },
+  { key: "MOVING",           label: "Moving",           desc: "Packing, hauling",             emoji: "📦" },
+  { key: "APPLIANCE_REPAIR", label: "Appliances",       desc: "Washer, fridge, dryer",        emoji: "🔌" },
+  { key: "GENERAL",          label: "General",          desc: "Odd jobs & fixes",             emoji: "🛠️" },
 ];
 
 type Handyman = {
@@ -68,6 +69,26 @@ export default function BrowsePage() {
 
   const TIME_SLOTS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
   const fmtHour = (h: number) => h < 12 ? `${h} AM` : h === 12 ? "12 PM" : `${h - 12} PM`;
+  const [taskDesc, setTaskDesc] = useState("");
+  const [taskPhotoUrl, setTaskPhotoUrl] = useState<string | null>(null);
+  const [taskPhotoPreview, setTaskPhotoPreview] = useState<string | null>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoUpload = async (file: File) => {
+    setUploadingPhoto(true);
+    setTaskPhotoPreview(URL.createObjectURL(file));
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "tarea/job-requests");
+      const res = await fetch("/api/upload/image", { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok) setTaskPhotoUrl(data.url);
+    } catch { /* ignore */ }
+    setUploadingPhoto(false);
+  };
+
   const [handymen, setHandymen] = useState<Handyman[]>([]);
   const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
@@ -134,20 +155,43 @@ export default function BrowsePage() {
         {/* Step 1: Category */}
         {step === 1 && (
           <motion.div key="step1" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}>
-            <p className="text-slate-400 text-sm mb-4">What do you need help with?</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {CATEGORIES.map(c => (
-                <button
-                  key={c.key}
-                  onClick={() => { setCategory(c.key); setStep(2); }}
-                  className="group p-4 bg-white/5 border border-white/10 rounded-2xl hover:border-tarea-sky/50 hover:bg-tarea-sky/5 transition-all text-left"
-                >
-                  <span className="text-3xl mb-2 block">{c.emoji}</span>
-                  <p className="text-white font-semibold text-sm group-hover:text-tarea-sky transition-colors">{c.label}</p>
-                  <p className="text-slate-500 text-xs mt-0.5">{c.desc}</p>
-                </button>
-              ))}
+            <p className="text-slate-400 text-sm mb-5">What do you need help with?</p>
+            <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide -mx-1 px-1">
+              {CATEGORIES.map(c => {
+                const active = category === c.key;
+                return (
+                  <button
+                    key={c.key}
+                    onClick={() => { setCategory(c.key); setStep(2); }}
+                    className="flex flex-col items-center gap-2 flex-shrink-0 group"
+                  >
+                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all border ${
+                      active
+                        ? "bg-sky-500/15 border-sky-400/40"
+                        : "bg-white/5 border-white/10 hover:bg-sky-500/10 hover:border-sky-400/30"
+                    }`}>
+                      <CategoryIcon catKey={c.key} active={active} />
+                    </div>
+                    <span className={`text-xs font-semibold text-center leading-tight w-16 transition-colors ${
+                      active ? "text-tarea-sky" : "text-slate-400 group-hover:text-white"
+                    }`}>
+                      {c.label}
+                    </span>
+                    {active && <div className="w-4 h-0.5 bg-tarea-sky rounded-full" />}
+                  </button>
+                );
+              })}
             </div>
+            {category && (
+              <div className="mt-5">
+                <button
+                  onClick={() => setStep(2)}
+                  className="w-full flex items-center justify-center gap-2 bg-tarea-sky text-tarea-ink font-bold py-3.5 rounded-xl hover:bg-sky-300 transition-all"
+                >
+                  Continue with {CATEGORIES.find(c => c.key === category)?.label} →
+                </button>
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -217,9 +261,58 @@ export default function BrowsePage() {
                 />
               </div>
 
+              {/* Task description + photo */}
+              <div>
+                <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 mb-2">
+                  <span className="text-base">📋</span> Describe your task <span className="text-slate-500 font-normal">(optional)</span>
+                </label>
+                <textarea
+                  value={taskDesc}
+                  onChange={e => setTaskDesc(e.target.value)}
+                  placeholder="e.g. Fix a leaky pipe under the kitchen sink, broken handle on the main shutoff valve…"
+                  rows={3}
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-tarea-sky resize-none"
+                />
+                <div className="mt-2 flex items-center gap-3">
+                  <input
+                    ref={photoInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={e => { const f = e.target.files?.[0]; if (f) handlePhotoUpload(f); }}
+                  />
+                  {taskPhotoPreview ? (
+                    <div className="relative group">
+                      <img src={taskPhotoPreview} alt="Task photo" className="w-20 h-20 object-cover rounded-xl border border-white/20" />
+                      {uploadingPhoto && (
+                        <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center">
+                          <Loader2 className="w-4 h-4 animate-spin text-white" />
+                        </div>
+                      )}
+                      <button
+                        onClick={() => { setTaskPhotoPreview(null); setTaskPhotoUrl(null); if (photoInputRef.current) photoInputRef.current.value = ""; }}
+                        className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="w-3 h-3 text-white" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => photoInputRef.current?.click()}
+                      className="flex items-center gap-2 px-4 py-2 border border-dashed border-white/20 rounded-xl text-slate-400 hover:border-tarea-sky/50 hover:text-tarea-sky transition-all text-sm"
+                    >
+                      <Camera className="w-4 h-4" /> Add a photo
+                    </button>
+                  )}
+                  {taskPhotoUrl && !uploadingPhoto && (
+                    <span className="text-xs text-emerald-400 flex items-center gap-1">✓ Photo uploaded</span>
+                  )}
+                </div>
+              </div>
+
               <button
                 onClick={search}
-                disabled={loading || !date || selectedHour === null}
+                disabled={loading || !date || selectedHour === null || uploadingPhoto}
                 className="w-full flex items-center justify-center gap-2 bg-tarea-sky text-tarea-ink font-bold py-3.5 rounded-xl hover:bg-sky-300 transition-all disabled:opacity-50"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
@@ -282,7 +375,7 @@ export default function BrowsePage() {
                 onSelect={(id) => {
                   const h = handymen.find(x => x.id === id);
                   if (!h) return;
-                  const qs = new URLSearchParams({ category, ...(date && { date }), ...(city && { city }) });
+                  const qs = new URLSearchParams({ category, ...(date && { date }), ...(city && { city }), ...(taskDesc && { notes: taskDesc }), ...(taskPhotoUrl && { photo: taskPhotoUrl }) });
                   router.push(`/customer/handymen/${h.userId}?${qs}`);
                 }}
               />
@@ -292,7 +385,7 @@ export default function BrowsePage() {
                   <motion.div key={h.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                     <button
                       onClick={() => {
-                        const qs = new URLSearchParams({ category, ...(date && { date }), ...(city && { city }) });
+                        const qs = new URLSearchParams({ category, ...(date && { date }), ...(city && { city }), ...(taskDesc && { notes: taskDesc }), ...(taskPhotoUrl && { photo: taskPhotoUrl }) });
                         router.push(`/customer/handymen/${h.userId}?${qs}`);
                       }}
                       className="w-full text-left p-5 bg-white/5 border border-white/10 rounded-2xl hover:border-tarea-sky/40 hover:bg-white/10 transition-all group"

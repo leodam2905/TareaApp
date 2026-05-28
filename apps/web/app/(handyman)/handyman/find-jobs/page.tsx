@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapPin, Clock, DollarSign, Loader2, Send, ChevronDown, ChevronUp, Zap, Camera, ShieldAlert } from "lucide-react";
+import { MapPin, Clock, DollarSign, Loader2, Send, ChevronDown, ChevronUp, Zap, CheckCircle2, Lock, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { formatCurrency, formatDate, SERVICE_CATEGORY_ICONS, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
+import { formatCurrency, formatDate, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
 import { useT } from "@/contexts/LanguageContext";
+import CategoryIcon from "@/components/ui/CategoryIcon";
 
 type JobRequest = {
   id: string;
@@ -25,6 +26,32 @@ type JobRequest = {
   customer: { name: string; city: string | null; avatarUrl: string | null };
   applications: { id: string }[];
 };
+
+type Checklist = {
+  ica: boolean;
+  profile: boolean;
+  services: boolean;
+  availability: boolean;
+  backgroundCheck: boolean;
+  stripe: boolean;
+};
+
+type Step = {
+  key: keyof Checklist;
+  label: string;
+  desc: string;
+  href: string;
+  requires: keyof Checklist | null;
+};
+
+const STEPS: Step[] = [
+  { key: "ica",             label: "Sign Contractor Agreement", desc: "Read and e-sign the Independent Contractor Agreement.",                     href: "/handyman/onboarding",     requires: null },
+  { key: "profile",         label: "Complete Your Profile",      desc: "Add a profile photo, bio, and upload your government ID.",                   href: "/handyman/profile",        requires: "ica" },
+  { key: "services",        label: "Add Your Services",           desc: "Select the services you offer with pricing and estimated duration.",          href: "/handyman/onboarding",     requires: "profile" },
+  { key: "availability",    label: "Set Your Availability",       desc: "Choose the days and hours you're open to taking bookings.",                  href: "/handyman/schedule",       requires: "services" },
+  { key: "backgroundCheck", label: "Complete Background Check",   desc: "One-time $29.99 check — required before you can receive job requests.",      href: "/handyman/onboarding",     requires: "availability" },
+  { key: "stripe",          label: "Connect Stripe to Get Paid",  desc: "Link your bank account to receive payouts for completed jobs.",              href: "/handyman/payout-methods", requires: "backgroundCheck" },
+];
 
 function timeAgo(dateStr: string) {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 60000);
@@ -97,30 +124,106 @@ function ApplyForm({ jobId, onApplied }: { jobId: string; onApplied: () => void 
   );
 }
 
+function SetupChecklist({ checklist }: { checklist: Checklist }) {
+  const completed = Object.values(checklist).filter(Boolean).length;
+  const total = STEPS.length;
+  const pct = Math.round((completed / total) * 100);
+
+  return (
+    <div className="space-y-4">
+      {/* Progress */}
+      <div className="bg-white border border-orange-100 rounded-2xl p-5 shadow-sm">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <p className="font-bold text-gray-900">Complete your setup to browse jobs</p>
+            <p className="text-gray-500 text-sm mt-0.5">{completed} of {total} steps done</p>
+          </div>
+          <span className="text-2xl font-black text-gray-900">{completed}<span className="text-gray-400 text-lg font-normal">/{total}</span></span>
+        </div>
+        <div className="w-full bg-gray-100 rounded-full h-2.5">
+          <div
+            className="h-2.5 rounded-full transition-all duration-700"
+            style={{ width: `${pct}%`, background: pct === 100 ? "#10B981" : "#F97316" }}
+          />
+        </div>
+      </div>
+
+      {/* Steps */}
+      <div className="space-y-2">
+        {STEPS.map((step, index) => {
+          const done = checklist[step.key];
+          const locked = step.requires !== null && !checklist[step.requires];
+          return (
+            <div
+              key={step.key}
+              className={`flex items-center gap-4 p-4 rounded-2xl border transition-all ${
+                done    ? "bg-emerald-50 border-emerald-200" :
+                locked  ? "bg-gray-50 border-gray-100 opacity-50" :
+                          "bg-white border-orange-200 shadow-sm"
+              }`}
+            >
+              {/* Step number / icon */}
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold ${
+                done   ? "bg-emerald-500 text-white" :
+                locked ? "bg-gray-200 text-gray-400" :
+                         "bg-orange-500 text-white"
+              }`}>
+                {done ? <CheckCircle2 className="w-4 h-4" /> : locked ? <Lock className="w-3.5 h-3.5" /> : index + 1}
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <p className={`font-semibold text-sm ${done ? "text-gray-400 line-through" : locked ? "text-gray-400" : "text-gray-900"}`}>
+                  {step.label}
+                </p>
+                <p className="text-gray-400 text-xs mt-0.5 truncate">{step.desc}</p>
+              </div>
+
+              {done ? (
+                <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2.5 py-1 rounded-full flex-shrink-0">Done</span>
+              ) : locked ? (
+                <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full flex-shrink-0">Locked</span>
+              ) : (
+                <Link
+                  href={step.href}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-full flex-shrink-0 transition-colors"
+                >
+                  Start <ChevronRight className="w-3 h-3" />
+                </Link>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function FindJobsPage() {
   const [jobs, setJobs] = useState<JobRequest[]>([]);
+  const [checklist, setChecklist] = useState<Checklist | null>(null);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [applied, setApplied] = useState<Set<string>>(new Set());
-  const [requiresPhoto, setRequiresPhoto] = useState(false);
-  const [requiresCheck, setRequiresCheck] = useState(false);
   const { t } = useT();
 
   useEffect(() => {
-    fetch("/api/job-requests")
-      .then(r => r.json())
-      .then(d => {
-        if (d?.requiresPhoto) { setRequiresPhoto(true); setLoading(false); return; }
-        if (d?.requiresCheck) { setRequiresCheck(true); setLoading(false); return; }
-        if (Array.isArray(d)) setJobs(d);
-        setLoading(false);
-      });
+    Promise.all([
+      fetch("/api/handyman/checklist").then(r => r.json()),
+      fetch("/api/job-requests").then(r => r.json()),
+    ]).then(([cl, jobsData]) => {
+      setChecklist(cl);
+      if (Array.isArray(jobsData)) setJobs(jobsData);
+    }).finally(() => setLoading(false));
   }, []);
 
   const markApplied = (id: string) => {
     setApplied(prev => new Set(Array.from(prev).concat(id)));
     setJobs(prev => prev.filter(j => j.id !== id));
   };
+
+  const setupDone = checklist
+    ? Object.values(checklist).every(Boolean)
+    : false;
 
   return (
     <div className="space-y-6">
@@ -131,32 +234,8 @@ export default function FindJobsPage() {
 
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 text-orange-400 animate-spin" /></div>
-      ) : requiresPhoto ? (
-        <div className="bg-white border border-orange-200 rounded-2xl p-10 text-center space-y-4 shadow-sm">
-          <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto">
-            <Camera className="w-8 h-8 text-orange-500" />
-          </div>
-          <h2 className="text-gray-900 font-bold text-xl">Profile photo required</h2>
-          <p className="text-gray-500 text-sm max-w-sm mx-auto">
-            You need a profile photo before you can browse and apply to jobs. Customers are more likely to hire workers with a clear photo.
-          </p>
-          <Link href="/handyman/profile" className="btn-primary inline-flex items-center gap-2">
-            <Camera className="w-4 h-4" /> Add Profile Photo
-          </Link>
-        </div>
-      ) : requiresCheck ? (
-        <div className="bg-white border border-amber-200 rounded-2xl p-10 text-center space-y-4 shadow-sm">
-          <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto">
-            <ShieldAlert className="w-8 h-8 text-amber-500" />
-          </div>
-          <h2 className="text-gray-900 font-bold text-xl">Background check required</h2>
-          <p className="text-gray-500 text-sm max-w-sm mx-auto">
-            You must pass a background check before you can browse and apply to jobs. It typically takes 1–3 business days.
-          </p>
-          <Link href="/handyman/onboarding" className="btn-primary inline-flex items-center gap-2">
-            <ShieldAlert className="w-4 h-4" /> Start Background Check
-          </Link>
-        </div>
+      ) : !setupDone && checklist ? (
+        <SetupChecklist checklist={checklist} />
       ) : jobs.length === 0 ? (
         <div className="bg-white border border-orange-100 rounded-2xl p-16 text-center space-y-3 shadow-sm">
           <p className="text-3xl">🎉</p>
@@ -180,7 +259,9 @@ export default function FindJobsPage() {
                   )}
 
                   <div className="flex items-start gap-3">
-                    <span className="text-2xl mt-0.5 flex-shrink-0">{SERVICE_CATEGORY_ICONS[job.category] || "🛠️"}</span>
+                    <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CategoryIcon catKey={job.category} className="w-6 h-6" />
+                    </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div>
@@ -198,8 +279,7 @@ export default function FindJobsPage() {
                       <div className="flex flex-wrap gap-3 mt-3 text-xs text-gray-500">
                         <span className="flex items-center gap-1">
                           <MapPin className="w-3 h-3 text-orange-400" />
-                          {job.city}
-                          {job.distanceKm !== null && ` · ${job.distanceKm.toFixed(0)} km away`}
+                          {job.city}{job.distanceKm !== null && ` · ${job.distanceKm.toFixed(0)} km away`}
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3 text-orange-400" />
@@ -242,8 +322,8 @@ export default function FindJobsPage() {
                     <div className="mt-4 space-y-3">
                       {job.imageUrls?.length > 0 && (
                         <div className="flex gap-2 flex-wrap">
-                          {job.imageUrls.map((url, i) => (
-                            <img key={i} src={url} alt="" className="w-24 h-24 rounded-xl object-cover border border-orange-100" />
+                          {job.imageUrls.map((url, idx) => (
+                            <img key={idx} src={url} alt="" className="w-24 h-24 rounded-xl object-cover border border-orange-100" />
                           ))}
                         </div>
                       )}

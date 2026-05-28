@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import { CheckCircle2, XCircle, Clock, MapPin, Calendar, DollarSign, Loader2, Navigation, MessageCircle, List, CalendarDays } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { formatCurrency, formatDate, SERVICE_CATEGORY_ICONS, cn } from "@/lib/utils";
+import { formatCurrency, formatDate, cn } from "@/lib/utils";
+import CategoryIcon from "@/components/ui/CategoryIcon";
 import { useT } from "@/contexts/LanguageContext";
 import BookingCalendar from "@/components/ui/BookingCalendar";
 
@@ -181,8 +182,8 @@ export default function HandymanJobsPage() {
                 {/* Top row */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-tarea-dark/60 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
-                      {SERVICE_CATEGORY_ICONS[b.service.category] || "🛠️"}
+                    <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <CategoryIcon catKey={b.service.category} className="w-6 h-6" />
                     </div>
                     <div>
                       <p className="text-white font-bold">{b.service.title}</p>

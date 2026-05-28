@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { ToggleLeft, ToggleRight, Search, Plus, X } from "lucide-react";
 import toast from "react-hot-toast";
-import { formatCurrency, SERVICE_CATEGORY_LABELS, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
+import { formatCurrency, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
+import CategoryIcon from "@/components/ui/CategoryIcon";
 
 type Service = {
   id: string; title: string; category: string;
@@ -122,7 +123,7 @@ export default function AdminServicesPage() {
                 <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
                   className="input">
                   {CATEGORIES.map(c => (
-                    <option key={c} value={c}>{SERVICE_CATEGORY_ICONS[c]} {SERVICE_CATEGORY_LABELS[c]}</option>
+                    <option key={c} value={c}>{SERVICE_CATEGORY_LABELS[c]}</option>
                   ))}
                 </select>
               </div>
@@ -207,8 +208,9 @@ export default function AdminServicesPage() {
                   )}
                 </td>
                 <td className="px-5 py-4">
-                  <span className="text-slate-300 text-sm">
-                    {SERVICE_CATEGORY_ICONS[s.category] || "🛠️"} {SERVICE_CATEGORY_LABELS[s.category] || s.category}
+                  <span className="text-slate-300 text-sm flex items-center gap-2">
+                    <CategoryIcon catKey={s.category} className="w-4 h-4 flex-shrink-0" />
+                    {SERVICE_CATEGORY_LABELS[s.category] || s.category}
                   </span>
                 </td>
                 <td className="px-5 py-4 text-sm text-slate-300">

@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, MapPin, LocateFixed, Camera, X, Sparkles, DollarSign } from "lucide-react";
 import toast from "react-hot-toast";
-import { SERVICE_CATEGORY_LABELS, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
+import { SERVICE_CATEGORY_LABELS } from "@/lib/utils";
 import { useT } from "@/contexts/LanguageContext";
 
 const CATEGORIES = Object.keys(SERVICE_CATEGORY_LABELS);
@@ -141,7 +141,7 @@ export default function PostJobPage() {
           <label className="label">Category <span className="text-red-400">*</span></label>
           <select value={form.category} onChange={e => set("category", e.target.value)} className="input">
             {CATEGORIES.map(c => (
-              <option key={c} value={c}>{SERVICE_CATEGORY_ICONS[c]} {SERVICE_CATEGORY_LABELS[c]}</option>
+              <option key={c} value={c}>{SERVICE_CATEGORY_LABELS[c]}</option>
             ))}
           </select>
         </div>

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Loader2, DollarSign, Receipt, TrendingUp, BarChart3 } from "lucide-react";
-import { formatCurrency, SERVICE_CATEGORY_LABELS, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
+import { formatCurrency, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
+import CategoryIcon from "@/components/ui/CategoryIcon";
 
 type SpendingData = {
   totalSpent: number;
@@ -93,7 +94,7 @@ export default function SpendingPage() {
               <div key={cat} className="space-y-1.5">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-slate-300 flex items-center gap-2">
-                    <span>{SERVICE_CATEGORY_ICONS[cat] || "🛠️"}</span>
+                    <CategoryIcon catKey={cat} className="w-4 h-4" />
                     {SERVICE_CATEGORY_LABELS[cat] || cat}
                   </span>
                   <span className="text-white font-semibold">{formatCurrency(amount)}</span>
@@ -119,7 +120,9 @@ export default function SpendingPage() {
           <div className="space-y-2">
             {data.recent.map(tx => (
               <div key={tx.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
-                <span className="text-xl flex-shrink-0">{SERVICE_CATEGORY_ICONS[tx.category] || "🛠️"}</span>
+                <div className="w-8 h-8 bg-white/5 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <CategoryIcon catKey={tx.category} className="w-5 h-5" />
+                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white text-sm font-medium truncate">{tx.title}</p>
                   <p className="text-slate-500 text-xs">

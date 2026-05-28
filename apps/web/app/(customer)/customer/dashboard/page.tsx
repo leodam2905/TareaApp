@@ -2,7 +2,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { CalendarCheck, Star, Clock, DollarSign, ArrowRight, Wrench } from "lucide-react";
-import { formatCurrency, formatDate, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import CategoryIcon from "@/components/ui/CategoryIcon";
 
 export default async function CustomerDashboard() {
   const user = await getCurrentUser();
@@ -152,8 +153,8 @@ export default async function CustomerDashboard() {
                 key={b.id}
                 className="flex items-center gap-4 px-6 py-4 hover:bg-white/[0.03] transition-colors"
               >
-                <div className="w-10 h-10 bg-tarea-dark/60 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
-                  {SERVICE_CATEGORY_ICONS[b.service.category] || "🛠️"}
+                <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <CategoryIcon catKey={b.service.category} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-semibold text-sm truncate">{b.service.title}</p>
@@ -188,8 +189,8 @@ export default async function CustomerDashboard() {
             <Link key={s.id} href={`/customer/browse?service=${s.id}`}>
               <div className="group bg-white/5 border border-white/10 rounded-2xl p-5 hover:border-tarea-sky/40 hover:-translate-y-0.5 hover:bg-white/[0.07] transition-all duration-200 cursor-pointer">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 bg-tarea-sky/10 rounded-xl flex items-center justify-center text-xl">
-                    {SERVICE_CATEGORY_ICONS[s.category] || "🛠️"}
+                  <div className="w-10 h-10 bg-tarea-sky/10 rounded-xl flex items-center justify-center">
+                    <CategoryIcon catKey={s.category} active />
                   </div>
                   <div className="min-w-0">
                     <p className="text-white font-semibold text-sm truncate">{s.title}</p>

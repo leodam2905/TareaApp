@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Star, MapPin, Clock, CheckCircle2, Loader2, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
-import { formatCurrency, SERVICE_CATEGORY_ICONS, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
+import { formatCurrency, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
+import CategoryIcon from "@/components/ui/CategoryIcon";
 import Link from "next/link";
 
 type Service = {
@@ -228,7 +229,9 @@ export default function ServiceDetailPage() {
       {/* Service header */}
       <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
         <div className="flex items-start gap-4">
-          <span className="text-4xl">{SERVICE_CATEGORY_ICONS[service.category] || "🛠️"}</span>
+          <div className="w-16 h-16 bg-tarea-sky/10 rounded-2xl flex items-center justify-center flex-shrink-0">
+            <CategoryIcon catKey={service.category} active className="w-8 h-8" />
+          </div>
           <div className="flex-1">
             <span className="badge-sky text-xs mb-2 inline-block">{SERVICE_CATEGORY_LABELS[service.category]}</span>
             <h1 className="text-2xl font-extrabold text-white">{service.title}</h1>

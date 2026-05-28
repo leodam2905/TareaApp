@@ -8,7 +8,8 @@ import {
   MessageCircle, SendHorizontal, User, CheckCircle2, XCircle, Star, CreditCard, ShieldCheck, ShieldAlert, Sparkles, FileText, RefreshCw
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { formatCurrency, formatDate, SERVICE_CATEGORY_ICONS } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import CategoryIcon from "@/components/ui/CategoryIcon";
 import PhaseConfirm from "@/components/ui/PhaseConfirm";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
@@ -38,6 +39,7 @@ type Booking = {
   city: string;
   notes: string | null;
   totalPrice: number;
+  materialsEstimate: number;
   cancelReason: string | null;
   isPaid: boolean;
   isOnMyWay: boolean;
@@ -272,15 +274,25 @@ export default function BookingDetailPage() {
       {/* Booking info card */}
       <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-tarea-sky/10 rounded-2xl flex items-center justify-center text-2xl">
-            {SERVICE_CATEGORY_ICONS[booking.service.category] || "🛠️"}
+          <div className="w-12 h-12 bg-tarea-sky/10 rounded-2xl flex items-center justify-center">
+            <CategoryIcon catKey={booking.service.category} active className="w-7 h-7" />
           </div>
           <div className="flex-1">
             <p className="text-white font-bold">{booking.service.title}</p>
             <p className="text-slate-400 text-sm">{booking.service.category.replace("_", " ")}</p>
           </div>
           <div className="text-right">
-            <p className="text-tarea-sky font-bold text-xl">{formatCurrency(booking.totalPrice)}</p>
+            <p className="text-tarea-sky font-bold text-xl">
+              {formatCurrency(booking.totalPrice * 1.15 + (booking.materialsEstimate ?? 0))}
+            </p>
+            <p className="text-slate-500 text-xs mt-0.5">
+              Labor {formatCurrency(booking.totalPrice)} + 15% fee
+            </p>
+            {(booking.materialsEstimate ?? 0) > 0 && (
+              <p className="text-slate-500 text-xs">
+                🔩 Materials ~{formatCurrency(booking.materialsEstimate)}
+              </p>
+            )}
             {booking.isPaid ? (
               <div className="flex flex-col items-end gap-1 mt-1">
                 <span className="flex items-center gap-1 text-xs text-emerald-400 font-semibold"><ShieldCheck className="w-3.5 h-3.5" /> Paid</span>
@@ -347,7 +359,7 @@ export default function BookingDetailPage() {
           className="w-full flex items-center justify-center gap-2 bg-tarea-sky text-tarea-ink font-bold py-4 rounded-2xl hover:bg-sky-300 transition-all disabled:opacity-50 text-base"
         >
           {paying ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
-          {paying ? "Redirecting to payment…" : `Pay ${formatCurrency(booking.totalPrice)} to Confirm`}
+          {paying ? "Redirecting to payment…" : `Pay ${formatCurrency(booking.totalPrice * 1.15 + (booking.materialsEstimate ?? 0))} to Confirm`}
         </button>
       )}
 
