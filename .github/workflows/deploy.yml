@@ -45,4 +45,5 @@ jobs:
             --image us-central1-docker.pkg.dev/splendid-drake-497611-h6/cloud-run-source-deploy/tarea-web:${{ github.sha }} \
             --region us-central1 \
             --project splendid-drake-497611-h6 \
+            --allow-unauthenticated \
             --quiet
