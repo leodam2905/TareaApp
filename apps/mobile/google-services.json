@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "866595286863",
+    "project_id": "taptarea",
+    "storage_bucket": "taptarea.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:866595286863:android:b97fa089d0cda9c4345f3a",
+        "android_client_info": {
+          "package_name": "com.tarea.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAXUGRIva1c4kPB3_bSQLz48HBCkizWpA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
