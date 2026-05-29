@@ -13,7 +13,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("night");
 
   useEffect(() => {
-    const saved = localStorage.getItem("tarea-theme") as Theme | null;
+    const saved = localStorage.getItem("tarea-theme-v2") as Theme | null;
     if (saved === "day" || saved === "night") {
       setTheme(saved);
     } else {
@@ -28,7 +28,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } else {
       root.classList.remove("dark");
     }
-    localStorage.setItem("tarea-theme", theme);
+    localStorage.setItem("tarea-theme-v2", theme);
   }, [theme]);
 
   return (
