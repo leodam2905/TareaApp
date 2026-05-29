@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import CategoryIcon from "@/components/ui/CategoryIcon";
 import PhaseConfirm from "@/components/ui/PhaseConfirm";
+import LiveTrackingMap from "@/components/ui/LiveTrackingMap";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   PENDING:     { label: "Pending",     color: "text-yellow-400 bg-yellow-400/10 border-yellow-400/30" },
@@ -260,15 +261,24 @@ export default function BookingDetailPage() {
         <span className={`text-xs font-bold px-3 py-1.5 rounded-full border ${cfg.color}`}>{cfg.label}</span>
       </div>
 
-      {/* On-the-way banner */}
+      {/* On-the-way banner + live map */}
       {booking.isOnMyWay && isActive && (
-        <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl px-4 py-3">
-          <span className="text-xl">🚗</span>
-          <div>
-            <p className="text-emerald-400 font-bold text-sm">Your handyman is on the way!</p>
-            <p className="text-emerald-600 text-xs">They will arrive shortly at your location.</p>
+        <>
+          <div className="flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl px-4 py-3">
+            <span className="text-xl">🚗</span>
+            <div>
+              <p className="text-emerald-400 font-bold text-sm">Your handyman is on the way!</p>
+              <p className="text-emerald-600 text-xs">They will arrive shortly at your location.</p>
+            </div>
           </div>
-        </div>
+          {booking.handymanLat && booking.handymanLng && (
+            <LiveTrackingMap
+              lat={booking.handymanLat}
+              lng={booking.handymanLng}
+              destinationAddress={booking.address}
+            />
+          )}
+        </>
       )}
 
       {/* Booking info card */}

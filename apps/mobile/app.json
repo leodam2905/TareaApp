@@ -19,6 +19,7 @@
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow Tarea to access your photos to upload profile and document images.",
         "NSCameraUsageDescription": "Allow Tarea to use your camera to take ID and document photos.",
+        "NSLocationWhenInUseUsageDescription": "Tarea uses your location to share your position with the customer while on the way.",
         "ITSAppUsesNonExemptEncryption": false
       }
     },
@@ -33,8 +34,15 @@
         "android.permission.CAMERA",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.RECORD_AUDIO"
-      ]
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCqDnoc2Ga5hTkSXd_xHsrk2Wf7p2bo3eI"
+        }
+      }
     },
     "plugins": [
       "expo-router",
@@ -54,7 +62,13 @@
           "sounds": []
         }
       ],
-      "expo-video"
+      "expo-video",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Tarea uses your location to share your position with the customer while on the way."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

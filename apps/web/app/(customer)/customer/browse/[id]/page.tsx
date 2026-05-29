@@ -6,6 +6,7 @@ import { Star, MapPin, Clock, CheckCircle2, Loader2, ArrowLeft } from "lucide-re
 import toast from "react-hot-toast";
 import { formatCurrency, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
 import CategoryIcon from "@/components/ui/CategoryIcon";
+import AddressAutocomplete from "@/components/ui/AddressAutocomplete";
 import Link from "next/link";
 
 type Service = {
@@ -354,9 +355,9 @@ export default function ServiceDetailPage() {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-slate-400 text-sm font-medium block mb-1.5">Street Address <span className="text-red-400">*</span></label>
-            <input
+            <AddressAutocomplete
               value={form.address}
-              onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
+              onChange={(address, city) => setForm(f => ({ ...f, address, ...(city ? { city } : {}) }))}
               placeholder="123 Main St"
               className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-tarea-sky"
             />
