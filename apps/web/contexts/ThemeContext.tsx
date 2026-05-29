@@ -10,15 +10,14 @@ const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("day");
+  const [theme, setTheme] = useState<Theme>("night");
 
   useEffect(() => {
     const saved = localStorage.getItem("tarea-theme") as Theme | null;
     if (saved === "day" || saved === "night") {
       setTheme(saved);
     } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      setTheme(prefersDark ? "night" : "day");
+      setTheme("night");
     }
   }, []);
 
