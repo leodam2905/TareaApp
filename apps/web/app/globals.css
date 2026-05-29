@@ -84,6 +84,30 @@ html:not(.dark) main [class*="bg-white/10"][class*="border"] { border-color: var
 /* Input fields in day mode */
 html:not(.dark) main .bg-white\/10.border { background-color: #FFFFFF !important; }
 
+/* Day mode: fix low-contrast colored text on peach background */
+html:not(.dark) .text-tarea-sky,
+html:not(.dark) main .text-tarea-sky       { color: #C2410C !important; }
+html:not(.dark) main .text-tarea-sky\/80   { color: #C2410C !important; }
+html:not(.dark) main .text-emerald-400     { color: #059669 !important; }
+html:not(.dark) main .text-emerald-600     { color: #047857 !important; }
+html:not(.dark) main .text-amber-400       { color: #B45309 !important; }
+html:not(.dark) main .text-amber-600       { color: #92400E !important; }
+html:not(.dark) main .text-violet-400      { color: #6D28D9 !important; }
+html:not(.dark) main .text-violet-600      { color: #5B21B6 !important; }
+html:not(.dark) main .text-sky-400         { color: #0369A1 !important; }
+html:not(.dark) main .text-red-400         { color: #DC2626 !important; }
+html:not(.dark) main .text-indigo-400      { color: #4338CA !important; }
+html:not(.dark) main .text-purple-400      { color: #7C3AED !important; }
+html:not(.dark) main .text-pink-400        { color: #BE185D !important; }
+html:not(.dark) main .text-cyan-400        { color: #0E7490 !important; }
+
+/* Day mode: fix colored icon backgrounds */
+html:not(.dark) main [class*="bg-tarea-sky\/"]   { background-color: rgba(194,65,12,0.10) !important; }
+html:not(.dark) main [class*="bg-emerald-500\/"] { background-color: rgba(5,150,105,0.12) !important; }
+html:not(.dark) main [class*="bg-amber-500\/"]   { background-color: rgba(180,83,9,0.12) !important; }
+html:not(.dark) main [class*="bg-violet-500\/"]  { background-color: rgba(109,40,217,0.10) !important; }
+html:not(.dark) main [class*="bg-sky-500\/"]     { background-color: rgba(3,105,161,0.10) !important; }
+
 @layer components {
   .btn-primary {
     @apply bg-tarea-dark text-white font-semibold px-6 py-3 rounded-xl
