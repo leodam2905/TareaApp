@@ -10,7 +10,7 @@ import {
   Zap, Paintbrush, Droplets, Wind, TreePine, Wrench,
   Star, Shield, Clock, CheckCircle2, ArrowRight,
   Phone, Mail, MapPin, Sparkles, Users, TrendingUp,
-  ChevronDown,
+  ChevronDown, SprayCan, Truck, Shirt, Hammer, Settings2,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import DiagnoseSection from "@/components/ui/DiagnoseSection";
@@ -37,12 +37,17 @@ function VideoBg() {
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const services = [
-  { icon: Droplets,   label: "Plumbing",    desc: "Leaks, pipes & installations",   href: "/register?category=PLUMBING",    from: "#3B82F6", to: "#06B6D4" },
-  { icon: Zap,        label: "Electrical",  desc: "Wiring, panels & smart home",    href: "/register?category=ELECTRICAL",  from: "#F59E0B", to: "#EF4444" },
-  { icon: Wrench,     label: "Carpentry",   desc: "Furniture, floors & custom work", href: "/register?category=CARPENTRY",   from: "#F97316", to: "#F59E0B" },
-  { icon: Paintbrush, label: "Painting",    desc: "Interior & exterior finishes",   href: "/register?category=PAINTING",    from: "#EC4899", to: "#A855F7" },
-  { icon: Wind,       label: "HVAC",        desc: "AC, heating & air quality",      href: "/register?category=HVAC",        from: "#06B6D4", to: "#38BDF8" },
-  { icon: TreePine,   label: "Landscaping", desc: "Lawn care & garden design",      href: "/register?category=LANDSCAPING", from: "#22C55E", to: "#10B981" },
+  { icon: Droplets,   label: "Plumbing",           desc: "Leaks, pipes & installations",     href: "/register?category=PLUMBING",    from: "#3B82F6", to: "#06B6D4" },
+  { icon: Zap,        label: "Electrical",          desc: "Wiring, panels & smart home",      href: "/register?category=ELECTRICAL",  from: "#F59E0B", to: "#EF4444" },
+  { icon: Wrench,     label: "Carpentry",           desc: "Furniture, floors & custom work",  href: "/register?category=CARPENTRY",   from: "#F97316", to: "#F59E0B" },
+  { icon: Paintbrush, label: "Painting",            desc: "Interior & exterior finishes",     href: "/register?category=PAINTING",    from: "#EC4899", to: "#A855F7" },
+  { icon: Wind,       label: "HVAC",                desc: "AC, heating & air quality",        href: "/register?category=HVAC",        from: "#06B6D4", to: "#38BDF8" },
+  { icon: TreePine,   label: "Landscaping",         desc: "Lawn care & garden design",        href: "/register?category=LANDSCAPING", from: "#22C55E", to: "#10B981" },
+  { icon: SprayCan,   label: "Cleaning",            desc: "Deep clean, recurring & move-out", href: "/register?category=CLEANING",    from: "#10B981", to: "#059669" },
+  { icon: Truck,      label: "Moving",              desc: "Local moves, packing & hauling",   href: "/register?category=MOVING",      from: "#6366F1", to: "#4F46E5" },
+  { icon: Shirt,      label: "Wash & Fold",         desc: "Laundry pickup, wash & delivery",  href: "/register?category=CLEANING",    from: "#0EA5E9", to: "#0284C7" },
+  { icon: Hammer,     label: "Assembly & Mounting", desc: "Furniture, TV mounts & shelves",   href: "/register?category=GENERAL",     from: "#A855F7", to: "#9333EA" },
+  { icon: Settings2,  label: "General",             desc: "Odd jobs & home repairs",          href: "/register?category=GENERAL",     from: "#F43F5E", to: "#E11D48" },
 ];
 
 const steps = [
@@ -398,7 +403,7 @@ export default function HomePage() {
             </motion.h2>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
             {services.map(({ icon: Icon, label, desc, href, from, to }, i) => (
               <motion.div
                 key={label}
