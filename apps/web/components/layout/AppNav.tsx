@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Search, CalendarCheck, User, Briefcase, DollarSign,
   LogOut, Bell, ClipboardList, Radar, Layers, CalendarDays, X, CheckCheck,
-  Heart, Sun, Moon, Wallet, Gift, PieChart, HelpCircle, Menu,
+  Heart, Sun, Moon, Gift, PieChart, HelpCircle, Menu, ListChecks, ScanSearch,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -36,6 +36,7 @@ export default function AppNav({ role, userName }: NavProps) {
   const customerLinks = [
     { href: "/customer/dashboard",        label: t("nav_dashboard"),   icon: LayoutDashboard },
     { href: "/customer/browse",           label: t("nav_browse"),       icon: Search          },
+    { href: "/customer/diagnose",         label: "Diagnose Issue",      icon: ScanSearch      },
     { href: "/customer/bookings",         label: t("nav_bookings"),     icon: CalendarCheck   },
     { href: "/customer/favorites",        label: "Favorites",           icon: Heart           },
     { href: "/customer/requests",         label: t("nav_requests"),     icon: ClipboardList   },
@@ -46,15 +47,15 @@ export default function AppNav({ role, userName }: NavProps) {
   ];
 
   const handymanLinks = [
-    { href: "/handyman/dashboard",  label: t("nav_dashboard"),   icon: LayoutDashboard },
-    { href: "/handyman/find-jobs",  label: t("nav_find_jobs"),   icon: Radar           },
-    { href: "/handyman/jobs",       label: t("nav_my_jobs"),     icon: Briefcase       },
-    { href: "/handyman/services",   label: t("nav_services"),    icon: Layers          },
-    { href: "/handyman/earnings",        label: t("nav_earnings"),    icon: DollarSign  },
-    { href: "/handyman/payout-methods", label: "Payout Methods",    icon: Wallet       },
-    { href: "/handyman/schedule",        label: "Schedule",          icon: CalendarDays },
-    { href: "/handyman/referrals",       label: "Refer & Earn",      icon: Gift         },
-    { href: "/handyman/profile",         label: t("nav_profile"),    icon: User         },
+    { href: "/handyman/dashboard",        label: t("nav_dashboard"),   icon: LayoutDashboard },
+    { href: "/handyman/setup-checklist",  label: "Setup Checklist",    icon: ListChecks      },
+    { href: "/handyman/find-jobs",        label: t("nav_find_jobs"),   icon: Radar           },
+    { href: "/handyman/jobs",             label: t("nav_my_jobs"),     icon: Briefcase       },
+    { href: "/handyman/services",         label: t("nav_services"),    icon: Layers          },
+    { href: "/handyman/earnings",         label: t("nav_earnings"),    icon: DollarSign      },
+    { href: "/handyman/schedule",         label: "Schedule",           icon: CalendarDays    },
+    { href: "/handyman/referrals",        label: "Refer & Earn",       icon: Gift            },
+    { href: "/handyman/profile",          label: t("nav_profile"),     icon: User            },
   ];
 
   const links = role === "CUSTOMER" ? customerLinks : handymanLinks;
