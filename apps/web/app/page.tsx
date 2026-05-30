@@ -173,7 +173,6 @@ export default function HomePage() {
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY  = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const heroOp = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -258,7 +257,7 @@ export default function HomePage() {
               initial={mounted ? { opacity: 0, y: 20 } : false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.65 }}
-              className="flex flex-col sm:flex-row gap-4 mb-12 justify-center"
+              className="flex flex-col sm:flex-row gap-4 mb-8 justify-center"
             >
               <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
                 <Link
@@ -276,6 +275,32 @@ export default function HomePage() {
                   Join as a Pro
                 </Link>
               </motion.div>
+            </motion.div>
+
+            {/* App store badges */}
+            <motion.div
+              initial={mounted ? { opacity: 0, y: 16 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.75 }}
+              className="flex flex-col items-center gap-3 mb-10"
+            >
+              <p className="text-white/50 text-xs font-medium uppercase tracking-widest">Also available on</p>
+              <div className="flex items-center gap-3 flex-wrap justify-center">
+                <a href="#" className="flex items-center gap-2.5 bg-black/70 hover:bg-black border border-white/20 backdrop-blur-sm text-white px-5 py-2.5 rounded-xl transition-all duration-200 hover:border-white/40">
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white flex-shrink-0"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                  <div className="text-left">
+                    <div className="text-[9px] text-white/60 leading-none">Download on the</div>
+                    <div className="text-sm font-bold leading-tight">App Store</div>
+                  </div>
+                </a>
+                <a href="#" className="flex items-center gap-2.5 bg-black/70 hover:bg-black border border-white/20 backdrop-blur-sm text-white px-5 py-2.5 rounded-xl transition-all duration-200 hover:border-white/40">
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white flex-shrink-0"><path d="M3.18 23.76c.33.18.7.22 1.06.14L14.84 12 11 8.16 3.18 23.76zm17.34-10.93c.36-.26.6-.67.6-1.17 0-.46-.21-.86-.54-1.12l-2.29-1.33-4.14 4.14 3.8 3.8 2.57-4.32zM3.54.26C3.2.06 2.82 0 2.47.14L13.42 12 3.54.26zM2.47.14L13.42 12l1.42-1.42L3.6.05C3.23-.09 2.82.01 2.47.14z"/></svg>
+                  <div className="text-left">
+                    <div className="text-[9px] text-white/60 leading-none">Get it on</div>
+                    <div className="text-sm font-bold leading-tight">Google Play</div>
+                  </div>
+                </a>
+              </div>
             </motion.div>
 
             {/* Social proof */}
@@ -595,7 +620,7 @@ export default function HomePage() {
           <p className="text-orange-100/80 text-xl mb-12 leading-relaxed">
             Join thousands of homeowners who trust Tarea for every home repair need.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }}>
               <Link
                 href="/register"
@@ -612,6 +637,25 @@ export default function HomePage() {
                 Become a Handyman
               </Link>
             </motion.div>
+          </div>
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-orange-200/60 text-xs font-medium uppercase tracking-widest">Get the app</p>
+            <div className="flex items-center gap-3 flex-wrap justify-center">
+              <a href="#" className="flex items-center gap-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-5 py-2.5 rounded-xl transition-all duration-200">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white flex-shrink-0"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                <div className="text-left">
+                  <div className="text-[9px] text-white/60 leading-none">Download on the</div>
+                  <div className="text-sm font-bold leading-tight">App Store</div>
+                </div>
+              </a>
+              <a href="#" className="flex items-center gap-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-5 py-2.5 rounded-xl transition-all duration-200">
+                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white flex-shrink-0"><path d="M3.18 23.76c.33.18.7.22 1.06.14L14.84 12 11 8.16 3.18 23.76zm17.34-10.93c.36-.26.6-.67.6-1.17 0-.46-.21-.86-.54-1.12l-2.29-1.33-4.14 4.14 3.8 3.8 2.57-4.32zM3.54.26C3.2.06 2.82 0 2.47.14L13.42 12 3.54.26zM2.47.14L13.42 12l1.42-1.42L3.6.05C3.23-.09 2.82.01 2.47.14z"/></svg>
+                <div className="text-left">
+                  <div className="text-[9px] text-white/60 leading-none">Get it on</div>
+                  <div className="text-sm font-bold leading-tight">Google Play</div>
+                </div>
+              </a>
+            </div>
           </div>
         </motion.div>
       </section>
@@ -648,11 +692,28 @@ export default function HomePage() {
             </div>
             <div>
               <h4 className="text-orange-600 font-bold text-sm uppercase tracking-wider mb-4">Contact</h4>
-              <ul className="space-y-3 text-gray-500 text-sm">
+              <ul className="space-y-3 text-gray-500 text-sm mb-6">
                 <li className="flex items-center gap-2.5"><Phone className="w-4 h-4 flex-shrink-0" /><a href="tel:+15304391054" className="hover:text-gray-900 transition-colors">+1 (530) 439-1054</a></li>
                 <li className="flex items-center gap-2.5"><Mail className="w-4 h-4 flex-shrink-0" /><Link href="/contact" className="hover:text-gray-900 transition-colors">support@taptarea.com</Link></li>
                 <li className="flex items-center gap-2.5"><MapPin className="w-4 h-4 flex-shrink-0" /><span>Pasadena, California</span></li>
               </ul>
+              <h4 className="text-orange-600 font-bold text-sm uppercase tracking-wider mb-3">Get the App</h4>
+              <div className="flex flex-col gap-2">
+                <a href="#" className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-3 py-2 rounded-lg transition-colors w-fit">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white flex-shrink-0"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                  <div>
+                    <div className="text-[8px] text-white/60 leading-none">Download on the</div>
+                    <div className="text-xs font-bold leading-tight">App Store</div>
+                  </div>
+                </a>
+                <a href="#" className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-3 py-2 rounded-lg transition-colors w-fit">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white flex-shrink-0"><path d="M3.18 23.76c.33.18.7.22 1.06.14L14.84 12 11 8.16 3.18 23.76zm17.34-10.93c.36-.26.6-.67.6-1.17 0-.46-.21-.86-.54-1.12l-2.29-1.33-4.14 4.14 3.8 3.8 2.57-4.32zM3.54.26C3.2.06 2.82 0 2.47.14L13.42 12 3.54.26zM2.47.14L13.42 12l1.42-1.42L3.6.05C3.23-.09 2.82.01 2.47.14z"/></svg>
+                  <div>
+                    <div className="text-[8px] text-white/60 leading-none">Get it on</div>
+                    <div className="text-xs font-bold leading-tight">Google Play</div>
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
           <div className="border-t border-orange-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
