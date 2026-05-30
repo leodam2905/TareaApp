@@ -252,9 +252,10 @@ export default function PostJobPage() {
         </div>
 
         <button onClick={submit} disabled={saving}
+          style={{ color: "#fff" }}
           className="btn-primary w-full flex items-center justify-center gap-2">
-          {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-          {saving ? t("btn_posting") : t("btn_post_job")}
+          {saving && <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#fff" }} />}
+          <span style={{ color: "#fff" }}>{saving ? t("btn_posting") : t("btn_post_job")}</span>
         </button>
       </div>
     </div>
