@@ -1,4 +1,3 @@
-import { createNotification } from "@/lib/notify";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
@@ -101,8 +100,8 @@ export async function POST(req: NextRequest) {
       description,
       address,
       city,
-      latitude,
-      longitude,
+      latitude:  latitude  ? parseFloat(latitude)  : undefined,
+      longitude: longitude ? parseFloat(longitude) : undefined,
       scheduledAt: new Date(scheduledAt),
       budgetMin: parseFloat(budgetMin),
       budgetMax: parseFloat(budgetMax),
