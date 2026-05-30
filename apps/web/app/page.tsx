@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import DiagnoseSection from "@/components/ui/DiagnoseSection";
+import InstantQuoteSection from "@/components/ui/InstantQuoteSection";
 
 // ─── Video Background ─────────────────────────────────────────────────────────
 
@@ -441,6 +442,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ── Instant Quote ── */}
+      <InstantQuoteSection />
 
       {/* ── How it works ── */}
       <section id="how-it-works" className="py-28 bg-orange-50/40 border-y border-orange-100">
