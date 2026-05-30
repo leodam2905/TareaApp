@@ -22,7 +22,7 @@ type Service = {
     id: string;
     rating: number;
     totalJobs: number;
-    user: { name: string; avatarUrl: string | null; city: string | null; state: string | null };
+    user: { id: string; name: string; avatarUrl: string | null; city: string | null; state: string | null };
   } | null;
 };
 
@@ -129,7 +129,7 @@ export default function ServiceDetailPage() {
         if (s.handymanId && s.handyman) {
           // Pre-select the handyman who owns this service
           setSelectedHandymanId(s.handyman.id);
-          setSelectedHandymanUserId(s.handyman.user as unknown as string);
+          setSelectedHandymanUserId(s.handyman.user.id);
         } else {
           // Platform service — fetch matched handymen
           setLoadingHandymen(true);
@@ -216,9 +216,7 @@ export default function ServiceDetailPage() {
   const isPlatform = !service.handymanId;
   const selectedHandyman = isPlatform
     ? handymen.find(h => h.id === selectedHandymanId)
-    : service.handyman
-      ? { ...service.handyman, distanceKm: null, score: 0, services: [], user: { ...service.handyman.user, id: selectedHandymanUserId || "" } }
-      : null;
+    : service.handyman ?? null;
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
