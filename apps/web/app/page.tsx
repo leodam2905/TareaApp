@@ -38,17 +38,17 @@ function VideoBg() {
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const services = [
-  { icon: Droplets,   label: "Plumbing",           desc: "Leaks, pipes & installations",     href: "/register?category=PLUMBING",    from: "#3B82F6", to: "#06B6D4", rate: "$75–$150/hr" },
-  { icon: Zap,        label: "Electrical",          desc: "Wiring, panels & smart home",      href: "/register?category=ELECTRICAL",  from: "#F59E0B", to: "#EF4444", rate: "$80–$150/hr" },
-  { icon: Wrench,     label: "Carpentry",           desc: "Furniture, floors & custom work",  href: "/register?category=CARPENTRY",   from: "#F97316", to: "#F59E0B", rate: "$50–$100/hr" },
-  { icon: Paintbrush, label: "Painting",            desc: "Interior & exterior finishes",     href: "/register?category=PAINTING",    from: "#EC4899", to: "#A855F7", rate: "$40–$80/hr"  },
-  { icon: Wind,       label: "HVAC",                desc: "AC, heating & air quality",        href: "/register?category=HVAC",        from: "#06B6D4", to: "#38BDF8", rate: "$80–$150/hr" },
-  { icon: TreePine,   label: "Landscaping",         desc: "Lawn care & garden design",        href: "/register?category=LANDSCAPING", from: "#22C55E", to: "#10B981", rate: "$35–$65/hr"  },
-  { icon: SprayCan,   label: "Cleaning",            desc: "Deep clean, recurring & move-out", href: "/register?category=CLEANING",    from: "#10B981", to: "#059669", rate: "$25–$50/hr"  },
-  { icon: Truck,      label: "Moving",              desc: "Local moves, packing & hauling",   href: "/register?category=MOVING",      from: "#6366F1", to: "#4F46E5", rate: "$90–$140/hr" },
-  { icon: Shirt,      label: "Wash & Fold",         desc: "Laundry pickup, wash & delivery",  href: "/register?category=CLEANING",    from: "#0EA5E9", to: "#0284C7", rate: "$1.50–$2/lb" },
-  { icon: Hammer,     label: "Assembly & Mounting", desc: "Furniture, TV mounts & shelves",   href: "/register?category=GENERAL",     from: "#A855F7", to: "#9333EA", rate: "$50–$100/hr" },
-  { icon: Settings2,  label: "General",             desc: "Odd jobs & home repairs",          href: "/register?category=GENERAL",     from: "#F43F5E", to: "#E11D48", rate: "$50–$90/hr"  },
+  { icon: Droplets,   label: "Plumbing",           desc: "Leaks, pipes & installations",     href: "/register?category=PLUMBING",    from: "#3B82F6", to: "#06B6D4", rate: "$75–$150/hr", img: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?auto=format&fit=crop&w=600&q=80" },
+  { icon: Zap,        label: "Electrical",          desc: "Wiring, panels & smart home",      href: "/register?category=ELECTRICAL",  from: "#F59E0B", to: "#EF4444", rate: "$80–$150/hr", img: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=600&q=80" },
+  { icon: Wrench,     label: "Carpentry",           desc: "Furniture, floors & custom work",  href: "/register?category=CARPENTRY",   from: "#F97316", to: "#F59E0B", rate: "$50–$100/hr", img: "https://images.unsplash.com/photo-1504148455-ac950b789b5d?auto=format&fit=crop&w=600&q=80" },
+  { icon: Paintbrush, label: "Painting",            desc: "Interior & exterior finishes",     href: "/register?category=PAINTING",    from: "#EC4899", to: "#A855F7", rate: "$40–$80/hr",  img: "https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?auto=format&fit=crop&w=600&q=80" },
+  { icon: Wind,       label: "HVAC",                desc: "AC, heating & air quality",        href: "/register?category=HVAC",        from: "#06B6D4", to: "#38BDF8", rate: "$80–$150/hr", img: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=600&q=80" },
+  { icon: TreePine,   label: "Landscaping",         desc: "Lawn care & garden design",        href: "/register?category=LANDSCAPING", from: "#22C55E", to: "#10B981", rate: "$35–$65/hr",  img: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=600&q=80" },
+  { icon: SprayCan,   label: "Cleaning",            desc: "Deep clean, recurring & move-out", href: "/register?category=CLEANING",    from: "#10B981", to: "#059669", rate: "$25–$50/hr",  img: "https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=600&q=80" },
+  { icon: Truck,      label: "Moving",              desc: "Local moves, packing & hauling",   href: "/register?category=MOVING",      from: "#6366F1", to: "#4F46E5", rate: "$90–$140/hr", img: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=600&q=80" },
+  { icon: Shirt,      label: "Wash & Fold",         desc: "Laundry pickup, wash & delivery",  href: "/register?category=CLEANING",    from: "#0EA5E9", to: "#0284C7", rate: "$1.50–$2/lb", img: "https://images.unsplash.com/photo-1545173168-9f1947eebb7f?auto=format&fit=crop&w=600&q=80" },
+  { icon: Hammer,     label: "Assembly & Mounting", desc: "Furniture, TV mounts & shelves",   href: "/register?category=GENERAL",     from: "#A855F7", to: "#9333EA", rate: "$50–$100/hr", img: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?auto=format&fit=crop&w=600&q=80" },
+  { icon: Settings2,  label: "General",             desc: "Odd jobs & home repairs",          href: "/register?category=GENERAL",     from: "#F43F5E", to: "#E11D48", rate: "$50–$90/hr",  img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80" },
 ];
 
 const steps = [
@@ -405,7 +405,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {services.map(({ icon: Icon, label, desc, href, from, to, rate }, i) => (
+            {services.map(({ icon: Icon, label, desc, href, from, rate, img }, i) => (
               <motion.div
                 key={label}
                 initial={{ opacity: 0, y: 30 }}
@@ -416,31 +416,37 @@ export default function HomePage() {
                 <Link href={href}>
                   <TiltCard>
                     <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      className="relative group bg-white border border-orange-100 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-orange-200 hover:shadow-md transition-all duration-300 h-full"
+                      whileHover={{ scale: 1.03 }}
+                      className="relative group rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-300 h-52"
                     >
+                      {/* Background image */}
                       <div
-                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
-                        style={{ background: `radial-gradient(circle at 50% 0%, ${from}10 0%, transparent 70%)` }}
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                        style={{ backgroundImage: `url(${img})`, backgroundColor: from }}
                       />
-                      <div className="flex items-start justify-between mb-4">
-                        <div
-                          className="w-12 h-12 rounded-xl flex items-center justify-center"
-                          style={{ background: `linear-gradient(135deg, ${from}20, ${to}20)`, border: `1px solid ${from}30` }}
-                        >
-                          <Icon className="w-6 h-6" style={{ color: from }} />
-                        </div>
-                        <span
-                          className="text-xs font-bold px-2.5 py-1 rounded-full"
-                          style={{ background: `${from}15`, color: from }}
-                        >
-                          {rate}
-                        </span>
+                      {/* Gradient overlay — dark bottom for text, colored top for brand */}
+                      <div
+                        className="absolute inset-0"
+                        style={{ background: `linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.35) 55%, ${from}55 100%)` }}
+                      />
+                      {/* Rate badge top-right */}
+                      <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-1 rounded-full">
+                        {rate}
                       </div>
-                      <h3 className="text-gray-900 font-bold text-lg mb-1">{label}</h3>
-                      <p className="text-gray-500 text-sm mb-4">{desc}</p>
-                      <div className="flex items-center gap-1 text-sm font-semibold" style={{ color: from }}>
-                        Book Now <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      {/* Icon top-left */}
+                      <div
+                        className="absolute top-3 left-3 w-9 h-9 rounded-xl flex items-center justify-center"
+                        style={{ background: `${from}cc` }}
+                      >
+                        <Icon className="w-4.5 h-4.5 text-white" />
+                      </div>
+                      {/* Text bottom */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4">
+                        <h3 className="text-white font-bold text-base leading-tight mb-0.5">{label}</h3>
+                        <p className="text-white/70 text-xs leading-snug mb-2">{desc}</p>
+                        <div className="flex items-center gap-1 text-xs font-semibold text-white/90">
+                          Book Now <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                        </div>
                       </div>
                     </motion.div>
                   </TiltCard>
