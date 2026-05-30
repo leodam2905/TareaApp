@@ -75,6 +75,7 @@ html:not(.dark) main .bg-white\/20 { background-color: rgba(255,255,255,0.7) !im
 html:not(.dark) main .border-white\/10 { border-color: var(--card-border) !important; }
 html:not(.dark) main .border-white\/20 { border-color: var(--card-border-2) !important; }
 html:not(.dark) main .text-white   { color: var(--text-primary) !important; }
+.btn-primary, .btn-primary *       { color: #FFFFFF !important; }
 html:not(.dark) main .text-slate-400 { color: var(--text-muted) !important; }
 html:not(.dark) main .text-slate-500 { color: var(--text-subtle) !important; }
 html:not(.dark) main .text-slate-300 { color: #475569 !important; }
@@ -110,9 +111,10 @@ html:not(.dark) main [class*="bg-sky-500\/"]     { background-color: rgba(3,105,
 
 @layer components {
   .btn-primary {
-    @apply bg-tarea-dark text-white font-semibold px-6 py-3 rounded-xl
+    @apply bg-tarea-dark font-semibold px-6 py-3 rounded-xl
            hover:bg-tarea-dark-deeper transition-all duration-200
            shadow-card hover:shadow-card-hover active:scale-95;
+    color: #FFFFFF;
   }
 
   .btn-secondary {
