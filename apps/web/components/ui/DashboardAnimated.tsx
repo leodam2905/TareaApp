@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { CalendarCheck, Star, Clock, DollarSign, ArrowRight, Wrench, ScanSearch } from "lucide-react";
+import { CalendarCheck, Star, Clock, DollarSign, ArrowRight, Wrench } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import CategoryIcon from "@/components/ui/CategoryIcon";
 
@@ -79,14 +79,6 @@ export default function DashboardAnimated({ user, bookings, recentServices, tota
                 className="flex items-center gap-2 bg-tarea-sky text-tarea-ink font-semibold px-5 py-2.5 rounded-xl hover:bg-sky-300 transition-all text-sm"
               >
                 <Wrench className="w-4 h-4" /> Find a Handyman
-              </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-              <Link
-                href="/customer/diagnose"
-                className="flex items-center gap-2 bg-white/10 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-white/15 transition-all text-sm border border-white/10"
-              >
-                <ScanSearch className="w-4 h-4" /> Diagnose Issue
               </Link>
             </motion.div>
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>

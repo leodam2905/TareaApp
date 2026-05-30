@@ -13,6 +13,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
+import DiagnoseSection from "@/components/ui/DiagnoseSection";
 
 // ─── Video Background ─────────────────────────────────────────────────────────
 
@@ -482,6 +483,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ── AI Diagnose ── */}
+      <DiagnoseSection />
 
       {/* ── Trust ── */}
       <section className="py-28">

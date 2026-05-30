@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Search, CalendarCheck, User, Briefcase, DollarSign,
   LogOut, Bell, ClipboardList, Radar, Layers, CalendarDays, X, CheckCheck,
-  Heart, Sun, Moon, Gift, PieChart, HelpCircle, Menu, ListChecks, ScanSearch,
+  Heart, Sun, Moon, Gift, PieChart, HelpCircle, Menu, ListChecks,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -36,7 +36,6 @@ export default function AppNav({ role, userName }: NavProps) {
   const customerLinks = [
     { href: "/customer/dashboard",        label: t("nav_dashboard"),   icon: LayoutDashboard },
     { href: "/customer/browse",           label: t("nav_browse"),       icon: Search          },
-    { href: "/customer/diagnose",         label: "Diagnose Issue",      icon: ScanSearch      },
     { href: "/customer/bookings",         label: t("nav_bookings"),     icon: CalendarCheck   },
     { href: "/customer/favorites",        label: "Favorites",           icon: Heart           },
     { href: "/customer/requests",         label: t("nav_requests"),     icon: ClipboardList   },
