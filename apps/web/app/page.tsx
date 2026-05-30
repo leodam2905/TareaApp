@@ -38,17 +38,17 @@ function VideoBg() {
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const services = [
-  { icon: Droplets,   label: "Plumbing",           desc: "Leaks, pipes & installations",     href: "/register?category=PLUMBING",    from: "#3B82F6", to: "#06B6D4" },
-  { icon: Zap,        label: "Electrical",          desc: "Wiring, panels & smart home",      href: "/register?category=ELECTRICAL",  from: "#F59E0B", to: "#EF4444" },
-  { icon: Wrench,     label: "Carpentry",           desc: "Furniture, floors & custom work",  href: "/register?category=CARPENTRY",   from: "#F97316", to: "#F59E0B" },
-  { icon: Paintbrush, label: "Painting",            desc: "Interior & exterior finishes",     href: "/register?category=PAINTING",    from: "#EC4899", to: "#A855F7" },
-  { icon: Wind,       label: "HVAC",                desc: "AC, heating & air quality",        href: "/register?category=HVAC",        from: "#06B6D4", to: "#38BDF8" },
-  { icon: TreePine,   label: "Landscaping",         desc: "Lawn care & garden design",        href: "/register?category=LANDSCAPING", from: "#22C55E", to: "#10B981" },
-  { icon: SprayCan,   label: "Cleaning",            desc: "Deep clean, recurring & move-out", href: "/register?category=CLEANING",    from: "#10B981", to: "#059669" },
-  { icon: Truck,      label: "Moving",              desc: "Local moves, packing & hauling",   href: "/register?category=MOVING",      from: "#6366F1", to: "#4F46E5" },
-  { icon: Shirt,      label: "Wash & Fold",         desc: "Laundry pickup, wash & delivery",  href: "/register?category=CLEANING",    from: "#0EA5E9", to: "#0284C7" },
-  { icon: Hammer,     label: "Assembly & Mounting", desc: "Furniture, TV mounts & shelves",   href: "/register?category=GENERAL",     from: "#A855F7", to: "#9333EA" },
-  { icon: Settings2,  label: "General",             desc: "Odd jobs & home repairs",          href: "/register?category=GENERAL",     from: "#F43F5E", to: "#E11D48" },
+  { icon: Droplets,   label: "Plumbing",           desc: "Leaks, pipes & installations",     href: "/register?category=PLUMBING",    from: "#3B82F6", to: "#06B6D4", rate: "$75–$150/hr" },
+  { icon: Zap,        label: "Electrical",          desc: "Wiring, panels & smart home",      href: "/register?category=ELECTRICAL",  from: "#F59E0B", to: "#EF4444", rate: "$80–$150/hr" },
+  { icon: Wrench,     label: "Carpentry",           desc: "Furniture, floors & custom work",  href: "/register?category=CARPENTRY",   from: "#F97316", to: "#F59E0B", rate: "$50–$100/hr" },
+  { icon: Paintbrush, label: "Painting",            desc: "Interior & exterior finishes",     href: "/register?category=PAINTING",    from: "#EC4899", to: "#A855F7", rate: "$40–$80/hr"  },
+  { icon: Wind,       label: "HVAC",                desc: "AC, heating & air quality",        href: "/register?category=HVAC",        from: "#06B6D4", to: "#38BDF8", rate: "$80–$150/hr" },
+  { icon: TreePine,   label: "Landscaping",         desc: "Lawn care & garden design",        href: "/register?category=LANDSCAPING", from: "#22C55E", to: "#10B981", rate: "$35–$65/hr"  },
+  { icon: SprayCan,   label: "Cleaning",            desc: "Deep clean, recurring & move-out", href: "/register?category=CLEANING",    from: "#10B981", to: "#059669", rate: "$25–$50/hr"  },
+  { icon: Truck,      label: "Moving",              desc: "Local moves, packing & hauling",   href: "/register?category=MOVING",      from: "#6366F1", to: "#4F46E5", rate: "$90–$140/hr" },
+  { icon: Shirt,      label: "Wash & Fold",         desc: "Laundry pickup, wash & delivery",  href: "/register?category=CLEANING",    from: "#0EA5E9", to: "#0284C7", rate: "$1.50–$2/lb" },
+  { icon: Hammer,     label: "Assembly & Mounting", desc: "Furniture, TV mounts & shelves",   href: "/register?category=GENERAL",     from: "#A855F7", to: "#9333EA", rate: "$50–$100/hr" },
+  { icon: Settings2,  label: "General",             desc: "Odd jobs & home repairs",          href: "/register?category=GENERAL",     from: "#F43F5E", to: "#E11D48", rate: "$50–$90/hr"  },
 ];
 
 const steps = [
@@ -405,29 +405,37 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {services.map(({ icon: Icon, label, desc, href, from, to }, i) => (
+            {services.map(({ icon: Icon, label, desc, href, from, to, rate }, i) => (
               <motion.div
                 key={label}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
+                transition={{ delay: i * 0.06 }}
               >
                 <Link href={href}>
                   <TiltCard>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
-                      className="relative group bg-white border border-orange-100 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-orange-200 hover:shadow-md transition-all duration-300"
+                      className="relative group bg-white border border-orange-100 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-orange-200 hover:shadow-md transition-all duration-300 h-full"
                     >
                       <div
                         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
                         style={{ background: `radial-gradient(circle at 50% 0%, ${from}10 0%, transparent 70%)` }}
                       />
-                      <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                        style={{ background: `linear-gradient(135deg, ${from}20, ${to}20)`, border: `1px solid ${from}30` }}
-                      >
-                        <Icon className="w-6 h-6" style={{ color: from }} />
+                      <div className="flex items-start justify-between mb-4">
+                        <div
+                          className="w-12 h-12 rounded-xl flex items-center justify-center"
+                          style={{ background: `linear-gradient(135deg, ${from}20, ${to}20)`, border: `1px solid ${from}30` }}
+                        >
+                          <Icon className="w-6 h-6" style={{ color: from }} />
+                        </div>
+                        <span
+                          className="text-xs font-bold px-2.5 py-1 rounded-full"
+                          style={{ background: `${from}15`, color: from }}
+                        >
+                          {rate}
+                        </span>
                       </div>
                       <h3 className="text-gray-900 font-bold text-lg mb-1">{label}</h3>
                       <p className="text-gray-500 text-sm mb-4">{desc}</p>
