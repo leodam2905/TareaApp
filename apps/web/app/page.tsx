@@ -415,27 +415,40 @@ export default function HomePage() {
                 <Link href={href}>
                   <TiltCard>
                     <motion.div
-                      whileHover={{ y: -4, boxShadow: `0 12px 32px ${from}30` }}
+                      whileHover={{ y: -5 }}
                       transition={{ duration: 0.2 }}
-                      className="group bg-white border border-orange-100 rounded-2xl p-5 cursor-pointer flex flex-col items-center text-center gap-3 hover:border-orange-200 transition-colors h-52 justify-center"
+                      className="group bg-white border border-orange-100 rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition-all"
                     >
-                      {/* Rate badge */}
-                      <span
-                        className="text-[11px] font-bold px-2.5 py-0.5 rounded-full"
-                        style={{ background: `${from}18`, color: from }}
+                      {/* Colored top band with emoji icon */}
+                      <div
+                        className="flex flex-col items-center justify-center pt-6 pb-4"
+                        style={{ background: `linear-gradient(135deg, ${from}18 0%, ${from}08 100%)` }}
                       >
-                        {rate}
-                      </span>
-                      {/* Emoji */}
-                      <span className="text-5xl leading-none select-none">{emoji}</span>
-                      {/* Label + desc */}
-                      <div>
-                        <h3 className="text-gray-900 font-bold text-base leading-tight">{label}</h3>
-                        <p className="text-gray-400 text-xs mt-1 leading-snug">{desc}</p>
+                        <div
+                          className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-md mb-1"
+                          style={{
+                            background: `linear-gradient(135deg, ${from}, ${from}cc)`,
+                            boxShadow: `0 6px 20px ${from}50`,
+                          }}
+                        >
+                          {emoji}
+                        </div>
                       </div>
-                      {/* Book now */}
-                      <div className="flex items-center gap-1 text-xs font-semibold" style={{ color: from }}>
-                        Book Now <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                      {/* White bottom with text */}
+                      <div className="px-4 pt-3 pb-4 text-center">
+                        <div className="flex items-center justify-center gap-1.5 mb-1">
+                          <h3 className="text-gray-900 font-bold text-sm leading-tight">{label}</h3>
+                          <span
+                            className="text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
+                            style={{ background: `${from}15`, color: from }}
+                          >
+                            {rate}
+                          </span>
+                        </div>
+                        <p className="text-gray-400 text-xs leading-snug mb-3">{desc}</p>
+                        <div className="flex items-center justify-center gap-1 text-xs font-semibold" style={{ color: from }}>
+                          Book Now <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                        </div>
                       </div>
                     </motion.div>
                   </TiltCard>
