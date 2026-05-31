@@ -7,10 +7,9 @@ import {
   useMotionValue, useSpring, animate,
 } from "framer-motion";
 import {
-  Zap, Paintbrush, Droplets, Wind, TreePine, Wrench,
   Star, Shield, Clock, CheckCircle2, ArrowRight,
   Phone, Mail, MapPin, Sparkles, Users, TrendingUp,
-  ChevronDown, SprayCan, Truck, Shirt, Hammer, Settings2,
+  ChevronDown, Wrench,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import DiagnoseSection from "@/components/ui/DiagnoseSection";
@@ -37,20 +36,18 @@ function VideoBg() {
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
-const P = (id: number) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=600`;
-
 const services = [
-  { icon: Droplets,   label: "Plumbing",           desc: "Leaks, pipes & installations",     href: "/register?category=PLUMBING",    from: "#3B82F6", rate: "$75–$150/hr", img: P(6419134) },
-  { icon: Zap,        label: "Electrical",          desc: "Wiring, panels & smart home",      href: "/register?category=ELECTRICAL",  from: "#F59E0B", rate: "$80–$150/hr", img: P(257736)  },
-  { icon: Wrench,     label: "Carpentry",           desc: "Furniture, floors & custom work",  href: "/register?category=CARPENTRY",   from: "#F97316", rate: "$50–$100/hr", img: P(1249611) },
-  { icon: Paintbrush, label: "Painting",            desc: "Interior & exterior finishes",     href: "/register?category=PAINTING",    from: "#EC4899", rate: "$40–$80/hr",  img: P(1669799) },
-  { icon: Wind,       label: "HVAC",                desc: "AC, heating & air quality",        href: "/register?category=HVAC",        from: "#06B6D4", rate: "$80–$150/hr", img: P(3807517) },
-  { icon: TreePine,   label: "Landscaping",         desc: "Lawn care & garden design",        href: "/register?category=LANDSCAPING", from: "#22C55E", rate: "$35–$65/hr",  img: P(589841)  },
-  { icon: SprayCan,   label: "Cleaning",            desc: "Deep clean, recurring & move-out", href: "/register?category=CLEANING",    from: "#10B981", rate: "$25–$50/hr",  img: P(4239032) },
-  { icon: Truck,      label: "Moving",              desc: "Local moves, packing & hauling",   href: "/register?category=MOVING",      from: "#6366F1", rate: "$90–$140/hr", img: P(7203986) },
-  { icon: Shirt,      label: "Wash & Fold",         desc: "Laundry pickup, wash & delivery",  href: "/register?category=CLEANING",    from: "#0EA5E9", rate: "$1.50–$2/lb", img: P(6941880) },
-  { icon: Hammer,     label: "Assembly & Mounting", desc: "Furniture, TV mounts & shelves",   href: "/register?category=GENERAL",     from: "#A855F7", rate: "$50–$100/hr", img: P(5974041) },
-  { icon: Settings2,  label: "General",             desc: "Odd jobs & home repairs",          href: "/register?category=GENERAL",     from: "#F43F5E", rate: "$50–$90/hr",  img: P(3637786) },
+  { emoji: "🔧", label: "Plumbing",           desc: "Leaks, pipes & installations",     href: "/register?category=PLUMBING",    from: "#3B82F6", rate: "$75–$150/hr" },
+  { emoji: "⚡", label: "Electrical",          desc: "Wiring, panels & smart home",      href: "/register?category=ELECTRICAL",  from: "#F59E0B", rate: "$80–$150/hr" },
+  { emoji: "🪚", label: "Carpentry",           desc: "Furniture, floors & custom work",  href: "/register?category=CARPENTRY",   from: "#F97316", rate: "$50–$100/hr" },
+  { emoji: "🎨", label: "Painting",            desc: "Interior & exterior finishes",     href: "/register?category=PAINTING",    from: "#EC4899", rate: "$40–$80/hr"  },
+  { emoji: "❄️", label: "HVAC",               desc: "AC, heating & air quality",        href: "/register?category=HVAC",        from: "#06B6D4", rate: "$80–$150/hr" },
+  { emoji: "🌿", label: "Landscaping",         desc: "Lawn care & garden design",        href: "/register?category=LANDSCAPING", from: "#22C55E", rate: "$35–$65/hr"  },
+  { emoji: "🧹", label: "Cleaning",            desc: "Deep clean, recurring & move-out", href: "/register?category=CLEANING",    from: "#10B981", rate: "$25–$50/hr"  },
+  { emoji: "🚚", label: "Moving",              desc: "Local moves, packing & hauling",   href: "/register?category=MOVING",      from: "#6366F1", rate: "$90–$140/hr" },
+  { emoji: "🧺", label: "Wash & Fold",         desc: "Laundry pickup, wash & delivery",  href: "/register?category=CLEANING",    from: "#0EA5E9", rate: "$1.50–$2/lb" },
+  { emoji: "🔩", label: "Assembly & Mounting", desc: "Furniture, TV mounts & shelves",   href: "/register?category=GENERAL",     from: "#A855F7", rate: "$50–$100/hr" },
+  { emoji: "🛠️", label: "General",            desc: "Odd jobs & home repairs",          href: "/register?category=GENERAL",     from: "#F43F5E", rate: "$50–$90/hr"  },
 ];
 
 const steps = [
@@ -407,7 +404,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {services.map(({ icon: Icon, label, desc, href, from, rate, img }, i) => (
+            {services.map(({ emoji, label, desc, href, from, rate }, i) => (
               <motion.div
                 key={label}
                 initial={{ opacity: 0, y: 30 }}
@@ -418,39 +415,27 @@ export default function HomePage() {
                 <Link href={href}>
                   <TiltCard>
                     <motion.div
-                      whileHover={{ scale: 1.03 }}
-                      className="relative group rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-300 h-52"
+                      whileHover={{ y: -4, boxShadow: `0 12px 32px ${from}30` }}
+                      transition={{ duration: 0.2 }}
+                      className="group bg-white border border-orange-100 rounded-2xl p-5 cursor-pointer flex flex-col items-center text-center gap-3 hover:border-orange-200 transition-colors h-52 justify-center"
                     >
-                      {/* Background photo */}
-                      <img
-                        src={img}
-                        alt={label}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        style={{ backgroundColor: from }}
-                      />
-                      {/* Gradient overlay */}
-                      <div
-                        className="absolute inset-0"
-                        style={{ background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 55%, ${from}66 100%)` }}
-                      />
-                      {/* Rate badge top-right */}
-                      <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-1 rounded-full">
-                        {rate}
-                      </div>
-                      {/* Icon top-left */}
-                      <div
-                        className="absolute top-3 left-3 w-9 h-9 rounded-xl flex items-center justify-center"
-                        style={{ background: `${from}dd` }}
+                      {/* Rate badge */}
+                      <span
+                        className="text-[11px] font-bold px-2.5 py-0.5 rounded-full"
+                        style={{ background: `${from}18`, color: from }}
                       >
-                        <Icon className="w-4 h-4 text-white" />
+                        {rate}
+                      </span>
+                      {/* Emoji */}
+                      <span className="text-5xl leading-none select-none">{emoji}</span>
+                      {/* Label + desc */}
+                      <div>
+                        <h3 className="text-gray-900 font-bold text-base leading-tight">{label}</h3>
+                        <p className="text-gray-400 text-xs mt-1 leading-snug">{desc}</p>
                       </div>
-                      {/* Text bottom */}
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <h3 className="text-white font-bold text-base leading-tight mb-0.5">{label}</h3>
-                        <p className="text-white/70 text-xs leading-snug mb-2">{desc}</p>
-                        <div className="flex items-center gap-1 text-xs font-semibold text-white/90">
-                          Book Now <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                        </div>
+                      {/* Book now */}
+                      <div className="flex items-center gap-1 text-xs font-semibold" style={{ color: from }}>
+                        Book Now <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </motion.div>
                   </TiltCard>
