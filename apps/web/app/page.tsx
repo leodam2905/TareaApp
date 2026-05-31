@@ -10,6 +10,8 @@ import {
   Star, Shield, Clock, CheckCircle2, ArrowRight,
   Phone, Mail, MapPin, Sparkles, Users, TrendingUp,
   ChevronDown, Wrench,
+  Droplets, Zap, Paintbrush, Wind, TreePine, SprayCan,
+  Truck, Shirt, Hammer, Settings2, Package,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import DiagnoseSection from "@/components/ui/DiagnoseSection";
@@ -36,20 +38,18 @@ function VideoBg() {
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
-const OM = (code: string) => `https://openmoji.org/data/color/svg/${code}.svg`;
-
 const services = [
-  { icon: OM("1F527"), label: "Plumbing",           desc: "Leaks, pipes & installations",     href: "/register?category=PLUMBING",    from: "#3B82F6", rate: "$75–$150/hr" },
-  { icon: OM("26A1"),  label: "Electrical",          desc: "Wiring, panels & smart home",      href: "/register?category=ELECTRICAL",  from: "#F59E0B", rate: "$80–$150/hr" },
-  { icon: OM("1FA9A"), label: "Carpentry",           desc: "Furniture, floors & custom work",  href: "/register?category=CARPENTRY",   from: "#F97316", rate: "$50–$100/hr" },
-  { icon: OM("1F3A8"), label: "Painting",            desc: "Interior & exterior finishes",     href: "/register?category=PAINTING",    from: "#EC4899", rate: "$40–$80/hr"  },
-  { icon: OM("2744"),  label: "HVAC",                desc: "AC, heating & air quality",        href: "/register?category=HVAC",        from: "#06B6D4", rate: "$80–$150/hr" },
-  { icon: OM("1F33F"), label: "Landscaping",         desc: "Lawn care & garden design",        href: "/register?category=LANDSCAPING", from: "#22C55E", rate: "$35–$65/hr"  },
-  { icon: OM("1F9F9"), label: "Cleaning",            desc: "Deep clean, recurring & move-out", href: "/register?category=CLEANING",    from: "#10B981", rate: "$25–$50/hr"  },
-  { icon: OM("1F69A"), label: "Moving",              desc: "Local moves, packing & hauling",   href: "/register?category=MOVING",      from: "#6366F1", rate: "$90–$140/hr" },
-  { icon: OM("1F9FA"), label: "Wash & Fold",         desc: "Laundry pickup, wash & delivery",  href: "/register?category=CLEANING",    from: "#0EA5E9", rate: "$1.50–$2/lb" },
-  { icon: OM("1F529"), label: "Assembly & Mounting", desc: "Furniture, TV mounts & shelves",   href: "/register?category=GENERAL",     from: "#A855F7", rate: "$50–$100/hr" },
-  { icon: OM("1F6E0"), label: "General",             desc: "Odd jobs & home repairs",          href: "/register?category=GENERAL",     from: "#F43F5E", rate: "$50–$90/hr"  },
+  { Icon: Droplets,  label: "Plumbing",           desc: "Leaks, pipes & installations",     href: "/register?category=PLUMBING",    from: "#3B82F6", rate: "$75–$150/hr" },
+  { Icon: Zap,       label: "Electrical",          desc: "Wiring, panels & smart home",      href: "/register?category=ELECTRICAL",  from: "#F59E0B", rate: "$80–$150/hr" },
+  { Icon: Hammer,    label: "Carpentry",           desc: "Furniture, floors & custom work",  href: "/register?category=CARPENTRY",   from: "#F97316", rate: "$50–$100/hr" },
+  { Icon: Paintbrush,label: "Painting",            desc: "Interior & exterior finishes",     href: "/register?category=PAINTING",    from: "#EC4899", rate: "$40–$80/hr"  },
+  { Icon: Wind,      label: "HVAC",                desc: "AC, heating & air quality",        href: "/register?category=HVAC",        from: "#06B6D4", rate: "$80–$150/hr" },
+  { Icon: TreePine,  label: "Landscaping",         desc: "Lawn care & garden design",        href: "/register?category=LANDSCAPING", from: "#22C55E", rate: "$35–$65/hr"  },
+  { Icon: SprayCan,  label: "Cleaning",            desc: "Deep clean, recurring & move-out", href: "/register?category=CLEANING",    from: "#10B981", rate: "$25–$50/hr"  },
+  { Icon: Truck,     label: "Moving",              desc: "Local moves, packing & hauling",   href: "/register?category=MOVING",      from: "#6366F1", rate: "$90–$140/hr" },
+  { Icon: Shirt,     label: "Wash & Fold",         desc: "Laundry pickup, wash & delivery",  href: "/register?category=CLEANING",    from: "#0EA5E9", rate: "$1.50–$2/lb" },
+  { Icon: Wrench,    label: "Assembly & Mounting", desc: "Furniture, TV mounts & shelves",   href: "/register?category=GENERAL",     from: "#A855F7", rate: "$50–$100/hr" },
+  { Icon: Settings2, label: "General",             desc: "Odd jobs & home repairs",          href: "/register?category=GENERAL",     from: "#F43F5E", rate: "$50–$90/hr"  },
 ];
 
 const steps = [
@@ -406,7 +406,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {services.map(({ icon, label, desc, href, from, rate }, i) => (
+            {services.map(({ Icon, label, desc, href, from, rate }, i) => (
               <motion.div
                 key={label}
                 initial={{ opacity: 0, y: 30 }}
@@ -427,10 +427,10 @@ export default function HomePage() {
                         style={{ background: `linear-gradient(135deg, ${from}18 0%, ${from}08 100%)` }}
                       >
                         <div
-                          className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-md mb-1 bg-white"
-                          style={{ boxShadow: `0 6px 20px ${from}40` }}
+                          className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-md mb-1"
+                          style={{ background: `linear-gradient(135deg, ${from}22, ${from}44)`, border: `2px solid ${from}44`, boxShadow: `0 6px 20px ${from}30` }}
                         >
-                          <img src={icon} alt={label} className="w-10 h-10 object-contain" />
+                          <Icon className="w-8 h-8" style={{ color: from }} strokeWidth={1.5} />
                         </div>
                       </div>
                       {/* White bottom with text */}
