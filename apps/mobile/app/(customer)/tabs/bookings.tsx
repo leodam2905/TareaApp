@@ -1,110 +1,111 @@
-import { useEffect, useState, useCallback } from "react";
-import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl } from "react-native";
-import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { api } from "../../../constants/api";
-import { colors, fontSize, radius, spacing } from "../../../constants/theme";
+import { useState, useCallback } from "react";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect, useRouter } from "expo-router";
+import { api } from "@/lib/api";
+import { C } from "@/constants/colors";
 
-const CATEGORY_ICONS: Record<string, string> = {
-  PLUMBING: "🔧", ELECTRICAL: "⚡", CARPENTRY: "🪚", PAINTING: "🎨",
-  CLEANING: "🧹", HVAC: "❄️", ROOFING: "🏠", LANDSCAPING: "🌿",
-  MOVING: "📦", APPLIANCE_REPAIR: "🔌", GENERAL: "🛠️",
+type Booking = { id: string; status: string; service: { title: string; category: string }; handyman: { name: string }; scheduledAt: string; totalPrice: number };
+
+const FILTERS = ["ALL", "PENDING", "ACCEPTED", "IN_PROGRESS", "COMPLETED", "CANCELLED"] as const;
+
+const STATUS_COLOR: Record<string, string> = {
+  PENDING: C.amber, ACCEPTED: C.sky, IN_PROGRESS: C.orange, COMPLETED: C.emerald, CANCELLED: C.red,
 };
 
-const STATUS_COLORS: Record<string, string> = {
-  PENDING: "#F59E0B", ACCEPTED: "#38BDF8", IN_PROGRESS: "#38BDF8",
-  COMPLETED: "#10B981", CANCELLED: "#EF4444", DISPUTED: "#EF4444",
-};
-
-interface Booking {
-  id: string; status: string; scheduledAt: string; totalPrice: number;
-  isOnMyWay: boolean;
-  service: { title: string; category: string };
-  handyman: { name: string; phone: string | null };
-  review: { id: string } | null;
-}
-
-export default function CustomerBookingsScreen() {
+export default function CustomerBookings() {
   const router = useRouter();
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [bookings, setBookings]   = useState<Booking[]>([]);
+  const [filter, setFilter]       = useState<string>("ALL");
+  const [loading, setLoading]     = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const load = useCallback(async () => {
+  const load = async () => {
     try {
       const res = await api.get("/bookings");
-      setBookings(res.data);
+      if (res.ok) setBookings(await res.json());
     } finally { setLoading(false); setRefreshing(false); }
-  }, []);
+  };
 
-  useEffect(() => { load(); }, [load]);
+  useFocusEffect(useCallback(() => { load(); }, []));
 
-  if (loading) return <View style={styles.center}><ActivityIndicator color={colors.skyBlue} size="large" /></View>;
+  const filtered = filter === "ALL" ? bookings : bookings.filter(b => b.status === filter);
+
+  const renderItem = ({ item: b }: { item: Booking }) => (
+    <TouchableOpacity style={s.card} onPress={() => router.push({ pathname: "/(customer)/booking-detail" as any, params: { id: b.id } })}>
+      <View style={s.cardTop}>
+        <View style={{ flex: 1 }}>
+          <Text style={s.serviceTitle}>{b.service.title}</Text>
+          <Text style={s.meta}>{b.handyman.name}</Text>
+          <Text style={s.meta}>{new Date(b.scheduledAt).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</Text>
+        </View>
+        <View>
+          <View style={[s.badge, { backgroundColor: (STATUS_COLOR[b.status] ?? C.slate400) + "22" }]}>
+            <Text style={[s.badgeText, { color: STATUS_COLOR[b.status] ?? C.slate400 }]}>{b.status.replace("_", " ")}</Text>
+          </View>
+          <Text style={s.price}>${b.totalPrice}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={styles.header}>
-        <Text style={styles.title}>My Bookings</Text>
+    <SafeAreaView style={s.safe}>
+      <View style={s.header}>
+        <Text style={s.title}>My Bookings</Text>
       </View>
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={colors.skyBlue} />}
-      >
-        {bookings.length === 0 ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>No bookings yet.</Text>
-            <Pressable style={styles.btn} onPress={() => router.push("/(customer)/tabs/browse")}>
-              <Text style={styles.btnText}>Browse Services</Text>
-            </Pressable>
-          </View>
-        ) : bookings.map((b, i) => (
-          <View key={b.id} entering={FadeInDown.delay(i * 50)}>
-            <Pressable style={styles.card} onPress={() => router.push(`/booking/${b.id}` as never)}>
-              <Text style={styles.icon}>{CATEGORY_ICONS[b.service.category] || "🛠️"}</Text>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.serviceTitle} numberOfLines={1}>{b.service.title}</Text>
-                <Text style={styles.meta}>{b.handyman.name}</Text>
-                {b.isOnMyWay && ["ACCEPTED", "IN_PROGRESS"].includes(b.status) && (
-                  <Text style={styles.onWay}>🚗 Handyman is on the way!</Text>
-                )}
-                {(b as any).status === "ACCEPTED" && !(b as any).isPaid && (
-                  <Text style={styles.payAlert}>💳 Payment required</Text>
-                )}
-              </View>
-              <View style={{ alignItems: "flex-end", gap: 4 }}>
-                <Text style={styles.price}>${(b.totalPrice * 1.10).toFixed(0)}</Text>
-                <View style={[styles.badge, { backgroundColor: STATUS_COLORS[b.status] + "30" }]}>
-                  <Text style={[styles.badgeText, { color: STATUS_COLORS[b.status] }]}>{b.status.replace("_", " ")}</Text>
-                </View>
-                {b.status === "COMPLETED" && !b.review && (
-                  <Text style={styles.reviewLink}>⭐ Review</Text>
-                )}
-              </View>
-            </Pressable>
-          </View>
-        ))}
-      </ScrollView>
-    </View>
+
+      {/* Filter bar */}
+      <FlatList
+        horizontal
+        data={FILTERS}
+        keyExtractor={f => f}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={s.filterBar}
+        renderItem={({ item: f }) => (
+          <TouchableOpacity
+            style={[s.filterChip, filter === f && s.filterChipActive]}
+            onPress={() => setFilter(f)}
+          >
+            <Text style={[s.filterText, filter === f && s.filterTextActive]}>
+              {f.replace("_", " ")}
+            </Text>
+          </TouchableOpacity>
+        )}
+      />
+
+      {loading
+        ? <View style={s.center}><ActivityIndicator color={C.sky} size="large" /></View>
+        : filtered.length === 0
+          ? <View style={s.center}><Text style={s.empty}>No bookings{filter !== "ALL" ? ` with status ${filter}` : ""}.</Text></View>
+          : <FlatList
+              data={filtered}
+              keyExtractor={b => b.id}
+              renderItem={renderItem}
+              contentContainerStyle={{ padding: 16, gap: 12 }}
+              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={C.sky} />}
+            />
+      }
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  center: { flex: 1, backgroundColor: colors.background, alignItems: "center", justifyContent: "center" },
-  header: { paddingTop: 60, paddingHorizontal: spacing.xl, paddingBottom: spacing.md },
-  title: { fontSize: fontSize["2xl"], fontWeight: "800", color: colors.white },
-  scroll: { padding: spacing.xl, gap: spacing.sm, paddingBottom: 100 },
-  empty: { alignItems: "center", paddingTop: 60, gap: spacing.md },
-  emptyText: { color: colors.inkSubtle, fontSize: fontSize.base },
-  btn: { backgroundColor: colors.skyBlue, paddingHorizontal: spacing.xl, paddingVertical: 12, borderRadius: radius.lg },
-  btnText: { color: colors.ink, fontWeight: "700", fontSize: fontSize.base },
-  card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.md, flexDirection: "row", alignItems: "center", gap: spacing.md, borderWidth: 1, borderColor: colors.cardBorder },
-  icon: { fontSize: 28 },
-  serviceTitle: { color: colors.white, fontWeight: "700", fontSize: fontSize.sm },
-  meta: { color: colors.inkSubtle, fontSize: fontSize.xs, marginTop: 2 },
-  onWay: { color: colors.success, fontSize: fontSize.xs, marginTop: 2, fontWeight: "600" },
-  price: { color: colors.skyBlue, fontWeight: "800", fontSize: fontSize.base },
-  badge: { borderRadius: radius.full, paddingHorizontal: 8, paddingVertical: 3 },
-  badgeText: { fontSize: 10, fontWeight: "700" },
-  reviewLink: { color: "#F59E0B", fontSize: 10, fontWeight: "700" },
-  payAlert: { color: "#F59E0B", fontSize: 10, fontWeight: "700", marginTop: 2 },
+const s = StyleSheet.create({
+  safe:            { flex: 1, backgroundColor: C.ink },
+  center:          { flex: 1, alignItems: "center", justifyContent: "center" },
+  header:          { padding: 20, paddingBottom: 8 },
+  title:           { color: C.white, fontSize: 24, fontWeight: "800" },
+  filterBar:       { paddingHorizontal: 16, paddingVertical: 10, gap: 8 },
+  filterChip:      { borderRadius: 20, paddingHorizontal: 14, paddingVertical: 7, backgroundColor: "#1E293B", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
+  filterChipActive:{ backgroundColor: C.sky + "22", borderColor: C.sky },
+  filterText:      { color: C.slate400, fontSize: 12, fontWeight: "600" },
+  filterTextActive:{ color: C.sky },
+  card:            { backgroundColor: "#1E293B", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.07)" },
+  cardTop:         { flexDirection: "row", gap: 12 },
+  serviceTitle:    { color: C.white, fontSize: 15, fontWeight: "800" },
+  meta:            { color: C.slate400, fontSize: 12, marginTop: 2 },
+  badge:           { borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3, alignSelf: "flex-end" },
+  badgeText:       { fontSize: 10, fontWeight: "700" },
+  price:           { color: C.emerald, fontWeight: "800", fontSize: 15, textAlign: "right", marginTop: 6 },
+  empty:           { color: C.slate400, fontSize: 15 },
 });

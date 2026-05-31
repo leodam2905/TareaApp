@@ -6,12 +6,11 @@ const monorepoRoot = path.resolve(projectRoot, "../..");
 
 const config = getDefaultConfig(projectRoot);
 
-// Watch monorepo root so Metro sees all workspace packages
 config.watchFolders = [monorepoRoot];
 
-// Only alias packages that are hoisted to root but needed in mobile web
-config.resolver.extraNodeModules = {
-  "react-native-web": path.resolve(monorepoRoot, "node_modules/react-native-web"),
-};
+config.resolver.nodeModulesPaths = [
+  path.resolve(projectRoot, "node_modules"),
+  path.resolve(monorepoRoot, "node_modules"),
+];
 
 module.exports = config;

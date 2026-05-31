@@ -1,163 +1,207 @@
-import { useEffect, useState, useCallback } from "react";
-import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl, TextInput, Alert } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { api } from "../../../constants/api";
-import { colors, fontSize, radius, spacing } from "../../../constants/theme";
+import { useState, useCallback } from "react";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, TextInput, Alert } from "react-native";
+import { useRouter } from "expo-router";
+import { useFocusEffect } from "expo-router";
+import { api } from "@/lib/api";
+import { C } from "@/constants/colors";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const CATEGORY_ICONS: Record<string, string> = {
-  PLUMBING: "🔧", ELECTRICAL: "⚡", CARPENTRY: "🪚", PAINTING: "🎨",
-  CLEANING: "🧹", HVAC: "❄️", ROOFING: "🏠", LANDSCAPING: "🌿",
-  MOVING: "📦", APPLIANCE_REPAIR: "🔌", GENERAL: "🛠️",
-};
+type Job = { id: string; title: string; category: string; description: string; city: string; budgetMin: number; budgetMax: number; scheduledAt: string; distanceKm: number | null; applications: { id: string }[]; customer: { name: string } };
+type Checklist = { ica: boolean; profile: boolean; services: boolean; availability: boolean; backgroundCheck: boolean; stripe: boolean };
 
-interface JobRequest {
-  id: string; category: string; title: string; description: string;
-  city: string; scheduledAt: string; budgetMin: number; budgetMax: number;
-  distanceKm: number | null; score: number;
-  customer: { name: string };
-  applications: { id: string }[];
-}
+const STEPS = [
+  { key: "ica",             label: "Sign Agreement",     href: "/(handyman)/ica" },
+  { key: "profile",         label: "Complete Profile",   href: "/(handyman)/onboarding-profile" },
+  { key: "services",        label: "Add Services",       href: "/(handyman)/onboarding-services" },
+  { key: "availability",    label: "Set Availability",   href: "/(handyman)/onboarding-availability" },
+  { key: "backgroundCheck", label: "Background Check",  href: "/(handyman)/background-check" },
+  { key: "stripe",          label: "Connect Payout",    href: "/(handyman)/tabs/earnings" },
+] as const;
 
 export default function FindJobsScreen() {
-  const [jobs, setJobs] = useState<JobRequest[]>([]);
-  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const [jobs, setJobs]           = useState<Job[]>([]);
+  const [checklist, setChecklist] = useState<Checklist | null>(null);
+  const [loading, setLoading]     = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [expanded, setExpanded] = useState<string | null>(null);
-  const [applied, setApplied] = useState<Set<string>>(new Set());
-  const [sending, setSending] = useState<string | null>(null);
-  const [message, setMessage] = useState("");
-  const [price, setPrice] = useState("");
+  const [expanded, setExpanded]   = useState<string | null>(null);
+  const [applied, setApplied]     = useState<Set<string>>(new Set());
+  const [message, setMessage]     = useState("");
+  const [price, setPrice]         = useState("");
+  const [sending, setSending]     = useState(false);
 
   const load = useCallback(async () => {
-    try {
-      const res = await api.get("/job-requests");
-      setJobs(Array.isArray(res.data) ? res.data : []);
-    } finally { setLoading(false); setRefreshing(false); }
+    const [cRes, jRes] = await Promise.all([
+      api.get("/handyman/checklist"),
+      api.get("/job-requests"),
+    ]);
+    if (cRes.ok) setChecklist(await cRes.json());
+    if (jRes.ok) { const d = await jRes.json(); if (Array.isArray(d)) setJobs(d); }
+    setLoading(false); setRefreshing(false);
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useFocusEffect(useCallback(() => { load(); }, [load]));
 
   const apply = async (jobId: string) => {
-    setSending(jobId);
-    try {
-      await api.post(`/job-requests/${jobId}/apply`, {
-        message: message.trim() || null,
-        proposedPrice: price || null,
-      });
-      setApplied(prev => new Set(Array.from(prev).concat(jobId)));
-      setJobs(prev => prev.filter(j => j.id !== jobId));
-      setExpanded(null);
-      setMessage(""); setPrice("");
-      Alert.alert("Applied!", "The customer will be notified.");
-    } catch (e: unknown) {
-      Alert.alert("Error", (e as { response?: { data?: { error?: string } } }).response?.data?.error || "Failed to apply");
+    setSending(true);
+    const res = await api.post(`/job-requests/${jobId}/apply`, { message: message.trim() || null, proposedPrice: price || null });
+    if (res.ok) {
+      setApplied(p => new Set([...p, jobId]));
+      setJobs(p => p.filter(j => j.id !== jobId));
+      setExpanded(null); setMessage(""); setPrice("");
+    } else {
+      const b = await res.json();
+      Alert.alert("Error", b.error || "Failed to apply");
     }
-    setSending(null);
+    setSending(false);
   };
 
-  if (loading) return <View style={styles.center}><ActivityIndicator color={colors.skyBlue} size="large" /></View>;
+  const setupDone = checklist ? Object.values(checklist).every(Boolean) : false;
+  const completedCount = checklist ? Object.values(checklist).filter(Boolean).length : 0;
+
+  if (loading) return <View style={s.center}><ActivityIndicator color={C.sky} size="large" /></View>;
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Find Jobs</Text>
-        <Text style={styles.subtitle}>Open requests matching your skills</Text>
-      </View>
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={colors.skyBlue} />}
-      >
-        {jobs.length === 0 ? (
-          <View style={styles.empty}>
-            <Text style={{ fontSize: 40 }}>🎉</Text>
-            <Text style={styles.emptyTitle}>All caught up!</Text>
-            <Text style={styles.emptyText}>No open requests right now. Check back soon.</Text>
+    <SafeAreaView style={s.safe}>
+      <ScrollView style={s.scroll}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={C.sky} />}>
+        <View style={s.header}>
+          <Text style={s.title}>Find Jobs</Text>
+          <Text style={s.sub}>Browse open job requests near you</Text>
+        </View>
+
+        {/* Checklist gate */}
+        {checklist && !setupDone && (
+          <View style={s.card}>
+            <Text style={s.cardTitle}>Complete setup to browse jobs</Text>
+            <Text style={s.cardSub}>{completedCount}/6 steps done</Text>
+            <View style={s.progressTrack}>
+              <View style={[s.progressFill, { width: `${(completedCount / 6) * 100}%` as any }]} />
+            </View>
+            {STEPS.map(step => {
+              const done = checklist[step.key as keyof Checklist];
+              return (
+                <TouchableOpacity key={step.key} style={[s.stepRow, done && s.stepDone]}
+                  onPress={() => !done && router.push(step.href as any)}>
+                  <Text style={s.stepEmoji}>{done ? "✅" : "⭕"}</Text>
+                  <Text style={[s.stepLabel, done && s.stepLabelDone]}>{step.label}</Text>
+                  {!done && <Text style={s.stepArrow}>›</Text>}
+                </TouchableOpacity>
+              );
+            })}
           </View>
-        ) : jobs.map((job, i) => {
+        )}
+
+        {/* Jobs */}
+        {setupDone && jobs.length === 0 && (
+          <View style={s.empty}>
+            <Text style={s.emptyEmoji}>🎉</Text>
+            <Text style={s.emptyTitle}>All caught up!</Text>
+            <Text style={s.emptySub}>No new job requests right now. Check back soon.</Text>
+          </View>
+        )}
+
+        {setupDone && jobs.map((job, i) => {
           const isExpanded = expanded === job.id;
+          const wasApplied = applied.has(job.id);
           return (
-            <View key={job.id} entering={FadeInDown.delay(i * 50)}>
-              <View style={[styles.card, i === 0 && styles.bestCard]}>
-                {i === 0 && (
-                  <View style={styles.bestBadge}><Text style={styles.bestBadgeText}>⭐ Best match</Text></View>
+            <View key={job.id} style={[s.jobCard, i === 0 && s.jobCardTop]}>
+              {i === 0 && <Text style={s.bestMatch}>⭐ Best match</Text>}
+              <View style={s.jobHeader}>
+                <View style={s.jobInfo}>
+                  <Text style={s.jobTitle}>{job.title}</Text>
+                  <Text style={s.jobCity}>📍 {job.city}{job.distanceKm != null ? ` · ${job.distanceKm.toFixed(0)} km` : ""}</Text>
+                </View>
+                <Text style={s.jobBudget}>${job.budgetMin}–${job.budgetMax}</Text>
+              </View>
+              <Text style={s.jobDesc} numberOfLines={isExpanded ? undefined : 2}>{job.description}</Text>
+              {job.applications.length > 0 && <Text style={s.jobApps}>⚡ {job.applications.length} applied</Text>}
+
+              <View style={s.jobActions}>
+                <TouchableOpacity style={s.detailBtn} onPress={() => setExpanded(isExpanded ? null : job.id)}>
+                  <Text style={s.detailBtnText}>{isExpanded ? "Less" : "Details"}</Text>
+                </TouchableOpacity>
+                {!wasApplied && !isExpanded && (
+                  <TouchableOpacity style={s.applyBtn} onPress={() => setExpanded(job.id)}>
+                    <Text style={s.applyBtnText}>Apply →</Text>
+                  </TouchableOpacity>
                 )}
-                <View style={styles.cardRow}>
-                  <Text style={styles.icon}>{CATEGORY_ICONS[job.category] || "🛠️"}</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.jobTitle}>{job.title}</Text>
-                    <Text style={styles.budget}>${job.budgetMin}–${job.budgetMax}</Text>
-                    <Text style={styles.meta}>
-                      📍 {job.city}{job.distanceKm !== null ? ` · ${job.distanceKm.toFixed(0)} km` : ""}
-                      {job.applications.length > 0 ? `  ⚡ ${job.applications.length} applied` : ""}
-                    </Text>
+                {wasApplied && <View style={s.appliedBadge}><Text style={s.appliedText}>✓ Applied</Text></View>}
+              </View>
+
+              {isExpanded && !wasApplied && (
+                <View style={s.applyForm}>
+                  <Text style={s.formLabel}>Message (optional)</Text>
+                  <TextInput style={s.formInput} value={message} onChangeText={setMessage}
+                    placeholder="Describe your approach…" placeholderTextColor={C.slate500} multiline numberOfLines={3} />
+                  <Text style={s.formLabel}>Your price offer $ (optional)</Text>
+                  <TextInput style={s.formInput} value={price} onChangeText={setPrice}
+                    placeholder="Leave blank to accept budget" placeholderTextColor={C.slate500} keyboardType="numeric" />
+                  <View style={s.formBtns}>
+                    <TouchableOpacity style={s.cancelBtn} onPress={() => setExpanded(null)}>
+                      <Text style={s.cancelBtnText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[s.sendBtn, sending && s.sendBtnDisabled]} onPress={() => apply(job.id)} disabled={sending}>
+                      <Text style={s.sendBtnText}>{sending ? "Sending…" : "Send Application"}</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
-                {isExpanded && (
-                  <View style={styles.expandSection}>
-                    <Text style={styles.desc}>{job.description}</Text>
-                    <View style={styles.applyForm}>
-                      <TextInput
-                        style={styles.textarea}
-                        placeholder="Message (optional)"
-                        placeholderTextColor={colors.inkSubtle}
-                        value={message}
-                        onChangeText={setMessage}
-                        multiline
-                        numberOfLines={2}
-                      />
-                      <TextInput
-                        style={styles.priceInput}
-                        placeholder="Your price ($) — optional"
-                        placeholderTextColor={colors.inkSubtle}
-                        value={price}
-                        onChangeText={setPrice}
-                        keyboardType="numeric"
-                      />
-                      <Pressable style={[styles.sendBtn, sending === job.id && { opacity: 0.7 }]}
-                        onPress={() => apply(job.id)} disabled={sending === job.id}>
-                        <Text style={styles.sendBtnText}>{sending === job.id ? "Sending…" : "Send Application"}</Text>
-                      </Pressable>
-                    </View>
-                  </View>
-                )}
-                <Pressable style={styles.detailBtn} onPress={() => setExpanded(isExpanded ? null : job.id)}>
-                  <Ionicons name={isExpanded ? "chevron-up" : "chevron-down"} size={14} color={colors.inkSubtle} />
-                  <Text style={styles.detailBtnText}>{isExpanded ? "Collapse" : "Apply"}</Text>
-                </Pressable>
-              </View>
+              )}
             </View>
           );
         })}
+        <View style={{ height: 32 }} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  center: { flex: 1, backgroundColor: colors.background, alignItems: "center", justifyContent: "center" },
-  header: { paddingTop: 60, paddingHorizontal: spacing.xl, paddingBottom: spacing.md },
-  title: { fontSize: fontSize["2xl"], fontWeight: "800", color: colors.white },
-  subtitle: { color: colors.inkSubtle, fontSize: fontSize.sm, marginTop: 2 },
-  scroll: { padding: spacing.xl, gap: spacing.md, paddingBottom: 100 },
-  empty: { alignItems: "center", paddingTop: 60, gap: spacing.sm },
-  emptyTitle: { color: colors.white, fontWeight: "700", fontSize: fontSize.lg },
-  emptyText: { color: colors.inkSubtle, fontSize: fontSize.sm, textAlign: "center" },
-  card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.md, borderWidth: 1, borderColor: colors.cardBorder },
-  bestCard: { borderColor: colors.skyBlue + "50", backgroundColor: colors.skyBlue + "08" },
-  bestBadge: { backgroundColor: colors.skyBlue + "20", alignSelf: "flex-start", borderRadius: radius.full, paddingHorizontal: 10, paddingVertical: 3, marginBottom: spacing.sm },
-  bestBadgeText: { color: colors.skyBlue, fontSize: fontSize.xs, fontWeight: "700" },
-  cardRow: { flexDirection: "row", alignItems: "flex-start", gap: spacing.md },
-  icon: { fontSize: 28, marginTop: 2 },
-  jobTitle: { color: colors.white, fontWeight: "700", fontSize: fontSize.base },
-  budget: { color: colors.skyBlue, fontWeight: "800", fontSize: fontSize.sm, marginTop: 2 },
-  meta: { color: colors.inkSubtle, fontSize: fontSize.xs, marginTop: 4 },
-  expandSection: { marginTop: spacing.md, gap: spacing.sm, borderTopWidth: 1, borderTopColor: colors.cardBorder, paddingTop: spacing.md },
-  desc: { color: "rgba(255,255,255,0.65)", fontSize: fontSize.sm, lineHeight: 20 },
-  applyForm: { gap: spacing.sm },
-  textarea: { backgroundColor: "rgba(255,255,255,0.06)", borderRadius: radius.md, padding: spacing.md, color: colors.white, fontSize: fontSize.sm, borderWidth: 1, borderColor: colors.cardBorder },
-  priceInput: { backgroundColor: "rgba(255,255,255,0.06)", borderRadius: radius.md, padding: spacing.md, color: colors.white, fontSize: fontSize.sm, borderWidth: 1, borderColor: colors.cardBorder },
-  sendBtn: { backgroundColor: colors.skyBlue, borderRadius: radius.lg, paddingVertical: 12, alignItems: "center" },
-  sendBtnText: { color: colors.ink, fontWeight: "800", fontSize: fontSize.base },
-  detailBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4, marginTop: spacing.md },
-  detailBtnText: { color: colors.inkSubtle, fontSize: fontSize.xs, fontWeight: "600" },
+const s = StyleSheet.create({
+  safe:           { flex: 1, backgroundColor: C.ink },
+  scroll:         { flex: 1 },
+  center:         { flex: 1, backgroundColor: C.ink, alignItems: "center", justifyContent: "center" },
+  header:         { padding: 24, paddingBottom: 12 },
+  title:          { color: C.white, fontSize: 28, fontWeight: "900" },
+  sub:            { color: C.slate400, fontSize: 14, marginTop: 2 },
+  card:           { margin: 16, backgroundColor: "#1E293B", borderRadius: 20, padding: 18, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
+  cardTitle:      { color: C.white, fontWeight: "800", fontSize: 16, marginBottom: 2 },
+  cardSub:        { color: C.slate400, fontSize: 13, marginBottom: 12 },
+  progressTrack:  { height: 5, backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 3, marginBottom: 14 },
+  progressFill:   { height: 5, backgroundColor: C.orange, borderRadius: 3 },
+  stepRow:        { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.05)" },
+  stepDone:       {},
+  stepEmoji:      { fontSize: 16 },
+  stepLabel:      { flex: 1, color: C.white, fontSize: 14, fontWeight: "600" },
+  stepLabelDone:  { color: C.slate500, textDecorationLine: "line-through" },
+  stepArrow:      { color: C.sky, fontSize: 20, fontWeight: "300" },
+  empty:          { alignItems: "center", padding: 48, gap: 8 },
+  emptyEmoji:     { fontSize: 40 },
+  emptyTitle:     { color: C.white, fontSize: 18, fontWeight: "800" },
+  emptySub:       { color: C.slate400, textAlign: "center", fontSize: 14 },
+  jobCard:        { margin: 16, marginBottom: 0, backgroundColor: "#1E293B", borderRadius: 20, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
+  jobCardTop:     { borderColor: C.orange },
+  bestMatch:      { color: C.orange, fontSize: 11, fontWeight: "700", marginBottom: 8 },
+  jobHeader:      { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 },
+  jobInfo:        { flex: 1 },
+  jobTitle:       { color: C.white, fontWeight: "800", fontSize: 16 },
+  jobCity:        { color: C.slate400, fontSize: 12, marginTop: 2 },
+  jobBudget:      { color: C.emerald, fontWeight: "800", fontSize: 15 },
+  jobDesc:        { color: C.slate400, fontSize: 13, lineHeight: 19 },
+  jobApps:        { color: C.amber, fontSize: 12, marginTop: 6 },
+  jobActions:     { flexDirection: "row", gap: 8, marginTop: 12 },
+  detailBtn:      { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)" },
+  detailBtnText:  { color: C.slate400, fontSize: 13, fontWeight: "600" },
+  applyBtn:       { flex: 1, backgroundColor: C.sky, borderRadius: 10, paddingVertical: 8, alignItems: "center" },
+  applyBtnText:   { color: C.ink, fontWeight: "800", fontSize: 14 },
+  appliedBadge:   { flex: 1, backgroundColor: "rgba(16,185,129,0.1)", borderRadius: 10, paddingVertical: 8, alignItems: "center", borderWidth: 1, borderColor: "rgba(16,185,129,0.2)" },
+  appliedText:    { color: C.emerald, fontWeight: "700", fontSize: 14 },
+  applyForm:      { marginTop: 14, gap: 6, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.08)", paddingTop: 14 },
+  formLabel:      { color: C.slate400, fontSize: 12, fontWeight: "600" },
+  formInput:      { backgroundColor: "rgba(255,255,255,0.07)", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)", borderRadius: 10, padding: 12, color: C.white, fontSize: 14 },
+  formBtns:       { flexDirection: "row", gap: 8, marginTop: 4 },
+  cancelBtn:      { flex: 1, borderWidth: 1, borderColor: "rgba(255,255,255,0.12)", borderRadius: 10, paddingVertical: 10, alignItems: "center" },
+  cancelBtnText:  { color: C.slate400, fontWeight: "600" },
+  sendBtn:        { flex: 2, backgroundColor: C.sky, borderRadius: 10, paddingVertical: 10, alignItems: "center" },
+  sendBtnDisabled:{ opacity: 0.5 },
+  sendBtnText:    { color: C.ink, fontWeight: "800", fontSize: 14 },
 });

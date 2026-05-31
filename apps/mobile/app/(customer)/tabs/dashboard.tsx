@@ -1,194 +1,117 @@
-import { useEffect, useState } from "react";
-import { View, Text, ScrollView, Pressable, StyleSheet, ActivityIndicator, RefreshControl } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import * as SecureStore from "expo-secure-store";
-import { api } from "../../../constants/api";
-import { colors, fontSize, radius, spacing } from "../../../constants/theme";
+import { useState, useCallback } from "react";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter, useFocusEffect } from "expo-router";
+import { api } from "@/lib/api";
+import { C } from "@/constants/colors";
 
-const CATEGORY_ICONS: Record<string, string> = {
-  PLUMBING: "🔧", ELECTRICAL: "⚡", CARPENTRY: "🪚",
-  PAINTING: "🎨", CLEANING: "🧹", HVAC: "❄️",
-  ROOFING: "🏠", LANDSCAPING: "🌿", MOVING: "📦",
-  APPLIANCE_REPAIR: "🔌", GENERAL: "🛠️",
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  PENDING: "#F59E0B", ACCEPTED: "#38BDF8", IN_PROGRESS: "#38BDF8",
-  COMPLETED: "#10B981", CANCELLED: "#EF4444", DISPUTED: "#EF4444",
-};
-
-interface Booking {
-  id: string;
-  status: string;
-  scheduledAt: string;
-  totalPrice: number;
-  service: { title: string; category: string };
-  handyman: { name: string };
-}
+type Booking = { id: string; status: string; service: { title: string }; handyman: { name: string }; scheduledAt: string };
 
 export default function CustomerDashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<{ name: string } | null>(null);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [name, setName]         = useState("");
+  const [recent, setRecent]     = useState<Booking[]>([]);
+  const [loading, setLoading]   = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const load = async () => {
     try {
-      const [userStr, bookingsRes] = await Promise.all([
-        SecureStore.getItemAsync("tarea_user"),
-        api.get("/bookings"),
-      ]);
-      if (userStr) setUser(JSON.parse(userStr));
-      setBookings(bookingsRes.data.slice(0, 5));
-    } finally {
-      setLoading(false); setRefreshing(false);
-    }
+      const [pRes, bRes] = await Promise.all([api.get("/profile"), api.get("/bookings")]);
+      if (pRes.ok) { const p = await pRes.json(); setName(p.name ?? ""); }
+      if (bRes.ok) { const b = await bRes.json(); setRecent((b as Booking[]).slice(0, 3)); }
+    } finally { setLoading(false); setRefreshing(false); }
   };
 
-  useEffect(() => { load(); }, []);
+  useFocusEffect(useCallback(() => { load(); }, []));
 
-  const stats = [
-    { label: "Total", value: bookings.length, icon: "calendar", color: colors.skyBlue },
-    { label: "Active", value: bookings.filter((b) => ["PENDING", "ACCEPTED", "IN_PROGRESS"].includes(b.status)).length, icon: "time", color: "#F59E0B" },
-    { label: "Done", value: bookings.filter((b) => b.status === "COMPLETED").length, icon: "checkmark-circle", color: "#10B981" },
-  ];
+  const statusColor = (s: string) =>
+    ({ PENDING: C.amber, ACCEPTED: C.sky, IN_PROGRESS: C.orange, COMPLETED: C.emerald, CANCELLED: C.red }[s] ?? C.slate400);
 
-  if (loading) return (
-    <View style={styles.loading}>
-      <ActivityIndicator color={colors.skyBlue} size="large" />
-    </View>
-  );
+  if (loading) return <View style={s.center}><ActivityIndicator color={C.sky} size="large" /></View>;
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* Header */}
-      <LinearGradient colors={["#0F2560", "#1E3A8A"]} style={styles.header}>
-        <View style={styles.headerTop}>
-          <View>
-            <Text style={styles.greeting}>Good day, {user?.name?.split(" ")[0] || "there"} 👋</Text>
-            <Text style={styles.headerSub}>What do you need fixed today?</Text>
+    <SafeAreaView style={s.safe}>
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={C.sky} />}>
+        <View style={s.header}>
+          <View style={{ flex: 1 }}>
+            <Text style={s.greeting}>Hello, {name.split(" ")[0] || "there"} 👋</Text>
+            <Text style={s.sub}>What do you need help with today?</Text>
           </View>
-          <Pressable onPress={() => router.push("/notifications" as never)} style={styles.bell}>
-            <Ionicons name="notifications" size={22} color={colors.white} />
-          </Pressable>
+          <TouchableOpacity style={s.avatarBtn} onPress={() => router.push("/(customer)/tabs/profile" as any)}>
+            <Text style={s.avatarText}>{name ? name[0].toUpperCase() : "?"}</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Stats */}
-        <View style={styles.statsRow}>
-          {stats.map(({ label, value, icon, color }) => (
-            <View key={label} style={styles.statCard}>
-              <Ionicons name={icon as never} size={18} color={color} />
-              <Text style={[styles.statValue, { color }]}>{value}</Text>
-              <Text style={styles.statLabel}>{label}</Text>
-            </View>
-          ))}
-        </View>
-      </LinearGradient>
-
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={styles.scroll}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={colors.skyBlue} />}
-      >
-        {/* Quick actions */}
-        <View style={styles.quickActions}>
+        <View style={s.grid}>
           {[
-            { label: "Browse", icon: "search", color: colors.skyBlue, onPress: () => router.push("/(customer)/tabs/browse") },
-            { label: "Post Job", icon: "add-circle", color: "#F59E0B", onPress: () => router.push("/post-job/index" as never) },
-            { label: "Bookings", icon: "calendar", color: "#A78BFA", onPress: () => router.push("/(customer)/tabs/bookings") },
-            { label: "Profile", icon: "person", color: "#10B981", onPress: () => router.push("/(customer)/tabs/profile") },
-          ].map(({ label, icon, color, onPress }) => (
-            <Pressable key={label} style={({ pressed }) => [styles.quickBtn, pressed && { opacity: 0.8 }]} onPress={onPress}>
-              <View style={[styles.quickIcon, { backgroundColor: `${color}20`, borderColor: `${color}30` }]}>
-                <Ionicons name={icon as never} size={24} color={color} />
-              </View>
-              <Text style={styles.quickLabel}>{label}</Text>
-            </Pressable>
+            { emoji: "🔍", label: "Browse Pros",    route: "/(customer)/tabs/browse" },
+            { emoji: "➕", label: "Post a Job",     route: "/(customer)/tabs/post-job" },
+            { emoji: "📋", label: "My Bookings",    route: "/(customer)/tabs/bookings" },
+            { emoji: "🔔", label: "Notifications",  route: "/(customer)/tabs/notifications" },
+            { emoji: "💰", label: "Spending",       route: "/(customer)/tabs/spending" },
+            { emoji: "👤", label: "My Profile",     route: "/(customer)/tabs/profile" },
+          ].map(({ emoji, label, route }) => (
+            <TouchableOpacity key={label} style={s.card} onPress={() => router.push(route as any)}>
+              <Text style={s.cardEmoji}>{emoji}</Text>
+              <Text style={s.cardLabel}>{label}</Text>
+            </TouchableOpacity>
           ))}
         </View>
 
-        {/* Recent bookings */}
-        <View>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recent Bookings</Text>
-            <Pressable onPress={() => router.push("/(customer)/tabs/bookings")}>
-              <Text style={styles.seeAll}>See all</Text>
-            </Pressable>
-          </View>
-
-          {bookings.length === 0 ? (
-            <View style={styles.emptyCard}>
-              <Text style={styles.emptyText}>No bookings yet.</Text>
-              <Pressable style={styles.emptyBtn} onPress={() => router.push("/(customer)/tabs/browse")}>
-                <Text style={styles.emptyBtnText}>Browse Services</Text>
-              </Pressable>
+        <View style={s.section}>
+          <Text style={s.sectionTitle}>Recent Bookings</Text>
+          {recent.length === 0 ? (
+            <View style={s.empty}>
+              <Text style={s.emptyText}>No bookings yet.</Text>
+              <TouchableOpacity style={s.emptyBtn} onPress={() => router.push("/(customer)/tabs/browse" as any)}>
+                <Text style={s.emptyBtnText}>Browse Handymen →</Text>
+              </TouchableOpacity>
             </View>
-          ) : (
-            <View style={styles.bookingsList}>
-              {bookings.map((b) => (
-                <View key={b.id} style={styles.bookingCard}>
-                  <Text style={styles.bookingIcon}>{CATEGORY_ICONS[b.service.category] || "🛠️"}</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.bookingTitle} numberOfLines={1}>{b.service.title}</Text>
-                    <Text style={styles.bookingMeta}>{b.handyman.name}</Text>
-                  </View>
-                  <View style={{ alignItems: "flex-end" }}>
-                    <Text style={styles.bookingPrice}>${b.totalPrice.toFixed(0)}</Text>
-                    <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[b.status] || colors.inkSubtle }]}>
-                      <Text style={styles.statusText}>{b.status.replace("_", " ")}</Text>
-                    </View>
-                  </View>
-                </View>
-              ))}
+          ) : recent.map(b => (
+            <View key={b.id} style={s.row}>
+              <View style={{ flex: 1 }}>
+                <Text style={s.rowTitle}>{b.service.title}</Text>
+                <Text style={s.rowMeta}>{b.handyman.name} · {new Date(b.scheduledAt).toLocaleDateString()}</Text>
+              </View>
+              <View style={[s.badge, { backgroundColor: statusColor(b.status) + "22" }]}>
+                <Text style={[s.badgeText, { color: statusColor(b.status) }]}>{b.status}</Text>
+              </View>
             </View>
+          ))}
+          {recent.length > 0 && (
+            <TouchableOpacity onPress={() => router.push("/(customer)/tabs/bookings" as any)} style={s.seeAll}>
+              <Text style={s.seeAllText}>See all →</Text>
+            </TouchableOpacity>
           )}
         </View>
       </ScrollView>
-
-      {/* FAB */}
-      <Pressable style={styles.fab} onPress={() => router.push("/(customer)/tabs/browse")}>
-        <LinearGradient colors={["#0284C7", "#38BDF8"]} style={styles.fabGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-          <Ionicons name="search" size={26} color={colors.ink} />
-        </LinearGradient>
-      </Pressable>
-    </View>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  loading: { flex: 1, backgroundColor: colors.background, alignItems: "center", justifyContent: "center" },
-  header: { paddingTop: 60, paddingBottom: 24, paddingHorizontal: spacing.xl },
-  headerTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: spacing.lg },
-  greeting: { fontSize: fontSize["2xl"], fontWeight: "800", color: colors.white },
-  headerSub: { fontSize: fontSize.sm, color: "rgba(255,255,255,0.55)", marginTop: 4 },
-  bell: { width: 40, height: 40, borderRadius: 20, backgroundColor: "rgba(255,255,255,0.1)", alignItems: "center", justifyContent: "center" },
-  statsRow: { flexDirection: "row", gap: spacing.sm },
-  statCard: { flex: 1, backgroundColor: "rgba(255,255,255,0.08)", borderRadius: radius.md, padding: spacing.md, alignItems: "center", gap: 4 },
-  statValue: { fontSize: fontSize.xl, fontWeight: "800" },
-  statLabel: { fontSize: fontSize.xs, color: "rgba(255,255,255,0.5)" },
-  scroll: { padding: spacing.xl, gap: spacing.xl, paddingBottom: 120 },
-  quickActions: { flexDirection: "row", justifyContent: "space-around" },
-  quickBtn: { alignItems: "center", gap: spacing.sm },
-  quickIcon: { width: 60, height: 60, borderRadius: radius.lg, borderWidth: 1, alignItems: "center", justifyContent: "center" },
-  quickLabel: { fontSize: fontSize.sm, color: colors.white, fontWeight: "600" },
-  sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: spacing.md },
-  sectionTitle: { fontSize: fontSize.lg, fontWeight: "700", color: colors.white },
-  seeAll: { fontSize: fontSize.sm, color: colors.skyBlue, fontWeight: "600" },
-  emptyCard: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.xl, alignItems: "center", borderWidth: 1, borderColor: colors.cardBorder },
-  emptyText: { color: colors.inkSubtle, marginBottom: spacing.md },
-  emptyBtn: { backgroundColor: colors.skyBlue, paddingHorizontal: spacing.xl, paddingVertical: 12, borderRadius: radius.md },
-  emptyBtnText: { color: colors.ink, fontWeight: "700" },
-  bookingsList: { gap: spacing.sm },
-  bookingCard: { backgroundColor: colors.card, borderRadius: radius.lg, padding: spacing.md, flexDirection: "row", alignItems: "center", gap: spacing.md, borderWidth: 1, borderColor: colors.cardBorder },
-  bookingIcon: { fontSize: 28 },
-  bookingTitle: { color: colors.white, fontWeight: "600", fontSize: fontSize.sm },
-  bookingMeta: { color: colors.inkSubtle, fontSize: fontSize.xs, marginTop: 2 },
-  bookingPrice: { color: colors.skyBlue, fontWeight: "800", fontSize: fontSize.base },
-  statusDot: { borderRadius: radius.full, paddingHorizontal: 8, paddingVertical: 3, marginTop: 4 },
-  statusText: { color: colors.white, fontSize: 10, fontWeight: "700" },
-  fab: { position: "absolute", bottom: 32, right: 24, width: 60, height: 60, borderRadius: 30, overflow: "hidden", shadowColor: colors.skyBlue, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.5, shadowRadius: 20, elevation: 10 },
-  fabGradient: { width: 60, height: 60, alignItems: "center", justifyContent: "center" },
+const s = StyleSheet.create({
+  safe:         { flex: 1, backgroundColor: C.ink },
+  center:       { flex: 1, backgroundColor: C.ink, alignItems: "center", justifyContent: "center" },
+  header:       { padding: 24, paddingBottom: 16, flexDirection: "row", alignItems: "center" },
+  avatarBtn:    { width: 42, height: 42, borderRadius: 21, backgroundColor: C.sky, alignItems: "center", justifyContent: "center" },
+  avatarText:   { color: C.ink, fontWeight: "900", fontSize: 18 },
+  greeting:     { color: C.white, fontSize: 24, fontWeight: "800" },
+  sub:          { color: C.slate400, fontSize: 14, marginTop: 4 },
+  grid:         { flexDirection: "row", flexWrap: "wrap", paddingHorizontal: 16, gap: 12, marginBottom: 8 },
+  card:         { flex: 1, minWidth: "28%", backgroundColor: "#1E293B", borderRadius: 16, padding: 18, alignItems: "center", gap: 6, borderWidth: 1, borderColor: "rgba(255,255,255,0.07)" },
+  cardEmoji:    { fontSize: 26 },
+  cardLabel:    { color: C.white, fontSize: 12, fontWeight: "700", textAlign: "center" },
+  section:      { margin: 16, backgroundColor: "#1E293B", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.07)" },
+  sectionTitle: { color: C.white, fontSize: 16, fontWeight: "800", marginBottom: 12 },
+  row:          { flexDirection: "row", alignItems: "center", paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.05)" },
+  rowTitle:     { color: C.white, fontWeight: "700", fontSize: 14 },
+  rowMeta:      { color: C.slate400, fontSize: 12, marginTop: 2 },
+  badge:        { borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 },
+  badgeText:    { fontSize: 10, fontWeight: "700" },
+  seeAll:       { marginTop: 10, alignItems: "center" },
+  seeAllText:   { color: C.sky, fontWeight: "700", fontSize: 13 },
+  empty:        { alignItems: "center", paddingVertical: 20, gap: 12 },
+  emptyText:    { color: C.slate400, fontSize: 14 },
+  emptyBtn:     { backgroundColor: C.sky, borderRadius: 12, paddingHorizontal: 20, paddingVertical: 10 },
+  emptyBtnText: { color: C.ink, fontWeight: "800", fontSize: 13 },
 });

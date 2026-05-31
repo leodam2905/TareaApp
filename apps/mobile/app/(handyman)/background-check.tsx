@@ -1,222 +1,84 @@
-import { useEffect, useState } from "react";
-import { View, Text, Pressable, StyleSheet, ActivityIndicator, Alert, ScrollView } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
-import * as WebBrowser from "expo-web-browser";
+import { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Linking } from "react-native";
 import { useRouter } from "expo-router";
-import { api } from "../../constants/api";
-import { colors, fontSize, radius, spacing } from "../../constants/theme";
-
-const FEE = 29.99;
+import { api } from "@/lib/api";
+import { C } from "@/constants/colors";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BackgroundCheckScreen() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [pending, setPending] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    api.get("/handyman/background-check")
-      .then(res => {
-        const s = res.data.status;
-        if (s === "PASSED") {
-          router.replace("/(handyman)/tabs/dashboard");
-        } else if (["PAID", "IN_PROGRESS", "DEFERRED"].includes(s)) {
-          setPending(true);
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
-
-  const payNow = async () => {
-    setSubmitting(true);
-    try {
-      const res = await api.post("/handyman/background-check", { method: "now" });
-      if (res.data.checkoutUrl) {
-        await WebBrowser.openBrowserAsync(res.data.checkoutUrl);
-        const updated = await api.get("/handyman/background-check");
-        const s = updated.data.status;
-        if (s === "PASSED") {
-          router.replace("/(handyman)/tabs/dashboard");
-        } else if (["PAID", "IN_PROGRESS"].includes(s)) {
-          setPending(true);
-        } else {
-          Alert.alert("Payment incomplete", "Please complete the payment to start your background check.");
-        }
-      } else if (["PAID", "IN_PROGRESS", "PASSED"].includes(res.data.status)) {
-        setPending(true);
+  const choose = async (method: "now" | "deferred") => {
+    setLoading(true);
+    const res = await api.post("/handyman/background-check", { method });
+    if (res.ok) {
+      const data = await res.json();
+      if (method === "now" && data.checkoutUrl) {
+        await Linking.openURL(data.checkoutUrl);
       } else {
-        Alert.alert("Error", "Could not start payment. Please try again.");
+        Alert.alert("Got it!", "$29.99 will be deducted from your first payout.", [
+          { text: "Go to Dashboard", onPress: () => router.replace("/(handyman)/tabs/dashboard") },
+        ]);
       }
-    } catch {
-      Alert.alert("Error", "Something went wrong. Please try again.");
+    } else {
+      Alert.alert("Error", "Something went wrong. Try again.");
     }
-    setSubmitting(false);
+    setLoading(false);
   };
-
-  const payDeferred = async () => {
-    setSubmitting(true);
-    try {
-      await api.post("/handyman/background-check", { method: "deferred" });
-      setPending(true);
-    } catch {
-      Alert.alert("Error", "Something went wrong. Please try again.");
-    }
-    setSubmitting(false);
-  };
-
-  if (loading) {
-    return (
-      <View style={styles.loading}>
-        <ActivityIndicator color={colors.skyBlue} size="large" />
-      </View>
-    );
-  }
-
-  // Paid or deferred — waiting for results
-  if (pending) {
-    return (
-      <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <LinearGradient colors={["#0F2560", "#0F172A"]} style={styles.header}>
-          <View style={[styles.iconCircle, { backgroundColor: "rgba(245,158,11,0.15)", borderColor: "rgba(245,158,11,0.3)" }]}>
-            <Ionicons name="hourglass" size={32} color="#F59E0B" />
-          </View>
-          <Text style={styles.title}>Background Check Pending</Text>
-          <Text style={styles.subtitle}>
-            Your background check is being processed. This typically takes 1–3 business days.
-          </Text>
-        </LinearGradient>
-        <View style={styles.pendingContent}>
-          <View style={styles.pendingCard}>
-            <Ionicons name="mail-outline" size={24} color={colors.skyBlue} />
-            <Text style={styles.pendingTitle}>Check your email</Text>
-            <Text style={styles.pendingBody}>
-              Certn will send you a link to submit your personal information. Please complete it as soon as possible to avoid delays.
-            </Text>
-          </View>
-          <View style={styles.noticeCard}>
-            <Ionicons name="lock-closed" size={18} color="#F59E0B" />
-            <Text style={styles.noticeText}>
-              Your background check is currently pending. You will be able to receive bookings once your background check is complete and approved.
-            </Text>
-          </View>
-          <Pressable style={styles.dashBtn} onPress={() => router.replace("/(handyman)/tabs/dashboard")}>
-            <Text style={styles.dashBtnText}>Go to Dashboard</Text>
-          </Pressable>
-        </View>
-      </View>
-    );
-  }
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <LinearGradient colors={["#0F2560", "#0F172A"]} style={styles.header}>
-        <View style={styles.iconCircle}>
-          <Ionicons name="shield-checkmark" size={32} color={colors.skyBlue} />
-        </View>
-        <Text style={styles.title}>Background Check Required</Text>
-        <Text style={styles.subtitle}>
-          All Tarea handymen must pass a background check before entering a customer's home.
-          This one-time fee is <Text style={{ color: colors.white, fontWeight: "700" }}>${FEE.toFixed(2)}</Text>.
-        </Text>
-      </LinearGradient>
+    <SafeAreaView style={s.safe}>
+      <View style={s.container}>
+        <Text style={s.title}>Background Check</Text>
+        <Text style={s.sub}>Required before you can receive job requests from customers.</Text>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-
-        {/* Fee highlight */}
-        <View style={styles.feeCard}>
-          <Text style={styles.feeLabel}>One-time fee</Text>
-          <Text style={styles.feeAmount}>${FEE.toFixed(2)}</Text>
-          <Text style={styles.feeSub}>Powered by Certn · Typically completes in 1–3 business days</Text>
+        <View style={s.infoCard}>
+          <Text style={s.infoEmoji}>🛡️</Text>
+          <Text style={s.infoText}>All Tarea handymen must pass a background check. This protects customers and builds trust. One-time fee: <Text style={s.infoBold}>$29.99</Text></Text>
         </View>
 
-        {/* What's included */}
-        <View style={styles.includesCard}>
-          <Text style={styles.includesTitle}>What's included</Text>
-          {[
-            "Criminal history check",
-            "Sex offender registry search",
-            "Global watchlist screening",
-            "Identity verification",
-          ].map(item => (
-            <View key={item} style={styles.includesRow}>
-              <Ionicons name="checkmark-circle" size={16} color="#10B981" />
-              <Text style={styles.includesText}>{item}</Text>
-            </View>
-          ))}
-        </View>
-
-        {/* Pay Now */}
-        <Pressable
-          style={({ pressed }) => [styles.optionCard, styles.optionPrimary, pressed && { opacity: 0.85 }, submitting && { opacity: 0.6 }]}
-          onPress={payNow}
-          disabled={submitting}
-        >
-          <View style={styles.optionIcon}>
-            <Ionicons name="card" size={22} color={colors.skyBlue} />
+        {/* Pay now */}
+        <TouchableOpacity style={s.optionCard} onPress={() => choose("now")} disabled={loading}>
+          <View style={s.optionIcon}><Text style={{ fontSize: 24 }}>💳</Text></View>
+          <View style={s.optionBody}>
+            <Text style={s.optionTitle}>Pay Now — $29.99</Text>
+            <Text style={s.optionDesc}>Pay by card via Stripe. Check starts immediately and typically completes in 1–3 business days.</Text>
           </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.optionTitle}>Pay now — ${FEE.toFixed(2)}</Text>
-            <Text style={styles.optionSub}>Pay by card via Stripe. Your check starts immediately.</Text>
-          </View>
-          {submitting ? <ActivityIndicator color={colors.skyBlue} size="small" /> : <Ionicons name="chevron-forward" size={18} color={colors.skyBlue} />}
-        </Pressable>
+        </TouchableOpacity>
 
         {/* Deferred */}
-        <Pressable
-          style={({ pressed }) => [styles.optionCard, pressed && { opacity: 0.85 }, submitting && { opacity: 0.6 }]}
-          onPress={payDeferred}
-          disabled={submitting}
-        >
-          <View style={[styles.optionIcon, { backgroundColor: "rgba(255,255,255,0.08)" }]}>
-            <Ionicons name="time" size={22} color={colors.inkSubtle} />
+        <TouchableOpacity style={[s.optionCard, s.optionCardSecondary]} onPress={() => choose("deferred")} disabled={loading}>
+          <View style={[s.optionIcon, s.optionIconSecondary]}><Text style={{ fontSize: 24 }}>⏳</Text></View>
+          <View style={s.optionBody}>
+            <Text style={s.optionTitle}>Deduct from First Payout</Text>
+            <Text style={s.optionDesc}>Start working now. The $29.99 fee will be automatically deducted from your first cashout.</Text>
           </View>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.optionTitle, { color: colors.white }]}>Deduct from first payout</Text>
-            <Text style={styles.optionSub}>
-              The ${FEE.toFixed(2)} fee will be deducted from your first payout. Your background check is pending — you will receive bookings once it is approved.
-            </Text>
-          </View>
-          <Ionicons name="chevron-forward" size={18} color={colors.inkSubtle} />
-        </Pressable>
+        </TouchableOpacity>
 
-        <Text style={styles.disclaimer}>
-          Results are shared only with Tarea and are never disclosed to customers.
-        </Text>
-      </ScrollView>
-    </View>
+        {loading && <ActivityIndicator color={C.sky} style={{ marginTop: 16 }} />}
+
+        <Text style={s.note}>You can accept bookings while your check is processing. Tarea uses Checkr for all background screenings.</Text>
+      </View>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  loading: { flex: 1, backgroundColor: colors.background, alignItems: "center", justifyContent: "center" },
-  header: { paddingTop: 80, paddingBottom: 32, paddingHorizontal: spacing.xl, alignItems: "center" },
-  iconCircle: { width: 72, height: 72, borderRadius: 36, backgroundColor: "rgba(56,189,248,0.15)", borderWidth: 1, borderColor: "rgba(56,189,248,0.3)", alignItems: "center", justifyContent: "center", marginBottom: spacing.md },
-  title: { fontSize: fontSize["2xl"], fontWeight: "900", color: colors.white, textAlign: "center", marginBottom: 10 },
-  subtitle: { fontSize: fontSize.sm, color: colors.inkSubtle, textAlign: "center", lineHeight: 20 },
-  content: { padding: spacing.xl, gap: spacing.md, paddingBottom: 48 },
-  feeCard: { backgroundColor: "rgba(56,189,248,0.1)", borderRadius: radius.xl, padding: spacing.lg, borderWidth: 1, borderColor: "rgba(56,189,248,0.25)", alignItems: "center" },
-  feeLabel: { fontSize: fontSize.xs, color: colors.skyBlue, fontWeight: "700", letterSpacing: 1, textTransform: "uppercase" },
-  feeAmount: { fontSize: 40, fontWeight: "900", color: colors.white, marginVertical: 4 },
-  feeSub: { fontSize: fontSize.xs, color: colors.inkSubtle, textAlign: "center" },
-  includesCard: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, borderWidth: 1, borderColor: colors.cardBorder, gap: spacing.sm },
-  includesTitle: { fontSize: fontSize.sm, fontWeight: "700", color: colors.white, marginBottom: 2 },
-  includesRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
-  includesText: { fontSize: fontSize.sm, color: "rgba(255,255,255,0.7)" },
-  optionCard: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, borderWidth: 1, borderColor: colors.cardBorder, flexDirection: "row", alignItems: "center", gap: spacing.md },
-  optionPrimary: { borderColor: "rgba(56,189,248,0.4)", backgroundColor: "rgba(56,189,248,0.08)" },
-  optionIcon: { width: 44, height: 44, borderRadius: radius.lg, backgroundColor: "rgba(56,189,248,0.15)", alignItems: "center", justifyContent: "center", flexShrink: 0 },
-  optionTitle: { fontSize: fontSize.base, fontWeight: "700", color: colors.skyBlue, marginBottom: 2 },
-  optionSub: { fontSize: fontSize.xs, color: colors.inkSubtle, lineHeight: 17 },
-  disclaimer: { fontSize: fontSize.xs, color: "rgba(255,255,255,0.3)", textAlign: "center", lineHeight: 17 },
-  // Pending state
-  pendingContent: { flex: 1, padding: spacing.xl, gap: spacing.md },
-  pendingCard: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.xl, borderWidth: 1, borderColor: colors.cardBorder, alignItems: "center", gap: spacing.md },
-  pendingTitle: { fontSize: fontSize.lg, fontWeight: "800", color: colors.white },
-  pendingBody: { fontSize: fontSize.sm, color: colors.inkSubtle, textAlign: "center", lineHeight: 20 },
-  noticeCard: { flexDirection: "row", alignItems: "flex-start", gap: spacing.sm, backgroundColor: "rgba(245,158,11,0.1)", borderRadius: radius.lg, padding: spacing.md, borderWidth: 1, borderColor: "rgba(245,158,11,0.25)" },
-  noticeText: { flex: 1, fontSize: fontSize.sm, color: "#FCD34D", lineHeight: 20 },
-  dashBtn: { backgroundColor: "rgba(255,255,255,0.06)", borderRadius: radius.lg, paddingVertical: 14, alignItems: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
-  dashBtnText: { fontSize: fontSize.base, fontWeight: "700", color: colors.white },
+const s = StyleSheet.create({
+  safe:                { flex: 1, backgroundColor: C.ink },
+  container:           { flex: 1, padding: 24, gap: 16 },
+  title:               { color: C.white, fontSize: 26, fontWeight: "900" },
+  sub:                 { color: C.slate400, fontSize: 14, lineHeight: 20 },
+  infoCard:            { flexDirection: "row", gap: 14, backgroundColor: "rgba(56,189,248,0.08)", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: "rgba(56,189,248,0.15)", alignItems: "flex-start" },
+  infoEmoji:           { fontSize: 28 },
+  infoText:            { flex: 1, color: C.slate300, fontSize: 14, lineHeight: 20 },
+  infoBold:            { color: C.white, fontWeight: "700" },
+  optionCard:          { flexDirection: "row", gap: 14, backgroundColor: "#1E293B", borderRadius: 18, padding: 18, borderWidth: 2, borderColor: C.sky, alignItems: "flex-start" },
+  optionCardSecondary: { borderColor: "rgba(255,255,255,0.1)" },
+  optionIcon:          { width: 48, height: 48, borderRadius: 14, backgroundColor: "rgba(56,189,248,0.15)", alignItems: "center", justifyContent: "center", flexShrink: 0 },
+  optionIconSecondary: { backgroundColor: "rgba(255,255,255,0.07)" },
+  optionBody:          { flex: 1 },
+  optionTitle:         { color: C.white, fontWeight: "800", fontSize: 16, marginBottom: 4 },
+  optionDesc:          { color: C.slate400, fontSize: 13, lineHeight: 19 },
+  note:                { color: C.slate600, fontSize: 12, textAlign: "center", lineHeight: 18 },
 });

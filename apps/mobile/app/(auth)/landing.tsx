@@ -50,12 +50,12 @@ export default function LandingScreen() {
 
           {/* AI Tools */}
           <View style={s.toolsRow}>
-            <TouchableOpacity style={s.toolCard} onPress={() => router.push("/(auth)/diagnose" as any)} activeOpacity={0.85}>
+            <TouchableOpacity style={s.toolCard} onPress={() => router.push("/diagnose")} activeOpacity={0.85}>
               <Text style={s.toolEmoji}>🔍</Text>
               <Text style={s.toolTitle}>Diagnose Issue</Text>
               <Text style={s.toolDesc}>AI identifies what pro you need</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={s.toolCard} onPress={() => router.push("/(auth)/instant-quote" as any)} activeOpacity={0.85}>
+            <TouchableOpacity style={s.toolCard} onPress={() => router.push("/instant-quote")} activeOpacity={0.85}>
               <Text style={s.toolEmoji}>⚡</Text>
               <Text style={s.toolTitle}>Instant Quote</Text>
               <Text style={s.toolDesc}>Get a price before you book</Text>

@@ -1,26 +1,32 @@
 {
-  "cli": { "version": ">= 5.0.0" },
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "local"
+  },
   "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "env": {
-        "EXPO_PUBLIC_API_URL": "http://localhost:3000/api"
+      "ios": {
+        "simulator": true
       }
     },
     "preview": {
       "distribution": "internal",
-      "ios": { "simulator": true },
-      "android": { "buildType": "apk" },
-      "env": {
-        "EXPO_PUBLIC_API_URL": "https://taptarea.com/api"
+      "ios": {
+        "simulator": false
+      },
+      "android": {
+        "buildType": "apk"
       }
     },
     "production": {
-      "ios": {},
-      "android": { "buildType": "app-bundle" },
-      "env": {
-        "EXPO_PUBLIC_API_URL": "https://taptarea.com/api"
+      "autoIncrement": true,
+      "ios": {
+        "simulator": false
+      },
+      "android": {
+        "buildType": "app-bundle"
       }
     }
   },
@@ -31,7 +37,7 @@
       },
       "android": {
         "serviceAccountKeyPath": "./google-service-account.json",
-        "track": "production"
+        "track": "internal"
       }
     }
   }

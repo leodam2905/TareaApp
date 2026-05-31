@@ -1,343 +1,83 @@
-import { useRef, useState } from "react";
-import { View, Text, TextInput, Pressable, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import * as SecureStore from "expo-secure-store";
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { api } from "../../constants/api";
-import { colors, fontSize, radius, spacing } from "../../constants/theme";
-
-const schema = z.object({
-  email: z.string().email("Invalid email"),
-  password: z.string().min(1, "Password required"),
-});
-type FormData = z.infer<typeof schema>;
-
-const OTP_LENGTH = 6;
+import { API_BASE } from "@/lib/api";
+import { saveToken, saveRole } from "@/lib/storage";
+import { C } from "@/constants/colors";
 
 export default function LoginScreen() {
   const router = useRouter();
-  const [showPw, setShowPw] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [email, setEmail]       = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading]   = useState(false);
 
-  // OTP state
-  const [pendingToken, setPendingToken] = useState<string | null>(null);
-  const [phoneMask, setPhoneMask] = useState("");
-  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
-  const [resending, setResending] = useState(false);
-  const inputRefs = useRef<(TextInput | null)[]>([]);
-  // Phone collection step
-  const [requiresPhone, setRequiresPhone] = useState(false);
-  const [phoneInput, setPhoneInput] = useState("");
-
-  const { control, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(schema) });
-
-  // ── Step 1: credentials ──────────────────────────────────────────────
-  const onSubmit = async (data: FormData) => {
-    setLoading(true); setError("");
+  const submit = async () => {
+    if (!email.trim() || !password) { Alert.alert("Error", "Please enter your email and password"); return; }
+    setLoading(true);
     try {
-      const res = await api.post("/auth/login", data);
-      const { role, token } = res.data;
-      if (token) await SecureStore.setItemAsync("tarea_token", token);
-      if (role) await SecureStore.setItemAsync("tarea_role", role);
-      await SecureStore.setItemAsync("tarea_user", JSON.stringify(res.data));
-      router.replace(role === "HANDYMAN" ? "/(handyman)/tabs/dashboard" : "/(customer)/tabs/dashboard");
-    } catch (e: unknown) {
-      setError((e as { response?: { data?: { error?: string } } }).response?.data?.error || "Login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ── OTP digit change ─────────────────────────────────────────────────
-  const handleDigit = (index: number, value: string) => {
-    const digit = value.replace(/\D/g, "").slice(-1);
-    const next = [...otp];
-    next[index] = digit;
-    setOtp(next);
-    if (digit && index < OTP_LENGTH - 1) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyPress = (index: number, key: string) => {
-    if (key === "Backspace" && !otp[index] && index > 0) {
-      const next = [...otp];
-      next[index - 1] = "";
-      setOtp(next);
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
-  // ── Submit phone ─────────────────────────────────────────────────────
-  const submitPhone = async () => {
-    if (!phoneInput.trim()) { setError("Enter your phone number"); return; }
-    setLoading(true); setError("");
-    try {
-      const res = await api.post("/auth/add-phone", { pendingToken, phone: phoneInput.trim() });
-      setRequiresPhone(false);
-      setPendingToken(res.data.pendingToken);
-      setPhoneMask(res.data.phoneMask ?? "");
-    } catch (e: unknown) {
-      setError((e as { response?: { data?: { error?: string } } }).response?.data?.error || "Failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ── Step 2: verify OTP ───────────────────────────────────────────────
-  const verifyOtp = async () => {
-    const code = otp.join("");
-    if (code.length < OTP_LENGTH) { setError("Enter the full 6-digit code"); return; }
-    setLoading(true); setError("");
-    try {
-      const res = await api.post("/auth/verify-otp", { pendingToken, code });
-      await SecureStore.setItemAsync("tarea_token", res.data.token || "");
-      await SecureStore.setItemAsync("tarea_role", res.data.role);
-      await SecureStore.setItemAsync("tarea_user", JSON.stringify(res.data));
-      router.replace(res.data.role === "HANDYMAN" ? "/(handyman)/tabs/dashboard" : "/(customer)/tabs/dashboard");
-    } catch (e: unknown) {
-      setError((e as { response?: { data?: { error?: string } } }).response?.data?.error || "Verification failed");
-      setOtp(Array(OTP_LENGTH).fill(""));
-      inputRefs.current[0]?.focus();
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ── Resend OTP ───────────────────────────────────────────────────────
-  const resendOtp = async () => {
-    setResending(true);
-    try {
-      const res = await api.post("/auth/resend-otp", { pendingToken });
-      setPendingToken(res.data.pendingToken);
-      setOtp(Array(OTP_LENGTH).fill(""));
-      setError("");
+      const res  = await fetch(`${API_BASE}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
+      });
+      const data = await res.json();
+      if (!res.ok) { Alert.alert("Login failed", data.error || "Invalid credentials"); return; }
+      await saveToken(data.token);
+      await saveRole(data.role);
+      if (data.role === "HANDYMAN") router.replace("/(handyman)/tabs/dashboard");
+      else router.replace("/(customer)/tabs/dashboard");
     } catch {
-      setError("Could not resend code");
+      Alert.alert("Error", "Could not connect. Check your internet connection.");
     } finally {
-      setResending(false);
+      setLoading(false);
     }
   };
 
-  // ── Add-phone Screen ─────────────────────────────────────────────────
-  if (requiresPhone) {
-    return (
-      <LinearGradient colors={["#0F2560", "#0F172A"]} style={{ flex: 1 }}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-          <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-            <Pressable onPress={() => { setRequiresPhone(false); setPendingToken(null); }} style={styles.back}>
-              <Ionicons name="arrow-back" size={22} color={colors.white} />
-            </Pressable>
-            <View style={styles.header}>
-              <View style={styles.shieldWrap}>
-                <Ionicons name="phone-portrait" size={36} color={colors.skyBlue} />
-              </View>
-              <Text style={styles.title}>Add your phone</Text>
-              <Text style={styles.subtitle}>We'll send a verification code each time you sign in.</Text>
-            </View>
-            <View style={styles.form}>
-              {error ? <Text style={styles.errorBanner}>{error}</Text> : null}
-              <View style={styles.fieldWrap}>
-                <Text style={styles.label}>Phone number</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="+1 (555) 000-0000"
-                  placeholderTextColor={colors.inkSubtle}
-                  keyboardType="phone-pad"
-                  value={phoneInput}
-                  onChangeText={setPhoneInput}
-                  autoFocus
-                />
-              </View>
-              <Pressable
-                style={({ pressed }) => [styles.btnPrimary, pressed && { opacity: 0.85 }, loading && { opacity: 0.7 }]}
-                onPress={submitPhone}
-                disabled={loading}
-              >
-                <Text style={styles.btnPrimaryText}>{loading ? "Sending…" : "Send Verification Code"}</Text>
-              </Pressable>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </LinearGradient>
-    );
-  }
-
-  // ── OTP Screen ───────────────────────────────────────────────────────
-  if (pendingToken) {
-    return (
-      <LinearGradient colors={["#0F2560", "#0F172A"]} style={{ flex: 1 }}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-          <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-            <Pressable onPress={() => { setPendingToken(null); setOtp(Array(OTP_LENGTH).fill("")); }} style={styles.back}>
-              <Ionicons name="arrow-back" size={22} color={colors.white} />
-            </Pressable>
-
-            <View style={styles.header}>
-              <View style={styles.shieldWrap}>
-                <Ionicons name="shield-checkmark" size={36} color={colors.skyBlue} />
-              </View>
-              <Text style={styles.title}>Verify your phone</Text>
-              <Text style={styles.subtitle}>
-                We sent a 6-digit code to {phoneMask || "your phone"}
-              </Text>
-            </View>
-
-            <View style={styles.form}>
-              {error ? <Text style={styles.errorBanner}>{error}</Text> : null}
-
-              {/* OTP boxes */}
-              <View style={styles.otpRow}>
-                {otp.map((digit, i) => (
-                  <TextInput
-                    key={i}
-                    ref={el => { inputRefs.current[i] = el; }}
-                    style={[styles.otpBox, digit ? styles.otpBoxFilled : null]}
-                    value={digit}
-                    onChangeText={v => handleDigit(i, v)}
-                    onKeyPress={({ nativeEvent }) => handleKeyPress(i, nativeEvent.key)}
-                    keyboardType="number-pad"
-                    maxLength={1}
-                    selectTextOnFocus
-                    placeholder="·"
-                    placeholderTextColor={colors.inkSubtle}
-                  />
-                ))}
-              </View>
-
-              <Pressable
-                style={({ pressed }) => [styles.btnPrimary, pressed && { opacity: 0.85 }, (loading || otp.join("").length < OTP_LENGTH) && { opacity: 0.6 }]}
-                onPress={verifyOtp}
-                disabled={loading || otp.join("").length < OTP_LENGTH}
-              >
-                <Text style={styles.btnPrimaryText}>{loading ? "Verifying…" : "Verify Code"}</Text>
-              </Pressable>
-
-              <View style={styles.footer}>
-                <Text style={styles.footerText}>Didn't receive it? </Text>
-                <Pressable onPress={resendOtp} disabled={resending}>
-                  <Text style={[styles.link, resending && { opacity: 0.5 }]}>
-                    {resending ? "Sending…" : "Resend code"}
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </LinearGradient>
-    );
-  }
-
-  // ── Credentials Screen ───────────────────────────────────────────────
   return (
-    <LinearGradient colors={["#0F2560", "#0F172A"]} style={{ flex: 1 }}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          <Pressable onPress={() => router.back()} style={styles.back}>
-            <Ionicons name="arrow-back" size={22} color={colors.white} />
-          </Pressable>
+    <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+      <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled">
+        <View style={s.header}>
+          <Text style={s.logo}>Tarea</Text>
+          <Text style={s.subtitle}>Sign in to your account</Text>
+        </View>
 
-          <View style={styles.header}>
-            <Text style={styles.title}>Welcome back</Text>
-            <Text style={styles.subtitle}>Sign in to your Tarea account</Text>
-          </View>
+        <View style={s.card}>
+          <Text style={s.label}>Email</Text>
+          <TextInput style={s.input} value={email} onChangeText={setEmail}
+            placeholder="you@email.com" placeholderTextColor={C.slate500}
+            autoCapitalize="none" keyboardType="email-address" autoComplete="email" />
 
-          <View style={styles.form}>
-            {error ? <Text style={styles.errorBanner}>{error}</Text> : null}
+          <Text style={s.label}>Password</Text>
+          <TextInput style={s.input} value={password} onChangeText={setPassword}
+            placeholder="••••••••" placeholderTextColor={C.slate500}
+            secureTextEntry autoComplete="password" />
 
-            <View style={styles.fieldWrap}>
-              <Text style={styles.label}>Email</Text>
-              <Controller control={control} name="email" render={({ field: { onChange, value } }) => (
-                <TextInput
-                  style={[styles.input, errors.email && styles.inputError]}
-                  placeholder="you@example.com"
-                  placeholderTextColor={colors.inkSubtle}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  value={value}
-                  onChangeText={onChange}
-                />
-              )} />
-              {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
-            </View>
+          <TouchableOpacity style={[s.btn, loading && s.btnDisabled]} onPress={submit} disabled={loading}>
+            {loading ? <ActivityIndicator color={C.ink} /> : <Text style={s.btnText}>Sign In</Text>}
+          </TouchableOpacity>
 
-            <View style={styles.fieldWrap}>
-              <Text style={styles.label}>Password</Text>
-              <View style={styles.pwWrap}>
-                <Controller control={control} name="password" render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    style={[styles.input, styles.pwInput, errors.password && styles.inputError]}
-                    placeholder="••••••••"
-                    placeholderTextColor={colors.inkSubtle}
-                    secureTextEntry={!showPw}
-                    value={value}
-                    onChangeText={onChange}
-                  />
-                )} />
-                <Pressable style={styles.eyeBtn} onPress={() => setShowPw(!showPw)}>
-                  <Ionicons name={showPw ? "eye-off" : "eye"} size={20} color={colors.inkSubtle} />
-                </Pressable>
-              </View>
-              {errors.password && <Text style={styles.error}>{errors.password.message}</Text>}
-            </View>
-
-            <Pressable
-              style={({ pressed }) => [styles.btnPrimary, pressed && { opacity: 0.85 }, loading && { opacity: 0.7 }]}
-              onPress={handleSubmit(onSubmit)}
-              disabled={loading}
-            >
-              <Text style={styles.btnPrimaryText}>{loading ? "Checking…" : "Continue"}</Text>
-            </Pressable>
-
-            <View style={styles.otpNote}>
-              <Ionicons name="shield-checkmark-outline" size={14} color={colors.inkSubtle} />
-              <Text style={styles.otpNoteText}>A verification code will be sent to your phone</Text>
-            </View>
-
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>Don't have an account? </Text>
-              <Pressable onPress={() => router.push("/(auth)/register")}>
-                <Text style={styles.link}>Create one</Text>
-              </Pressable>
-            </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </LinearGradient>
+          <TouchableOpacity onPress={() => router.push("/(auth)/register")} style={s.link}>
+            <Text style={s.linkText}>Don't have an account? <Text style={s.linkBold}>Sign up</Text></Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
-const styles = StyleSheet.create({
-  scroll: { flexGrow: 1, paddingHorizontal: spacing.xl, paddingTop: 60, paddingBottom: 40 },
-  back: { marginBottom: spacing.xl },
-  header: { marginBottom: spacing.xl, alignItems: "center" },
-  shieldWrap: { width: 72, height: 72, borderRadius: radius.xl, backgroundColor: "rgba(56,189,248,0.12)", borderWidth: 1, borderColor: "rgba(56,189,248,0.3)", alignItems: "center", justifyContent: "center", marginBottom: spacing.md },
-  title: { fontSize: fontSize["3xl"], fontWeight: "800", color: colors.white, marginBottom: 6, textAlign: "center" },
-  subtitle: { fontSize: fontSize.base, color: "rgba(255,255,255,0.5)", textAlign: "center" },
-  form: { gap: spacing.lg },
-  errorBanner: { backgroundColor: "rgba(239,68,68,0.15)", borderWidth: 1, borderColor: "rgba(239,68,68,0.3)", borderRadius: radius.md, padding: spacing.md, color: "#FCA5A5", fontSize: fontSize.sm },
-  fieldWrap: { gap: 6 },
-  label: { fontSize: fontSize.sm, fontWeight: "600", color: "rgba(255,255,255,0.6)" },
-  input: { backgroundColor: "rgba(255,255,255,0.06)", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)", borderRadius: radius.md, paddingHorizontal: spacing.md, paddingVertical: 14, color: colors.white, fontSize: fontSize.base },
-  inputError: { borderColor: "rgba(239,68,68,0.5)" },
-  pwWrap: { position: "relative" },
-  pwInput: { paddingRight: 52 },
-  eyeBtn: { position: "absolute", right: 14, top: 14 },
-  error: { fontSize: fontSize.xs, color: "#FCA5A5" },
-  btnPrimary: { backgroundColor: colors.skyBlue, borderRadius: radius.lg, paddingVertical: 16, alignItems: "center", marginTop: 8, shadowColor: colors.skyBlue, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.4, shadowRadius: 16 },
-  btnPrimaryText: { fontSize: fontSize.lg, fontWeight: "800", color: colors.ink },
-  otpNote: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 },
-  otpNoteText: { color: "rgba(255,255,255,0.35)", fontSize: fontSize.xs },
-  footer: { flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 8 },
-  footerText: { color: "rgba(255,255,255,0.45)", fontSize: fontSize.sm },
-  link: { color: colors.skyBlue, fontSize: fontSize.sm, fontWeight: "700" },
-  // OTP-specific
-  otpRow: { flexDirection: "row", justifyContent: "center", gap: 10 },
-  otpBox: { width: 46, height: 56, borderRadius: radius.md, borderWidth: 2, borderColor: "rgba(255,255,255,0.15)", backgroundColor: "rgba(255,255,255,0.06)", color: colors.white, fontSize: fontSize["2xl"], fontWeight: "800", textAlign: "center" },
-  otpBoxFilled: { borderColor: colors.skyBlue, backgroundColor: "rgba(56,189,248,0.1)" },
+const s = StyleSheet.create({
+  flex:        { flex: 1, backgroundColor: C.ink },
+  container:   { flexGrow: 1, justifyContent: "center", padding: 24 },
+  header:      { alignItems: "center", marginBottom: 40 },
+  logo:        { fontSize: 42, fontWeight: "900", color: C.sky, letterSpacing: -1 },
+  subtitle:    { color: C.slate400, fontSize: 15, marginTop: 6 },
+  card:        { backgroundColor: "#1E293B", borderRadius: 20, padding: 24, gap: 4 },
+  label:       { color: C.slate400, fontSize: 13, fontWeight: "600", marginTop: 12, marginBottom: 6 },
+  input:       { backgroundColor: "rgba(255,255,255,0.07)", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 13, color: C.white, fontSize: 15 },
+  btn:         { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 15, alignItems: "center", marginTop: 20 },
+  btnDisabled: { opacity: 0.6 },
+  btnText:     { color: C.ink, fontWeight: "800", fontSize: 16 },
+  link:        { alignItems: "center", marginTop: 20 },
+  linkText:    { color: C.slate400, fontSize: 14 },
+  linkBold:    { color: C.sky, fontWeight: "700" },
 });
