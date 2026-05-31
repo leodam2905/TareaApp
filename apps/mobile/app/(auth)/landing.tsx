@@ -8,9 +8,14 @@ const VIDEO_URL = "https://res.cloudinary.com/damk2dpd4/video/upload/v1778893570
 const { height } = Dimensions.get("window");
 
 const FEATURES = [
-  { emoji: "🔍", title: "Find Verified Pros",  desc: "Browse background-checked handymen near you" },
-  { emoji: "📅", title: "Book in Seconds",      desc: "Schedule same-day or in advance, pay securely" },
-  { emoji: "⭐", title: "Quality Guaranteed",   desc: "Live job tracking, reviews, and dispute protection" },
+  { emoji: "🔍", color: "#0EA5E9", title: "Find Verified Pros",  desc: "Browse background-checked handymen near you" },
+  { emoji: "📅", color: "#22C55E", title: "Book in Seconds",      desc: "Schedule same-day or in advance, pay securely" },
+  { emoji: "⭐", color: "#F97316", title: "Quality Guaranteed",   desc: "Live job tracking, reviews, and dispute protection" },
+];
+
+const TOOLS = [
+  { emoji: "🔍", color: "#3B82F6", title: "Diagnose Issue",  desc: "AI identifies what pro you need",   route: "/diagnose"       },
+  { emoji: "⚡", color: "#F59E0B", title: "Instant Quote",   desc: "Get a price before you book",        route: "/instant-quote"  },
 ];
 
 export default function LandingScreen() {
@@ -39,7 +44,17 @@ export default function LandingScreen() {
           <View style={s.features}>
             {FEATURES.map(f => (
               <View key={f.title} style={s.featureRow}>
-                <View style={s.featureIcon}><Text style={s.featureEmoji}>{f.emoji}</Text></View>
+                <View style={[s.featureIcon, {
+                  backgroundColor: `${f.color}25`,
+                  borderColor: `${f.color}55`,
+                  shadowColor: f.color,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 4,
+                }]}>
+                  <Text style={s.featureEmoji}>{f.emoji}</Text>
+                </View>
                 <View style={{ flex: 1 }}>
                   <Text style={s.featureTitle}>{f.title}</Text>
                   <Text style={s.featureDesc}>{f.desc}</Text>
@@ -50,16 +65,30 @@ export default function LandingScreen() {
 
           {/* AI Tools */}
           <View style={s.toolsRow}>
-            <TouchableOpacity style={s.toolCard} onPress={() => router.push("/diagnose")} activeOpacity={0.85}>
-              <Text style={s.toolEmoji}>🔍</Text>
-              <Text style={s.toolTitle}>Diagnose Issue</Text>
-              <Text style={s.toolDesc}>AI identifies what pro you need</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.toolCard} onPress={() => router.push("/instant-quote")} activeOpacity={0.85}>
-              <Text style={s.toolEmoji}>⚡</Text>
-              <Text style={s.toolTitle}>Instant Quote</Text>
-              <Text style={s.toolDesc}>Get a price before you book</Text>
-            </TouchableOpacity>
+            {TOOLS.map(t => (
+              <TouchableOpacity
+                key={t.title}
+                style={s.toolCard}
+                onPress={() => router.push(t.route as any)}
+                activeOpacity={0.85}
+              >
+                <View style={{
+                  width: 52, height: 52, borderRadius: 16,
+                  backgroundColor: `${t.color}25`,
+                  borderWidth: 2, borderColor: `${t.color}55`,
+                  alignItems: "center", justifyContent: "center",
+                  shadowColor: t.color,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.35,
+                  shadowRadius: 8,
+                  elevation: 5,
+                }}>
+                  <Text style={{ fontSize: 24 }}>{t.emoji}</Text>
+                </View>
+                <Text style={s.toolTitle}>{t.title}</Text>
+                <Text style={s.toolDesc}>{t.desc}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
 
           <View style={s.ctas}>
@@ -105,7 +134,7 @@ const s = StyleSheet.create({
 
   features:           { gap: 16, marginBottom: 48 },
   featureRow:         { flexDirection: "row", alignItems: "center", gap: 16, backgroundColor: "rgba(30,41,59,0.75)", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
-  featureIcon:        { width: 48, height: 48, borderRadius: 14, backgroundColor: "rgba(56,189,248,0.15)", alignItems: "center", justifyContent: "center" },
+  featureIcon:        { width: 52, height: 52, borderRadius: 16, alignItems: "center", justifyContent: "center", borderWidth: 2 },
   featureEmoji:       { fontSize: 22 },
   featureTitle:       { color: C.white, fontSize: 15, fontWeight: "700", marginBottom: 3 },
   featureDesc:        { color: "rgba(255,255,255,0.55)", fontSize: 13, lineHeight: 18 },
@@ -124,7 +153,6 @@ const s = StyleSheet.create({
 
   toolsRow:           { flexDirection: "row", gap: 12, marginBottom: 24 },
   toolCard:           { flex: 1, backgroundColor: "rgba(30,41,59,0.85)", borderRadius: 18, padding: 16, alignItems: "center", gap: 6, borderWidth: 1, borderColor: "rgba(56,189,248,0.2)" },
-  toolEmoji:          { fontSize: 28 },
   toolTitle:          { color: "#fff", fontSize: 13, fontWeight: "800", textAlign: "center" },
   toolDesc:           { color: "rgba(255,255,255,0.45)", fontSize: 11, textAlign: "center", lineHeight: 15 },
 });
