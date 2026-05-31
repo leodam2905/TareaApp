@@ -69,9 +69,10 @@ export default function InstantQuoteScreen() {
   const [details, setDetails]   = useState<Record<string, string>>({});
   const [loading, setLoading]   = useState(false);
   const [quote, setQuote]       = useState<Quote | null>(null);
+  const [error, setError]       = useState<string | null>(null);
 
-  const selectCategory = (c: string) => { setCategory(c); setTask(null); setDetails({}); setQuote(null); };
-  const selectTask = (t: Task) => { setTask(t); setDetails({}); setQuote(null); };
+  const selectCategory = (c: string) => { setCategory(c); setTask(null); setDetails({}); setQuote(null); setError(null); };
+  const selectTask = (t: Task) => { setTask(t); setDetails({}); setQuote(null); setError(null); };
   const setDetail = (key: string, val: string) => setDetails(prev => ({ ...prev, [key]: val }));
 
   const allFilled = task ? task.details.every(d => details[d.key]) : false;
@@ -81,6 +82,7 @@ export default function InstantQuoteScreen() {
     if (!category || !task) return;
     setLoading(true);
     setQuote(null);
+    setError(null);
     try {
       const res = await fetch(`${API}/ai/instant-quote`, {
         method: "POST",
@@ -88,9 +90,13 @@ export default function InstantQuoteScreen() {
         body: JSON.stringify({ category: CATEGORY_API[category], task: task.label, details }),
       });
       const data = await res.json();
-      if (res.ok) setQuote(data);
-    } catch {
-      // fail silently, button stays
+      if (res.ok) {
+        setQuote(data);
+      } else {
+        setError(data.error || "Could not generate quote. Try again.");
+      }
+    } catch (e: any) {
+      setError(e?.message || "Network error. Check your connection.");
     }
     setLoading(false);
   };
@@ -150,6 +156,13 @@ export default function InstantQuoteScreen() {
               : <Text style={s.btnText}>⚡  Get My Instant Quote</Text>
             }
           </TouchableOpacity>
+        )}
+
+        {/* Error */}
+        {error && (
+          <View style={s.errorBox}>
+            <Text style={s.errorText}>⚠️  {error}</Text>
+          </View>
         )}
 
         {/* Result */}
@@ -226,4 +239,6 @@ const s = StyleSheet.create({
   noteText:         { color: "#FB923C", fontSize: 12, lineHeight: 18 },
   bookBtn:          { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 14, alignItems: "center", marginTop: 4 },
   bookBtnText:      { color: C.ink, fontWeight: "900", fontSize: 15 },
+  errorBox:         { backgroundColor: "rgba(239,68,68,0.12)", borderRadius: 12, padding: 14, marginBottom: 16, borderWidth: 1, borderColor: "rgba(239,68,68,0.3)" },
+  errorText:        { color: "#EF4444", fontSize: 13, lineHeight: 20 },
 });
