@@ -43,6 +43,8 @@ export const SERVICE_CATEGORY_LABELS: Record<string, string> = {
   LANDSCAPING: "Landscaping",
   MOVING: "Moving",
   APPLIANCE_REPAIR: "Appliance Repair",
+  WASH_AND_FOLD: "Wash & Fold",
+  ASSEMBLY_MOUNTING: "Assembly & Mounting",
   GENERAL: "General",
 };
 
@@ -57,5 +59,7 @@ export const SERVICE_CATEGORY_ICONS: Record<string, string> = {
   LANDSCAPING: "🌿",
   MOVING: "📦",
   APPLIANCE_REPAIR: "🔌",
+  WASH_AND_FOLD: "🧺",
+  ASSEMBLY_MOUNTING: "🔩",
   GENERAL: "🛠️",
 };

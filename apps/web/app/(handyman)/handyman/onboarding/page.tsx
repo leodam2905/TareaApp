@@ -30,8 +30,10 @@ const SERVICES = [
   { category: "ROOFING",          emoji: "🏠", label: "Roofing",          desc: "Repairs, gutters, inspections" },
   { category: "LANDSCAPING",      emoji: "🌿", label: "Landscaping",      desc: "Lawn care, trimming, planting" },
   { category: "MOVING",           emoji: "📦", label: "Moving",           desc: "Packing, hauling, assembly" },
-  { category: "APPLIANCE_REPAIR", emoji: "🔌", label: "Appliance Repair", desc: "Washer, dryer, fridge, dishwasher" },
-  { category: "GENERAL",          emoji: "🛠️", label: "General",          desc: "Odd jobs, handyman tasks, fixes" },
+  { category: "APPLIANCE_REPAIR",   emoji: "🔌", label: "Appliance Repair",    desc: "Washer, dryer, fridge, dishwasher" },
+  { category: "WASH_AND_FOLD",     emoji: "🧺", label: "Wash & Fold",         desc: "Laundry, folding, ironing, dry cleaning drop-off" },
+  { category: "ASSEMBLY_MOUNTING", emoji: "🔩", label: "Assembly & Mounting", desc: "Furniture assembly, TV mounting, shelves" },
+  { category: "GENERAL",           emoji: "🛠️", label: "General",             desc: "Odd jobs, handyman tasks, fixes" },
 ];
 
 type ServiceEntry = {
@@ -53,11 +55,9 @@ export default function HandymanOnboarding() {
   const [icaScrolled, setIcaScrolled] = useState(false);
   const [icaChecked, setIcaChecked] = useState(false);
   const [icaSigning, setIcaSigning] = useState(false);
-  const [icaAlreadySigned, setIcaAlreadySigned] = useState(false);
-
   useEffect(() => {
     fetch("/api/handyman/ica").then(r => r.json()).then(d => {
-      if (d.signed) { setIcaAlreadySigned(true); setStep(bgCheckResult === "success" ? 4 : 1); }
+      if (d.signed) { setStep(bgCheckResult === "success" ? 4 : 1); }
     });
   }, [bgCheckResult]);
 

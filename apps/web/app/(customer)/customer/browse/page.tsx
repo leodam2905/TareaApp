@@ -20,8 +20,10 @@ const CATEGORIES = [
   { key: "ROOFING",          label: "Roofing",          desc: "Repairs, gutters",             emoji: "🏠" },
   { key: "LANDSCAPING",      label: "Landscaping",      desc: "Lawn, trimming, planting",     emoji: "🌿" },
   { key: "MOVING",           label: "Moving",           desc: "Packing, hauling",             emoji: "📦" },
-  { key: "APPLIANCE_REPAIR", label: "Appliances",       desc: "Washer, fridge, dryer",        emoji: "🔌" },
-  { key: "GENERAL",          label: "General",          desc: "Odd jobs & fixes",             emoji: "🛠️" },
+  { key: "APPLIANCE_REPAIR",   label: "Appliances",        desc: "Washer, fridge, dryer",       emoji: "🔌" },
+  { key: "WASH_AND_FOLD",     label: "Wash & Fold",       desc: "Laundry, folding, ironing",   emoji: "🧺" },
+  { key: "ASSEMBLY_MOUNTING", label: "Assembly",          desc: "Furniture, TV, shelves",      emoji: "🔩" },
+  { key: "GENERAL",           label: "General",           desc: "Odd jobs & fixes",            emoji: "🛠️" },
 ];
 
 type Handyman = {
