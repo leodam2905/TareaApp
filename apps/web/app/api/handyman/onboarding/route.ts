@@ -39,12 +39,19 @@ export async function PATCH(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user || user.role !== "HANDYMAN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { idFrontUrl, idBackUrl } = await req.json();
+  const { idFrontUrl, idBackUrl, licenseNumber, licenseDocUrl, insuranceDocUrl } = await req.json();
+
+  const data: Record<string, string> = {};
+  if (idFrontUrl)      data.idFrontUrl      = idFrontUrl;
+  if (idBackUrl)       data.idBackUrl       = idBackUrl;
+  if (licenseNumber)   data.licenseNumber   = licenseNumber;
+  if (licenseDocUrl)   data.licenseDocUrl   = licenseDocUrl;
+  if (insuranceDocUrl) data.insuranceDocUrl = insuranceDocUrl;
 
   await prisma.handymanProfile.upsert({
     where: { userId: user.id },
-    update: { idFrontUrl, idBackUrl },
-    create: { userId: user.id, hourlyRate: 0, idFrontUrl, idBackUrl },
+    update: data,
+    create: { userId: user.id, hourlyRate: 0, ...data },
   });
 
   return NextResponse.json({ ok: true });

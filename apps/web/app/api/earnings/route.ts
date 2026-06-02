@@ -48,22 +48,31 @@ export async function GET(req: NextRequest) {
     since = buckets[0].start;
   }
 
-  const completed = await prisma.booking.findMany({
-    where: {
-      handymanId: user.id,
-      status: "COMPLETED",
-      completedAt: { gte: since },
-    },
-    select: { totalPrice: true, completedAt: true },
-  });
+  const [completed, tips] = await Promise.all([
+    prisma.booking.findMany({
+      where: { handymanId: user.id, status: "COMPLETED", completedAt: { gte: since } },
+      select: { id: true, totalPrice: true, completedAt: true },
+    }),
+    prisma.tip.findMany({
+      where: {
+        booking: { handymanId: user.id },
+        createdAt: { gte: since },
+      },
+      select: { amount: true, createdAt: true },
+    }),
+  ]);
 
-  const chart = buckets.map(b => ({
-    label: b.label,
-    earnings: completed
-      .filter(c => c.completedAt && c.completedAt >= b.start && c.completedAt <= b.end)
-      .reduce((s, c) => s + handymanNet(c.totalPrice), 0),
-    jobs: completed.filter(c => c.completedAt && c.completedAt >= b.start && c.completedAt <= b.end).length,
-  }));
+  const chart = buckets.map(b => {
+    const bucketBookings = completed.filter(c => c.completedAt && c.completedAt >= b.start && c.completedAt <= b.end);
+    const bucketTips = tips.filter(t => t.createdAt >= b.start && t.createdAt <= b.end);
+    return {
+      label: b.label,
+      earnings: bucketBookings.reduce((s, c) => s + handymanNet(c.totalPrice), 0)
+        + bucketTips.reduce((s, t) => s + t.amount, 0),
+      jobs: bucketBookings.length,
+      tips: bucketTips.reduce((s, t) => s + t.amount, 0),
+    };
+  });
 
   return NextResponse.json(chart);
 }

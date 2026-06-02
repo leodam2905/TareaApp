@@ -18,9 +18,9 @@ function fmt(h: number) {
 type Slot = { dayOfWeek: number; startHour: number; endHour: number };
 
 export default function HandymanSchedulePage() {
-  const [activeDays, setActiveDays] = useState<Set<number>>(new Set([1, 2, 3, 4, 5]));
+  const [activeDays, setActiveDays] = useState<Set<number>>(new Set([0, 1, 2, 3, 4, 5, 6]));
   const [slots, setSlots] = useState<Record<number, Slot>>(
-    Object.fromEntries([0, 1, 2, 3, 4, 5, 6].map(d => [d, { dayOfWeek: d, startHour: 8, endHour: 18 }]))
+    Object.fromEntries([0, 1, 2, 3, 4, 5, 6].map(d => [d, { dayOfWeek: d, startHour: 6, endHour: 20 }]))
   );
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

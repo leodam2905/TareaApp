@@ -18,6 +18,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
       handyman: { select: { id: true, name: true, avatarUrl: true, phone: true } },
       review: true,
       phases: { orderBy: { startedAt: "asc" } },
+      extensions: { orderBy: { createdAt: "desc" } },
       messages: {
         include: { sender: { select: { id: true, name: true, avatarUrl: true, role: true } } },
         orderBy: { createdAt: "asc" },
@@ -59,6 +60,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     data: {
       status,
       cancelReason,
+      ...(status === "IN_PROGRESS" && !booking.jobStartedAt && { jobStartedAt: new Date() }),
       ...(status === "COMPLETED" && { completedAt: new Date() }),
     },
   });

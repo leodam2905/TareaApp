@@ -15,7 +15,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: "Job not available" }, { status: 400 });
   }
 
-  const { message, proposedPrice } = await req.json();
+  const { message, proposedPrice, materialsEstimate } = await req.json();
 
   const application = await prisma.jobApplication.create({
     data: {
@@ -24,6 +24,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       userId: user.id,
       message: message?.trim() || null,
       proposedPrice: proposedPrice ? parseFloat(proposedPrice) : null,
+      materialsEstimate: materialsEstimate ? parseFloat(materialsEstimate) : null,
     },
   });
 

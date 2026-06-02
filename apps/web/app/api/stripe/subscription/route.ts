@@ -52,3 +52,29 @@ export async function GET(_req: NextRequest) {
     stripeSubId: profile?.stripeSubId ?? null,
   });
 }
+
+export async function DELETE(_req: NextRequest) {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "HANDYMAN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const profile = await prisma.handymanProfile.findUnique({
+    where: { userId: user.id },
+    select: { stripeSubId: true, isPremium: true },
+  });
+
+  if (!profile?.stripeSubId || !profile.isPremium) {
+    return NextResponse.json({ error: "No active subscription to cancel" }, { status: 400 });
+  }
+
+  // Cancel at period end so handyman keeps access until billing cycle ends
+  await stripe.subscriptions.update(profile.stripeSubId, { cancel_at_period_end: true });
+
+  await prisma.handymanProfile.update({
+    where: { userId: user.id },
+    data: { stripeSubStatus: "canceling" },
+  });
+
+  return NextResponse.json({ ok: true, message: "Subscription will be cancelled at the end of the current billing period." });
+}

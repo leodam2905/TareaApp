@@ -41,6 +41,11 @@ type Profile = {
     isAvailable: boolean;
     rating: number;
     totalJobs: number;
+    idFrontUrl: string | null;
+    idBackUrl: string | null;
+    licenseNumber: string | null;
+    licenseDocUrl: string | null;
+    insuranceDocUrl: string | null;
   } | null;
 };
 
@@ -58,8 +63,57 @@ export default function HandymanProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useT();
 
+  // Document uploads
+  const idFrontRef = useRef<HTMLInputElement>(null);
+  const idBackRef = useRef<HTMLInputElement>(null);
+  const licenseDocRef = useRef<HTMLInputElement>(null);
+  const insuranceDocRef = useRef<HTMLInputElement>(null);
+  const [docUrls, setDocUrls] = useState({ idFrontUrl: "", idBackUrl: "", licenseNumber: "", licenseDocUrl: "", insuranceDocUrl: "" });
+  const [docPreviews, setDocPreviews] = useState({ idFront: "", idBack: "", licenseDoc: "", insuranceDoc: "" });
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+
+  const uploadDoc = async (file: File): Promise<string | null> => {
+    const form = new FormData();
+    form.append("file", file);
+    form.append("folder", "tarea/id-docs");
+    const res = await fetch("/api/upload/image", { method: "POST", body: form });
+    if (!res.ok) return null;
+    const { url } = await res.json();
+    return url;
+  };
+
+  const handleDocFile = async (field: "idFront" | "idBack" | "licenseDoc" | "insuranceDoc", file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => setDocPreviews(p => ({ ...p, [field]: reader.result as string }));
+    reader.readAsDataURL(file);
+    setUploadingDoc(true);
+    const url = await uploadDoc(file);
+    setUploadingDoc(false);
+    if (!url) { toast.error("Upload failed"); return; }
+    const keyMap = { idFront: "idFrontUrl", idBack: "idBackUrl", licenseDoc: "licenseDocUrl", insuranceDoc: "insuranceDocUrl" } as const;
+    const urlKey = keyMap[field];
+    const newUrls = { ...docUrls, [urlKey]: url };
+    setDocUrls(newUrls);
+    await fetch("/api/handyman/onboarding", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [urlKey]: url }),
+    });
+    toast.success("Document saved!");
+  };
+
+  const saveLicenseNumber = async () => {
+    await fetch("/api/handyman/onboarding", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ licenseNumber: docUrls.licenseNumber }),
+    });
+    toast.success("License number saved!");
+  };
+
   const [sub, setSub] = useState<{ isPremium: boolean; stripeSubStatus: string | null } | null>(null);
   const [subscribing, setSubscribing] = useState(false);
+  const [canceling, setCanceling] = useState(false);
 
   useEffect(() => {
     fetch("/api/stripe/subscription")
@@ -84,6 +138,22 @@ export default function HandymanProfilePage() {
     }
   };
 
+  const cancelSubscription = async () => {
+    if (!confirm("Cancel your Tarea Pro subscription? You'll keep access until the end of the current billing period.")) return;
+    setCanceling(true);
+    try {
+      const res = await fetch("/api/stripe/subscription", { method: "DELETE" });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error);
+      setSub(s => s ? { ...s, stripeSubStatus: "canceling" } : s);
+      toast.success("Subscription cancellation scheduled. You'll keep Pro access until the period ends.");
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Could not cancel subscription");
+    } finally {
+      setCanceling(false);
+    }
+  };
+
   useEffect(() => {
     fetch("/api/profile")
       .then(r => r.json())
@@ -102,6 +172,13 @@ export default function HandymanProfilePage() {
           companyName: d.companyName || "",
           ein: d.ein || "",
           website: d.website || "",
+        });
+        setDocUrls({
+          idFrontUrl: d.handymanProfile?.idFrontUrl || "",
+          idBackUrl: d.handymanProfile?.idBackUrl || "",
+          licenseNumber: d.handymanProfile?.licenseNumber || "",
+          licenseDocUrl: d.handymanProfile?.licenseDocUrl || "",
+          insuranceDocUrl: d.handymanProfile?.insuranceDocUrl || "",
         });
       });
   }, []);
@@ -146,6 +223,9 @@ export default function HandymanProfilePage() {
   };
 
   const save = async () => {
+    if (!profile?.avatarUrl) { toast.error("Please upload a profile photo"); return; }
+    if (!docUrls.idFrontUrl) { toast.error("Please upload the front of your government ID"); return; }
+    if (!docUrls.idBackUrl) { toast.error("Please upload the back of your government ID"); return; }
     if (!form.name.trim()) { toast.error("Name is required"); return; }
     setSaving(true);
     const res = await fetch("/api/profile", {
@@ -225,10 +305,24 @@ export default function HandymanProfilePage() {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <p className="text-amber-300 font-bold">Tarea Pro</p>
-                <span className="text-[10px] font-bold bg-amber-400 text-tarea-ink px-2 py-0.5 rounded-full">ACTIVE</span>
+                <span className="text-[10px] font-bold bg-amber-400 text-tarea-ink px-2 py-0.5 rounded-full">
+                  {sub.stripeSubStatus === "canceling" ? "CANCELING" : "ACTIVE"}
+                </span>
               </div>
               <p className="text-amber-400/70 text-xs mt-0.5">Priority listing · Verified badge · Unlimited bids</p>
+              {sub.stripeSubStatus === "canceling" && (
+                <p className="text-amber-500/70 text-xs mt-1">Active until end of billing period</p>
+              )}
             </div>
+            {sub.stripeSubStatus !== "canceling" && (
+              <button
+                onClick={cancelSubscription}
+                disabled={canceling}
+                className="text-xs text-amber-500/70 hover:text-amber-400 underline underline-offset-2 disabled:opacity-50 transition-colors"
+              >
+                {canceling ? "Canceling…" : "Cancel"}
+              </button>
+            )}
           </div>
         ) : (
           <div className="p-5 bg-gradient-to-br from-tarea-sky/10 to-purple-500/10 border border-tarea-sky/20 rounded-2xl space-y-4">
@@ -267,6 +361,31 @@ export default function HandymanProfilePage() {
       )}
 
       <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-5">
+        {/* Profile picture */}
+        <div>
+          <label className="text-slate-300 text-sm font-medium block mb-3 flex items-center gap-2">
+            <Camera className="w-4 h-4 text-tarea-sky" /> Profile Picture <span className="text-red-400">*</span>
+          </label>
+          <div className="flex items-center gap-5">
+            <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading}
+              className="relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-dashed border-white/20 hover:border-tarea-sky flex items-center justify-center bg-white/5 transition-all flex-shrink-0 group">
+              {uploading
+                ? <Loader2 className="w-6 h-6 animate-spin text-tarea-sky" />
+                : profile.avatarUrl
+                  ? <img src={profile.avatarUrl} alt="" className="w-full h-full object-cover" />
+                  : <div className="flex flex-col items-center gap-1 text-slate-400"><Camera className="w-6 h-6" /><span className="text-xs">Upload</span></div>}
+              <span className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <Camera className="w-5 h-5 text-white" />
+              </span>
+            </button>
+            <div className="text-sm text-slate-400 space-y-1">
+              <p className="text-white font-medium">{profile.avatarUrl ? "Change your photo" : "Upload a profile photo"}</p>
+              <p>A clear face photo helps customers trust you.</p>
+              <p className="text-xs">JPG, PNG or WebP — max 5 MB</p>
+            </div>
+          </div>
+        </div>
+
         {/* Personal info */}
         <div>
           <label className="text-slate-300 text-sm font-medium block mb-1.5 flex items-center gap-2">
@@ -353,6 +472,96 @@ export default function HandymanProfilePage() {
           className="w-full flex items-center justify-center gap-2 border border-tarea-border text-tarea-ink-muted py-3 rounded-xl hover:border-tarea-sky hover:text-tarea-sky transition-all text-sm font-semibold">
           <Lock className="w-4 h-4" /> Change Password
         </Link>
+      </div>
+
+      {/* Documents */}
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-5">
+        <div>
+          <h2 className="text-white font-bold flex items-center gap-2"><FileText className="w-4 h-4 text-tarea-sky" /> Documents</h2>
+          <p className="text-slate-500 text-xs mt-0.5">Upload your ID, license, and insurance documents. These are only visible to Tarea admins.</p>
+        </div>
+
+        {/* Gov ID */}
+        <div>
+          <p className="text-slate-300 text-sm font-medium mb-2">Government-Issued ID <span className="text-red-400">*</span></p>
+          <div className="grid grid-cols-2 gap-3">
+            {(["idFront", "idBack"] as const).map((side) => {
+              const ref = side === "idFront" ? idFrontRef : idBackRef;
+              const preview = docPreviews[side];
+              const existing = side === "idFront" ? docUrls.idFrontUrl : docUrls.idBackUrl;
+              return (
+                <div key={side}>
+                  <p className="text-xs text-slate-400 mb-1.5">{side === "idFront" ? "Front (Recto)" : "Back (Verso)"}</p>
+                  <button type="button" onClick={() => ref.current?.click()}
+                    className="relative w-full h-28 rounded-xl overflow-hidden border-2 border-dashed border-white/20 hover:border-tarea-sky flex items-center justify-center bg-white/5 transition-all">
+                    {preview || existing ? (
+                      <img src={preview || existing} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="flex flex-col items-center gap-1 text-slate-400">
+                        <FileText className="w-6 h-6" />
+                        <span className="text-xs">{uploadingDoc ? "Uploading…" : "Upload"}</span>
+                      </div>
+                    )}
+                  </button>
+                  <input ref={ref} type="file" accept="image/*" className="hidden"
+                    onChange={e => { const f = e.target.files?.[0]; if (f) handleDocFile(side, f); e.target.value = ""; }} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* License */}
+        <div className="space-y-3">
+          <p className="text-slate-300 text-sm font-medium">License</p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={docUrls.licenseNumber}
+              onChange={e => setDocUrls(d => ({ ...d, licenseNumber: e.target.value }))}
+              placeholder="License number (e.g. CSLB-1234567)"
+              className={field + " flex-1"}
+            />
+            <button onClick={saveLicenseNumber}
+              className="px-4 py-2 bg-tarea-sky/15 border border-tarea-sky/30 text-tarea-sky rounded-xl text-sm font-semibold hover:bg-tarea-sky/25 transition-all">
+              Save
+            </button>
+          </div>
+          <div>
+            <p className="text-xs text-slate-400 mb-1.5">License Document</p>
+            <button type="button" onClick={() => licenseDocRef.current?.click()}
+              className="relative w-full h-28 rounded-xl overflow-hidden border-2 border-dashed border-white/20 hover:border-tarea-sky flex items-center justify-center bg-white/5 transition-all">
+              {docPreviews.licenseDoc || docUrls.licenseDocUrl ? (
+                <img src={docPreviews.licenseDoc || docUrls.licenseDocUrl} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <div className="flex flex-col items-center gap-1 text-slate-400">
+                  <FileText className="w-6 h-6" />
+                  <span className="text-xs">{uploadingDoc ? "Uploading…" : "Upload license document"}</span>
+                </div>
+              )}
+            </button>
+            <input ref={licenseDocRef} type="file" accept="image/*,application/pdf" className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; if (f) handleDocFile("licenseDoc", f); e.target.value = ""; }} />
+          </div>
+        </div>
+
+        {/* Insurance */}
+        <div>
+          <p className="text-slate-300 text-sm font-medium mb-2">Insurance Certificate</p>
+          <button type="button" onClick={() => insuranceDocRef.current?.click()}
+            className="relative w-full h-28 rounded-xl overflow-hidden border-2 border-dashed border-white/20 hover:border-tarea-sky flex items-center justify-center bg-white/5 transition-all">
+            {docPreviews.insuranceDoc || docUrls.insuranceDocUrl ? (
+              <img src={docPreviews.insuranceDoc || docUrls.insuranceDocUrl} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <div className="flex flex-col items-center gap-1 text-slate-400">
+                <FileText className="w-6 h-6" />
+                <span className="text-xs">{uploadingDoc ? "Uploading…" : "Upload insurance certificate"}</span>
+              </div>
+            )}
+          </button>
+          <input ref={insuranceDocRef} type="file" accept="image/*,application/pdf" className="hidden"
+            onChange={e => { const f = e.target.files?.[0]; if (f) handleDocFile("insuranceDoc", f); e.target.value = ""; }} />
+        </div>
       </div>
 
       {/* Notification preferences */}

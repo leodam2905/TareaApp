@@ -27,7 +27,7 @@ export async function createAndSendOtp(userId: string, phone: string, email?: st
   await prisma.otpCode.create({ data: { userId, code, expiresAt } });
 
   // Send via SMS (best-effort — carrier filtering may apply)
-  sendSms(normalizePhone(phone), `Your Tarea verification code is: ${code}. It expires in ${OTP_TTL_MINUTES} minutes.`).catch(() => {});
+  sendSms(normalizePhone(phone), `Your Tarea verification code is: ${code}. It expires in ${OTP_TTL_MINUTES} minutes. Msg&data rates may apply. Reply STOP to opt out.`).catch(() => {});
 
   // Always send via email as fallback
   if (email) {

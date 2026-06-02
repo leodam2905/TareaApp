@@ -77,9 +77,9 @@ export default function HandymanOnboarding() {
 
   // Step 3 — availability
   const [availability, setAvailability] = useState<Record<number, AvailSlot>>(
-    Object.fromEntries([1, 2, 3, 4, 5].map(d => [d, { dayOfWeek: d, startHour: 8, endHour: 18 }]))
+    Object.fromEntries([1, 2, 3, 4, 5].map(d => [d, { dayOfWeek: d, startHour: 6, endHour: 20 }]))
   );
-  const [activeDays, setActiveDays] = useState<Set<number>>(new Set([1, 2, 3, 4, 5]));
+  const [activeDays, setActiveDays] = useState<Set<number>>(new Set([0, 1, 2, 3, 4, 5, 6]));
 
   // Profile picture
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -94,6 +94,15 @@ export default function HandymanOnboarding() {
   const [idFrontFile, setIdFrontFile] = useState<File | null>(null);
   const [idBackFile, setIdBackFile] = useState<File | null>(null);
   const [uploadingId, setUploadingId] = useState(false);
+
+  // License & insurance
+  const licenseDocRef = useRef<HTMLInputElement>(null);
+  const insuranceDocRef = useRef<HTMLInputElement>(null);
+  const [licenseNumber, setLicenseNumber] = useState("");
+  const [licenseDocFile, setLicenseDocFile] = useState<File | null>(null);
+  const [licenseDocPreview, setLicenseDocPreview] = useState<string | null>(null);
+  const [insuranceDocFile, setInsuranceDocFile] = useState<File | null>(null);
+  const [insuranceDocPreview, setInsuranceDocPreview] = useState<string | null>(null);
 
   // Step 1 — profile info
   const [bio, setBio] = useState("");
@@ -140,18 +149,25 @@ export default function HandymanOnboarding() {
     if (!idFrontFile) { toast.error("Please upload the front of your ID"); return; }
     if (!idBackFile) { toast.error("Please upload the back of your ID"); return; }
     setUploadingId(true);
-    const [avatarOk, idFrontUrl, idBackUrl] = await Promise.all([
+    const uploads = await Promise.all([
       uploadAvatar(),
       uploadIdPhoto(idFrontFile),
       uploadIdPhoto(idBackFile),
+      licenseDocFile ? uploadIdPhoto(licenseDocFile) : Promise.resolve(null),
+      insuranceDocFile ? uploadIdPhoto(insuranceDocFile) : Promise.resolve(null),
     ]);
     setUploadingId(false);
+    const [avatarOk, idFrontUrl, idBackUrl, licenseDocUrl, insuranceDocUrl] = uploads;
     if (!avatarOk || !idFrontUrl || !idBackUrl) { toast.error("Upload failed, try again"); return; }
-    // Save ID URLs — profile may not exist yet so we upsert via PATCH
     await fetch("/api/handyman/onboarding", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idFrontUrl, idBackUrl }),
+      body: JSON.stringify({
+        idFrontUrl, idBackUrl,
+        ...(licenseNumber.trim() && { licenseNumber: licenseNumber.trim() }),
+        ...(licenseDocUrl && { licenseDocUrl }),
+        ...(insuranceDocUrl && { insuranceDocUrl }),
+      }),
     });
     setStep(2);
   };
@@ -219,7 +235,7 @@ export default function HandymanOnboarding() {
       return next;
     });
     if (!availability[d]) {
-      setAvailability(prev => ({ ...prev, [d]: { dayOfWeek: d, startHour: 8, endHour: 18 } }));
+      setAvailability(prev => ({ ...prev, [d]: { dayOfWeek: d, startHour: 6, endHour: 20 } }));
     }
   };
 
@@ -483,6 +499,64 @@ export default function HandymanOnboarding() {
                 </div>
               </div>
 
+              {/* License & Insurance */}
+              <div className="space-y-4">
+                <div>
+                  <label className="label">License Number <span className="text-slate-500 font-normal">(optional)</span></label>
+                  <input
+                    type="text"
+                    value={licenseNumber}
+                    onChange={e => setLicenseNumber(e.target.value)}
+                    placeholder="e.g. CSLB-1234567"
+                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-tarea-sky"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {/* License doc */}
+                  <div>
+                    <p className="text-xs text-slate-400 font-medium mb-1.5">License Document <span className="text-slate-600">(optional)</span></p>
+                    <button type="button" onClick={() => licenseDocRef.current?.click()}
+                      className="relative w-full h-28 rounded-xl overflow-hidden border-2 border-dashed border-white/20 hover:border-tarea-sky flex items-center justify-center bg-white/5 transition-all">
+                      {licenseDocPreview ? (
+                        <img src={licenseDocPreview} alt="License" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="flex flex-col items-center gap-1 text-slate-400">
+                          <FileText className="w-6 h-6" />
+                          <span className="text-xs">Upload license</span>
+                        </div>
+                      )}
+                    </button>
+                    <input ref={licenseDocRef} type="file" accept="image/*,application/pdf" className="hidden"
+                      onChange={e => {
+                        const f = e.target.files?.[0]; if (!f) return;
+                        setLicenseDocFile(f);
+                        const r = new FileReader(); r.onload = () => setLicenseDocPreview(r.result as string); r.readAsDataURL(f);
+                      }} />
+                  </div>
+                  {/* Insurance doc */}
+                  <div>
+                    <p className="text-xs text-slate-400 font-medium mb-1.5">Insurance Certificate <span className="text-slate-600">(optional)</span></p>
+                    <button type="button" onClick={() => insuranceDocRef.current?.click()}
+                      className="relative w-full h-28 rounded-xl overflow-hidden border-2 border-dashed border-white/20 hover:border-tarea-sky flex items-center justify-center bg-white/5 transition-all">
+                      {insuranceDocPreview ? (
+                        <img src={insuranceDocPreview} alt="Insurance" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="flex flex-col items-center gap-1 text-slate-400">
+                          <FileText className="w-6 h-6" />
+                          <span className="text-xs">Upload certificate</span>
+                        </div>
+                      )}
+                    </button>
+                    <input ref={insuranceDocRef} type="file" accept="image/*,application/pdf" className="hidden"
+                      onChange={e => {
+                        const f = e.target.files?.[0]; if (!f) return;
+                        setInsuranceDocFile(f);
+                        const r = new FileReader(); r.onload = () => setInsuranceDocPreview(r.result as string); r.readAsDataURL(f);
+                      }} />
+                  </div>
+                </div>
+              </div>
+
               {/* Bio */}
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-1.5">Bio <span className="text-red-400">*</span></label>
@@ -594,7 +668,7 @@ export default function HandymanOnboarding() {
               <div className="space-y-3">
                 {DAYS.map((day, d) => {
                   const active = activeDays.has(d);
-                  const slot = availability[d] ?? { startHour: 8, endHour: 18 };
+                  const slot = availability[d] ?? { startHour: 6, endHour: 20 };
                   return (
                     <div key={d} className={`rounded-2xl border overflow-hidden transition-all ${active ? "border-tarea-sky/30 bg-tarea-sky/5" : "border-white/10 bg-white/5"}`}>
                       <button onClick={() => toggleDay(d)}

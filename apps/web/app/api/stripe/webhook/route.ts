@@ -77,6 +77,31 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ ok: true });
       }
 
+      // Handle tip payment
+      if (session.metadata?.type === "tip") {
+        const tipBookingId = session.metadata?.bookingId;
+        const tipAmount = session.amount_total ? session.amount_total / 100 : 0;
+        if (tipBookingId && tipAmount > 0) {
+          const tipBooking = await prisma.booking.findUnique({
+            where: { id: tipBookingId },
+            include: { service: { select: { title: true } } },
+          });
+          if (tipBooking) {
+            await prisma.tip.create({
+              data: { bookingId: tipBookingId, amount: tipAmount, stripeSessionId: session.id },
+            });
+            await createNotification({
+              userId: tipBooking.handymanId,
+              title: `You received a $${tipAmount.toFixed(2)} tip! 🎉`,
+              body: `A customer left you a tip for "${tipBooking.service.title}".`,
+              type: "job_completed",
+              refId: tipBookingId,
+            });
+          }
+        }
+        return NextResponse.json({ ok: true });
+      }
+
       // Handle payment checkout
       const bookingId = session.metadata?.bookingId;
       if (!bookingId) return NextResponse.json({ ok: true });

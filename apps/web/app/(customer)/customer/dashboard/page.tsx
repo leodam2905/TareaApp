@@ -6,7 +6,7 @@ export default async function CustomerDashboard() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const [bookings, recentServices] = await Promise.all([
+  const [bookings, recentServices, upcomingBooking, favoritesCount] = await Promise.all([
     prisma.booking.findMany({
       where: { customerId: user.id },
       include: {
@@ -22,6 +22,19 @@ export default async function CustomerDashboard() {
       orderBy: { createdAt: "desc" },
       take: 6,
     }),
+    prisma.booking.findFirst({
+      where: {
+        customerId: user.id,
+        scheduledAt: { gte: new Date() },
+        status: { in: ["PENDING", "ACCEPTED", "IN_PROGRESS"] },
+      },
+      include: {
+        service: { select: { title: true, category: true } },
+        handyman: { select: { name: true, avatarUrl: true } },
+      },
+      orderBy: { scheduledAt: "asc" },
+    }),
+    prisma.favorite.count({ where: { customerId: user.id } }),
   ]);
 
   const totalSpent = bookings
@@ -39,6 +52,8 @@ export default async function CustomerDashboard() {
       recentServices={recentServices}
       totalSpent={totalSpent}
       activeJobs={activeJobs}
+      upcomingBooking={upcomingBooking}
+      favoritesCount={favoritesCount}
     />
   );
 }

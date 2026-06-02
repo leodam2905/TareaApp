@@ -43,6 +43,7 @@ const schema = z.object({
   zipCode: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
+  referralCode: z.string().optional(),
   agreedToTerms: z.boolean().refine((v) => v === true, {
     message: "You must accept the Terms and Privacy Policy",
   }),
@@ -446,6 +447,12 @@ function RegisterForm() {
                   className="input"
                 />
                 {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
+              </div>
+
+              <div>
+                <label className="label">Referral Code <span className="text-tarea-ink-muted font-normal">(optional)</span></label>
+                <input {...register("referralCode")} placeholder="e.g. JOHN1A2B"
+                  className="input uppercase" autoComplete="off" />
               </div>
 
               <div className="flex items-start gap-3 pt-1">

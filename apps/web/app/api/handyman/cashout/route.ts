@@ -18,7 +18,7 @@ export async function GET() {
   const user = await getCurrentUser();
   if (!user || user.role !== "HANDYMAN") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const [unpaid, paid] = await Promise.all([
+  const [unpaid, paid, pendingTips, activeDisputes] = await Promise.all([
     prisma.booking.findMany({
       where: { handymanId: user.id, status: "COMPLETED", isPaid: true, handymanPaidOut: false },
       select: { id: true, totalPrice: true, completedAt: true, service: { select: { title: true } } },
@@ -30,12 +30,23 @@ export async function GET() {
       orderBy: { paidOutAt: "desc" },
       take: 20,
     }),
+    prisma.tip.findMany({
+      where: { booking: { handymanId: user.id, handymanPaidOut: false } },
+      select: { amount: true },
+    }),
+    prisma.booking.count({
+      where: { handymanId: user.id, status: "DISPUTED" },
+    }),
   ]);
 
-  const available = unpaid.reduce((s, b) => s + handymanNet(b.totalPrice), 0);
+  const bookingEarnings = unpaid.reduce((s, b) => s + handymanNet(b.totalPrice), 0);
+  const tipEarnings = pendingTips.reduce((s, t) => s + t.amount, 0);
+  const available = bookingEarnings + tipEarnings;
 
   return NextResponse.json({
     available,
+    tipEarnings,
+    activeDisputes,
     minCashout: MIN_CASHOUT,
     instantFee: calcInstantFee(available),
     stripeStatus: user.stripeAccountStatus ?? "not_connected",
@@ -66,15 +77,30 @@ export async function POST(_req: NextRequest) {
     );
   }
 
-  const pending = await prisma.booking.findMany({
-    where: { handymanId: user.id, status: "COMPLETED", isPaid: true, handymanPaidOut: false },
-  });
+  const [pending, activeDisputes, pendingTips] = await Promise.all([
+    prisma.booking.findMany({
+      where: { handymanId: user.id, status: "COMPLETED", isPaid: true, handymanPaidOut: false },
+    }),
+    prisma.booking.count({ where: { handymanId: user.id, status: "DISPUTED" } }),
+    prisma.tip.findMany({
+      where: { booking: { handymanId: user.id, handymanPaidOut: false } },
+      select: { amount: true },
+    }),
+  ]);
+
+  if (activeDisputes > 0) {
+    return NextResponse.json(
+      { error: `You have ${activeDisputes} disputed booking${activeDisputes > 1 ? "s" : ""} under review. Payouts are frozen until all disputes are resolved.` },
+      { status: 400 }
+    );
+  }
 
   if (pending.length === 0) {
     return NextResponse.json({ error: "No earnings available to cash out." }, { status: 400 });
   }
 
-  const gross = pending.reduce((s, b) => s + handymanNet(b.totalPrice), 0);
+  const tipTotal = pendingTips.reduce((s, t) => s + t.amount, 0);
+  const gross = pending.reduce((s, b) => s + handymanNet(b.totalPrice), 0) + tipTotal;
 
   if (gross < MIN_CASHOUT) {
     return NextResponse.json(

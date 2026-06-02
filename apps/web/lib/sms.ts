@@ -13,7 +13,12 @@ export async function sendSms(to: string, body: string): Promise<void> {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({ from, to, text: body }),
+    body: JSON.stringify({
+      from,
+      to,
+      text: body,
+      messaging_profile_id: process.env.TELNYX_MESSAGING_PROFILE_ID,
+    }),
   });
 
   if (!res.ok) {

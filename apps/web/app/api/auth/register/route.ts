@@ -22,6 +22,7 @@ const schema = z.object({
   zipCode: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
+  referralCode: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -56,6 +57,13 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await hashPassword(data.password);
 
+    // Validate referral code if provided
+    let referredBy: string | null = null;
+    if (data.referralCode) {
+      const referrer = await prisma.user.findUnique({ where: { referralCode: data.referralCode.trim().toUpperCase() } });
+      if (referrer) referredBy = referrer.referralCode;
+    }
+
     const user = await prisma.user.create({
       data: {
         name: data.name,
@@ -73,6 +81,7 @@ export async function POST(req: NextRequest) {
         zipCode: data.zipCode,
         latitude: data.latitude,
         longitude: data.longitude,
+        referredBy: referredBy ?? undefined,
         ...(data.role === "HANDYMAN" && {
           handymanProfile: {
             create: { hourlyRate: 50 },

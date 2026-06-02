@@ -13,6 +13,7 @@ const createSchema = z.object({
   city: z.string().min(2),
   notes: z.string().optional(),
   totalPrice: z.number().positive(),
+  materialsEstimate: z.number().min(0).optional(),
   promoCode: z.string().optional(),
 });
 
@@ -86,6 +87,7 @@ export async function POST(req: NextRequest) {
         city: data.city,
         notes: data.notes,
         totalPrice: data.totalPrice,
+        materialsEstimate: data.materialsEstimate ?? 0,
         responseDeadline,
         ...(promoCodeId && { promoCodeId }),
       },

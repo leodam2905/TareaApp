@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
-    include: { service: true },
+    include: { service: true, promoCode: true },
   });
 
   if (!booking) return NextResponse.json({ error: "Booking not found" }, { status: 404 });
@@ -29,33 +29,60 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Already paid" }, { status: 400 });
   }
 
+  // Apply promo code discount if present and active
+  let discountAmount = 0;
+  if (booking.promoCode && booking.promoCode.isActive) {
+    if (booking.promoCode.discountType === "PERCENT") {
+      discountAmount = booking.totalPrice * (booking.promoCode.discountValue / 100);
+    } else {
+      discountAmount = Math.min(booking.promoCode.discountValue, booking.totalPrice);
+    }
+  }
+  const discountedPrice = Math.max(0, booking.totalPrice - discountAmount);
+  const serviceFee = discountedPrice * CUSTOMER_FEE_RATE;
+
+  const lineItems: Parameters<typeof stripe.checkout.sessions.create>[0]["line_items"] = [
+    {
+      price_data: {
+        currency: "usd",
+        unit_amount: Math.round(discountedPrice * 100),
+        product_data: {
+          name: `${booking.service.title} (Labor)`,
+          description: discountAmount > 0
+            ? `Booking #${booking.id.slice(-8).toUpperCase()} — ${booking.city} · Promo applied: -$${discountAmount.toFixed(2)}`
+            : `Booking #${booking.id.slice(-8).toUpperCase()} — ${booking.city}`,
+        },
+      },
+      quantity: 1,
+    },
+    {
+      price_data: {
+        currency: "usd",
+        unit_amount: Math.round(serviceFee * 100),
+        product_data: { name: "Tarea service fee (15% of labor)" },
+      },
+      quantity: 1,
+    },
+    ...(booking.materialsEstimate > 0 ? [{
+      price_data: {
+        currency: "usd",
+        unit_amount: Math.round(booking.materialsEstimate * 100),
+        product_data: {
+          name: "Materials (estimated)",
+          description: "Cost of materials required to complete the job. Handyman will provide receipts.",
+        },
+      },
+      quantity: 1,
+    }] : []),
+  ];
+
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card", "apple_pay", "google_pay"],
     payment_method_options: {
       card: { request_three_d_secure: "automatic" },
     },
     mode: "payment",
-    line_items: [
-      {
-        price_data: {
-          currency: "usd",
-          unit_amount: Math.round(booking.totalPrice * 100),
-          product_data: {
-            name: booking.service.title,
-            description: `Booking #${booking.id.slice(-8).toUpperCase()} — ${booking.city}`,
-          },
-        },
-        quantity: 1,
-      },
-      {
-        price_data: {
-          currency: "usd",
-          unit_amount: Math.round(booking.totalPrice * CUSTOMER_FEE_RATE * 100),
-          product_data: { name: "Tarea service fee (15%)" },
-        },
-        quantity: 1,
-      },
-    ],
+    line_items: lineItems,
     metadata: { bookingId: booking.id, userId: user.id },
     payment_intent_data: { metadata: { bookingId: booking.id } },
     success_url: `${APP_URL}/customer/pay/success?session_id={CHECKOUT_SESSION_ID}`,

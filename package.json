@@ -2,7 +2,7 @@
   "name": "tarea-monorepo",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/web"
   ],
   "scripts": {
     "dev:web": "cd apps/web && npm run dev",

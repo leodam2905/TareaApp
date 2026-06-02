@@ -8,10 +8,45 @@ export async function GET() {
 
   const handymen = await prisma.handymanProfile.findMany({
     include: {
-      user: { select: { name: true, email: true, isVerified: true, stripeAccountStatus: true } },
+      user: {
+        select: {
+          name: true, email: true, avatarUrl: true,
+          isVerified: true, stripeAccountStatus: true,
+        },
+      },
+      services: { select: { id: true } },
+      availability: { select: { id: true } },
     },
     orderBy: { totalEarnings: "desc" },
   });
 
-  return NextResponse.json(handymen);
+  const BG_INITIATED = ["PAID", "IN_PROGRESS", "DEFERRED", "PASSED"];
+
+  const result = handymen.map(h => ({
+    id: h.id,
+    rating: h.rating,
+    totalJobs: h.totalJobs,
+    totalEarnings: h.totalEarnings,
+    backgroundCheckStatus: h.backgroundCheckStatus,
+    verificationStatus: h.verificationStatus,
+    isPremium: h.isPremium,
+    idFrontUrl: h.idFrontUrl,
+    idBackUrl: h.idBackUrl,
+    licenseNumber: h.licenseNumber,
+    licenseDocUrl: h.licenseDocUrl,
+    insuranceDocUrl: h.insuranceDocUrl,
+    icaSignedAt: h.icaSignedAt,
+    icaSignedIp: h.icaSignedIp,
+    user: h.user,
+    checklist: {
+      ica:             !!h.icaSignedAt,
+      profile:         !!(h.user.avatarUrl && h.bio && h.idFrontUrl),
+      services:        h.services.length > 0,
+      availability:    h.availability.length > 0,
+      backgroundCheck: BG_INITIATED.includes(h.backgroundCheckStatus as string),
+      stripe:          h.user.stripeAccountStatus === "active",
+    },
+  }));
+
+  return NextResponse.json(result);
 }
