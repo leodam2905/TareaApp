@@ -1,0 +1,42 @@
+substitutions:
+  _IMAGE: gcr.io/splendid-drake-497611-h6/tarea-web
+
+steps:
+  # Pull existing images to seed the layer cache (|| true = no-fail on first run)
+  - name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -c
+      - 'docker pull $_IMAGE:deps || true && docker pull $_IMAGE:latest || true'
+
+  # Build and push the deps stage (npm install) separately so it can be cached
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --target=deps
+      - --cache-from=$_IMAGE:deps
+      - --build-arg=BUILDKIT_INLINE_CACHE=1
+      - -t=$_IMAGE:deps
+      - .
+    env:
+      - DOCKER_BUILDKIT=1
+
+  # Full build reusing the cached deps layer
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --cache-from=$_IMAGE:deps
+      - --cache-from=$_IMAGE:latest
+      - --build-arg=BUILDKIT_INLINE_CACHE=1
+      - -t=$_IMAGE:latest
+      - .
+    env:
+      - DOCKER_BUILDKIT=1
+
+images:
+  - $_IMAGE:deps
+  - $_IMAGE:latest
+
+options:
+  machineType: E2_HIGHCPU_8
+  logging: CLOUD_LOGGING_ONLY
