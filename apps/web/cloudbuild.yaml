@@ -40,13 +40,13 @@ steps:
     args:
       - -c
       - |
-        SHA=${COMMIT_SHA:-$(git rev-parse --short HEAD)}
+        SHA=$${COMMIT_SHA:-$(git rev-parse --short HEAD)}
         docker build \
           --cache-from=$_IMAGE:deps \
           --cache-from=$_IMAGE:latest \
           --build-arg=BUILDKIT_INLINE_CACHE=1 \
           -t $_IMAGE:latest \
-          -t $_IMAGE:$SHA \
+          -t $_IMAGE:$$SHA \
           .
         docker push --all-tags $_IMAGE
     env:
@@ -58,9 +58,9 @@ steps:
     args:
       - -c
       - |
-        SHA=${COMMIT_SHA:-$(git rev-parse --short HEAD)}
+        SHA=$${COMMIT_SHA:-$(git rev-parse --short HEAD)}
         gcloud run deploy $_SERVICE \
-          --image=$_IMAGE:$SHA \
+          --image=$_IMAGE:$$SHA \
           --region=$_REGION \
           --project=$_PROJECT \
           --platform=managed \
