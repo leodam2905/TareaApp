@@ -54,17 +54,16 @@ steps:
 
   # Deploy to Cloud Run
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
-    entrypoint: bash
+    entrypoint: gcloud
     args:
-      - -c
-      - |
-        SHA=$${COMMIT_SHA:-$(git rev-parse --short HEAD)}
-        gcloud run deploy $_SERVICE \
-          --image=$_IMAGE:$$SHA \
-          --region=$_REGION \
-          --project=$_PROJECT \
-          --platform=managed \
-          --quiet
+      - run
+      - deploy
+      - $_SERVICE
+      - --image=$_IMAGE:latest
+      - --region=$_REGION
+      - --project=$_PROJECT
+      - --platform=managed
+      - --quiet
 
 images:
   - $_IMAGE:deps
