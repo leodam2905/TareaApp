@@ -1,15 +1,27 @@
 substitutions:
-  _IMAGE: gcr.io/splendid-drake-497611-h6/tarea-web
+  _PROJECT: splendid-drake-497611-h6
+  _REGION: us-central1
+  _IMAGE: us-central1-docker.pkg.dev/splendid-drake-497611-h6/cloud-run-source-deploy/tarea-web
+  _SERVICE: tarea-web
 
 steps:
-  # Pull existing images to seed the layer cache (|| true = no-fail on first run)
+  # Authenticate Docker with Artifact Registry
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+      - auth
+      - configure-docker
+      - us-central1-docker.pkg.dev
+
+  # Pull cached layers to seed the build cache (|| true = no-fail on first run)
   - name: gcr.io/cloud-builders/docker
     entrypoint: bash
     args:
       - -c
-      - 'docker pull $_IMAGE:deps || true && docker pull $_IMAGE:latest || true'
+      - |
+        docker pull $_IMAGE:deps || true
+        docker pull $_IMAGE:latest || true
 
-  # Build and push the deps stage (npm install) separately so it can be cached
+  # Build deps stage separately so npm install layer is reused across builds
   - name: gcr.io/cloud-builders/docker
     args:
       - build
@@ -21,17 +33,38 @@ steps:
     env:
       - DOCKER_BUILDKIT=1
 
-  # Full build reusing the cached deps layer
+  # Full build reusing the cached deps and latest layers
+  # Uses a bash step so we can set a SHA tag that works for both manual and triggered builds
   - name: gcr.io/cloud-builders/docker
+    entrypoint: bash
     args:
-      - build
-      - --cache-from=$_IMAGE:deps
-      - --cache-from=$_IMAGE:latest
-      - --build-arg=BUILDKIT_INLINE_CACHE=1
-      - -t=$_IMAGE:latest
-      - .
+      - -c
+      - |
+        SHA=${COMMIT_SHA:-$(git rev-parse --short HEAD)}
+        docker build \
+          --cache-from=$_IMAGE:deps \
+          --cache-from=$_IMAGE:latest \
+          --build-arg=BUILDKIT_INLINE_CACHE=1 \
+          -t $_IMAGE:latest \
+          -t $_IMAGE:$SHA \
+          .
+        docker push --all-tags $_IMAGE
     env:
       - DOCKER_BUILDKIT=1
+
+  # Deploy to Cloud Run
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        SHA=${COMMIT_SHA:-$(git rev-parse --short HEAD)}
+        gcloud run deploy $_SERVICE \
+          --image=$_IMAGE:$SHA \
+          --region=$_REGION \
+          --project=$_PROJECT \
+          --platform=managed \
+          --quiet
 
 images:
   - $_IMAGE:deps
