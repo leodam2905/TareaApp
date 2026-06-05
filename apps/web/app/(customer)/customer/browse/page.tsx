@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Calendar, ChevronRight, Star, Clock, Zap, ArrowLeft, Loader2, List, Map, ShieldCheck, Building2, Camera, X } from "lucide-react";
+import { MapPin, Calendar, Star, Clock, Zap, ArrowLeft, Loader2, List, Map, ShieldCheck, Building2, Camera, X } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import CategoryIcon from "@/components/ui/CategoryIcon";
 
@@ -107,9 +107,10 @@ export default function BrowsePage() {
   });
 
   const search = async () => {
+    setHandymen([]);
     setLoading(true);
+    setStep(3);
     const qs = new URLSearchParams({ category });
-    // Build datetime from date + selectedHour
     const dateTime = date && selectedHour !== null
       ? `${date}T${String(selectedHour).padStart(2, "0")}:00`
       : date || "";
@@ -118,7 +119,6 @@ export default function BrowsePage() {
     const res = await fetch(`/api/match?${qs}`);
     const data = await res.json();
     setHandymen(Array.isArray(data) ? data : []);
-    setStep(3);
     setLoading(false);
   };
 
@@ -157,42 +157,48 @@ export default function BrowsePage() {
         {/* Step 1: Category */}
         {step === 1 && (
           <motion.div key="step1" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}>
-            <p className="text-slate-400 text-sm mb-5">What do you need help with?</p>
-            <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide -mx-1 px-1">
-              {CATEGORIES.map(c => {
+            <p className="text-slate-400 text-sm mb-4">What do you need help with?</p>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+              {CATEGORIES.map((c, i) => {
                 const active = category === c.key;
                 return (
-                  <button
+                  <motion.button
                     key={c.key}
                     onClick={() => { setCategory(c.key); setStep(2); }}
-                    className="flex flex-col items-center gap-2 flex-shrink-0 group"
-                  >
-                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all border ${
+                    initial={{ opacity: 0, scale: 0.88 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.03, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    whileHover={{ scale: 1.04, y: -2 }}
+                    whileTap={{ scale: 0.96 }}
+                    className={`flex flex-col items-center gap-2.5 p-4 rounded-2xl border transition-all text-center ${
                       active
-                        ? "bg-sky-500/15 border-sky-400/40"
-                        : "bg-white/5 border-white/10 hover:bg-sky-500/10 hover:border-sky-400/30"
+                        ? "bg-sky-500/15 border-sky-400/40 shadow-lg shadow-sky-500/10"
+                        : "bg-white/5 border-white/10 hover:bg-sky-500/8 hover:border-sky-400/30"
+                    }`}
+                  >
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
+                      active ? "bg-sky-500/25" : "bg-white/8"
                     }`}>
                       <CategoryIcon catKey={c.key} active={active} />
                     </div>
-                    <span className={`text-xs font-semibold text-center leading-tight w-16 transition-colors ${
-                      active ? "text-tarea-sky" : "text-slate-400 group-hover:text-white"
+                    <span className={`text-xs font-semibold leading-tight transition-colors ${
+                      active ? "text-tarea-sky" : "text-slate-400"
                     }`}>
                       {c.label}
                     </span>
-                    {active && <div className="w-4 h-0.5 bg-tarea-sky rounded-full" />}
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
             {category && (
-              <div className="mt-5">
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
                 <button
                   onClick={() => setStep(2)}
                   className="w-full flex items-center justify-center gap-2 bg-tarea-sky text-tarea-ink font-bold py-3.5 rounded-xl hover:bg-sky-300 transition-all"
                 >
                   Continue with {CATEGORIES.find(c => c.key === category)?.label} →
                 </button>
-              </div>
+              </motion.div>
             )}
           </motion.div>
         )}
@@ -364,7 +370,29 @@ export default function BrowsePage() {
               </div>
             </div>
 
-            {handymen.length === 0 ? (
+            {loading ? (
+              <div className="space-y-3">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="w-full p-5 bg-white/5 border border-white/10 rounded-2xl animate-pulse">
+                    <div className="flex gap-4">
+                      <div className="w-16 h-16 rounded-2xl bg-white/10 flex-shrink-0" />
+                      <div className="flex-1 space-y-2.5 pt-1">
+                        <div className="h-4 bg-white/10 rounded-lg w-2/3" />
+                        <div className="flex gap-2">
+                          <div className="h-3 bg-white/10 rounded-lg w-16" />
+                          <div className="h-3 bg-white/10 rounded-lg w-20" />
+                        </div>
+                        <div className="h-3 bg-white/10 rounded-lg w-1/2" />
+                      </div>
+                      <div className="w-14 space-y-2 pt-1 flex-shrink-0">
+                        <div className="h-4 bg-white/10 rounded-lg" />
+                        <div className="h-3 bg-white/10 rounded-lg" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : handymen.length === 0 ? (
               <div className="bg-white/5 border border-white/10 rounded-2xl p-12 text-center space-y-3">
                 <p className="text-2xl">😕</p>
                 <p className="text-white font-semibold">No handymen available</p>
@@ -384,26 +412,32 @@ export default function BrowsePage() {
             ) : (
               <div className="space-y-3">
                 {sortedHandymen.map((h, i) => (
-                  <motion.div key={h.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                  <motion.div key={h.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}>
                     <button
                       onClick={() => {
                         const qs = new URLSearchParams({ category, ...(date && { date }), ...(city && { city }), ...(taskDesc && { notes: taskDesc }), ...(taskPhotoUrl && { photo: taskPhotoUrl }) });
                         router.push(`/customer/handymen/${h.userId}?${qs}`);
                       }}
-                      className="w-full text-left p-5 bg-white/5 border border-white/10 rounded-2xl hover:border-tarea-sky/40 hover:bg-white/10 transition-all group"
+                      className="w-full text-left p-5 bg-white/5 border border-white/10 rounded-2xl hover:border-tarea-sky/40 hover:bg-white/[0.08] transition-all group relative overflow-hidden"
                     >
-                      <div className="flex gap-4">
+                      {/* subtle hover gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-tarea-sky/0 to-tarea-sky/0 group-hover:from-tarea-sky/[0.03] group-hover:to-transparent transition-all duration-300 pointer-events-none" />
+
+                      <div className="flex gap-4 relative">
                         {/* Avatar */}
                         <div className="relative flex-shrink-0">
-                          <div className="w-16 h-16 rounded-2xl bg-tarea-sky/20 flex items-center justify-center overflow-hidden">
+                          <div className="w-16 h-16 rounded-2xl bg-tarea-sky/20 flex items-center justify-center overflow-hidden ring-2 ring-transparent group-hover:ring-tarea-sky/20 transition-all">
                             {h.avatarUrl
                               ? <img src={h.avatarUrl} alt={h.name} className="w-full h-full object-cover" />
                               : <span className="text-2xl font-bold text-tarea-sky">{h.name[0]}</span>}
                           </div>
                           {h.isElite && (
-                            <span className="absolute -top-1.5 -right-1.5 bg-amber-400 text-tarea-ink text-[10px] font-extrabold px-1.5 py-0.5 rounded-full">
+                            <span className="absolute -top-1.5 -right-1.5 bg-amber-400 text-tarea-ink text-[10px] font-extrabold px-1.5 py-0.5 rounded-full shadow-lg">
                               ELITE
                             </span>
+                          )}
+                          {h.responseTime <= 15 && (
+                            <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-[#0F172A]" title="Responds quickly" />
                           )}
                         </div>
 
@@ -429,54 +463,54 @@ export default function BrowsePage() {
                               <div className="flex flex-wrap items-center gap-3 mt-1">
                                 <StarRating rating={h.rating} count={h.totalJobs} />
                                 {h.totalJobs > 0 && (
-                                  <span className="text-slate-500 text-xs">{h.totalJobs} jobs done</span>
+                                  <span className="text-slate-500 text-xs">{h.totalJobs} jobs</span>
                                 )}
                                 {h.city && (
                                   <span className="flex items-center gap-1 text-slate-500 text-xs">
                                     <MapPin className="w-3 h-3" />
-                                    {h.city}
-                                    {h.distanceKm !== null && ` · ${h.distanceKm.toFixed(0)} km`}
+                                    {h.city}{h.distanceKm !== null && ` · ${h.distanceKm.toFixed(0)} km`}
                                   </span>
                                 )}
                               </div>
                             </div>
-                            <div className="text-right flex-shrink-0">
+                            <div className="text-right flex-shrink-0 space-y-1">
                               {h.service ? (
                                 <>
-                                  <p className="text-tarea-sky font-bold">
+                                  <p className="text-tarea-sky font-bold text-sm">
                                     {formatCurrency(h.service.minPrice)}–{formatCurrency(h.service.maxPrice)}
                                   </p>
-                                  <p className="text-slate-500 text-xs flex items-center gap-1 justify-end mt-0.5">
+                                  <p className="text-slate-500 text-xs flex items-center gap-1 justify-end">
                                     <Clock className="w-3 h-3" />{h.service.duration} min
                                   </p>
                                 </>
                               ) : (
-                                <p className="text-tarea-sky font-bold">${h.hourlyRate}/hr</p>
+                                <p className="text-tarea-sky font-bold text-sm">${h.hourlyRate}/hr</p>
                               )}
+                              <p className="text-tarea-sky text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                                Book →
+                              </p>
                             </div>
                           </div>
 
                           {h.bio && (
-                            <p className="text-slate-400 text-sm mt-2 line-clamp-2">{h.bio}</p>
+                            <p className="text-slate-400 text-sm mt-2 line-clamp-1">{h.bio}</p>
                           )}
 
-                          <div className="flex items-center gap-3 mt-3">
+                          <div className="flex items-center gap-3 mt-2">
                             <span className="flex items-center gap-1 text-xs text-slate-500">
                               <Zap className="w-3 h-3 text-emerald-400" />
-                              Responds in ~{h.responseTime} min
+                              ~{h.responseTime} min response
                             </span>
                             {h.yearsExperience > 0 && (
                               <span className="text-xs text-slate-500">{h.yearsExperience}yr exp</span>
                             )}
                           </div>
                         </div>
-
-                        <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-tarea-sky transition-colors flex-shrink-0 self-center" />
                       </div>
 
                       {i === 0 && (
-                        <div className="mt-3 pt-3 border-t border-white/5">
-                          <span className="text-xs font-bold text-tarea-sky bg-tarea-sky/10 px-2 py-0.5 rounded-full">
+                        <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-2">
+                          <span className="text-xs font-bold text-tarea-sky bg-tarea-sky/10 px-2.5 py-1 rounded-full">
                             ⭐ Best match for you
                           </span>
                         </div>

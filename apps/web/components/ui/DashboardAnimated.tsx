@@ -46,6 +46,7 @@ type Props = {
   activeJobs: number;
   upcomingBooking: UpcomingBooking;
   favoritesCount: number;
+  hasLocation: boolean;
 };
 
 /* ─────────── Variants ─────────── */
@@ -170,8 +171,54 @@ function GridDots() {
 
 /* ─────────── Main component ─────────── */
 
+function LocationBanner() {
+  const [dismissed, setDismissed] = useState(false);
+  const [requested, setRequested] = useState(false);
+
+  if (dismissed) return null;
+
+  const request = () => {
+    setRequested(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        fetch("/api/auth/location", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
+        }).catch(() => {});
+        setDismissed(true);
+      },
+      () => setDismissed(true)
+    );
+  };
+
+  return (
+    <motion.div variants={fadeUp} className="flex items-center justify-between gap-4 px-5 py-4 bg-tarea-sky/10 border border-tarea-sky/20 rounded-2xl">
+      <div className="flex items-center gap-3">
+        <span className="text-xl">📍</span>
+        <div>
+          <p className="text-white font-semibold text-sm">Enable location for nearby results</p>
+          <p className="text-slate-400 text-xs">We'll show you handymen and jobs within 50 miles of you.</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <button
+          onClick={request}
+          disabled={requested}
+          className="px-4 py-2 bg-tarea-sky text-tarea-ink text-sm font-bold rounded-xl hover:bg-sky-300 transition-all disabled:opacity-60"
+        >
+          {requested ? "Requesting…" : "Allow"}
+        </button>
+        <button onClick={() => setDismissed(true)} className="text-slate-500 hover:text-slate-300 text-xs px-2">
+          Not now
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function DashboardAnimated({
-  user, bookings, recentServices, totalSpent, activeJobs, upcomingBooking,
+  user, bookings, recentServices, totalSpent, activeJobs, upcomingBooking, hasLocation,
 }: Props) {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
@@ -180,6 +227,8 @@ export default function DashboardAnimated({
 
   return (
     <motion.div initial="hidden" animate="show" variants={container} className="space-y-6 max-w-7xl">
+
+      {!hasLocation && <LocationBanner />}
 
       {/* ── Hero greeting (3D orbs + dot grid) ── */}
       <motion.div
@@ -317,16 +366,21 @@ export default function DashboardAnimated({
           { label: "Completed",      value: completedCount,             icon: Star,          color: "#10B981", bg: "rgba(16,185,129,0.12)",  glow: "rgba(16,185,129,0.25)"  },
           { label: "Total Spent",    value: formatCurrency(totalSpent), icon: DollarSign,    color: "#A78BFA", bg: "rgba(167,139,250,0.12)", glow: "rgba(167,139,250,0.25)" },
         ].map(({ label, value, icon: Icon, color, bg, glow }, i) => (
-          <motion.div key={label} variants={scaleIn} custom={i}>
+          <motion.div key={label} variants={scaleIn} custom={i} whileHover={{ scale: 1.02, y: -2 }} transition={{ duration: 0.2 }}>
             <TiltCard className="h-full">
               <div
-                className="relative overflow-hidden bg-white/5 border border-white/[0.08] rounded-2xl p-5 h-full"
-                style={{ boxShadow: `0 0 0 0 ${glow}` }}
+                className="relative overflow-hidden bg-white/5 border border-white/[0.08] rounded-2xl p-5 h-full transition-shadow duration-300 hover:border-white/15"
+                style={{ ["--glow" as string]: glow }}
               >
-                {/* corner glow */}
+                {/* corner glow — brightens on hover */}
                 <div
-                  className="absolute -top-6 -right-6 w-20 h-20 rounded-full blur-2xl opacity-60 pointer-events-none"
+                  className="absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl opacity-40 group-hover:opacity-80 pointer-events-none transition-opacity duration-300"
                   style={{ background: color }}
+                />
+                {/* bottom-left accent line */}
+                <div
+                  className="absolute bottom-0 left-0 h-0.5 w-1/2 rounded-full opacity-50"
+                  style={{ background: `linear-gradient(to right, ${color}, transparent)` }}
                 />
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
@@ -400,15 +454,20 @@ export default function DashboardAnimated({
           </div>
 
           {bookings.length === 0 ? (
-            <div className="text-center py-14">
+            <div className="text-center py-10 px-6">
               <motion.div
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="mx-auto mb-5 w-44 h-44"
               >
-                📋
+                <img
+                  src="/illustrations/empty-bookings.svg"
+                  alt="No bookings"
+                  className="w-full h-full object-contain"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                />
               </motion.div>
-              <p className="text-slate-400 font-medium text-sm">No bookings yet</p>
+              <p className="text-white font-semibold text-sm">No bookings yet</p>
               <p className="text-slate-500 text-xs mt-1 mb-5">Start by finding a handyman near you</p>
               <Link href="/customer/browse" className="btn-secondary text-xs px-4 py-2">
                 Browse Services
@@ -420,9 +479,11 @@ export default function DashboardAnimated({
                 <motion.div
                   key={b.id}
                   variants={fadeUp}
-                  whileHover={{ x: 4, backgroundColor: "rgba(255,255,255,0.02)" }}
-                  transition={{ duration: 0.2 }}
+                  whileHover={{ backgroundColor: "rgba(255,255,255,0.025)" }}
+                  transition={{ duration: 0.15 }}
+                  className="relative group/row"
                 >
+                  <div className="absolute left-0 top-2 bottom-2 w-0.5 rounded-full bg-tarea-sky scale-y-0 group-hover/row:scale-y-100 transition-transform origin-center duration-200" />
                   <Link
                     href={`/customer/bookings/${b.id}`}
                     className="flex items-center gap-3 px-6 py-3.5 transition-colors"

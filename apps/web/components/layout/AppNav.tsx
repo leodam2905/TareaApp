@@ -40,7 +40,7 @@ export default function AppNav({ role, userName }: NavProps) {
     { href: "/customer/favorites",        label: "Favorites",           icon: Heart           },
     { href: "/customer/requests",         label: t("nav_requests"),     icon: ClipboardList   },
     { href: "/customer/post-job",         label: t("nav_post_job"),     icon: Briefcase       },
-{ href: "/customer/spending",         label: "Spending Report",     icon: PieChart        },
+    { href: "/customer/spending",         label: "Spending Report",     icon: PieChart        },
     { href: "/customer/referrals",        label: "Refer & Earn",        icon: Gift            },
     { href: "/customer/profile",          label: t("nav_profile"),      icon: User            },
   ];
@@ -205,7 +205,7 @@ export default function AppNav({ role, userName }: NavProps) {
               <div className="relative">
                 <Bell className="w-5 h-5" />
                 {unread > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
                     {unread > 9 ? "9+" : unread}
                   </span>
                 )}
@@ -236,7 +236,7 @@ export default function AppNav({ role, userName }: NavProps) {
             <button onClick={() => setNotifOpen(o => !o)} className="text-slate-400 hover:text-white p-1">
               <Bell className="w-5 h-5" />
               {unread > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
                   {unread > 9 ? "9+" : unread}
                 </span>
               )}

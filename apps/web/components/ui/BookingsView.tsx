@@ -45,8 +45,15 @@ export default function BookingsView({ bookings, role, emptyHref, emptyLabel, ba
 
   if (bookings.length === 0) {
     return (
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-16 text-center">
-        <p className="text-slate-400 text-lg mb-4">No bookings yet.</p>
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-12 text-center flex flex-col items-center">
+        <img
+          src="/illustrations/empty-bookings.svg"
+          alt="No bookings"
+          className="w-48 h-48 object-contain mb-4 animate-[float_4s_ease-in-out_infinite]"
+          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+        />
+        <p className="text-white font-semibold mb-1">No bookings yet</p>
+        <p className="text-slate-400 text-sm mb-5">Your booked services will appear here</p>
         <Link href={emptyHref} className="btn-secondary">{emptyLabel}</Link>
       </div>
     );
