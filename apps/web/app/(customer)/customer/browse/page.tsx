@@ -130,8 +130,8 @@ export default function BrowsePage() {
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-extrabold text-white">Book a Handyman</h1>
-        <p className="text-slate-400 mt-1">Find trusted professionals near you</p>
+        <h1 className="text-3xl font-extrabold text-[var(--text-primary)]">Book a Handyman</h1>
+        <p className="text-[var(--text-muted)] mt-1">Find trusted professionals near you</p>
       </div>
 
       {/* Step indicator */}
@@ -142,13 +142,13 @@ export default function BrowsePage() {
           { n: 3, label: "Choose" },
         ].map(({ n, label }, i) => (
           <div key={n} className="flex items-center gap-2">
-            <div className={`flex items-center gap-1.5 ${step >= n ? "text-tarea-sky" : "text-slate-600"}`}>
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${step >= n ? "border-tarea-sky bg-tarea-sky text-tarea-ink" : "border-slate-600 text-slate-600"}`}>
+            <div className={`flex items-center gap-1.5 ${step >= n ? "text-tarea-sky" : "text-[var(--text-subtle)]"}`}>
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${step >= n ? "border-tarea-sky bg-tarea-sky text-tarea-ink" : "border-[var(--text-subtle)] text-[var(--text-subtle)]"}`}>
                 {n}
               </div>
               <span className="text-xs font-medium hidden sm:block">{label}</span>
             </div>
-            {i < 2 && <div className={`flex-1 h-px w-8 ${step > n ? "bg-tarea-sky" : "bg-slate-700"}`} />}
+            {i < 2 && <div className={`flex-1 h-px w-8 ${step > n ? "bg-tarea-sky" : "bg-[var(--card-border-2)]"}`} />}
           </div>
         ))}
       </div>
@@ -157,7 +157,7 @@ export default function BrowsePage() {
         {/* Step 1: Category */}
         {step === 1 && (
           <motion.div key="step1" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}>
-            <p className="text-slate-400 text-sm mb-4">What do you need help with?</p>
+            <p className="text-[var(--text-muted)] text-sm mb-4">What do you need help with?</p>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
               {CATEGORIES.map((c, i) => {
                 const active = category === c.key;
@@ -173,16 +173,16 @@ export default function BrowsePage() {
                     className={`flex flex-col items-center gap-2.5 p-4 rounded-2xl border transition-all text-center ${
                       active
                         ? "bg-sky-500/15 border-sky-400/40 shadow-lg shadow-sky-500/10"
-                        : "bg-white/5 border-white/10 hover:bg-sky-500/8 hover:border-sky-400/30"
+                        : "bg-[var(--card-bg)] border-[var(--card-border)] hover:bg-sky-500/[0.06] hover:border-sky-400/40"
                     }`}
                   >
                     <div className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
-                      active ? "bg-sky-500/25" : "bg-white/8"
+                      active ? "bg-sky-500/25" : "bg-[var(--card-bg-alt)]"
                     }`}>
                       <CategoryIcon catKey={c.key} active={active} />
                     </div>
                     <span className={`text-xs font-semibold leading-tight transition-colors ${
-                      active ? "text-tarea-sky" : "text-slate-400"
+                      active ? "text-tarea-sky" : "text-[var(--text-muted)]"
                     }`}>
                       {c.label}
                     </span>
@@ -207,21 +207,21 @@ export default function BrowsePage() {
         {step === 2 && (
           <motion.div key="step2" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
             className="space-y-5">
-            <button onClick={() => setStep(1)} className="flex items-center gap-1.5 text-slate-400 hover:text-white text-sm transition-colors">
+            <button onClick={() => setStep(1)} className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] text-sm transition-colors">
               <ArrowLeft className="w-4 h-4" /> Back
             </button>
 
             <div className="flex items-center gap-3 p-4 bg-tarea-sky/10 border border-tarea-sky/20 rounded-2xl">
               <span className="text-3xl">{selectedCat?.emoji}</span>
               <div>
-                <p className="text-white font-bold">{selectedCat?.label}</p>
-                <p className="text-slate-400 text-sm">{selectedCat?.desc}</p>
+                <p className="text-[var(--text-primary)] font-bold">{selectedCat?.label}</p>
+                <p className="text-[var(--text-muted)] text-sm">{selectedCat?.desc}</p>
               </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-5">
+            <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-6 space-y-5">
               <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 mb-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-[var(--text-muted)] mb-2">
                   <Calendar className="w-4 h-4 text-tarea-sky" /> What date?
                 </label>
                 <input
@@ -229,13 +229,13 @@ export default function BrowsePage() {
                   min={minDateStr.slice(0, 10)}
                   value={date}
                   onChange={e => { setDate(e.target.value); setSelectedHour(null); }}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-tarea-sky"
+                  className="w-full bg-[var(--input-bg)] border border-[var(--card-border)] rounded-xl px-4 py-3 text-[var(--text-primary)] text-sm focus:outline-none focus:border-tarea-sky"
                 />
               </div>
 
               {date && (
                 <div>
-                  <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 mb-3">
+                  <label className="flex items-center gap-2 text-sm font-semibold text-[var(--text-muted)] mb-3">
                     <Clock className="w-4 h-4 text-tarea-sky" /> What time?
                   </label>
                   <div className="grid grid-cols-4 gap-2">
@@ -246,7 +246,7 @@ export default function BrowsePage() {
                         className={`py-2 rounded-xl text-sm font-semibold transition-all border ${
                           selectedHour === h
                             ? "bg-tarea-sky text-tarea-ink border-tarea-sky"
-                            : "bg-white/5 border-white/10 text-slate-300 hover:border-tarea-sky/40 hover:text-white"
+                            : "bg-[var(--card-bg-alt)] border-[var(--card-border)] text-[var(--text-muted)] hover:border-tarea-sky/40 hover:text-tarea-sky"
                         }`}
                       >
                         {fmtHour(h)}
@@ -257,7 +257,7 @@ export default function BrowsePage() {
               )}
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 mb-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-[var(--text-muted)] mb-2">
                   <MapPin className="w-4 h-4 text-tarea-sky" /> Your city
                 </label>
                 <input
@@ -265,21 +265,21 @@ export default function BrowsePage() {
                   value={city}
                   onChange={e => setCity(e.target.value)}
                   placeholder="Miami"
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-tarea-sky"
+                  className="w-full bg-[var(--input-bg)] border border-[var(--card-border)] rounded-xl px-4 py-3 text-[var(--text-primary)] text-sm placeholder:text-[var(--text-subtle)] focus:outline-none focus:border-tarea-sky"
                 />
               </div>
 
               {/* Task description + photo */}
               <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-slate-300 mb-2">
-                  <span className="text-base">📋</span> Describe your task <span className="text-slate-500 font-normal">(optional)</span>
+                <label className="flex items-center gap-2 text-sm font-semibold text-[var(--text-muted)] mb-2">
+                  <span className="text-base">📋</span> Describe your task <span className="text-[var(--text-subtle)] font-normal">(optional)</span>
                 </label>
                 <textarea
                   value={taskDesc}
                   onChange={e => setTaskDesc(e.target.value)}
                   placeholder="e.g. Fix a leaky pipe under the kitchen sink, broken handle on the main shutoff valve…"
                   rows={3}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-tarea-sky resize-none"
+                  className="w-full bg-[var(--input-bg)] border border-[var(--card-border)] rounded-xl px-4 py-3 text-[var(--text-primary)] text-sm placeholder:text-[var(--text-subtle)] focus:outline-none focus:border-tarea-sky resize-none"
                 />
                 <div className="mt-2 flex items-center gap-3">
                   <input
@@ -291,7 +291,7 @@ export default function BrowsePage() {
                   />
                   {taskPhotoPreview ? (
                     <div className="relative group">
-                      <img src={taskPhotoPreview} alt="Task photo" className="w-20 h-20 object-cover rounded-xl border border-white/20" />
+                      <img src={taskPhotoPreview} alt="Task photo" className="w-20 h-20 object-cover rounded-xl border border-[var(--card-border)]" />
                       {uploadingPhoto && (
                         <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center">
                           <Loader2 className="w-4 h-4 animate-spin text-white" />
@@ -307,13 +307,13 @@ export default function BrowsePage() {
                   ) : (
                     <button
                       onClick={() => photoInputRef.current?.click()}
-                      className="flex items-center gap-2 px-4 py-2 border border-dashed border-white/20 rounded-xl text-slate-400 hover:border-tarea-sky/50 hover:text-tarea-sky transition-all text-sm"
+                      className="flex items-center gap-2 px-4 py-2 border border-dashed border-[var(--card-border-2)] rounded-xl text-[var(--text-muted)] hover:border-tarea-sky/50 hover:text-tarea-sky transition-all text-sm"
                     >
                       <Camera className="w-4 h-4" /> Add a photo
                     </button>
                   )}
                   {taskPhotoUrl && !uploadingPhoto && (
-                    <span className="text-xs text-emerald-400 flex items-center gap-1">✓ Photo uploaded</span>
+                    <span className="text-xs text-emerald-500 flex items-center gap-1">✓ Photo uploaded</span>
                   )}
                 </div>
               </div>
@@ -335,17 +335,17 @@ export default function BrowsePage() {
           <motion.div key="step3" initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
             className="space-y-4">
             <div className="flex items-center justify-between gap-3 flex-wrap">
-              <button onClick={() => setStep(2)} className="flex items-center gap-1.5 text-slate-400 hover:text-white text-sm transition-colors">
+              <button onClick={() => setStep(2)} className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] text-sm transition-colors">
                 <ArrowLeft className="w-4 h-4" /> Back
               </button>
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="text-slate-400 text-sm">
-                  <span className="text-white font-semibold">{handymen.length}</span> available
+                <p className="text-[var(--text-muted)] text-sm">
+                  <span className="text-[var(--text-primary)] font-semibold">{handymen.length}</span> available
                 </p>
                 <select
                   value={sortBy}
                   onChange={e => setSortBy(e.target.value as typeof sortBy)}
-                  className="bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-slate-300 text-xs focus:outline-none focus:border-tarea-sky"
+                  className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl px-3 py-1.5 text-[var(--text-muted)] text-xs focus:outline-none focus:border-tarea-sky"
                 >
                   <option value="best">Best Match</option>
                   <option value="rating">Top Rated</option>
@@ -353,16 +353,16 @@ export default function BrowsePage() {
                   <option value="price_high">Price: High to Low</option>
                   <option value="distance">Nearest First</option>
                 </select>
-                <div className="flex bg-white/5 border border-white/10 rounded-xl p-1 gap-1">
+                <div className="flex bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl p-1 gap-1">
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${viewMode === "list" ? "bg-tarea-sky text-tarea-ink" : "text-slate-400 hover:text-white"}`}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${viewMode === "list" ? "bg-tarea-sky text-tarea-ink" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"}`}
                   >
                     <List className="w-3.5 h-3.5" /> List
                   </button>
                   <button
                     onClick={() => setViewMode("map")}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${viewMode === "map" ? "bg-tarea-sky text-tarea-ink" : "text-slate-400 hover:text-white"}`}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${viewMode === "map" ? "bg-tarea-sky text-tarea-ink" : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"}`}
                   >
                     <Map className="w-3.5 h-3.5" /> Map
                   </button>
@@ -373,30 +373,30 @@ export default function BrowsePage() {
             {loading ? (
               <div className="space-y-3">
                 {[...Array(4)].map((_, i) => (
-                  <div key={i} className="w-full p-5 bg-white/5 border border-white/10 rounded-2xl animate-pulse">
+                  <div key={i} className="w-full p-5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl animate-pulse">
                     <div className="flex gap-4">
-                      <div className="w-16 h-16 rounded-2xl bg-white/10 flex-shrink-0" />
+                      <div className="w-16 h-16 rounded-2xl bg-[var(--card-bg-alt)] flex-shrink-0" />
                       <div className="flex-1 space-y-2.5 pt-1">
-                        <div className="h-4 bg-white/10 rounded-lg w-2/3" />
+                        <div className="h-4 bg-[var(--card-bg-alt)] rounded-lg w-2/3" />
                         <div className="flex gap-2">
-                          <div className="h-3 bg-white/10 rounded-lg w-16" />
-                          <div className="h-3 bg-white/10 rounded-lg w-20" />
+                          <div className="h-3 bg-[var(--card-bg-alt)] rounded-lg w-16" />
+                          <div className="h-3 bg-[var(--card-bg-alt)] rounded-lg w-20" />
                         </div>
-                        <div className="h-3 bg-white/10 rounded-lg w-1/2" />
+                        <div className="h-3 bg-[var(--card-bg-alt)] rounded-lg w-1/2" />
                       </div>
                       <div className="w-14 space-y-2 pt-1 flex-shrink-0">
-                        <div className="h-4 bg-white/10 rounded-lg" />
-                        <div className="h-3 bg-white/10 rounded-lg" />
+                        <div className="h-4 bg-[var(--card-bg-alt)] rounded-lg" />
+                        <div className="h-3 bg-[var(--card-bg-alt)] rounded-lg" />
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : handymen.length === 0 ? (
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-12 text-center space-y-3">
+              <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl p-12 text-center space-y-3">
                 <p className="text-2xl">😕</p>
-                <p className="text-white font-semibold">No handymen available</p>
-                <p className="text-slate-400 text-sm">Try a different date or city.</p>
+                <p className="text-[var(--text-primary)] font-semibold">No handymen available</p>
+                <p className="text-[var(--text-muted)] text-sm">Try a different date or city.</p>
                 <button onClick={() => setStep(2)} className="btn-secondary mt-2">Change filters</button>
               </div>
             ) : viewMode === "map" ? (
@@ -418,10 +418,9 @@ export default function BrowsePage() {
                         const qs = new URLSearchParams({ category, ...(date && { date }), ...(city && { city }), ...(taskDesc && { notes: taskDesc }), ...(taskPhotoUrl && { photo: taskPhotoUrl }) });
                         router.push(`/customer/handymen/${h.userId}?${qs}`);
                       }}
-                      className="w-full text-left p-5 bg-white/5 border border-white/10 rounded-2xl hover:border-tarea-sky/40 hover:bg-white/[0.08] transition-all group relative overflow-hidden"
+                      className="w-full text-left p-5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl hover:border-tarea-sky/40 hover:shadow-md transition-all group relative overflow-hidden"
                     >
-                      {/* subtle hover gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-tarea-sky/0 to-tarea-sky/0 group-hover:from-tarea-sky/[0.03] group-hover:to-transparent transition-all duration-300 pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-tarea-sky/0 to-tarea-sky/0 group-hover:from-tarea-sky/[0.04] group-hover:to-transparent transition-all duration-300 pointer-events-none" />
 
                       <div className="flex gap-4 relative">
                         {/* Avatar */}
@@ -437,7 +436,7 @@ export default function BrowsePage() {
                             </span>
                           )}
                           {h.responseTime <= 15 && (
-                            <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-[#0F172A]" title="Responds quickly" />
+                            <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-[var(--card-bg)]" title="Responds quickly" />
                           )}
                         </div>
 
@@ -446,7 +445,7 @@ export default function BrowsePage() {
                           <div className="flex items-start justify-between gap-2">
                             <div>
                               <div className="flex items-center gap-1.5 flex-wrap">
-                                <p className="text-white font-bold group-hover:text-tarea-sky transition-colors">
+                                <p className="text-[var(--text-primary)] font-bold group-hover:text-tarea-sky transition-colors">
                                   {h.accountType === "COMPANY" && h.companyName ? h.companyName : h.name}
                                 </p>
                                 {h.accountType === "COMPANY" && (
@@ -463,10 +462,10 @@ export default function BrowsePage() {
                               <div className="flex flex-wrap items-center gap-3 mt-1">
                                 <StarRating rating={h.rating} count={h.totalJobs} />
                                 {h.totalJobs > 0 && (
-                                  <span className="text-slate-500 text-xs">{h.totalJobs} jobs</span>
+                                  <span className="text-[var(--text-subtle)] text-xs">{h.totalJobs} jobs</span>
                                 )}
                                 {h.city && (
-                                  <span className="flex items-center gap-1 text-slate-500 text-xs">
+                                  <span className="flex items-center gap-1 text-[var(--text-subtle)] text-xs">
                                     <MapPin className="w-3 h-3" />
                                     {h.city}{h.distanceKm !== null && ` · ${h.distanceKm.toFixed(0)} km`}
                                   </span>
@@ -482,6 +481,7 @@ export default function BrowsePage() {
                                   <p className="text-slate-500 text-xs flex items-center gap-1 justify-end">
                                     <Clock className="w-3 h-3" />{h.service.duration} min
                                   </p>
+
                                 </>
                               ) : (
                                 <p className="text-tarea-sky font-bold text-sm">${h.hourlyRate}/hr</p>
@@ -493,23 +493,23 @@ export default function BrowsePage() {
                           </div>
 
                           {h.bio && (
-                            <p className="text-slate-400 text-sm mt-2 line-clamp-1">{h.bio}</p>
+                            <p className="text-[var(--text-muted)] text-sm mt-2 line-clamp-1">{h.bio}</p>
                           )}
 
                           <div className="flex items-center gap-3 mt-2">
-                            <span className="flex items-center gap-1 text-xs text-slate-500">
-                              <Zap className="w-3 h-3 text-emerald-400" />
+                            <span className="flex items-center gap-1 text-xs text-[var(--text-subtle)]">
+                              <Zap className="w-3 h-3 text-emerald-500" />
                               ~{h.responseTime} min response
                             </span>
                             {h.yearsExperience > 0 && (
-                              <span className="text-xs text-slate-500">{h.yearsExperience}yr exp</span>
+                              <span className="text-xs text-[var(--text-subtle)]">{h.yearsExperience}yr exp</span>
                             )}
                           </div>
                         </div>
                       </div>
 
                       {i === 0 && (
-                        <div className="mt-3 pt-3 border-t border-white/5 flex items-center gap-2">
+                        <div className="mt-3 pt-3 border-t border-[var(--card-border)] flex items-center gap-2">
                           <span className="text-xs font-bold text-tarea-sky bg-tarea-sky/10 px-2.5 py-1 rounded-full">
                             ⭐ Best match for you
                           </span>
