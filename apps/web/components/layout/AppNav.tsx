@@ -159,18 +159,30 @@ export default function AppNav({ role, userName }: NavProps) {
       <div className="max-h-64 overflow-y-auto">
         {notifs.length === 0 ? (
           <p className="text-slate-400 text-sm text-center py-8">No notifications yet</p>
-        ) : notifs.map(n => (
-          <Link
-            key={n.id}
-            href={n.type === "message" ? `/chat/${n.refId}` : n.refId ? `/customer/bookings/${n.refId}` : "/notifications"}
-            onClick={onClose}
-            className={cn("block px-4 py-3 border-b border-white/5 hover:bg-white/5 transition-colors", !n.isRead && "bg-tarea-sky/5")}
-          >
-            {!n.isRead && <span className="w-1.5 h-1.5 rounded-full bg-tarea-sky inline-block mr-2 mb-0.5" />}
-            <p className={cn("text-sm font-semibold", n.isRead ? "text-slate-300" : "text-white")}>{n.title}</p>
-            <p className="text-slate-500 text-xs mt-0.5 line-clamp-1">{n.body}</p>
-          </Link>
-        ))}
+        ) : notifs.map(n => {
+          const bookingBase = role === "HANDYMAN" ? "/handyman/jobs" : "/customer/bookings";
+          const href = n.type === "message"
+            ? `/chat/${n.refId}`
+            : n.refId
+              ? `${bookingBase}/${n.refId}`
+              : "/notifications";
+          return (
+            <Link
+              key={n.id}
+              href={href}
+              onClick={onClose}
+              className={cn("block px-4 py-3 border-b border-white/5 hover:bg-white/5 transition-colors", !n.isRead && "bg-tarea-sky/5")}
+            >
+              <div className="flex items-start gap-2">
+                {!n.isRead && <span className="w-1.5 h-1.5 rounded-full bg-tarea-sky flex-shrink-0 mt-1.5" />}
+                <div className="flex-1 min-w-0">
+                  <p className={cn("text-sm font-semibold", n.isRead ? "text-slate-300" : "text-white")}>{n.title}</p>
+                  <p className="text-slate-500 text-xs mt-0.5 line-clamp-2 leading-relaxed">{n.body}</p>
+                </div>
+              </div>
+            </Link>
+          );
+        })}
       </div>
       <Link href="/notifications" onClick={onClose} className="block text-center text-tarea-sky text-xs font-medium py-3 hover:bg-white/5 transition-colors">
         View all →
