@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { jwtVerify } from "jose";
 
-function getTokenRole(token: string): string | null {
+const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+
+// Verify the JWT *signature* (not just decode the payload) so a forged cookie
+// with an arbitrary role cannot reach a protected page shell.
+async function getVerifiedRole(token: string): Promise<string | null> {
   try {
-    const payload = token.split(".")[1];
-    if (!payload) return null;
-    const decoded = JSON.parse(Buffer.from(payload, "base64url").toString());
-    return typeof decoded.role === "string" ? decoded.role : null;
+    const { payload } = await jwtVerify(token, secret);
+    return typeof payload.role === "string" ? payload.role : null;
   } catch {
     return null;
   }
@@ -17,16 +20,17 @@ function redirectToLogin(req: NextRequest) {
   return NextResponse.redirect(url);
 }
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("tarea_token")?.value;
+  const role = token ? await getVerifiedRole(token) : null;
 
   if (pathname.startsWith("/admin")) {
-    if (!token || getTokenRole(token) !== "ADMIN") return redirectToLogin(req);
+    if (role !== "ADMIN") return redirectToLogin(req);
   } else if (pathname.startsWith("/handyman")) {
-    if (!token || getTokenRole(token) !== "HANDYMAN") return redirectToLogin(req);
+    if (role !== "HANDYMAN") return redirectToLogin(req);
   } else if (pathname.startsWith("/customer")) {
-    if (!token || getTokenRole(token) !== "CUSTOMER") return redirectToLogin(req);
+    if (role !== "CUSTOMER") return redirectToLogin(req);
   }
 
   return NextResponse.next();

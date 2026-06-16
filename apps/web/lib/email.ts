@@ -48,7 +48,8 @@ export async function sendEmail(
     html = baseTemplate(title!, body!, cta);
   }
   if (!resend) {
-    console.log(`[EMAIL → ${to}] ${subj}`);
+    // Do NOT log the subject — OTP emails embed the code in the subject line.
+    console.log(`[EMAIL → ${to}] (Resend not configured; email not sent)`);
     return;
   }
   await resend.emails.send({ from: FROM, to, subject: subj, html });

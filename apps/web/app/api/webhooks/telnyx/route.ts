@@ -1,24 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
-// Telnyx signs each webhook with HMAC-SHA256 using the v1_secret from the messaging profile.
-// If the signature doesn't match we ignore the request.
-function verifySignature(payload: string, signature: string | null, secret: string): boolean {
-  if (!signature) return false;
-  const expected = crypto.createHmac("sha256", secret).update(payload).digest("hex");
-  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+export const runtime = "nodejs";
+
+// Telnyx signs each webhook with Ed25519 over `${timestamp}|${rawBody}`. The
+// public key (base64 raw 32-byte Ed25519 key) is provided in the Telnyx portal.
+const ED25519_SPKI_PREFIX = Buffer.from("302a300506032b6570032100", "hex");
+
+function verifyTelnyxSignature(
+  rawBody: string,
+  signatureB64: string | null,
+  timestamp: string | null,
+  publicKeyB64: string
+): boolean {
+  if (!signatureB64 || !timestamp) return false;
+  try {
+    const der = Buffer.concat([ED25519_SPKI_PREFIX, Buffer.from(publicKeyB64, "base64")]);
+    const key = crypto.createPublicKey({ key: der, format: "der", type: "spki" });
+    const signed = Buffer.from(`${timestamp}|${rawBody}`);
+    return crypto.verify(null, signed, key, Buffer.from(signatureB64, "base64"));
+  } catch {
+    return false;
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const secret = process.env.TELNYX_WEBHOOK_SECRET;
+  const publicKey = process.env.TELNYX_PUBLIC_KEY;
   const rawBody = await req.text();
 
-  if (secret) {
-    const sig = req.headers.get("telnyx-signature-ed25519") ??
-                req.headers.get("x-telnyx-signature");
-    if (!verifySignature(rawBody, sig, secret)) {
-      return NextResponse.json({ error: "invalid signature" }, { status: 401 });
-    }
+  // Fail closed — never process an unverified webhook.
+  if (!publicKey) {
+    console.error("[telnyx/webhook] TELNYX_PUBLIC_KEY not configured — rejecting request");
+    return NextResponse.json({ error: "webhook not configured" }, { status: 500 });
+  }
+
+  const sig = req.headers.get("telnyx-signature-ed25519");
+  const ts = req.headers.get("telnyx-timestamp");
+  if (!verifyTelnyxSignature(rawBody, sig, ts, publicKey)) {
+    return NextResponse.json({ error: "invalid signature" }, { status: 401 });
   }
 
   let event: Record<string, unknown>;

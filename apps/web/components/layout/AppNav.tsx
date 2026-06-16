@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Search, CalendarCheck, User, Briefcase, DollarSign,
   LogOut, Bell, ClipboardList, Radar, Layers, CalendarDays, X, CheckCheck,
-  Heart, Sun, Moon, Gift, PieChart, HelpCircle, Menu, ListChecks,
+  Heart, Sun, Moon, Gift, PieChart, HelpCircle, Menu, ListChecks, Wallet,
 } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -52,6 +52,7 @@ export default function AppNav({ role, userName }: NavProps) {
     { href: "/handyman/jobs",             label: t("nav_my_jobs"),     icon: Briefcase       },
     { href: "/handyman/services",         label: t("nav_services"),    icon: Layers          },
     { href: "/handyman/earnings",         label: t("nav_earnings"),    icon: DollarSign      },
+    { href: "/handyman/payout-methods",  label: "Payout Methods",     icon: Wallet          },
     { href: "/handyman/schedule",         label: "Schedule",           icon: CalendarDays    },
     { href: "/handyman/referrals",        label: "Refer & Earn",       icon: Gift            },
     { href: "/handyman/profile",          label: t("nav_profile"),     icon: User            },

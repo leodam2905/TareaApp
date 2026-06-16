@@ -203,10 +203,29 @@ export default function AdminHandymenPage() {
                   <span className="text-emerald-400">{formatCurrency(h.totalEarnings)}</span>
                 </div>
 
-                {/* BG status */}
-                <span className={`hidden md:inline-flex text-xs font-semibold px-2.5 py-1 rounded-full border flex-shrink-0 ${BG_COLORS[h.backgroundCheckStatus] ?? BG_COLORS.PENDING}`}>
-                  {h.backgroundCheckStatus}
-                </span>
+                {/* BG status — inline dropdown */}
+                <select
+                  value={h.backgroundCheckStatus}
+                  onChange={async (e) => {
+                    const newStatus = e.target.value;
+                    const res = await fetch("/api/admin/handymen", {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ profileId: h.id, backgroundCheckStatus: newStatus }),
+                    });
+                    if (res.ok) {
+                      toast.success(`BG check → ${newStatus}`);
+                      setHandymen(prev => prev.map(x => x.id !== h.id ? x : { ...x, backgroundCheckStatus: newStatus }));
+                    } else {
+                      toast.error("Failed to update");
+                    }
+                  }}
+                  className={`text-xs font-semibold px-2.5 py-1 rounded-full border cursor-pointer flex-shrink-0 ${BG_COLORS[h.backgroundCheckStatus] ?? BG_COLORS.PENDING} bg-transparent`}
+                >
+                  {["PENDING","DEFERRED","PAID","IN_PROGRESS","PASSED","FAILED"].map(s => (
+                    <option key={s} value={s} className="bg-slate-900 text-white">{s}</option>
+                  ))}
+                </select>
 
                 {/* Expand toggle */}
                 <button onClick={() => setExpanded(isExpanded ? null : h.id)}

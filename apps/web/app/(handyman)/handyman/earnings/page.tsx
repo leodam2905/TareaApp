@@ -1,10 +1,11 @@
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { TrendingUp, DollarSign, CheckCircle2, Star, Clock, ArrowDownCircle, FileDown } from "lucide-react";
+import { TrendingUp, DollarSign, CheckCircle2, Star, Clock, ArrowDownCircle, Wallet } from "lucide-react";
 import EarningsChart from "@/components/ui/EarningsChart";
 import CashoutButton from "@/components/ui/CashoutButton";
 import TaxReportDownload from "@/components/ui/TaxReportDownload";
+import PayoutMethodsClient from "@/components/ui/PayoutMethodsClient";
 import { handymanNet } from "@/lib/fees";
 
 const MIN_CASHOUT = 10;
@@ -56,6 +57,15 @@ export default async function HandymanEarningsPage() {
       <div>
         <h1 className="text-3xl font-extrabold text-white">Earnings</h1>
         <p className="text-slate-400 mt-1">Track your income and cash out your earnings</p>
+      </div>
+
+      {/* Payout methods */}
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Wallet className="w-5 h-5 text-tarea-sky" />
+          <h2 className="text-lg font-bold text-white">Payout Methods</h2>
+        </div>
+        <PayoutMethodsClient />
       </div>
 
       {/* Cashout widget */}

@@ -2,16 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
-const KM_PER_MILE = 1.60934;
+const RADIUS_KM = 50 * 1.60934; // 50 miles in km
 
 function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371;
   const toRad = (d: number) => (d * Math.PI) / 180;
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
@@ -19,25 +17,11 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get("category");
-    const dateStr = searchParams.get("date");
-    const city = searchParams.get("city");
 
     if (!category) return NextResponse.json({ error: "category is required" }, { status: 400 });
 
-    // User may not be logged in — that's fine
     let user = null;
     try { user = await getCurrentUser(); } catch { /* unauthenticated */ }
-
-    // Parse as UTC so "2026-04-29T10:00" always means day=Wed, hour=10
-    // regardless of the server's local timezone
-    let requestedDay: number | null = null;
-    let requestedHour: number | null = null;
-    if (dateStr) {
-      const normalized = dateStr.endsWith("Z") ? dateStr : dateStr + "Z";
-      const d = new Date(normalized);
-      requestedDay = d.getUTCDay();
-      requestedHour = d.getUTCHours();
-    }
 
     // Restrict to active states (if any are configured)
     const activeStates = await prisma.activeState.findMany({ where: { isActive: true }, select: { state: true } });
@@ -46,7 +30,6 @@ export async function GET(req: NextRequest) {
 
     const handymen = await prisma.handymanProfile.findMany({
       where: {
-        isAvailable: true,
         backgroundCheckStatus: "PASSED",
         services: { some: { category: category as never, isActive: true } },
         user: {
@@ -74,43 +57,18 @@ export async function GET(req: NextRequest) {
           select: { id: true, title: true, minPrice: true, maxPrice: true, duration: true },
           take: 1,
         },
-        availability: true,
-        // backgroundCheckStatus included as scalar via default select
       },
     });
-    // Note: isPremium is a scalar field included by default via findMany
 
-    const customerCity = (user?.city || city || "").toLowerCase();
     const customerLat = user?.latitude ?? null;
     const customerLon = user?.longitude ?? null;
 
     const results = handymen
       .map((h) => {
-        // Availability: if no slots configured → always available
-        let isAvailableOnDate = true;
-        if (requestedDay !== null && h.availability.length > 0) {
-          const slot = h.availability.find((a) => a.dayOfWeek === requestedDay);
-          if (!slot) {
-            isAvailableOnDate = false;
-          } else if (requestedHour !== null) {
-            isAvailableOnDate = requestedHour >= slot.startHour && requestedHour < slot.endHour;
-          }
-        }
-
-        let distanceKm: number | null = null;
-        if (customerLat && customerLon && h.user.latitude && h.user.longitude) {
-          distanceKm = haversine(customerLat, customerLon, h.user.latitude, h.user.longitude);
-        }
-
-        const isElite = h.rating >= 4.5 && h.totalJobs >= 10;
-        const cityMatch = customerCity && h.user.city?.toLowerCase() === customerCity;
-        const distanceScore = distanceKm !== null ? Math.max(0, 50 - distanceKm * 0.5) : 0;
-        const score =
-          (cityMatch ? 40 : 0) + distanceScore + h.rating * 8 + Math.min(h.totalJobs, 25) + (isElite ? 15 : 0) + (h.isPremium ? 25 : 0);
-
-        // Filter by service radius: if distance is known and exceeds radius, exclude
-        const withinRadius = distanceKm === null || distanceKm <= h.serviceRadius * KM_PER_MILE;
-
+        const distanceKm =
+          customerLat && customerLon && h.user.latitude && h.user.longitude
+            ? haversine(customerLat, customerLon, h.user.latitude, h.user.longitude)
+            : null;
         return {
           id: h.id,
           userId: h.user.id,
@@ -128,20 +86,19 @@ export async function GET(req: NextRequest) {
           yearsExperience: h.yearsExperience,
           responseTime: h.responseTime,
           serviceRadius: h.serviceRadius,
-          isElite,
+          isElite: h.rating >= 4.5 && h.totalJobs >= 10,
           isPremium: h.isPremium,
           backgroundCheckStatus: h.backgroundCheckStatus,
           distanceKm,
-          score,
-          isAvailableOnDate,
-          withinRadius,
+          score: h.rating * 8 + Math.min(h.totalJobs, 25) + (h.isPremium ? 25 : 0),
           latitude: h.user.latitude,
           longitude: h.user.longitude,
           service: h.services[0] ?? null,
         };
       })
-      .filter((h) => h.isAvailableOnDate && h.withinRadius)
-      .sort((a, b) => b.score - a.score);
+      // Only apply distance filter when customer location is known
+      .filter((h) => h.distanceKm === null || h.distanceKm <= RADIUS_KM)
+      .sort((a, b) => (a.distanceKm ?? 999) - (b.distanceKm ?? 999) || b.score - a.score);
 
     return NextResponse.json(results);
   } catch (err) {

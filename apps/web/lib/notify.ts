@@ -14,7 +14,7 @@ interface NotifyInput {
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-const SMS_TYPES = new Set(["booking_accepted", "booking_request", "booking_completed"]);
+const SMS_TYPES = new Set(["booking_accepted", "booking_request", "booking_completed", "booking_cancelled"]);
 
 function ctaForType(type: string, refId?: string) {
   const urls: Record<string, string> = {

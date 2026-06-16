@@ -12,30 +12,35 @@ export async function POST(_req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let accountId = user.stripeAccountId;
+  try {
+    let accountId = user.stripeAccountId;
 
-  if (!accountId) {
-    const account = await stripe.accounts.create({
-      type: "express",
-      email: user.email,
-      capabilities: { transfers: { requested: true } },
-      metadata: { userId: user.id },
+    if (!accountId) {
+      const account = await stripe.accounts.create({
+        type: "express",
+        email: user.email,
+        capabilities: { transfers: { requested: true } },
+        metadata: { userId: user.id },
+      });
+      accountId = account.id;
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { stripeAccountId: accountId, stripeAccountStatus: "pending" },
+      });
+    }
+
+    const link = await stripe.accountLinks.create({
+      account: accountId,
+      refresh_url: `${APP_URL}/handyman/payout-methods?stripe=refresh`,
+      return_url:  `${APP_URL}/handyman/payout-methods?stripe=connected`,
+      type: "account_onboarding",
     });
-    accountId = account.id;
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { stripeAccountId: accountId, stripeAccountStatus: "pending" },
-    });
+
+    return NextResponse.json({ url: link.url });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to start verification";
+    return NextResponse.json({ error: message }, { status: 400 });
   }
-
-  const link = await stripe.accountLinks.create({
-    account: accountId,
-    refresh_url: `${APP_URL}/handyman/payout-methods?stripe=refresh`,
-    return_url:  `${APP_URL}/handyman/payout-methods?stripe=connected`,
-    type: "account_onboarding",
-  });
-
-  return NextResponse.json({ url: link.url });
 }
 
 // GET /api/stripe/connect — return current connection status
@@ -49,16 +54,21 @@ export async function GET(_req: NextRequest) {
     return NextResponse.json({ status: "not_connected" });
   }
 
-  // Sync status from Stripe
-  const account = await stripe.accounts.retrieve(user.stripeAccountId);
-  const status = account.charges_enabled ? "active" : "pending";
+  try {
+    // Sync status from Stripe
+    const account = await stripe.accounts.retrieve(user.stripeAccountId);
+    const status = account.charges_enabled ? "active" : "pending";
 
-  if (status !== user.stripeAccountStatus) {
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { stripeAccountStatus: status },
-    });
+    if (status !== user.stripeAccountStatus) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { stripeAccountStatus: status },
+      });
+    }
+
+    return NextResponse.json({ status, accountId: user.stripeAccountId });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Failed to retrieve account status";
+    return NextResponse.json({ error: message, status: "error" }, { status: 400 });
   }
-
-  return NextResponse.json({ status, accountId: user.stripeAccountId });
 }

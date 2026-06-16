@@ -4,6 +4,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
 import { sendPush } from "@/lib/push";
 
+const RADIUS_KM = 50 * 1.60934;
+
 function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371;
   const toRad = (d: number) => (d * Math.PI) / 180;
@@ -12,6 +14,7 @@ function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
   const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
+
 
 // Customer: get own requests  |  Handyman: get matching open requests
 export async function GET() {
@@ -35,7 +38,7 @@ export async function GET() {
     return NextResponse.json(requests);
   }
 
-  // Handyman: return OPEN requests matching their service categories
+  // Handyman: return ALL open requests, optionally filtered by their service categories
   const profile = user.handymanProfile;
   if (!profile) return NextResponse.json([]);
 
@@ -45,15 +48,10 @@ export async function GET() {
   });
   const myCategories = myServices.map(s => s.category);
 
-  // Block handymen without a photo or passed background check
-  const handymanUser = await prisma.user.findUnique({ where: { id: user.id }, select: { avatarUrl: true } });
-  if (!handymanUser?.avatarUrl) return NextResponse.json({ requiresPhoto: true });
-  if (profile.backgroundCheckStatus !== "PASSED") return NextResponse.json({ requiresCheck: true });
-
   const requests = await prisma.jobRequest.findMany({
     where: {
       status: "OPEN",
-      category: { in: myCategories as never[] },
+      ...(myCategories.length > 0 ? { category: { in: myCategories as never[] } } : {}),
       applications: { none: { handymanId: profile.id } },
     },
     include: {
@@ -63,21 +61,22 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
   });
 
-  // Sort by proximity + recency
-  const myUser = await prisma.user.findUnique({ where: { id: user.id }, select: { latitude: true, longitude: true, city: true } });
-
-  const scored = requests.map(r => {
-    const cityMatch = myUser?.city?.toLowerCase() === r.city.toLowerCase();
-    let distanceKm: number | null = null;
-    if (myUser?.latitude && myUser?.longitude && r.latitude && r.longitude) {
-      distanceKm = haversine(myUser.latitude, myUser.longitude, r.latitude, r.longitude);
-    }
-    const distanceScore = distanceKm !== null ? Math.max(0, 100 - distanceKm) : 0;
-    const score = (cityMatch ? 50 : 0) + distanceScore;
-    return { ...r, distanceKm, score };
+  const handymanUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { latitude: true, longitude: true },
   });
 
-  scored.sort((a, b) => b.score - a.score || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const scored = requests
+    .map(r => {
+      const distanceKm =
+        handymanUser?.latitude && handymanUser?.longitude && r.latitude && r.longitude
+          ? haversine(handymanUser.latitude, handymanUser.longitude, r.latitude, r.longitude)
+          : null;
+      return { ...r, distanceKm, score: 0 };
+    })
+    .filter(r => r.distanceKm === null || r.distanceKm <= RADIUS_KM)
+    .sort((a, b) => (a.distanceKm ?? 999) - (b.distanceKm ?? 999));
+
   return NextResponse.json(scored);
 }
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { validateImageBuffer } from "@/lib/upload-validate";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -18,16 +19,11 @@ export async function POST(req: NextRequest) {
   if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
 
   const mimeType = file.type || "image/jpeg";
-  if (!mimeType.startsWith("image/")) {
-    return NextResponse.json({ error: "Only image files allowed" }, { status: 400 });
-  }
-  if (file.size > 0 && file.size > 8 * 1024 * 1024) {
-    return NextResponse.json({ error: "File too large (max 8 MB)" }, { status: 400 });
-  }
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const v = validateImageBuffer(mimeType, buffer, 8 * 1024 * 1024);
+  if (!v.ok) return NextResponse.json({ error: v.error }, { status: v.status });
 
-  const bytes = await file.arrayBuffer();
-  if (!bytes.byteLength) return NextResponse.json({ error: "Empty file received" }, { status: 400 });
-  const base64 = Buffer.from(bytes).toString("base64");
+  const base64 = buffer.toString("base64");
   const dataUri = `data:${mimeType};base64,${base64}`;
 
   const result = await cloudinary.uploader.upload(dataUri, {

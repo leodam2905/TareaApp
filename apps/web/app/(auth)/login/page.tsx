@@ -53,6 +53,14 @@ export default function LoginPage() {
       const body = await res.json();
       if (!res.ok) throw new Error(body.error || "Login failed");
 
+      if (body.requiresOtp) {
+        setPendingToken(body.pendingToken);
+        setPhoneMask(body.phoneMask ?? "");
+        if (body.requiresPhone) setRequiresPhone(true);
+        toast.success("Verification code sent to your email" + (body.phoneMask ? " and phone" : ""));
+        return;
+      }
+
       toast.success("Welcome back!");
       const dest = body.role === "ADMIN" ? "/admin/dashboard" : body.role === "HANDYMAN" ? "/handyman/dashboard" : "/customer/dashboard";
       router.push(dest);

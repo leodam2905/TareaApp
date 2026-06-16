@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -49,4 +49,23 @@ export async function GET() {
   }));
 
   return NextResponse.json(result);
+}
+
+const VALID_BG_STATUSES = ["PENDING", "DEFERRED", "PAID", "IN_PROGRESS", "PASSED", "FAILED"];
+
+export async function PATCH(req: NextRequest) {
+  const admin = await getCurrentUser();
+  if (!admin || admin.role !== "ADMIN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const { profileId, backgroundCheckStatus } = await req.json();
+  if (!profileId || !VALID_BG_STATUSES.includes(backgroundCheckStatus)) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+
+  await prisma.handymanProfile.update({
+    where: { id: profileId },
+    data: { backgroundCheckStatus },
+  });
+
+  return NextResponse.json({ ok: true });
 }

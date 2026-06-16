@@ -103,6 +103,34 @@ export default function BookingDetailPage() {
     ]).finally(() => setLoading(false));
   }, [loadBooking]);
 
+  // Auto-redirect to payment when booking is accepted but unpaid
+  useEffect(() => {
+    if (!booking || booking.isPaid || booking.status !== "ACCEPTED") return;
+    if (!currentUserId || booking.customer.id !== currentUserId) return;
+
+    setPaying(true);
+    toast.loading("Booking accepted — redirecting to payment…", { id: "auto-pay" });
+    fetch("/api/stripe/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bookingId: booking.id }),
+    })
+      .then(r => r.json())
+      .then(d => {
+        if (d.url) {
+          toast.dismiss("auto-pay");
+          window.location.href = d.url;
+        } else {
+          toast.error(d.error ?? "Could not start payment", { id: "auto-pay" });
+          setPaying(false);
+        }
+      })
+      .catch(() => {
+        toast.error("Could not start payment", { id: "auto-pay" });
+        setPaying(false);
+      });
+  }, [booking?.status, booking?.isPaid, currentUserId]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);

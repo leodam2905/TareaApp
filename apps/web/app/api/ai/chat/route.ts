@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { rateLimit } from "@/lib/rate-limit";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -20,9 +21,19 @@ Key facts:
 Be helpful, warm, and concise. Answer in 1–3 sentences when possible. If you don't know something specific, direct them to support@taptarea.com.`;
 
 export async function POST(req: NextRequest) {
+  // Public endpoint — rate limit per IP to prevent API-key cost abuse.
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (!rateLimit(`ai:${ip}`, 20, 60_000).ok) {
+    return new Response("Too many requests", { status: 429 });
+  }
+
   const { messages } = await req.json();
   if (!Array.isArray(messages) || messages.length === 0) {
     return new Response("Bad request", { status: 400 });
+  }
+  // Cap conversation length to bound input tokens.
+  if (messages.length > 30) {
+    return new Response("Conversation too long", { status: 400 });
   }
 
   const stream = await client.messages.stream({

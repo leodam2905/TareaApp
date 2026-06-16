@@ -31,6 +31,7 @@ function AddCardForm({ onSuccess }: { onSuccess: () => void }) {
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,44 +40,55 @@ function AddCardForm({ onSuccess }: { onSuccess: () => void }) {
     const cardEl = elements.getElement(CardElement);
     if (!cardEl) return;
 
+    setFormError(null);
     setLoading(true);
-    const { token, error } = await stripe.createToken(cardEl);
+    try {
+      const { token, error } = await stripe.createToken(cardEl, { currency: "usd" });
 
-    if (error) {
-      toast.error(error.message ?? "Card error");
+      if (error) {
+        setFormError(error.message ?? "Card error");
+        return;
+      }
+
+      if (token.card?.funding !== "debit") {
+        setFormError("This card was detected as a credit card. Only debit cards are accepted. Please type your debit card number manually — do not use the Stripe Link autofill.");
+        return;
+      }
+
+      const res = await fetch("/api/handyman/payout-methods", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: token.id, type: "card" }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success("Debit card added!");
+        cardEl.clear();
+        onSuccess();
+      } else {
+        setFormError(data.error ?? "Failed to add card");
+      }
+    } catch {
+      setFormError("Something went wrong. Please try again.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    if (token.card?.funding !== "debit") {
-      toast.error("Only debit cards are accepted for instant payouts.");
-      setLoading(false);
-      return;
-    }
-
-    const res = await fetch("/api/handyman/payout-methods", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: token.id, type: "card" }),
-    });
-    const data = await res.json();
-
-    if (res.ok) {
-      toast.success("Debit card added!");
-      cardEl.clear();
-      onSuccess();
-    } else {
-      toast.error(data.error ?? "Failed to add card");
-    }
-    setLoading(false);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3 mt-4 p-4 bg-white/5 border border-white/10 rounded-xl">
       <p className="text-xs text-slate-400 mb-2">Enter your debit card details — we never store your card number.</p>
+      <p className="text-xs text-amber-400/80">If you see a saved card from Stripe Link, ignore it and type your debit card number directly in the field below.</p>
       <div className="p-3 bg-[#0F172A] border border-white/10 rounded-lg">
         <CardElement options={CARD_ELEMENT_OPTS} />
       </div>
+      {formError && (
+        <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+          <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+          <p className="text-red-400 text-xs">{formError}</p>
+        </div>
+      )}
       <button
         type="submit"
         disabled={loading || !stripe}
@@ -181,7 +193,8 @@ function Inner() {
     load();
     fetch("/api/stripe/connect")
       .then(r => r.json())
-      .then(d => setStripeStatus(d.status ?? "not_connected"));
+      .then(d => setStripeStatus(d.status && d.status !== "error" ? d.status : "not_connected"))
+      .catch(() => setStripeStatus("not_connected"));
 
     const stripeReturn = searchParams.get("stripe");
     if (stripeReturn === "connected") toast.success("Stripe account connected! Add a payout method below.");
@@ -196,7 +209,7 @@ function Inner() {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        toast.error("Could not start verification. Try again.");
+        toast.error(data.error ?? "Could not start verification. Try again.");
       }
     } catch {
       toast.error("Something went wrong");
@@ -230,6 +243,7 @@ function Inner() {
 
   const debitCards = methods.cards.filter(c => c.funding === "debit");
   const creditCards = methods.cards.filter(c => c.funding !== "debit");
+  const canAddMethods = stripeStatus === "active";
 
   return (
     <div className="space-y-8">
@@ -306,7 +320,9 @@ function Inner() {
           </div>
           <button
             onClick={() => { setShowAddCard(v => !v); setShowAddBank(false); }}
-            className="flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 border border-violet-500/30 hover:border-violet-400/50 px-3 py-1.5 rounded-lg transition-all"
+            disabled={!canAddMethods}
+            title={!canAddMethods ? "Complete identity verification first" : undefined}
+            className="flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 border border-violet-500/30 hover:border-violet-400/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Plus className="w-3.5 h-3.5" /> Add card
           </button>
@@ -323,12 +339,14 @@ function Inner() {
           <div className="text-center py-8 border border-dashed border-white/10 rounded-xl">
             <CreditCard className="w-8 h-8 text-slate-600 mx-auto mb-2" />
             <p className="text-slate-400 text-sm">No debit card added yet</p>
-            <button
-              onClick={() => setShowAddCard(true)}
-              className="mt-3 text-violet-400 text-sm hover:text-violet-300 underline underline-offset-2"
-            >
-              Add a debit card
-            </button>
+            {canAddMethods && (
+              <button
+                onClick={() => setShowAddCard(true)}
+                className="mt-3 text-violet-400 text-sm hover:text-violet-300 underline underline-offset-2"
+              >
+                Add a debit card
+              </button>
+            )}
           </div>
         )}
 
@@ -387,7 +405,9 @@ function Inner() {
           </div>
           <button
             onClick={() => { setShowAddBank(v => !v); setShowAddCard(false); }}
-            className="flex items-center gap-1.5 text-xs text-tarea-sky hover:text-sky-300 border border-tarea-sky/30 hover:border-sky-400/50 px-3 py-1.5 rounded-lg transition-all"
+            disabled={!canAddMethods}
+            title={!canAddMethods ? "Complete identity verification first" : undefined}
+            className="flex items-center gap-1.5 text-xs text-tarea-sky hover:text-sky-300 border border-tarea-sky/30 hover:border-sky-400/50 px-3 py-1.5 rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Plus className="w-3.5 h-3.5" /> Add account
           </button>
@@ -397,12 +417,14 @@ function Inner() {
           <div className="text-center py-8 border border-dashed border-white/10 rounded-xl">
             <Building2 className="w-8 h-8 text-slate-600 mx-auto mb-2" />
             <p className="text-slate-400 text-sm">No bank account added yet</p>
-            <button
-              onClick={() => setShowAddBank(true)}
-              className="mt-3 text-tarea-sky text-sm hover:text-sky-300 underline underline-offset-2"
-            >
-              Add a bank account
-            </button>
+            {canAddMethods && (
+              <button
+                onClick={() => setShowAddBank(true)}
+                className="mt-3 text-tarea-sky text-sm hover:text-sky-300 underline underline-offset-2"
+              >
+                Add a bank account
+              </button>
+            )}
           </div>
         )}
 

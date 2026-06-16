@@ -1,17 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
-import { headers } from "next/headers";
+import { isAuthorizedCron } from "@/lib/cron-auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(_req: NextRequest) {
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const authHeader = headers().get("authorization") ?? "";
-    if (authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!isAuthorizedCron()) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://taptarea.com";

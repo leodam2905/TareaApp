@@ -60,6 +60,7 @@ model User {
   phone           String?
   expoPushToken   String?
   passwordHash String
+  passwordChangedAt DateTime?
   role         Role     @default(CUSTOMER)
   avatarUrl    String?
   address      String?
@@ -380,10 +381,12 @@ model PromoCode {
   usesCount     Int      @default(0)
   expiresAt     DateTime?
   isActive      Boolean  @default(true)
+  ownerId       String?  // if set, only this user may redeem the code (null = public/global)
   createdAt     DateTime @default(now())
 
   bookings Booking[]
 
+  @@index([ownerId])
   @@map("promo_codes")
 }
 

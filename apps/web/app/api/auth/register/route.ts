@@ -82,6 +82,7 @@ export async function POST(req: NextRequest) {
         latitude: data.latitude,
         longitude: data.longitude,
         referredBy: referredBy ?? undefined,
+        notifSms: true,
         ...(data.role === "HANDYMAN" && {
           handymanProfile: {
             create: { hourlyRate: 50 },
@@ -111,7 +112,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: err.errors[0].message }, { status: 400 });
     }
     console.error(err);
-    const msg = err instanceof Error ? err.message : "Internal server error";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    // Don't leak internal error details (e.g. Prisma constraint names) to clients.
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

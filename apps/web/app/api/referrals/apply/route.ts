@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+
+// Cap how many referrals one user can drive, to limit sybil/credit farming.
+const MAX_REFERRALS_PER_USER = 25;
+
+function randomPromoCode(prefix: string): string {
+  return `${prefix}-${crypto.randomBytes(5).toString("hex").toUpperCase()}`;
+}
 
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
@@ -17,27 +25,35 @@ export async function POST(req: NextRequest) {
   if (!referrer) return NextResponse.json({ error: "Invalid referral code" }, { status: 404 });
   if (referrer.id === user.id) return NextResponse.json({ error: "Cannot use your own code" }, { status: 400 });
 
+  // Enforce a per-referrer cap.
+  const referralsSoFar = await prisma.user.count({ where: { referredBy: referrer.referralCode } });
+  if (referralsSoFar >= MAX_REFERRALS_PER_USER) {
+    return NextResponse.json({ error: "This referral code is no longer available." }, { status: 400 });
+  }
+
   await prisma.user.update({ where: { id: user.id }, data: { referredBy: referrer.referralCode } });
 
-  // Create a 10% promo credit for the new user
+  // Create a 10% promo credit for the new user — unguessable code, bound to them.
   const newUserPromo = await prisma.promoCode.create({
     data: {
-      code: `REF-${user.id.slice(-6).toUpperCase()}`,
+      code: randomPromoCode("REF"),
       discountType: "PERCENT",
       discountValue: 10,
       maxUses: 1,
       isActive: true,
+      ownerId: user.id,
     },
   });
 
-  // Create a 10% promo credit for the referrer
+  // Create a 10% promo credit for the referrer — unguessable code, bound to them.
   const referrerPromo = await prisma.promoCode.create({
     data: {
-      code: `TKS-${referrer.id.slice(-6).toUpperCase()}-${Date.now().toString(36).toUpperCase().slice(-4)}`,
+      code: randomPromoCode("TKS"),
       discountType: "PERCENT",
       discountValue: 10,
       maxUses: 1,
       isActive: true,
+      ownerId: referrer.id,
     },
   });
 

@@ -17,6 +17,13 @@ export async function PATCH(
     return NextResponse.json({ error: "Only the customer can confirm phases" }, { status: 403 });
   }
 
+  // Ensure the phase actually belongs to this booking (prevents confirming a
+  // phase on an unrelated booking by passing a foreign phaseId).
+  const existingPhase = await prisma.bookingPhase.findUnique({ where: { id: params.phaseId } });
+  if (!existingPhase || existingPhase.bookingId !== params.id) {
+    return NextResponse.json({ error: "Phase not found" }, { status: 404 });
+  }
+
   const phase = await prisma.bookingPhase.update({
     where: { id: params.phaseId },
     data: { confirmedAt: new Date() },

@@ -28,7 +28,8 @@ export async function POST(req: NextRequest) {
   const passwordHash = await bcrypt.hash(password, 12);
 
   await Promise.all([
-    prisma.user.update({ where: { id: record.userId }, data: { passwordHash } }),
+    // Stamp the change so existing JWTs (issued before now) are invalidated.
+    prisma.user.update({ where: { id: record.userId }, data: { passwordHash, passwordChangedAt: new Date() } }),
     prisma.otpCode.update({ where: { id: record.id }, data: { used: true } }),
   ]);
 

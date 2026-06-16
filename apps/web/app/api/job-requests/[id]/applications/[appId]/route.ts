@@ -20,6 +20,13 @@ export async function PATCH(
 
   const { action } = await req.json();
 
+  // Ensure the application actually belongs to this job request (prevents
+  // accepting/rejecting an application from a different customer's job request
+  // by passing a foreign appId).
+  if (!jobRequest.applications.some((a) => a.id === params.appId)) {
+    return NextResponse.json({ error: "Application not found" }, { status: 404 });
+  }
+
   const application = await prisma.jobApplication.update({
     where: { id: params.appId },
     data: { status: action === "accept" ? "ACCEPTED" : "REJECTED" },
@@ -27,6 +34,23 @@ export async function PATCH(
   });
 
   if (action === "accept") {
+    // Safety gate — handyman must have photo + passed background check before booking
+    const handymanProfile = await prisma.handymanProfile.findUnique({
+      where: { id: application.handymanId },
+      select: { backgroundCheckStatus: true },
+    });
+    const handymanUserRecord = await prisma.user.findUnique({
+      where: { id: application.user.id },
+      select: { avatarUrl: true },
+    });
+
+    if (!handymanUserRecord?.avatarUrl) {
+      return NextResponse.json({ error: "This handyman has not uploaded a profile photo yet and cannot be booked." }, { status: 400 });
+    }
+    if (handymanProfile?.backgroundCheckStatus !== "PASSED") {
+      return NextResponse.json({ error: "This handyman has not passed a background check yet and cannot be booked." }, { status: 400 });
+    }
+
     await prisma.jobRequest.update({ where: { id: params.id }, data: { status: "ASSIGNED" } });
     await prisma.jobApplication.updateMany({
       where: { jobRequestId: params.id, id: { not: params.appId } },

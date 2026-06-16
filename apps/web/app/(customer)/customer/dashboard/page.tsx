@@ -54,6 +54,7 @@ export default async function CustomerDashboard() {
       activeJobs={activeJobs}
       upcomingBooking={upcomingBooking}
       favoritesCount={favoritesCount}
+      hasLocation={!!(user.latitude && user.longitude)}
     />
   );
 }

@@ -11,6 +11,7 @@ export interface TokenPayload {
   userId: string;
   email: string;
   role: string;
+  iat?: number; // issued-at (seconds), set by jwt.sign
 }
 
 export function signToken(payload: TokenPayload): string {
@@ -69,10 +70,19 @@ export async function getCurrentUser() {
   const payload = verifyToken(token);
   if (!payload) return null;
 
-  return prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: payload.userId },
     include: { handymanProfile: true },
   });
+  if (!user?.isActive) return null;
+
+  // Invalidate tokens issued before the user's last password change.
+  if (user.passwordChangedAt && payload.iat) {
+    const issuedAtMs = payload.iat * 1000;
+    if (issuedAtMs < user.passwordChangedAt.getTime()) return null;
+  }
+
+  return user;
 }
 
 export function setAuthCookie(token: string) {

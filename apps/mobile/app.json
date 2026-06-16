@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.tarea.app",
+      "bundleIdentifier": "com.taptarea.app",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow Tarea to access your photos to upload profile and document images.",
@@ -28,7 +28,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0F172A"
       },
-      "package": "com.tarea.app",
+      "package": "com.taptarea.app",
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "android.permission.CAMERA",

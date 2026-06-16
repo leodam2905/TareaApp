@@ -24,7 +24,8 @@ export async function POST(req: NextRequest) {
     }
 
     const passwordHash = await hashPassword(newPassword);
-    await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
+    // Stamp the change so existing JWTs (issued before now) are invalidated.
+    await prisma.user.update({ where: { id: user.id }, data: { passwordHash, passwordChangedAt: new Date() } });
 
     return NextResponse.json({ success: true });
   } catch (err) {

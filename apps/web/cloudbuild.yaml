@@ -52,7 +52,7 @@ steps:
     env:
       - DOCKER_BUILDKIT=1
 
-  # Deploy to Cloud Run
+  # Deploy to Cloud Run — always include all secrets to prevent wipe
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: gcloud
     args:
@@ -63,6 +63,7 @@ steps:
       - --region=$_REGION
       - --project=$_PROJECT
       - --platform=managed
+      - --set-secrets=DATABASE_URL=DATABASE_URL:latest,JWT_SECRET=JWT_SECRET:latest,STRIPE_SECRET_KEY=STRIPE_SECRET_KEY:latest,STRIPE_WEBHOOK_SECRET=STRIPE_WEBHOOK_SECRET:latest,RESEND_API_KEY=RESEND_API_KEY:latest,CLOUDINARY_API_KEY=CLOUDINARY_API_KEY:latest,CLOUDINARY_API_SECRET=CLOUDINARY_API_SECRET:latest,CLOUDINARY_CLOUD_NAME=CLOUDINARY_CLOUD_NAME:latest,TELNYX_API_KEY=TELNYX_API_KEY:latest,TELNYX_PHONE_NUMBER=TELNYX_PHONE_NUMBER:latest,TELNYX_MESSAGING_PROFILE_ID=TELNYX_MESSAGING_PROFILE_ID:latest,ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest,CRON_SECRET=CRON_SECRET:latest
       - --quiet
 
 images:

@@ -4,10 +4,11 @@ import { prisma } from "@/lib/prisma";
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const user = await prisma.user.findUnique({
     where: { id: params.id },
+    // NOTE: this is a public profile projection — do NOT include email/phone or
+    // other PII, to prevent enumeration/harvesting of contact details.
     select: {
       id: true,
       name: true,
-      email: true,
       avatarUrl: true,
       city: true,
       state: true,

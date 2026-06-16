@@ -3,6 +3,9 @@ import { writeFile } from "fs/promises";
 import { join } from "path";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { validateImageBuffer } from "@/lib/upload-validate";
+
+const MAX_BYTES = 8 * 1024 * 1024; // 8MB
 
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
@@ -12,13 +15,13 @@ export async function POST(req: NextRequest) {
   const file = form.get("file") as File;
   if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
 
-  const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-  if (!allowed.includes(file.type)) return NextResponse.json({ error: "Only images allowed" }, { status: 400 });
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const v = validateImageBuffer(file.type, buffer, MAX_BYTES);
+  if (!v.ok) return NextResponse.json({ error: v.error }, { status: v.status });
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-  const ext = file.name.split(".").pop() || "jpg";
-  const filename = `${user.id}-${Date.now()}.${ext}`;
+  // Extension is server-derived from the validated type — never from the client
+  // filename (which could inject .html/.svg into the public web root).
+  const filename = `${user.id}-${Date.now()}.${v.ext}`;
   const path = join(process.cwd(), "public", "uploads", filename);
 
   await writeFile(path, buffer);

@@ -9,25 +9,28 @@ export const runtime = "nodejs";
 export async function POST(req: NextRequest) {
   const secret = process.env.CERTN_WEBHOOK_SECRET;
 
-  // Verify Certn signature
-  if (secret) {
-    const signature = req.headers.get("x-certn-signature") ?? "";
-    const rawBody = await req.arrayBuffer();
-    const expected = crypto
-      .createHmac("sha256", secret)
-      .update(Buffer.from(rawBody))
-      .digest("hex");
-
-    if (signature !== expected) {
-      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
-    }
-
-    const payload = JSON.parse(Buffer.from(rawBody).toString());
-    return handleEvent(payload);
+  // Fail closed: a missing secret must never allow unverified payloads to mark a
+  // handyman's background check PASSED (identity/trust bypass).
+  if (!secret) {
+    console.error("[certn/webhook] CERTN_WEBHOOK_SECRET not configured — rejecting request");
+    return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
   }
 
-  // No secret configured — accept payload directly (dev only)
-  const payload = await req.json();
+  // Verify Certn signature (constant-time)
+  const signature = req.headers.get("x-certn-signature") ?? "";
+  const rawBody = await req.arrayBuffer();
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(Buffer.from(rawBody))
+    .digest("hex");
+
+  const sigBuf = Buffer.from(signature);
+  const expBuf = Buffer.from(expected);
+  if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
+    return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+  }
+
+  const payload = JSON.parse(Buffer.from(rawBody).toString());
   return handleEvent(payload);
 }
 

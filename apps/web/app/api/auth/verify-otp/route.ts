@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { verifyPendingToken, signToken, setAuthCookie } from "@/lib/auth";
 import { verifyOtp } from "@/lib/otp";
+import { rateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
   pendingToken: z.string().min(1),
@@ -17,6 +18,17 @@ export async function POST(req: NextRequest) {
     const userId = verifyPendingToken(data.pendingToken);
     if (!userId) {
       return NextResponse.json({ error: "Session expired. Please log in again." }, { status: 401 });
+    }
+
+    // Throttle OTP guesses to make brute-forcing the 6-digit code infeasible.
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+    const rlUser = rateLimit(`otp-verify:${userId}`, 5, 10 * 60_000);
+    const rlIp = rateLimit(`otp-verify-ip:${ip}`, 20, 10 * 60_000);
+    if (!rlUser.ok || !rlIp.ok) {
+      return NextResponse.json(
+        { error: "Too many attempts. Please request a new code and try again later." },
+        { status: 429 }
+      );
     }
 
     const valid = await verifyOtp(userId, data.code);

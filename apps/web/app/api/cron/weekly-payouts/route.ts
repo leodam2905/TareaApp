@@ -4,17 +4,13 @@ import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { handymanNet } from "@/lib/fees";
 import { createNotification } from "@/lib/notify";
-import { headers } from "next/headers";
+import { isAuthorizedCron } from "@/lib/cron-auth";
 
 // Runs every Monday at 9 AM UTC via Vercel cron
 // Pays out all remaining unpaid earnings to handyman bank accounts (standard, free)
 export async function GET(_req: NextRequest) {
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const authHeader = headers().get("authorization") ?? "";
-    if (authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!isAuthorizedCron()) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   // Group unpaid completed bookings by handyman

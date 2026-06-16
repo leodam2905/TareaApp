@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { prisma } from "./prisma";
 import { sendSms } from "./sms";
 import { sendEmail } from "./email";
@@ -5,7 +6,8 @@ import { sendEmail } from "./email";
 const OTP_TTL_MINUTES = 10;
 
 export function generateCode(): string {
-  return String(Math.floor(100000 + Math.random() * 900000));
+  // Cryptographically secure 6-digit code (100000–999999).
+  return String(crypto.randomInt(100000, 1000000));
 }
 
 function normalizePhone(phone: string): string {

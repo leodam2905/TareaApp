@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
+import { assertPromoUsable } from "@/lib/promo";
 
 const createSchema = z.object({
   serviceId: z.string(),
@@ -60,6 +61,29 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const data = createSchema.parse(body);
 
+    // Authoritative price check: the client-supplied totalPrice must fall within
+    // the service's server-side price range. Prevents price tampering (e.g. paying
+    // $0.01 for a $500 job). Materials are tracked separately (materialsEstimate).
+    const service = await prisma.service.findUnique({
+      where: { id: data.serviceId },
+      select: { minPrice: true, maxPrice: true, isActive: true, handyman: { select: { userId: true } } },
+    });
+    if (!service || !service.isActive) {
+      return NextResponse.json({ error: "Service not available" }, { status: 400 });
+    }
+    // If the service is owned by a specific handyman, it must match the booking target.
+    if (service.handyman && service.handyman.userId !== data.handymanUserId) {
+      return NextResponse.json({ error: "Service does not belong to this handyman" }, { status: 400 });
+    }
+    // Allow a tiny float tolerance on the bounds.
+    const EPS = 0.01;
+    if (data.totalPrice < service.minPrice - EPS || data.totalPrice > service.maxPrice + EPS) {
+      return NextResponse.json(
+        { error: `Price must be between $${service.minPrice} and $${service.maxPrice} for this service.` },
+        { status: 400 }
+      );
+    }
+
     const responseDeadline = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
     let promoCodeId: string | undefined;
@@ -67,11 +91,7 @@ export async function POST(req: NextRequest) {
       const promo = await prisma.promoCode.findUnique({
         where: { code: data.promoCode.toUpperCase() },
       });
-      const valid = promo &&
-        promo.isActive &&
-        (!promo.expiresAt || promo.expiresAt > new Date()) &&
-        (promo.maxUses === null || promo.usesCount < promo.maxUses);
-      if (valid && promo) {
+      if (promo && assertPromoUsable(promo, user.id, data.totalPrice).ok) {
         promoCodeId = promo.id;
         await prisma.promoCode.update({ where: { id: promo.id }, data: { usesCount: { increment: 1 } } });
       }

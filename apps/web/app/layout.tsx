@@ -19,6 +19,10 @@ export const metadata: Metadata = {
     "Book skilled handymen for plumbing, electrical, carpentry, cleaning, and more. Fast, reliable, and affordable home services.",
   keywords: ["handyman", "home repair", "plumbing", "electrical", "cleaning", "Tarea"],
   manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

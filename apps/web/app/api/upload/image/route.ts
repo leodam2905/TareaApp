@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import { getCurrentUser } from "@/lib/auth";
+import { validateImageBuffer } from "@/lib/upload-validate";
+
+// Only these Cloudinary folders may be targeted (prevents writing into arbitrary
+// namespaces via the client-supplied `folder` field).
+const ALLOWED_FOLDERS = new Set([
+  "tarea/images",
+  "tarea/portfolio",
+  "tarea/services",
+  "tarea/verification",
+]);
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -14,20 +24,16 @@ export async function POST(req: NextRequest) {
 
   const formData = await req.formData();
   const file = formData.get("file") as File | null;
-  const folder = (formData.get("folder") as string | null) ?? "tarea/images";
+  const requestedFolder = (formData.get("folder") as string | null) ?? "tarea/images";
+  const folder = ALLOWED_FOLDERS.has(requestedFolder) ? requestedFolder : "tarea/images";
 
   if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
   const mimeType = file.type || "image/jpeg";
-  if (!mimeType.startsWith("image/")) {
-    return NextResponse.json({ error: "Only image files allowed" }, { status: 400 });
-  }
-  if (file.size > 0 && file.size > 10 * 1024 * 1024) {
-    return NextResponse.json({ error: "File too large (max 10 MB)" }, { status: 400 });
-  }
+  const buffer = Buffer.from(await file.arrayBuffer());
+  const v = validateImageBuffer(mimeType, buffer, 10 * 1024 * 1024);
+  if (!v.ok) return NextResponse.json({ error: v.error }, { status: v.status });
 
-  const bytes = await file.arrayBuffer();
-  if (!bytes.byteLength) return NextResponse.json({ error: "Empty file received" }, { status: 400 });
-  const base64 = Buffer.from(bytes).toString("base64");
+  const base64 = buffer.toString("base64");
   const dataUri = `data:${mimeType};base64,${base64}`;
 
   const result = await cloudinary.uploader.upload(dataUri, {
