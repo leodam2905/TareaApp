@@ -7,6 +7,8 @@ COPY package.json package-lock.json* ./
 RUN npm install --legacy-peer-deps
 
 FROM base AS builder
+ARG CACHE_BUST=1
+RUN echo "cache bust: $CACHE_BUST"
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
