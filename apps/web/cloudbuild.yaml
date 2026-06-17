@@ -40,11 +40,11 @@ steps:
     args:
       - -c
       - |
-        SHA=$${COMMIT_SHA:-$(git rev-parse --short HEAD)}
+        SHA=$${COMMIT_SHA:-$(git rev-parse --short HEAD 2>/dev/null || echo "manual")}
         docker build \
           --cache-from=$_IMAGE:deps \
-          --cache-from=$_IMAGE:latest \
           --build-arg=BUILDKIT_INLINE_CACHE=1 \
+          --build-arg=CACHE_BUST=$(date +%s) \
           -t $_IMAGE:latest \
           -t $_IMAGE:$$SHA \
           .
