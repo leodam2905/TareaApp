@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
 
 // TEMP: hardcoded for screenshots — replace with DB query after Prisma client is regenerated
 const MOCK_HANDYMEN = [
@@ -28,7 +27,5 @@ const MOCK_HANDYMEN = [
 ];
 
 export async function GET(_req: NextRequest) {
-  const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   return NextResponse.json(MOCK_HANDYMEN);
 }
