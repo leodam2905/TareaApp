@@ -11,57 +11,93 @@ type Quote       = { minPrice: number; maxPrice: number; duration: string; inclu
 
 const TASKS: Record<string, Task[]> = {
   Plumbing: [
-    { label: "Fix Leaky Faucet",      details: [{ key: "location", label: "Location",           options: ["Kitchen", "Bathroom", "Outdoor"] }, { key: "parts",    label: "Parts supplied by",  options: ["Me (customer)", "Handyman"] }] },
-    { label: "Unclog Drain",           details: [{ key: "drain",    label: "Which drain?",        options: ["Kitchen sink", "Bathroom sink", "Shower / tub", "Toilet"] }] },
-    { label: "Install Toilet",         details: [{ key: "supplied", label: "Toilet supplied by",  options: ["Me (customer)", "Handyman"] }] },
-    { label: "Replace Water Heater",   details: [{ key: "type",     label: "Type",                options: ["Tank (electric)", "Tank (gas)", "Tankless"] }, { key: "unit", label: "Unit supplied by", options: ["Me (customer)", "Handyman"] }] },
+    { label: "Fix Leaky Faucet",        details: [{ key: "location", label: "Location",           options: ["Kitchen", "Bathroom", "Outdoor"] }, { key: "parts",    label: "Parts supplied by",  options: ["Me (customer)", "Handyman"] }] },
+    { label: "Unclog Drain",             details: [{ key: "drain",    label: "Which drain?",        options: ["Kitchen sink", "Bathroom sink", "Shower / tub", "Toilet"] }] },
+    { label: "Install Toilet",           details: [{ key: "supplied", label: "Toilet supplied by",  options: ["Me (customer)", "Handyman"] }] },
+    { label: "Replace Water Heater",     details: [{ key: "type",     label: "Type",                options: ["Tank (electric)", "Tank (gas)", "Tankless"] }, { key: "unit", label: "Unit supplied by", options: ["Me (customer)", "Handyman"] }] },
   ],
   Electrical: [
-    { label: "Install Ceiling Fan",    details: [{ key: "height",   label: "Ceiling height",      options: ["8 ft", "9 ft", "10+ ft", "Vaulted"] }, { key: "preWired", label: "Pre-wired box?", options: ["Yes", "No — needs new wiring"] }, { key: "fan", label: "Fan supplied by", options: ["Me (customer)", "Handyman"] }] },
-    { label: "Replace Outlet / Switch",details: [{ key: "qty",      label: "How many?",           options: ["1", "2–3", "4–6", "7+"] }, { key: "type", label: "Outlet type", options: ["Standard", "GFCI", "USB combo"] }] },
-    { label: "Install Light Fixture",  details: [{ key: "qty",      label: "Number of fixtures",  options: ["1", "2–3", "4+"] }, { key: "fixture", label: "Fixture supplied by", options: ["Me (customer)", "Handyman"] }] },
+    { label: "Install Ceiling Fan",      details: [{ key: "height",   label: "Ceiling height",      options: ["8 ft", "9 ft", "10+ ft", "Vaulted"] }, { key: "preWired", label: "Pre-wired box?", options: ["Yes", "No — needs new wiring"] }, { key: "fan", label: "Fan supplied by", options: ["Me (customer)", "Handyman"] }] },
+    { label: "Replace Outlet / Switch",  details: [{ key: "qty",      label: "How many?",           options: ["1", "2–3", "4–6", "7+"] }, { key: "type", label: "Outlet type", options: ["Standard", "GFCI", "USB combo"] }] },
+    { label: "Install Light Fixture",    details: [{ key: "qty",      label: "Number of fixtures",  options: ["1", "2–3", "4+"] }, { key: "fixture", label: "Fixture supplied by", options: ["Me (customer)", "Handyman"] }] },
+    { label: "Install EV Charger",       details: [{ key: "level",    label: "Charger level",       options: ["Level 1 (120V)", "Level 2 (240V)"] }, { key: "unit", label: "Charger supplied by", options: ["Me (customer)", "Handyman"] }] },
+  ],
+  HVAC: [
+    { label: "AC Tune-Up",               details: [{ key: "type",     label: "AC type",             options: ["Central / split", "Window unit", "Mini-split"] }] },
+    { label: "Heating System Service",   details: [{ key: "type",     label: "System type",         options: ["Furnace (gas)", "Furnace (electric)", "Heat pump", "Boiler"] }] },
+    { label: "Install Thermostat",       details: [{ key: "kind",     label: "Thermostat type",     options: ["Manual / basic", "Programmable", "Smart (Nest, Ecobee)"] }, { key: "unit", label: "Thermostat supplied by", options: ["Me (customer)", "Handyman"] }] },
+    { label: "Duct Cleaning",            details: [{ key: "size",     label: "Home size",           options: ["< 1,000 sq ft", "1,000–2,000 sq ft", "2,000+ sq ft"] }] },
   ],
   Carpentry: [
-    { label: "Assemble Furniture",     details: [{ key: "pieces",   label: "Number of pieces",    options: ["1", "2–3", "4–6", "7+"] }, { key: "size", label: "Largest piece size", options: ["Small (chair, table)", "Medium (dresser, desk)", "Large (wardrobe, bed frame)"] }] },
-    { label: "Install Shelving",       details: [{ key: "shelves",  label: "Number of shelves",   options: ["1–2", "3–5", "6+"] }, { key: "wall", label: "Wall type", options: ["Drywall", "Concrete / brick", "Tile"] }] },
-    { label: "Fix / Hang Door",        details: [{ key: "issue",    label: "Issue",               options: ["Won't close or latch", "Squeaking hinge", "Install new door", "Install door hardware"] }] },
+    { label: "Assemble Furniture",       details: [{ key: "pieces",   label: "Number of pieces",    options: ["1", "2–3", "4–6", "7+"] }, { key: "size", label: "Largest piece size", options: ["Small (chair, table)", "Medium (dresser, desk)", "Large (wardrobe, bed frame)"] }] },
+    { label: "Install Shelving",         details: [{ key: "shelves",  label: "Number of shelves",   options: ["1–2", "3–5", "6+"] }, { key: "wall", label: "Wall type", options: ["Drywall", "Concrete / brick", "Tile"] }] },
+    { label: "Fix / Hang Door",          details: [{ key: "issue",    label: "Issue",               options: ["Won't close or latch", "Squeaking hinge", "Install new door", "Install door hardware"] }] },
+    { label: "Build / Repair Deck",      details: [{ key: "work",     label: "Type of work",        options: ["Repair / replace boards", "Add railing", "Build new deck"] }, { key: "size", label: "Deck size", options: ["Small < 100 sq ft", "Medium 100–300 sq ft", "Large 300+ sq ft"] }] },
   ],
   Painting: [
-    { label: "Paint a Room",           details: [{ key: "size",     label: "Room size",           options: ["Small < 150 sq ft", "Medium 150–300 sq ft", "Large 300+ sq ft"] }, { key: "paint", label: "Paint supplied by", options: ["Me (customer)", "Handyman"] }, { key: "coats", label: "Number of coats", options: ["1 coat", "2 coats"] }] },
-    { label: "Patch & Paint Wall",     details: [{ key: "patches",  label: "Damage level",        options: ["1–2 small holes", "3–5 holes", "Large area repair"] }] },
+    { label: "Paint a Room",             details: [{ key: "size",     label: "Room size",           options: ["Small < 150 sq ft", "Medium 150–300 sq ft", "Large 300+ sq ft"] }, { key: "paint", label: "Paint supplied by", options: ["Me (customer)", "Handyman"] }, { key: "coats", label: "Number of coats", options: ["1 coat", "2 coats"] }] },
+    { label: "Patch & Paint Wall",       details: [{ key: "patches",  label: "Damage level",        options: ["1–2 small holes", "3–5 holes", "Large area repair"] }] },
+    { label: "Paint Exterior",           details: [{ key: "area",     label: "Area",                options: ["Front door / trim", "Full house exterior"] }, { key: "paint", label: "Paint supplied by", options: ["Me (customer)", "Handyman"] }] },
+    { label: "Cabinet Painting",         details: [{ key: "qty",      label: "Number of cabinets",  options: ["Up to 10", "11–20", "21+"] }, { key: "paint", label: "Paint supplied by", options: ["Me (customer)", "Handyman"] }] },
+  ],
+  Roofing: [
+    { label: "Roof Inspection",          details: [{ key: "stories",  label: "Home stories",        options: ["1 story", "2 stories", "3+ stories"] }] },
+    { label: "Repair Roof Leak",         details: [{ key: "location", label: "Leak location",       options: ["Around chimney / vent", "Flat section", "Ridge / peak", "General / unknown"] }, { key: "stories", label: "Home stories", options: ["1 story", "2 stories", "3+ stories"] }] },
+    { label: "Replace Shingles",         details: [{ key: "area",     label: "Affected area",       options: ["Small patch < 10 sq ft", "Medium 10–50 sq ft", "Large 50+ sq ft"] }, { key: "stories", label: "Home stories", options: ["1 story", "2 stories", "3+ stories"] }] },
+    { label: "Gutter Repair / Replace",  details: [{ key: "work",     label: "Type of work",        options: ["Reseal leaking seam", "Replace a section", "Replace all gutters"] }, { key: "stories", label: "Home stories", options: ["1 story", "2 stories", "3+ stories"] }] },
   ],
   Cleaning: [
-    { label: "Deep Clean",             details: [{ key: "beds",     label: "Bedrooms",            options: ["Studio / 1BR", "2BR", "3BR", "4BR+"] }, { key: "baths", label: "Bathrooms", options: ["1", "2", "3+"] }] },
-    { label: "Move-Out Clean",         details: [{ key: "beds",     label: "Bedrooms",            options: ["Studio / 1BR", "2BR", "3BR", "4BR+"] }, { key: "condition", label: "Condition", options: ["Good", "Fair", "Heavy dirt / grease"] }] },
-    { label: "Wash & Fold (pickup)",   details: [{ key: "bags",     label: "Laundry bags",        options: ["1 bag (~15 lbs)", "2 bags", "3+ bags"] }, { key: "turnaround", label: "Turnaround", options: ["Standard (24 hrs)", "Same day (+$15)"] }] },
+    { label: "Deep Clean",               details: [{ key: "beds",     label: "Bedrooms",            options: ["Studio / 1BR", "2BR", "3BR", "4BR+"] }, { key: "baths", label: "Bathrooms", options: ["1", "2", "3+"] }] },
+    { label: "Move-Out Clean",           details: [{ key: "beds",     label: "Bedrooms",            options: ["Studio / 1BR", "2BR", "3BR", "4BR+"] }, { key: "condition", label: "Condition", options: ["Good", "Fair", "Heavy dirt / grease"] }] },
+    { label: "Carpet Cleaning",          details: [{ key: "rooms",    label: "Number of rooms",     options: ["1", "2–3", "4–5", "6+"] }, { key: "condition", label: "Carpet condition", options: ["Lightly soiled", "Moderately soiled", "Heavily stained"] }] },
+    { label: "Wash & Fold (pickup)",     details: [{ key: "bags",     label: "Laundry bags",        options: ["1 bag (~15 lbs)", "2 bags", "3+ bags"] }, { key: "turnaround", label: "Turnaround", options: ["Standard (24 hrs)", "Same day (+$15)"] }] },
+  ],
+  Landscaping: [
+    { label: "Lawn Mowing",              details: [{ key: "size",     label: "Lawn size",           options: ["Small < 2,000 sq ft", "Medium 2,000–5,000 sq ft", "Large 5,000+ sq ft"] }, { key: "frequency", label: "Frequency", options: ["One-time", "Weekly", "Bi-weekly"] }] },
+    { label: "Hedge / Tree Trimming",    details: [{ key: "qty",      label: "Number of shrubs / trees", options: ["1–3", "4–8", "9+"] }, { key: "height", label: "Max height", options: ["Under 6 ft", "6–12 ft", "12+ ft"] }] },
+    { label: "Leaf Cleanup",             details: [{ key: "size",     label: "Yard size",           options: ["Small", "Medium", "Large"] }, { key: "haul", label: "Haul away debris?", options: ["Yes", "No — leave in bags"] }] },
+    { label: "Garden Bed Maintenance",   details: [{ key: "beds",     label: "Number of beds",      options: ["1–2", "3–5", "6+"] }, { key: "work", label: "Services needed", options: ["Weed & mulch", "Plant new plants", "Both"] }] },
+  ],
+  "Appliance Repair": [
+    { label: "Washing Machine Repair",   details: [{ key: "brand",    label: "Brand",               options: ["Samsung", "LG", "Whirlpool", "GE", "Other"] }, { key: "issue", label: "Issue", options: ["Won't start", "Won't drain / spin", "Leaking", "Noisy", "Other"] }] },
+    { label: "Dryer Repair",             details: [{ key: "fuel",     label: "Dryer type",          options: ["Electric", "Gas"] }, { key: "issue", label: "Issue", options: ["Won't heat", "Won't start", "Noisy", "Takes too long", "Other"] }] },
+    { label: "Dishwasher Repair",        details: [{ key: "brand",    label: "Brand",               options: ["Bosch", "Samsung", "LG", "Whirlpool", "Other"] }, { key: "issue", label: "Issue", options: ["Won't start", "Not cleaning well", "Leaking", "Won't drain", "Other"] }] },
+    { label: "Refrigerator Repair",      details: [{ key: "issue",    label: "Issue",               options: ["Not cooling", "Leaking water", "Ice maker broken", "Noisy / vibrating", "Other"] }] },
   ],
   Moving: [
-    { label: "Local Move",             details: [{ key: "size",     label: "Home size",           options: ["Studio / 1BR", "2BR", "3BR", "4BR+"] }, { key: "distance", label: "Distance", options: ["< 5 miles", "5–15 miles", "15–30 miles", "30+ miles"] }, { key: "packing", label: "Need packing help?", options: ["No — just moving boxes", "Yes — pack & move"] }] },
-    { label: "Furniture Delivery",     details: [{ key: "pieces",   label: "Number of pieces",    options: ["1", "2–3", "4+"] }] },
+    { label: "Local Move",               details: [{ key: "size",     label: "Home size",           options: ["Studio / 1BR", "2BR", "3BR", "4BR+"] }, { key: "distance", label: "Distance", options: ["< 5 miles", "5–15 miles", "15–30 miles", "30+ miles"] }, { key: "packing", label: "Need packing help?", options: ["No — just moving boxes", "Yes — pack & move"] }] },
+    { label: "Furniture Delivery",       details: [{ key: "pieces",   label: "Number of pieces",    options: ["1", "2–3", "4+"] }] },
+    { label: "Junk Removal",             details: [{ key: "volume",   label: "Amount of junk",      options: ["A few items", "Half truck load", "Full truck load"] }, { key: "location", label: "Location", options: ["Curbside / easy access", "Inside home", "Upstairs / basement"] }] },
   ],
   General: [
-    { label: "TV Mounting",            details: [{ key: "tvSize",   label: "TV size",             options: ['Under 40"', '40–55"', '55–75"', '75"+'] }, { key: "wall", label: "Wall type", options: ["Drywall", "Concrete / brick", "Tile"] }, { key: "mount", label: "Bracket supplied by", options: ["Me (customer)", "Handyman"] }] },
-    { label: "Picture Hanging",        details: [{ key: "qty",      label: "How many items?",     options: ["1–2", "3–5", "6+"] }, { key: "weight", label: "Heaviest item", options: ["Light < 10 lbs", "Medium 10–30 lbs", "Heavy 30+ lbs"] }] },
-    { label: "Gutter Cleaning",        details: [{ key: "stories",  label: "Home stories",        options: ["1 story", "2 stories", "3+ stories"] }, { key: "length", label: "Approx. gutter length", options: ["< 100 ft", "100–200 ft", "200+ ft"] }] },
-    { label: "Assembly & Mounting",    details: [{ key: "item",     label: "What to assemble?",   options: ["TV stand / entertainment center", "Desk / workstation", "Shelving unit", "Exercise equipment"] }, { key: "complexity", label: "Complexity", options: ["Simple (< 30 min)", "Medium (30–90 min)", "Complex (2+ hrs)"] }] },
+    { label: "TV Mounting",              details: [{ key: "tvSize",   label: "TV size",             options: ['Under 40"', '40–55"', '55–75"', '75"+'] }, { key: "wall", label: "Wall type", options: ["Drywall", "Concrete / brick", "Tile"] }, { key: "mount", label: "Bracket supplied by", options: ["Me (customer)", "Handyman"] }] },
+    { label: "Picture Hanging",          details: [{ key: "qty",      label: "How many items?",     options: ["1–2", "3–5", "6+"] }, { key: "weight", label: "Heaviest item", options: ["Light < 10 lbs", "Medium 10–30 lbs", "Heavy 30+ lbs"] }] },
+    { label: "Gutter Cleaning",          details: [{ key: "stories",  label: "Home stories",        options: ["1 story", "2 stories", "3+ stories"] }, { key: "length", label: "Approx. gutter length", options: ["< 100 ft", "100–200 ft", "200+ ft"] }] },
+    { label: "Assembly & Mounting",      details: [{ key: "item",     label: "What to assemble?",   options: ["TV stand / entertainment center", "Desk / workstation", "Shelving unit", "Exercise equipment"] }, { key: "complexity", label: "Complexity", options: ["Simple (< 30 min)", "Medium (30–90 min)", "Complex (2+ hrs)"] }] },
   ],
 };
 
 const CATEGORIES = Object.keys(TASKS);
 
 const CATEGORY_META: Record<string, { icon: string; color: string }> = {
-  Plumbing:   { icon: "🔧", color: "#38BDF8" },
-  Electrical: { icon: "⚡", color: "#F59E0B" },
-  Carpentry:  { icon: "🪵", color: "#D97706" },
-  Painting:   { icon: "🎨", color: "#A78BFA" },
-  Cleaning:   { icon: "✨", color: "#34D399" },
-  Moving:     { icon: "📦", color: "#FB923C" },
-  General:    { icon: "🛠️", color: "#94A3B8" },
+  Plumbing:          { icon: "🔧", color: "#38BDF8" },
+  Electrical:        { icon: "⚡", color: "#F59E0B" },
+  HVAC:              { icon: "❄️", color: "#7DD3FC" },
+  Carpentry:         { icon: "🪵", color: "#D97706" },
+  Painting:          { icon: "🎨", color: "#A78BFA" },
+  Roofing:           { icon: "🏠", color: "#94A3B8" },
+  Cleaning:          { icon: "✨", color: "#34D399" },
+  Landscaping:       { icon: "🌿", color: "#4ADE80" },
+  "Appliance Repair":{ icon: "🔌", color: "#818CF8" },
+  Moving:            { icon: "📦", color: "#FB923C" },
+  General:           { icon: "🛠️", color: "#64748B" },
 };
 
 const CATEGORY_API: Record<string, string> = {
-  Plumbing: "PLUMBING", Electrical: "ELECTRICAL", Carpentry: "CARPENTRY",
-  Painting: "PAINTING", Cleaning: "CLEANING", Moving: "MOVING", General: "GENERAL",
+  Plumbing: "PLUMBING", Electrical: "ELECTRICAL", HVAC: "HVAC",
+  Carpentry: "CARPENTRY", Painting: "PAINTING", Roofing: "ROOFING",
+  Cleaning: "CLEANING", Landscaping: "LANDSCAPING", "Appliance Repair": "APPLIANCE_REPAIR",
+  Moving: "MOVING", General: "GENERAL",
 };
 
 export default function InstantQuoteSection() {
@@ -425,9 +461,10 @@ export default function InstantQuoteSection() {
                   <div className="space-y-2 w-full">
                     <p className="text-gray-600 text-xs font-semibold uppercase tracking-wider mb-3">Popular requests</p>
                     {[
-                      { label: "Install Ceiling Fan", cat: "Electrical", icon: "⚡" },
-                      { label: "Deep Clean (2BR)",    cat: "Cleaning",   icon: "✨" },
-                      { label: "TV Mounting",          cat: "General",    icon: "🛠️" },
+                      { label: "Install Ceiling Fan", cat: "Electrical",  icon: "⚡" },
+                      { label: "AC Tune-Up",           cat: "HVAC",        icon: "❄️" },
+                      { label: "Lawn Mowing",          cat: "Landscaping", icon: "🌿" },
+                      { label: "TV Mounting",          cat: "General",     icon: "🛠️" },
                     ].map(({ label, cat, icon }) => (
                       <button key={label} type="button"
                         onClick={() => {
