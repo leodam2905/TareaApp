@@ -4,7 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
-  Upload, Sparkles, Loader2, AlertTriangle, Clock,
+  Upload, Loader2, AlertTriangle, Clock,
   CheckCircle2, ArrowRight, X, ImagePlus, Lightbulb,
 } from "lucide-react";
 import { SERVICE_CATEGORY_LABELS } from "@/lib/utils";
@@ -19,23 +19,34 @@ type Diagnosis = {
 };
 
 const urgencyConfig = {
-  urgent:  { label: "Urgent — Fix Today",    icon: AlertTriangle, color: "text-red-400",    bg: "bg-red-500/10",    border: "border-red-500/30"    },
-  soon:    { label: "Fix Within a Week",      icon: Clock,         color: "text-amber-400",  bg: "bg-amber-500/10",  border: "border-amber-500/30"  },
-  routine: { label: "Schedule at Your Pace",  icon: CheckCircle2,  color: "text-emerald-400",bg: "bg-emerald-500/10",border: "border-emerald-500/30" },
+  urgent:  { label: "Fix Today",            icon: AlertTriangle, color: "text-red-400",     bg: "bg-red-500/10",     border: "border-red-500/25",    dot: "bg-red-400"     },
+  soon:    { label: "Fix Within a Week",     icon: Clock,         color: "text-amber-400",   bg: "bg-amber-500/10",   border: "border-amber-500/25",  dot: "bg-amber-400"   },
+  routine: { label: "No Rush — Plan Ahead", icon: CheckCircle2,  color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/25",dot: "bg-emerald-400" },
 };
 
-const confidenceLabel = { high: "High confidence", medium: "Medium confidence", low: "Low confidence" };
-const confidenceColor  = { high: "text-emerald-400", medium: "text-amber-400",   low: "text-slate-400"  };
+const categoryAccent: Record<string, string> = {
+  PLUMBING:        "#38BDF8",
+  ELECTRICAL:      "#F59E0B",
+  CARPENTRY:       "#D97706",
+  PAINTING:        "#A78BFA",
+  CLEANING:        "#34D399",
+  HVAC:            "#7DD3FC",
+  ROOFING:         "#94A3B8",
+  LANDSCAPING:     "#4ADE80",
+  MOVING:          "#FB923C",
+  APPLIANCE_REPAIR:"#818CF8",
+  GENERAL:         "#94A3B8",
+};
 
 export default function DiagnosePage() {
-  const [preview, setPreview]       = useState<string | null>(null);
-  const [imageBase64, setBase64]    = useState<string | null>(null);
-  const [mediaType, setMediaType]   = useState("image/jpeg");
+  const [preview,     setPreview]     = useState<string | null>(null);
+  const [imageBase64, setBase64]      = useState<string | null>(null);
+  const [mediaType,   setMediaType]   = useState("image/jpeg");
   const [description, setDescription] = useState("");
-  const [loading, setLoading]       = useState(false);
-  const [result, setResult]         = useState<Diagnosis | null>(null);
-  const [error, setError]           = useState<string | null>(null);
-  const [dragging, setDragging]     = useState(false);
+  const [loading,     setLoading]     = useState(false);
+  const [result,      setResult]      = useState<Diagnosis | null>(null);
+  const [error,       setError]       = useState<string | null>(null);
+  const [dragging,    setDragging]    = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback((file: File) => {
@@ -45,7 +56,6 @@ export default function DiagnosePage() {
     reader.onload = (e) => {
       const dataUrl = e.target?.result as string;
       setPreview(dataUrl);
-      // Strip the data:image/...;base64, prefix
       setBase64(dataUrl.split(",")[1]);
     };
     reader.readAsDataURL(file);
@@ -72,8 +82,8 @@ export default function DiagnosePage() {
         body: JSON.stringify({ imageBase64, mediaType, description }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Analysis failed"); }
-      else { setResult(data); }
+      if (!res.ok) setError(data.error || "Analysis failed");
+      else setResult(data);
     } catch {
       setError("Network error. Please try again.");
     }
@@ -86,6 +96,7 @@ export default function DiagnosePage() {
   };
 
   const urgency = result ? urgencyConfig[result.urgency] : null;
+  const accent  = result ? (categoryAccent[result.category] ?? "#38BDF8") : "#38BDF8";
 
   return (
     <motion.div
@@ -96,37 +107,48 @@ export default function DiagnosePage() {
     >
       {/* Header */}
       <div>
-        <div className="flex items-center gap-2 mb-1">
-          <Sparkles className="w-5 h-5 text-tarea-sky" />
-          <span className="text-tarea-sky text-sm font-semibold uppercase tracking-widest">AI-Powered</span>
-        </div>
         <h1 className="text-3xl font-extrabold text-white">Diagnose Your Issue</h1>
-        <p className="text-slate-400 mt-1">Upload a photo or describe the problem — our AI will tell you exactly which pro you need.</p>
+        <p className="text-slate-400 mt-2 leading-relaxed">
+          Upload a photo or describe the problem and we'll tell you exactly which pro you need — and how urgent it is.
+        </p>
       </div>
 
-      {/* Upload + Describe */}
+      {/* Input card */}
       <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-5">
 
         {/* Image upload */}
         <div>
-          <p className="text-slate-300 text-sm font-semibold mb-3">Photo of the issue <span className="text-slate-500 font-normal">(optional but recommended)</span></p>
+          <p className="text-slate-300 text-sm font-semibold mb-3">
+            Photo of the issue{" "}
+            <span className="text-slate-500 font-normal">(optional but recommended)</span>
+          </p>
 
           <AnimatePresence mode="wait">
             {preview ? (
               <motion.div
                 key="preview"
-                initial={{ opacity: 0, scale: 0.96 }}
+                initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                className="relative rounded-xl overflow-hidden border border-white/10"
+                exit={{ opacity: 0, scale: 0.97 }}
+                className="relative rounded-xl overflow-hidden border border-white/10 group"
               >
                 <img src={preview} alt="Issue" className="w-full max-h-64 object-cover" />
+                {/* Scan corners */}
+                <div className="absolute top-2 left-2 w-5 h-5 border-t-2 border-l-2 border-tarea-sky rounded-tl-sm" />
+                <div className="absolute top-2 right-2 w-5 h-5 border-t-2 border-r-2 border-tarea-sky rounded-tr-sm" />
+                <div className="absolute bottom-2 left-2 w-5 h-5 border-b-2 border-l-2 border-tarea-sky rounded-bl-sm" />
+                <div className="absolute bottom-2 right-2 w-5 h-5 border-b-2 border-r-2 border-tarea-sky rounded-br-sm" />
                 <button
                   onClick={reset}
-                  className="absolute top-2 right-2 w-7 h-7 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center transition-colors"
+                  className="absolute top-2.5 right-2.5 w-7 h-7 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
                 >
-                  <X className="w-4 h-4 text-white" />
+                  <X className="w-3.5 h-3.5 text-white" />
                 </button>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-4 py-3">
+                  <button onClick={reset} className="text-xs text-white/70 hover:text-white transition-colors font-medium">
+                    Click to change photo
+                  </button>
+                </div>
               </motion.div>
             ) : (
               <motion.div
@@ -139,14 +161,14 @@ export default function DiagnosePage() {
                 onDrop={onDrop}
                 onClick={() => fileRef.current?.click()}
                 className={`border-2 border-dashed rounded-xl p-10 flex flex-col items-center gap-3 cursor-pointer transition-all duration-200
-                  ${dragging ? "border-tarea-sky bg-tarea-sky/5" : "border-white/20 hover:border-white/40 hover:bg-white/[0.03]"}`}
+                  ${dragging ? "border-tarea-sky bg-tarea-sky/5 scale-[1.01]" : "border-white/15 hover:border-white/30 hover:bg-white/[0.03]"}`}
               >
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${dragging ? "bg-tarea-sky/20" : "bg-white/5"}`}>
-                  <ImagePlus className={`w-6 h-6 ${dragging ? "text-tarea-sky" : "text-slate-500"}`} />
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${dragging ? "bg-tarea-sky/15" : "bg-white/5"}`}>
+                  <ImagePlus className={`w-7 h-7 ${dragging ? "text-tarea-sky" : "text-slate-500"}`} />
                 </div>
                 <div className="text-center">
                   <p className="text-slate-300 font-semibold text-sm">Drop a photo here or click to upload</p>
-                  <p className="text-slate-500 text-xs mt-1">JPG, PNG or WebP · Max 5MB</p>
+                  <p className="text-slate-500 text-xs mt-1">JPG, PNG or WebP · Max 5 MB</p>
                 </div>
                 <div className="flex items-center gap-2 text-tarea-sky text-sm font-semibold">
                   <Upload className="w-4 h-4" /> Choose Photo
@@ -164,9 +186,15 @@ export default function DiagnosePage() {
           />
         </div>
 
+        {/* OR divider */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-white/8" />
+          <span className="text-slate-600 text-xs font-medium">or describe it</span>
+          <div className="flex-1 h-px bg-white/8" />
+        </div>
+
         {/* Description */}
         <div>
-          <p className="text-slate-300 text-sm font-semibold mb-2">Describe the issue <span className="text-slate-500 font-normal">(optional)</span></p>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -176,46 +204,39 @@ export default function DiagnosePage() {
           />
         </div>
 
-        {/* Analyze button */}
+        {/* Analyze CTA */}
         <button
           onClick={analyze}
           disabled={loading || (!imageBase64 && !description.trim())}
-          className="w-full flex items-center justify-center gap-2 font-bold py-3.5 rounded-xl transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{
-            background: loading || (!imageBase64 && !description.trim())
-              ? "rgba(255,255,255,0.05)"
-              : "linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%)",
-            color: "#fff",
-            border: "1px solid rgba(255,255,255,0.1)",
-          }}
+          className="w-full flex items-center justify-center gap-2.5 font-bold py-3.5 rounded-xl transition-all duration-200 disabled:opacity-35 disabled:cursor-not-allowed bg-tarea-sky hover:bg-sky-300 text-tarea-ink"
         >
           {loading
-            ? <><Loader2 className="w-4 h-4 animate-spin" style={{ color: "#fff" }} /><span style={{ color: "#fff" }}>Analyzing…</span></>
-            : <><Sparkles className="w-4 h-4" style={{ color: "#fff" }} /><span style={{ color: "#fff" }}>Diagnose My Issue</span></>
+            ? <><Loader2 className="w-4 h-4 animate-spin" /><span>Inspecting your issue…</span></>
+            : <><span className="text-lg">🔍</span><span>Diagnose My Issue</span></>
           }
         </button>
       </div>
 
-      {/* Loading pulse */}
+      {/* Loading animation */}
       <AnimatePresence>
         {loading && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col items-center gap-3 py-4"
+            className="flex flex-col items-center gap-3 py-3"
           >
             <div className="flex gap-1.5">
               {[0, 1, 2].map(i => (
                 <motion.div
                   key={i}
-                  animate={{ scale: [1, 1.4, 1], opacity: [0.4, 1, 0.4] }}
+                  animate={{ scale: [1, 1.5, 1], opacity: [0.35, 1, 0.35] }}
                   transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
-                  className="w-2.5 h-2.5 bg-tarea-sky rounded-full"
+                  className="w-2 h-2 bg-tarea-sky rounded-full"
                 />
               ))}
             </div>
-            <p className="text-slate-400 text-sm">AI is analyzing your issue…</p>
+            <p className="text-slate-500 text-sm">Assessing the situation…</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -224,10 +245,10 @@ export default function DiagnosePage() {
       <AnimatePresence>
         {error && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-xl p-4"
+            className="flex items-center gap-3 bg-red-500/10 border border-red-500/25 rounded-xl p-4"
           >
             <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
             <p className="text-red-300 text-sm">{error}</p>
@@ -243,86 +264,100 @@ export default function DiagnosePage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="space-y-4"
+            className="space-y-3"
           >
-            {/* Main result card */}
-            <div className="bg-white/5 border border-tarea-sky/30 rounded-2xl p-6 space-y-5">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-tarea-sky" />
-                <span className="text-tarea-sky text-sm font-semibold">AI Diagnosis</span>
-                <span className={`ml-auto text-xs font-semibold ${confidenceColor[result.confidence]}`}>
-                  {confidenceLabel[result.confidence]}
-                </span>
-              </div>
+            {/* Result card */}
+            <div className="rounded-2xl overflow-hidden border border-white/8">
 
-              {/* Category */}
-              <div className="flex items-center gap-4">
+              {/* Category header band */}
+              <div
+                className="flex items-center gap-4 px-6 py-5"
+                style={{ background: `linear-gradient(135deg, ${accent}18 0%, ${accent}08 100%)`, borderBottom: `1px solid ${accent}20` }}
+              >
                 <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 300, delay: 0.1 }}
-                  className="w-16 h-16 bg-tarea-sky/15 border border-tarea-sky/30 rounded-2xl flex items-center justify-center flex-shrink-0"
+                  initial={{ scale: 0, rotate: -15 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 260, delay: 0.05 }}
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: `${accent}18`, border: `1px solid ${accent}30` }}
                 >
-                  <CategoryIcon catKey={result.category} active className="w-8 h-8" />
+                  <CategoryIcon catKey={result.category} active className="w-7 h-7" />
                 </motion.div>
                 <div>
-                  <p className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-0.5">You need a</p>
-                  <p className="text-white text-2xl font-extrabold">
+                  <p className="text-slate-400 text-xs font-semibold uppercase tracking-widest mb-0.5">You need a</p>
+                  <p className="text-white text-2xl font-extrabold" style={{ color: accent }}>
                     {SERVICE_CATEGORY_LABELS[result.category] || result.category} Pro
                   </p>
                 </div>
               </div>
 
-              {/* Urgency badge */}
-              <div className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border ${urgency.bg} ${urgency.border}`}>
-                <urgency.icon className={`w-4.5 h-4.5 ${urgency.color} flex-shrink-0`} />
-                <span className={`text-sm font-semibold ${urgency.color}`}>{urgency.label}</span>
-              </div>
+              <div className="bg-white/5 p-6 space-y-5">
 
-              {/* Explanation */}
-              <p className="text-slate-300 text-sm leading-relaxed">{result.explanation}</p>
+                {/* Urgency */}
+                <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${urgency.bg} ${urgency.border}`}
+                  style={{ borderLeftWidth: 3, borderLeftColor: urgency.dot.replace("bg-", "") }}
+                >
+                  <urgency.icon className={`w-4.5 h-4.5 ${urgency.color} flex-shrink-0`} />
+                  <div>
+                    <p className={`text-sm font-bold ${urgency.color}`}>{urgency.label}</p>
+                  </div>
+                </div>
 
-              {/* Tips */}
-              <div className="space-y-2">
-                <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5">
-                  <Lightbulb className="w-3.5 h-3.5" /> While you wait for the pro
-                </p>
-                {result.tips.map((tip, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 + i * 0.1 }}
-                    className="flex items-start gap-2.5 bg-white/5 rounded-xl p-3"
-                  >
-                    <span className="w-5 h-5 bg-tarea-sky/20 text-tarea-sky rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                      {i + 1}
-                    </span>
-                    <p className="text-slate-300 text-sm">{tip}</p>
-                  </motion.div>
-                ))}
+                {/* Assessment */}
+                <div className="space-y-2">
+                  <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider">Assessment</p>
+                  <p className="text-slate-300 text-sm leading-relaxed">{result.explanation}</p>
+                </div>
+
+                <div className="h-px bg-white/8" />
+
+                {/* Tips */}
+                <div className="space-y-2">
+                  <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                    <Lightbulb className="w-3.5 h-3.5" /> Quick tips while you wait
+                  </p>
+                  {result.tips.map((tip, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 + i * 0.09 }}
+                      className="flex items-start gap-3 bg-white/[0.04] rounded-xl p-3"
+                    >
+                      <span
+                        className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-black flex-shrink-0 mt-0.5"
+                        style={{ background: `${accent}20`, color: accent }}
+                      >
+                        {i + 1}
+                      </span>
+                      <p className="text-slate-300 text-sm leading-relaxed">{tip}</p>
+                    </motion.div>
+                  ))}
+                </div>
+
               </div>
             </div>
 
-            {/* CTA */}
+            {/* CTAs */}
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.35 }}
               className="flex gap-3"
             >
               <Link
                 href={`/customer/browse?category=${result.category}`}
-                className="flex-1 flex items-center justify-center gap-2 bg-tarea-sky text-tarea-ink font-bold py-3.5 rounded-xl hover:bg-sky-300 transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 font-bold py-3.5 rounded-xl transition-colors text-sm"
+                style={{ background: accent, color: "#0F172A" }}
               >
-                Book a {SERVICE_CATEGORY_LABELS[result.category] || "Pro"} Now
+                Book a {SERVICE_CATEGORY_LABELS[result.category] || "Pro"}
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <button
                 onClick={reset}
                 className="px-5 py-3.5 bg-white/5 border border-white/10 text-slate-400 font-semibold rounded-xl hover:bg-white/10 hover:text-white transition-colors text-sm"
               >
-                Try Again
+                Start over
               </button>
             </motion.div>
           </motion.div>
