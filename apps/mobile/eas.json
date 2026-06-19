@@ -28,10 +28,52 @@
       "android": {
         "buildType": "app-bundle"
       }
+    },
+    "production-customer": {
+      "autoIncrement": true,
+      "env": {
+        "APP_VARIANT": "customer"
+      },
+      "ios": {
+        "simulator": false
+      },
+      "android": {
+        "buildType": "app-bundle"
+      }
+    },
+    "production-handyman": {
+      "autoIncrement": true,
+      "env": {
+        "APP_VARIANT": "handyman"
+      },
+      "ios": {
+        "simulator": false
+      },
+      "android": {
+        "buildType": "app-bundle"
+      }
     }
   },
   "submit": {
     "production": {
+      "ios": {
+        "appleId": "asclepiosleo@gmail.com"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json",
+        "track": "internal"
+      }
+    },
+    "production-customer": {
+      "ios": {
+        "appleId": "asclepiosleo@gmail.com"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json",
+        "track": "internal"
+      }
+    },
+    "production-handyman": {
       "ios": {
         "appleId": "asclepiosleo@gmail.com"
       },
