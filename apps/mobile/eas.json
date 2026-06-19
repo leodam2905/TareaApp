@@ -30,7 +30,6 @@
       }
     },
     "production-customer": {
-      "autoIncrement": true,
       "env": {
         "APP_VARIANT": "customer"
       },
@@ -42,7 +41,6 @@
       }
     },
     "production-handyman": {
-      "autoIncrement": true,
       "env": {
         "APP_VARIANT": "handyman"
       },
