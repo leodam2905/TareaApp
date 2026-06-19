@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, TextInput, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
-import * as Location from "expo-location";
 import { api } from "@/lib/api";
 import { C } from "@/constants/colors";
 
@@ -82,6 +81,9 @@ export default function JobDetailScreen() {
   }, [booking?.status]);
 
   const markOnMyWay = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let Location: any;
+    try { Location = require("expo-location"); } catch { Alert.alert("Unavailable", "Location not available."); return; }
     setSendingLocation(true);
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
@@ -97,10 +99,10 @@ export default function JobDetailScreen() {
     });
     setOnMyWay(true);
     setSendingLocation(false);
-    // Send location updates every 20 seconds
     locationIntervalRef.current = setInterval(async () => {
       try {
-        const l = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+        const loc2 = require("expo-location");
+        const l = await loc2.getCurrentPositionAsync({ accuracy: loc2.Accuracy.Balanced });
         await api.patch(`/bookings/${id}/location`, { lat: l.coords.latitude, lng: l.coords.longitude });
       } catch { /* ignore */ }
     }, 20000);

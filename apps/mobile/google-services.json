@@ -1,13 +1,32 @@
 {
   "project_info": {
-    "project_number": "866595286863",
-    "project_id": "taptarea",
-    "storage_bucket": "taptarea.firebasestorage.app"
+    "project_number": "277743379820",
+    "project_id": "splendid-drake-497611-h6",
+    "storage_bucket": "splendid-drake-497611-h6.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:866595286863:android:b97fa089d0cda9c4345f3a",
+        "mobilesdk_app_id": "1:277743379820:android:53c06a0a10544660573f49",
+        "android_client_info": {
+          "package_name": "com.taptarea.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-mUw_zXXpDg944yQaz5dwSI7qtKugwyc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277743379820:android:9df2e795f4fb8daf573f49",
         "android_client_info": {
           "package_name": "com.tarea.app"
         }
@@ -15,7 +34,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAAXUGRIva1c4kPB3_bSQLz48HBCkizWpA"
+          "current_key": "AIzaSyC-mUw_zXXpDg944yQaz5dwSI7qtKugwyc"
         }
       ],
       "services": {

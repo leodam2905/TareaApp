@@ -1,6 +1,6 @@
 import { getToken } from "./storage";
 
-export const API_BASE = process.env.EXPO_PUBLIC_API_URL?.replace("/api", "") ?? "http://localhost:3000";
+export const API_BASE = process.env.EXPO_PUBLIC_API_URL?.replace("/api", "") ?? "https://taptarea.com";
 
 async function request(path: string, options: RequestInit = {}) {
   const token = await getToken();

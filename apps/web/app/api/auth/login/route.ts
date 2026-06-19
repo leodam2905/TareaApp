@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { comparePassword, signPendingToken } from "@/lib/auth";
+import { comparePassword, signPendingToken, signToken, setAuthCookie } from "@/lib/auth";
 import { createAndSendOtp } from "@/lib/otp";
 import { rateLimit } from "@/lib/rate-limit";
 
@@ -40,6 +40,14 @@ export async function POST(req: NextRequest) {
 
     if (!user.isActive) {
       return NextResponse.json({ error: "Your account has been suspended. Contact support at support@taptarea.com." }, { status: 403 });
+    }
+
+    // Bypass OTP for test accounts used in app review
+    const TEST_EMAILS = ["reviewer@taptarea.com", "test@taptarea.com", "monsegueadah@gmail.com", "ahissezirignon@gmail.com"];
+    if (TEST_EMAILS.includes(user.email)) {
+      const token = signToken({ userId: user.id, email: user.email, role: user.role });
+      setAuthCookie(token);
+      return NextResponse.json({ success: true, id: user.id, name: user.name, email: user.email, role: user.role, token });
     }
 
     // Send OTP via SMS + email, return pending token for verification step

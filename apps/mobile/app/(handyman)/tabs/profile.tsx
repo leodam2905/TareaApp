@@ -58,7 +58,7 @@ export default function ProfileScreen() {
     setSaving(false);
   };
 
-  const logout = async () => { await clearAuth(); router.replace("/(auth)/login"); };
+  const logout = async () => { await clearAuth(); router.replace("/(auth)/landing" as any); };
 
   if (loading) return <View style={s.center}><ActivityIndicator color={C.sky} size="large" /></View>;
 

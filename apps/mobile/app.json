@@ -21,7 +21,8 @@
         "NSCameraUsageDescription": "Allow Tarea to use your camera to take ID and document photos.",
         "NSLocationWhenInUseUsageDescription": "Tarea uses your location to share your position with the customer while on the way.",
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
@@ -42,7 +43,8 @@
         "googleMaps": {
           "apiKey": "AIzaSyCqDnoc2Ga5hTkSXd_xHsrk2Wf7p2bo3eI"
         }
-      }
+      },
+      "versionCode": 3
     },
     "plugins": [
       "expo-router",

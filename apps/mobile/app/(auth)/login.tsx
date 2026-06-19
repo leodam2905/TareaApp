@@ -22,6 +22,10 @@ export default function LoginScreen() {
       });
       const data = await res.json();
       if (!res.ok) { Alert.alert("Login failed", data.error || "Invalid credentials"); return; }
+      if (data.requiresOtp) {
+        router.push({ pathname: "/(auth)/verify-otp", params: { pendingToken: data.pendingToken, phoneMask: data.phoneMask ?? "" } });
+        return;
+      }
       await saveToken(data.token);
       await saveRole(data.role);
       if (data.role === "HANDYMAN") router.replace("/(handyman)/tabs/dashboard");
