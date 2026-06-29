@@ -19,11 +19,11 @@ const securityHeaders = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://js.stripe.com/v3/",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https://res.cloudinary.com https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://images.pexels.com https://images.unsplash.com https://openmoji.org",
+      "img-src 'self' data: blob: https://pub-adf5c223fa884cf6878a12b8f1ef7d2f.r2.dev https://res.cloudinary.com https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://images.pexels.com https://images.unsplash.com https://openmoji.org",
       "font-src 'self' data:",
       "frame-src https://js.stripe.com https://hooks.stripe.com",
       "connect-src 'self' https://api.stripe.com https://api.telnyx.com https://nominatim.openstreetmap.org wss://*.pusher.com",
-      "media-src 'self' https://res.cloudinary.com blob:",
+      "media-src 'self' https://pub-adf5c223fa884cf6878a12b8f1ef7d2f.r2.dev https://res.cloudinary.com blob:",
       "worker-src 'self' blob:",
     ].join("; "),
   },
@@ -33,7 +33,7 @@ const securityHeaders = [
 const nextConfig = {
   output: "standalone",
   images: {
-    domains: ["res.cloudinary.com", "avatars.githubusercontent.com"],
+    domains: ["pub-adf5c223fa884cf6878a12b8f1ef7d2f.r2.dev", "res.cloudinary.com", "avatars.githubusercontent.com"],
   },
   typescript: {
     ignoreBuildErrors: true,

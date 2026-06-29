@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { cld } from "@/lib/cld";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -57,7 +58,7 @@ type Booking = {
 function Avatar({ url, name, size = 8 }: { url: string | null; name: string; size?: number }) {
   return (
     <div className={`w-${size} h-${size} rounded-full bg-tarea-sky/20 flex items-center justify-center overflow-hidden flex-shrink-0 text-xs font-bold text-tarea-sky`}>
-      {url ? <img src={url} alt={name} className="w-full h-full object-cover" /> : name[0]?.toUpperCase()}
+      {url ? <img src={cld(url)} alt={name} className="w-full h-full object-cover" /> : name[0]?.toUpperCase()}
     </div>
   );
 }

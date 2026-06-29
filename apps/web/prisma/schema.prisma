@@ -229,6 +229,7 @@ model Booking {
   messages  Message[]
   tips      Tip[]
   extensions BookingExtension[]
+  proxySessions ProxySession[]
 
   @@map("bookings")
 }
@@ -433,4 +434,27 @@ model ActiveState {
   updatedAt   DateTime  @updatedAt
 
   @@map("active_states")
+}
+
+// Anonymous calling: both parties dial a shared Telnyx `proxyNumber` and are
+// bridged to each other, so neither sees the other's real phone number. One
+// ACTIVE session per booking holds a proxy number from the pool until it
+// expires (or is released), then the number returns to the pool for reuse.
+model ProxySession {
+  id            String    @id @default(cuid())
+  bookingId     String
+  proxyNumber   String    // E.164 Telnyx number both parties dial
+  customerPhone String    // E.164, never exposed to the handyman
+  handymanPhone String    // E.164, never exposed to the customer
+  status        String    @default("ACTIVE") // ACTIVE | RELEASED
+  expiresAt     DateTime
+  lastCallSid   String?
+  createdAt     DateTime  @default(now())
+  releasedAt    DateTime?
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([proxyNumber, status])
+  @@index([bookingId])
+  @@map("proxy_sessions")
 }

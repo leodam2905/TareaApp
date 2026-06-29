@@ -73,7 +73,7 @@ export default function BookScreen() {
         <View style={s.priceCard}>
           <Text style={s.priceLabel}>Service Total</Text>
           <Text style={s.priceVal}>${price.toFixed(2)}</Text>
-          <Text style={s.priceSub}>+10% platform fee at checkout</Text>
+          <Text style={s.priceSub}>+15% service fee · You pay ${(price * 1.15).toFixed(2)} total</Text>
         </View>
 
         {/* Date picker */}

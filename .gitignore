@@ -55,3 +55,7 @@ apps/web/tsconfig.tsbuildinfo
 
 # Test
 coverage/
+apps/mobile/google-service-account.json
+*.p8
+apps/mobile/builds/
+apps/mobile/ios.stale-bundleid-bak/

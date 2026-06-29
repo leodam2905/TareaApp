@@ -55,7 +55,7 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "asclepiosleo@gmail.com"
+        "appleId": "leodam2905@gmail.com"
       },
       "android": {
         "serviceAccountKeyPath": "./google-service-account.json",
@@ -64,7 +64,10 @@
     },
     "production-customer": {
       "ios": {
-        "appleId": "asclepiosleo@gmail.com"
+        "ascApiKeyPath": "./store/appstore/AuthKey_54F786QLW9.p8",
+        "ascApiKeyId": "54F786QLW9",
+        "ascApiKeyIssuerId": "d4043b84-ff32-4cd9-bef8-a0d183c13991",
+        "ascAppId": "6784023441"
       },
       "android": {
         "serviceAccountKeyPath": "./google-service-account.json",
@@ -73,7 +76,10 @@
     },
     "production-handyman": {
       "ios": {
-        "appleId": "asclepiosleo@gmail.com"
+        "ascApiKeyPath": "./store/appstore/AuthKey_54F786QLW9.p8",
+        "ascApiKeyId": "54F786QLW9",
+        "ascApiKeyIssuerId": "d4043b84-ff32-4cd9-bef8-a0d183c13991",
+        "ascAppId": "6784029141"
       },
       "android": {
         "serviceAccountKeyPath": "./google-service-account.json",

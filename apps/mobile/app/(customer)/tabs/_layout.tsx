@@ -22,6 +22,7 @@ export default function CustomerTabs() {
     }}>
       <Tabs.Screen name="dashboard"     options={{ tabBarIcon: ({ focused }) => <Icon emoji="🏠" label="Home"         focused={focused} /> }} />
       <Tabs.Screen name="bookings"      options={{ tabBarIcon: ({ focused }) => <Icon emoji="📊" label="Dashboard"   focused={focused} /> }} />
+      <Tabs.Screen name="requests"      options={{ tabBarIcon: ({ focused }) => <Icon emoji="📋" label="Requests"    focused={focused} /> }} />
       <Tabs.Screen name="favorites"     options={{ tabBarIcon: ({ focused }) => <Icon emoji="❤️" label="Favorite"    focused={focused} /> }} />
       <Tabs.Screen name="refer-earn"    options={{ tabBarIcon: ({ focused }) => <Icon emoji="🎁" label="Refer & Earn" focused={focused} /> }} />
       <Tabs.Screen name="browse"        options={{ href: null }} />

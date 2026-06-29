@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { cld } from "@/lib/cld";
 import { useParams } from "next/navigation";
 import { Send, Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -137,7 +138,7 @@ export default function ChatPage() {
                       {!isMine && (
                         <div className="w-7 h-7 rounded-full bg-tarea-sky/20 flex items-center justify-center text-tarea-sky text-xs font-bold flex-shrink-0 overflow-hidden mb-0.5">
                           {msg.sender.avatarUrl
-                            ? <img src={msg.sender.avatarUrl} alt="" className="w-full h-full object-cover" />
+                            ? <img src={cld(msg.sender.avatarUrl)} alt="" className="w-full h-full object-cover" />
                             : msg.sender.name[0]}
                         </div>
                       )}

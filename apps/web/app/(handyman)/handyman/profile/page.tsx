@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { cld } from "@/lib/cld";
 
 const US_STATES = [
   ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
@@ -259,7 +260,7 @@ export default function HandymanProfilePage() {
           {uploading
             ? <Loader2 className="w-6 h-6 animate-spin text-tarea-sky" />
             : profile.avatarUrl
-              ? <img src={profile.avatarUrl} alt="" className="w-full h-full object-cover" />
+              ? <img src={cld(profile.avatarUrl)} alt="" className="w-full h-full object-cover" />
               : <User className="w-7 h-7 text-tarea-sky" />}
           <span className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl">
             <Camera className="w-5 h-5 text-white" />
@@ -372,7 +373,7 @@ export default function HandymanProfilePage() {
               {uploading
                 ? <Loader2 className="w-6 h-6 animate-spin text-tarea-sky" />
                 : profile.avatarUrl
-                  ? <img src={profile.avatarUrl} alt="" className="w-full h-full object-cover" />
+                  ? <img src={cld(profile.avatarUrl)} alt="" className="w-full h-full object-cover" />
                   : <div className="flex flex-col items-center gap-1 text-slate-400"><Camera className="w-6 h-6" /><span className="text-xs">Upload</span></div>}
               <span className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <Camera className="w-5 h-5 text-white" />
@@ -495,7 +496,7 @@ export default function HandymanProfilePage() {
                   <button type="button" onClick={() => ref.current?.click()}
                     className="relative w-full h-28 rounded-xl overflow-hidden border-2 border-dashed border-white/20 hover:border-tarea-sky flex items-center justify-center bg-white/5 transition-all">
                     {preview || existing ? (
-                      <img src={preview || existing} alt="" className="w-full h-full object-cover" />
+                      <img src={cld(preview || existing)} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <div className="flex flex-col items-center gap-1 text-slate-400">
                         <FileText className="w-6 h-6" />
@@ -532,7 +533,7 @@ export default function HandymanProfilePage() {
             <button type="button" onClick={() => licenseDocRef.current?.click()}
               className="relative w-full h-28 rounded-xl overflow-hidden border-2 border-dashed border-white/20 hover:border-tarea-sky flex items-center justify-center bg-white/5 transition-all">
               {docPreviews.licenseDoc || docUrls.licenseDocUrl ? (
-                <img src={docPreviews.licenseDoc || docUrls.licenseDocUrl} alt="" className="w-full h-full object-cover" />
+                <img src={cld(docPreviews.licenseDoc || docUrls.licenseDocUrl)} alt="" className="w-full h-full object-cover" />
               ) : (
                 <div className="flex flex-col items-center gap-1 text-slate-400">
                   <FileText className="w-6 h-6" />
@@ -551,7 +552,7 @@ export default function HandymanProfilePage() {
           <button type="button" onClick={() => insuranceDocRef.current?.click()}
             className="relative w-full h-28 rounded-xl overflow-hidden border-2 border-dashed border-white/20 hover:border-tarea-sky flex items-center justify-center bg-white/5 transition-all">
             {docPreviews.insuranceDoc || docUrls.insuranceDocUrl ? (
-              <img src={docPreviews.insuranceDoc || docUrls.insuranceDocUrl} alt="" className="w-full h-full object-cover" />
+              <img src={cld(docPreviews.insuranceDoc || docUrls.insuranceDocUrl)} alt="" className="w-full h-full object-cover" />
             ) : (
               <div className="flex flex-col items-center gap-1 text-slate-400">
                 <FileText className="w-6 h-6" />

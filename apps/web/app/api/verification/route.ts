@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { v2 as cloudinary } from "cloudinary";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key:    process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+import { uploadImageToR2, uploadRawToR2, uid } from "@/lib/r2";
 
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
@@ -20,30 +14,27 @@ export async function POST(req: NextRequest) {
   if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
 
   const mimeType = file.type || "image/jpeg";
-  if (!mimeType.startsWith("image/") && mimeType !== "application/pdf") {
+  const isPdf = mimeType === "application/pdf";
+  if (!mimeType.startsWith("image/") && !isPdf) {
     return NextResponse.json({ error: "Only image or PDF files allowed" }, { status: 400 });
   }
   if (file.size > 0 && file.size > 10 * 1024 * 1024) {
     return NextResponse.json({ error: "File too large (max 10 MB)" }, { status: 400 });
   }
 
-  const bytes = await file.arrayBuffer();
-  if (!bytes.byteLength) return NextResponse.json({ error: "Empty file received" }, { status: 400 });
-  const base64 = Buffer.from(bytes).toString("base64");
-  const dataUri = `data:${mimeType};base64,${base64}`;
+  const buffer = Buffer.from(await file.arrayBuffer());
+  if (!buffer.byteLength) return NextResponse.json({ error: "Empty file received" }, { status: 400 });
 
-  const result = await cloudinary.uploader.upload(dataUri, {
-    folder: "tarea/verification",
-    public_id: `verify_${user.id}`,
-    overwrite: true,
-  });
+  const url = isPdf
+    ? await uploadRawToR2(buffer, { key: `verification/${user.id}-${uid()}.pdf`, contentType: "application/pdf" })
+    : await uploadImageToR2(buffer, { key: `verification/${user.id}-${uid()}`, resize: { fit: "inside", width: 2000, height: 2000 } });
 
   await prisma.handymanProfile.update({
     where: { userId: user.id },
-    data: { verificationDocUrl: result.secure_url, verificationStatus: "pending" },
+    data: { verificationDocUrl: url, verificationStatus: "pending" },
   });
 
-  return NextResponse.json({ url: result.secure_url, status: "pending" });
+  return NextResponse.json({ url, status: "pending" });
 }
 
 export async function GET() {

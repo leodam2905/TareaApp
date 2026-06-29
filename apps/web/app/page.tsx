@@ -23,7 +23,7 @@ function VideoBg() {
   return (
     <div className="absolute inset-0 overflow-hidden">
       <video
-        src="https://res.cloudinary.com/damk2dpd4/video/upload/v1778893570/hero-video.mp4"
+        src="https://pub-adf5c223fa884cf6878a12b8f1ef7d2f.r2.dev/hero/hero-video.mp4"
         autoPlay
         muted
         loop

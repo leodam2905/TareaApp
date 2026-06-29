@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { cld } from "@/lib/cld";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Heart, Star, MapPin, Loader2, Zap } from "lucide-react";
@@ -78,7 +79,7 @@ export default function FavoritesPage() {
                   <div className="relative flex-shrink-0">
                     <div className="w-16 h-16 rounded-2xl bg-tarea-sky/20 flex items-center justify-center overflow-hidden">
                       {h.user.avatarUrl
-                        ? <img src={h.user.avatarUrl} alt={h.user.name} className="w-full h-full object-cover" />
+                        ? <img src={cld(h.user.avatarUrl)} alt={h.user.name} className="w-full h-full object-cover" />
                         : <span className="text-2xl font-bold text-tarea-sky">{h.user.name[0]}</span>}
                     </div>
                     {h.isPremium && (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { cld } from "@/lib/cld";
 import { Star, MapPin, Clock, CheckCircle2, XCircle, Loader2, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
@@ -149,7 +150,7 @@ export default function CustomerRequestsPage() {
                     <div key={a.id} className={`p-4 flex items-center gap-4 ${a.status === "ACCEPTED" ? "bg-emerald-500/5" : a.status === "REJECTED" ? "opacity-50" : ""}`}>
                       <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
                         {a.user.avatarUrl
-                          ? <img src={a.user.avatarUrl} alt="" className="w-full h-full object-cover" />
+                          ? <img src={cld(a.user.avatarUrl)} alt="" className="w-full h-full object-cover" />
                           : <span className="text-orange-600 font-bold">{a.user.name[0]}</span>}
                       </div>
                       <div className="flex-1 min-w-0">

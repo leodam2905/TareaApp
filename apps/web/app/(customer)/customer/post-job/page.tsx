@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { cld } from "@/lib/cld";
 import { useRouter } from "next/navigation";
 import { Loader2, MapPin, LocateFixed, Camera, X, Sparkles, DollarSign } from "lucide-react";
 import toast from "react-hot-toast";
@@ -177,7 +178,7 @@ export default function PostJobPage() {
           <div className="flex flex-wrap gap-3">
             {imageUrls.map((url, i) => (
               <div key={url} className="relative w-20 h-20 rounded-xl overflow-hidden border border-orange-200">
-                <img src={url} alt="" className="w-full h-full object-cover" />
+                <img src={cld(url)} alt="" className="w-full h-full object-cover" />
                 <button
                   type="button"
                   onClick={() => setImageUrls(prev => prev.filter((_, j) => j !== i))}

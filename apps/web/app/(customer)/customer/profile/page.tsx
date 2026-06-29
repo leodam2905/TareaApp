@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { cld } from "@/lib/cld";
 
 const US_STATES = [
   ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
@@ -136,7 +137,7 @@ export default function CustomerProfilePage() {
           {uploading
             ? <Loader2 className="w-6 h-6 animate-spin text-tarea-sky" />
             : profile.avatarUrl
-              ? <img src={profile.avatarUrl} alt="" className="w-full h-full object-cover" />
+              ? <img src={cld(profile.avatarUrl)} alt="" className="w-full h-full object-cover" />
               : <User className="w-7 h-7" />}
           <span className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl">
             <Camera className="w-5 h-5 text-white" />

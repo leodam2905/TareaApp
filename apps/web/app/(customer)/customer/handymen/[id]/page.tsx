@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, Suspense } from "react";
+import { cld } from "@/lib/cld";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Star, MapPin, Clock, Zap, ArrowLeft, Loader2, CheckCircle2, Calendar, Tag, X, ShieldCheck, Camera } from "lucide-react";
 import toast from "react-hot-toast";
@@ -217,7 +218,7 @@ function ProfileInner() {
           <div className="relative flex-shrink-0">
             <div className="w-20 h-20 rounded-2xl bg-tarea-sky/20 flex items-center justify-center overflow-hidden">
               {handyman.avatarUrl
-                ? <img src={handyman.avatarUrl} alt={handyman.name} className="w-full h-full object-cover" />
+                ? <img src={cld(handyman.avatarUrl)} alt={handyman.name} className="w-full h-full object-cover" />
                 : <span className="text-3xl font-bold text-tarea-sky">{handyman.name[0]}</span>}
             </div>
             {isElite && (
@@ -315,7 +316,7 @@ function ProfileInner() {
             {portfolio.map(p => (
               <button key={p.id} onClick={() => setLightbox(p.url)}
                 className="aspect-square rounded-xl overflow-hidden border border-white/10 hover:border-tarea-sky/40 transition-colors">
-                <img src={p.url} alt={p.caption ?? "Portfolio"} className="w-full h-full object-cover hover:scale-105 transition-transform duration-200" />
+                <img src={cld(p.url)} alt={p.caption ?? "Portfolio"} className="w-full h-full object-cover hover:scale-105 transition-transform duration-200" />
               </button>
             ))}
           </div>
@@ -328,7 +329,7 @@ function ProfileInner() {
           className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
           onClick={() => setLightbox(null)}
         >
-          <img src={lightbox} alt="Portfolio" className="max-w-full max-h-full rounded-2xl object-contain" />
+          <img src={cld(lightbox)} alt="Portfolio" className="max-w-full max-h-full rounded-2xl object-contain" />
         </div>
       )}
 
@@ -346,7 +347,7 @@ function ProfileInner() {
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-tarea-sky/20 flex items-center justify-center text-tarea-sky text-sm font-bold overflow-hidden flex-shrink-0">
                       {r.author.avatarUrl
-                        ? <img src={r.author.avatarUrl} alt="" className="w-full h-full object-cover" />
+                        ? <img src={cld(r.author.avatarUrl)} alt="" className="w-full h-full object-cover" />
                         : r.author.name[0]}
                     </div>
                     <p className="text-white text-sm font-semibold">{r.author.name}</p>

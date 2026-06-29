@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { cld } from "@/lib/cld";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -80,7 +81,7 @@ export default function HandymenMap({
             <div style={{ minWidth: 180 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                 <div style={{ width: 40, height: 40, borderRadius: 12, background: "#E0F2FE", overflow: "hidden", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "#0369A1", fontSize: 16 }}>
-                  {h.avatarUrl ? <img src={h.avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : h.name[0]}
+                  {h.avatarUrl ? <img src={cld(h.avatarUrl)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : h.name[0]}
                 </div>
                 <div>
                   <p style={{ margin: 0, fontWeight: 700, fontSize: 14, color: "#0F172A" }}>{h.name}</p>

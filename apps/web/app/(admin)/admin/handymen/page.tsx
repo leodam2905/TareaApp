@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { cld } from "@/lib/cld";
 import { CheckCircle2, XCircle, ExternalLink, ChevronDown, ChevronUp, Shield, FileText } from "lucide-react";
 import toast from "react-hot-toast";
 import { formatCurrency } from "@/lib/utils";
@@ -158,7 +159,7 @@ export default function AdminHandymenPage() {
                 {/* Avatar */}
                 <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden bg-tarea-sky/20 flex items-center justify-center">
                   {h.user.avatarUrl
-                    ? <img src={h.user.avatarUrl} alt="" className="w-full h-full object-cover" />
+                    ? <img src={cld(h.user.avatarUrl)} alt="" className="w-full h-full object-cover" />
                     : <span className="text-tarea-sky font-bold text-sm">{h.user.name[0]?.toUpperCase()}</span>}
                 </div>
 

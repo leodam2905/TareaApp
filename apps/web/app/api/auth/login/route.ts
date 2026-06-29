@@ -42,8 +42,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Your account has been suspended. Contact support at support@taptarea.com." }, { status: 403 });
     }
 
-    // Bypass OTP for test accounts used in app review
-    const TEST_EMAILS = ["reviewer@taptarea.com", "test@taptarea.com", "monsegueadah@gmail.com", "ahissezirignon@gmail.com"];
+    // Bypass OTP for test accounts used in app review + admin accounts
+    const TEST_EMAILS = ["reviewer@taptarea.com", "test@taptarea.com", "monsegueadah@gmail.com", "ahissezirignon@gmail.com", "admin1@taptarea.com", "admin4@taptarea.com"];
     if (TEST_EMAILS.includes(user.email)) {
       const token = signToken({ userId: user.id, email: user.email, role: user.role });
       setAuthCookie(token);

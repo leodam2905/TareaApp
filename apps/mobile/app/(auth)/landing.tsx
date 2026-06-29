@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { C } from "@/constants/colors";
 
-const VIDEO_URL = "https://res.cloudinary.com/damk2dpd4/video/upload/v1778893570/hero-video.mp4";
+const VIDEO_URL = "https://res.cloudinary.com/damk2dpd4/video/upload/f_auto,q_auto,w_1080,c_limit/v1778893570/hero-video.mp4";
 const { height } = Dimensions.get("window");
 
 const FEATURES = [

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { cld } from "@/lib/cld";
 import { useParams, useRouter } from "next/navigation";
 import { Star, MapPin, Clock, CheckCircle2, Loader2, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
@@ -63,7 +64,7 @@ function HandymanCard({
       <div className="flex items-center gap-3">
         <div className="w-12 h-12 rounded-xl bg-tarea-sky flex items-center justify-center text-tarea-ink font-bold text-lg flex-shrink-0">
           {handyman.user.avatarUrl
-            ? <img src={handyman.user.avatarUrl} alt="" className="w-12 h-12 rounded-xl object-cover" />
+            ? <img src={cld(handyman.user.avatarUrl)} alt="" className="w-12 h-12 rounded-xl object-cover" />
             : handyman.user.name[0].toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">

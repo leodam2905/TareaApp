@@ -4,8 +4,10 @@ import {
   StyleSheet, Alert, ActivityIndicator, KeyboardAvoidingView, Platform
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 import { api } from "@/lib/api";
 import { C } from "@/constants/colors";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const CATEGORIES = [
   { value: "PLUMBING",        label: "Plumbing",        emoji: "🔧" },
@@ -22,6 +24,7 @@ const CATEGORIES = [
 ];
 
 export default function PostJobScreen() {
+  const router = useRouter();
   const [category,    setCategory]    = useState("");
   const [title,       setTitle]       = useState("");
   const [description, setDescription] = useState("");
@@ -29,18 +32,19 @@ export default function PostJobScreen() {
   const [city,        setCity]        = useState("");
   const [budgetMin,   setBudgetMin]   = useState("");
   const [budgetMax,   setBudgetMax]   = useState("");
-  const [scheduledAt, setScheduledAt] = useState("");
+  const [dateObj,     setDateObj]     = useState<Date | null>(null);
+  const [showPicker,  setShowPicker]  = useState(false);
   const [submitting,  setSubmitting]  = useState(false);
   const [submitted,   setSubmitted]   = useState(false);
 
   const reset = () => {
     setCategory(""); setTitle(""); setDescription(""); setAddress("");
-    setCity(""); setBudgetMin(""); setBudgetMax(""); setScheduledAt("");
+    setCity(""); setBudgetMin(""); setBudgetMax(""); setDateObj(null);
     setSubmitted(false);
   };
 
   const submit = async () => {
-    if (!category || !title || !description || !address || !city || !budgetMin || !budgetMax || !scheduledAt) {
+    if (!category || !title || !description || !address || !city || !budgetMin || !budgetMax || !dateObj) {
       Alert.alert("Missing Fields", "Please fill in all required fields.");
       return;
     }
@@ -54,7 +58,7 @@ export default function PostJobScreen() {
         category, title, description, address, city,
         budgetMin: parseFloat(budgetMin),
         budgetMax: parseFloat(budgetMax),
-        scheduledAt: new Date(scheduledAt).toISOString(),
+        scheduledAt: dateObj.toISOString(),
       });
       if (res.ok) {
         setSubmitted(true);
@@ -75,8 +79,11 @@ export default function PostJobScreen() {
           <Text style={s.successEmoji}>✅</Text>
           <Text style={s.successTitle}>Job Posted!</Text>
           <Text style={s.successSub}>Nearby pros will be notified and can apply. We'll let you know when someone applies.</Text>
-          <TouchableOpacity style={s.btn} onPress={reset}>
-            <Text style={s.btnText}>Post Another Job</Text>
+          <TouchableOpacity style={s.btn} onPress={() => router.push("/(customer)/tabs/requests" as any)}>
+            <Text style={s.btnText}>View My Requests</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={s.btnGhost} onPress={reset}>
+            <Text style={s.btnGhostText}>Post Another Job</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -138,8 +145,31 @@ export default function PostJobScreen() {
 
           {/* Scheduled Date */}
           <Text style={s.label}>Preferred Date *</Text>
-          <TextInput style={s.input} placeholderTextColor={C.slate500} placeholder="YYYY-MM-DD"
-            value={scheduledAt} onChangeText={setScheduledAt} />
+          <TouchableOpacity style={s.input} activeOpacity={0.7} onPress={() => setShowPicker(true)}>
+            <Text style={{ color: dateObj ? C.white : C.slate500, fontSize: 14 }}>
+              {dateObj
+                ? dateObj.toLocaleDateString(undefined, { weekday: "short", month: "long", day: "numeric", year: "numeric" })
+                : "Tap to choose a date"}
+            </Text>
+          </TouchableOpacity>
+          {showPicker && (
+            <DateTimePicker
+              value={dateObj ?? new Date()}
+              mode="date"
+              display={Platform.OS === "ios" ? "inline" : "default"}
+              minimumDate={new Date()}
+              themeVariant="dark"
+              onChange={(event, selected) => {
+                if (Platform.OS === "android") setShowPicker(false);
+                if (event.type === "set" && selected) setDateObj(selected);
+              }}
+            />
+          )}
+          {Platform.OS === "ios" && showPicker && (
+            <TouchableOpacity style={s.doneBtn} onPress={() => setShowPicker(false)}>
+              <Text style={s.doneText}>Done</Text>
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity style={[s.btn, submitting && s.btnDisabled]} onPress={submit} disabled={submitting}>
             {submitting
@@ -161,6 +191,8 @@ const s = StyleSheet.create({
   sub:            { color: C.slate400, fontSize: 14, marginBottom: 20 },
   label:          { color: C.slate300, fontSize: 13, fontWeight: "700", marginBottom: 6, marginTop: 14 },
   input:          { backgroundColor: "#1E293B", borderRadius: 12, padding: 14, color: C.white, fontSize: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
+  doneBtn:        { alignSelf: "flex-end", paddingVertical: 8, paddingHorizontal: 14, marginTop: 4 },
+  doneText:       { color: C.sky, fontWeight: "800", fontSize: 15 },
   textArea:       { height: 100, textAlignVertical: "top" },
   catScroll:      { marginBottom: 4 },
   catChip:        { backgroundColor: "#1E293B", borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10, marginRight: 8, alignItems: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
@@ -173,6 +205,8 @@ const s = StyleSheet.create({
   btn:            { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 16, alignItems: "center", marginTop: 24 },
   btnDisabled:    { opacity: 0.5 },
   btnText:        { color: C.ink, fontWeight: "900", fontSize: 16 },
+  btnGhost:       { borderRadius: 14, paddingVertical: 14, alignItems: "center", marginTop: 10 },
+  btnGhostText:   { color: C.slate400, fontWeight: "700", fontSize: 15 },
   successBox:     { flex: 1, alignItems: "center", justifyContent: "center", padding: 32, gap: 16 },
   successEmoji:   { fontSize: 64 },
   successTitle:   { color: C.white, fontSize: 28, fontWeight: "900" },

@@ -28,8 +28,16 @@ export async function createAndSendOtp(userId: string, phone: string, email?: st
 
   await prisma.otpCode.create({ data: { userId, code, expiresAt } });
 
-  // Send via SMS (best-effort — carrier filtering may apply)
-  sendSms(normalizePhone(phone), `Your Tarea verification code is: ${code}. It expires in ${OTP_TTL_MINUTES} minutes. Msg&data rates may apply. Reply STOP to opt out.`).catch(() => {});
+  // Send via SMS (best-effort — carrier filtering may apply). Clean transactional
+  // wording: a one-time passcode does not need marketing opt-out boilerplate, and
+  // the STOP/rates tail makes it read more like spam to carrier filters. Prefer a
+  // dedicated (e.g. verified toll-free) OTP number when configured — local long
+  // codes get spam-flagged far more often for automated codes.
+  sendSms(
+    normalizePhone(phone),
+    `Your Tarea verification code is ${code}. It expires in ${OTP_TTL_MINUTES} minutes. Do not share this code.`,
+    { from: process.env.TELNYX_OTP_PHONE_NUMBER || undefined }
+  ).catch(() => {});
 
   // Always send via email as fallback
   if (email) {

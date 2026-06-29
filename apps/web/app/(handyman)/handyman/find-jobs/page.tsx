@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { cld } from "@/lib/cld";
 import { MapPin, Clock, DollarSign, Loader2, Send, ChevronDown, ChevronUp, Zap, CheckCircle2, Lock, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -323,7 +324,7 @@ export default function FindJobsPage() {
                       {job.imageUrls?.length > 0 && (
                         <div className="flex gap-2 flex-wrap">
                           {job.imageUrls.map((url, idx) => (
-                            <img key={idx} src={url} alt="" className="w-24 h-24 rounded-xl object-cover border border-orange-100" />
+                            <img key={idx} src={cld(url)} alt="" className="w-24 h-24 rounded-xl object-cover border border-orange-100" />
                           ))}
                         </div>
                       )}

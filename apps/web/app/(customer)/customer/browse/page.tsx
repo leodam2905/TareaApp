@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { cld } from "@/lib/cld";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -427,7 +428,7 @@ export default function BrowsePage() {
                         <div className="relative flex-shrink-0">
                           <div className="w-16 h-16 rounded-2xl bg-tarea-sky/20 flex items-center justify-center overflow-hidden ring-2 ring-transparent group-hover:ring-tarea-sky/20 transition-all">
                             {h.avatarUrl
-                              ? <img src={h.avatarUrl} alt={h.name} className="w-full h-full object-cover" />
+                              ? <img src={cld(h.avatarUrl)} alt={h.name} className="w-full h-full object-cover" />
                               : <span className="text-2xl font-bold text-tarea-sky">{h.name[0]}</span>}
                           </div>
                           {h.isElite && (
