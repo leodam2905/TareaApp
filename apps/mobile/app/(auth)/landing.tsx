@@ -8,7 +8,7 @@ import Constants from "expo-constants";
 // Which app build this is — drives a customer (Tarea) vs handyman (Tarea Pro) landing.
 const IS_HANDYMAN = (Constants.expoConfig?.extra?.appVariant ?? "customer") === "handyman";
 
-const VIDEO_URL = "https://res.cloudinary.com/damk2dpd4/video/upload/f_auto,q_auto,w_1080,c_limit/v1778893570/hero-video.mp4";
+const VIDEO_URL = "https://pub-adf5c223fa884cf6878a12b8f1ef7d2f.r2.dev/hero/hero-mobile.mp4";
 const { height } = Dimensions.get("window");
 
 const FEATURES = IS_HANDYMAN ? [
