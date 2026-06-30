@@ -92,6 +92,10 @@ export default function PrivacyPage() {
               <li>Respond to customer support inquiries.</li>
               <li>Send promotional communications (only with your consent — you may opt out at any time).</li>
             </ul>
+            <h3>4.5 — SMS / Text Messaging</h3>
+            <p>With your consent, Tarea sends recurring SMS text messages for: (a) one-time verification codes (OTP) to secure your account; (b) booking confirmations, status updates, and appointment reminders; and (c) other service-related notifications. You provide your mobile number and consent to receive these messages when you create an account or log in to Tarea.</p>
+            <p>Message frequency varies based on your activity. Message and data rates may apply. Reply <strong>STOP</strong> to any message to opt out at any time, or reply <strong>HELP</strong> for assistance. Opting out of SMS does not affect the email versions of these notifications.</p>
+            <p><strong>No mobile information (including your phone number) or SMS opt-in and consent data is shared with third parties or affiliates for marketing or promotional purposes.</strong> Text-messaging originator opt-in data and consent are never sold or shared with any third party. We disclose your mobile number only to the messaging providers (such as Twilio) strictly necessary to deliver these messages.</p>
           </Section>
 
           <Section title="5. How We Share Your Information">

@@ -473,6 +473,11 @@ function RegisterForm() {
                 <p className="text-red-500 text-xs -mt-1">{errors.agreedToTerms.message}</p>
               )}
 
+              <p className="text-tarea-ink-muted text-xs leading-relaxed">
+                By providing your phone number and creating an account, you agree to receive recurring SMS text messages from Tarea, including one-time verification codes and booking notifications. Message frequency varies. Message and data rates may apply. Reply STOP to opt out, HELP for help. See our{" "}
+                <Link href="/privacy" className="text-tarea-dark hover:underline font-medium">Privacy Policy</Link>{" "}for details on how we handle your mobile information.
+              </p>
+
               {comingSoonState && (
                 <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-center space-y-1">
                   <p className="text-amber-800 font-semibold text-sm">🚀 Coming soon to {comingSoonState}!</p>
