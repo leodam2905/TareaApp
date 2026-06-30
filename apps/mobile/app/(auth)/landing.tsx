@@ -3,17 +3,26 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useVideoPlayer, VideoView } from "expo-video";
 import { C } from "@/constants/colors";
+import Constants from "expo-constants";
+
+// Which app build this is — drives a customer (Tarea) vs handyman (Tarea Pro) landing.
+const IS_HANDYMAN = (Constants.expoConfig?.extra?.appVariant ?? "customer") === "handyman";
 
 const VIDEO_URL = "https://res.cloudinary.com/damk2dpd4/video/upload/f_auto,q_auto,w_1080,c_limit/v1778893570/hero-video.mp4";
 const { height } = Dimensions.get("window");
 
-const FEATURES = [
+const FEATURES = IS_HANDYMAN ? [
+  { emoji: "📍", color: "#0EA5E9", title: "Get Local Jobs",        desc: "Customers near you, matched to your skills" },
+  { emoji: "💸", color: "#22C55E", title: "Fast Payouts",          desc: "Paid via Stripe within 30 min of completion" },
+  { emoji: "⭐", color: "#F97316", title: "Build Your Reputation", desc: "Great reviews win you more work" },
+] : [
   { emoji: "🔍", color: "#0EA5E9", title: "Find Verified Pros",  desc: "Browse background-checked handymen near you" },
   { emoji: "📅", color: "#22C55E", title: "Book in Seconds",      desc: "Schedule same-day or in advance, pay securely" },
   { emoji: "⭐", color: "#F97316", title: "Quality Guaranteed",   desc: "Live job tracking, reviews, and dispute protection" },
 ];
 
-const TOOLS = [
+// AI tools are customer-facing only; the Pro app hides them.
+const TOOLS = IS_HANDYMAN ? [] : [
   { emoji: "🔍", color: "#3B82F6", title: "Diagnose Issue",  desc: "AI identifies what pro you need",   route: "/diagnose"       },
   { emoji: "⚡", color: "#F59E0B", title: "Instant Quote",   desc: "Get a price before you book",        route: "/instant-quote"  },
 ];
@@ -37,8 +46,8 @@ export default function LandingScreen() {
             <View style={s.logoWrap}>
               <Text style={s.logoEmoji}>🔧</Text>
             </View>
-            <Text style={s.brand}>Tarea</Text>
-            <Text style={s.tagline}>Your trusted home service pros</Text>
+            <Text style={s.brand}>{IS_HANDYMAN ? "Tarea Pro" : "Tarea"}</Text>
+            <Text style={s.tagline}>{IS_HANDYMAN ? "Grow your business, on your schedule" : "Your trusted home service pros"}</Text>
           </View>
 
           <View style={s.features}>
@@ -63,7 +72,8 @@ export default function LandingScreen() {
             ))}
           </View>
 
-          {/* AI Tools */}
+          {/* AI Tools (customer only) */}
+          {TOOLS.length > 0 && (
           <View style={s.toolsRow}>
             {TOOLS.map(t => (
               <TouchableOpacity
@@ -90,23 +100,26 @@ export default function LandingScreen() {
               </TouchableOpacity>
             ))}
           </View>
+          )}
 
           <View style={s.ctas}>
-            <TouchableOpacity
-              style={s.btnPrimary}
-              onPress={() => router.push({ pathname: "/(auth)/register" as any, params: { role: "CUSTOMER" } })}
-            >
-              <Text style={s.btnPrimaryText}>Find a Pro</Text>
-              <Text style={s.btnPrimarySubtext}>I need home services</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={s.btnSecondary}
-              onPress={() => router.push({ pathname: "/(auth)/register" as any, params: { role: "HANDYMAN" } })}
-            >
-              <Text style={s.btnSecondaryText}>Become a Pro</Text>
-              <Text style={s.btnSecondarySubtext}>I offer home services</Text>
-            </TouchableOpacity>
+            {IS_HANDYMAN ? (
+              <TouchableOpacity
+                style={s.btnPrimary}
+                onPress={() => router.push({ pathname: "/(auth)/register" as any, params: { role: "HANDYMAN" } })}
+              >
+                <Text style={s.btnPrimaryText}>Become a Pro</Text>
+                <Text style={s.btnPrimarySubtext}>Start earning on your schedule</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={s.btnPrimary}
+                onPress={() => router.push({ pathname: "/(auth)/register" as any, params: { role: "CUSTOMER" } })}
+              >
+                <Text style={s.btnPrimaryText}>Find a Pro</Text>
+                <Text style={s.btnPrimarySubtext}>I need home services</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           <TouchableOpacity style={s.signIn} onPress={() => router.push("/(auth)/login" as any)}>
