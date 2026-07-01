@@ -10,7 +10,7 @@ export default function Logo({ variant = "full", size = 36 }: LogoProps) {
   if (variant === "icon") {
     return (
       <Image
-        src="/tarea-logo.png"
+        src="/tarea-logo.png?v=2"
         alt="Tarea"
         width={size}
         height={size}
@@ -22,7 +22,7 @@ export default function Logo({ variant = "full", size = 36 }: LogoProps) {
 
   return (
     <Image
-      src="/tarea-logo.png"
+      src="/tarea-logo.png?v=2"
       alt="Tarea"
       width={200}
       height={size}
