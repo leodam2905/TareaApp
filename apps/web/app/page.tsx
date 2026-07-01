@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   motion, useScroll, useTransform, useInView,
   useMotionValue, useSpring, animate,
@@ -9,11 +10,10 @@ import {
 import {
   Star, Shield, Clock, CheckCircle2, ArrowRight,
   Phone, Mail, MapPin, Sparkles, Users, TrendingUp,
-  ChevronDown, Wrench,
+  ChevronDown, Wrench, Search,
   Droplets, Zap, Paintbrush, Wind, TreePine, SprayCan,
   Truck, Shirt, Hammer, Settings2, Package,
 } from "lucide-react";
-import Logo from "@/components/ui/Logo";
 import DiagnoseSection from "@/components/ui/DiagnoseSection";
 import InstantQuoteSection from "@/components/ui/InstantQuoteSection";
 
@@ -155,7 +155,7 @@ function Marquee() {
         {items.map((r, i) => (
           <div
             key={i}
-            className="w-80 flex-shrink-0 bg-white border border-orange-100 rounded-2xl p-6 shadow-sm"
+            className="w-80 flex-shrink-0 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm"
           >
             <div className="flex text-orange-400 mb-3 text-sm">{"★".repeat(r.rating)}</div>
             <p className="text-gray-600 text-sm leading-relaxed mb-5">"{r.text}"</p>
@@ -182,10 +182,18 @@ export default function HomePage() {
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY  = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const [mounted, setMounted] = useState(false);
+  const [query, setQuery] = useState("");
+  const router = useRouter();
   useEffect(() => setMounted(true), []);
 
+  const onSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = query.trim();
+    router.push(q ? `/register?q=${encodeURIComponent(q)}` : "/register");
+  };
+
   return (
-    <div className="min-h-screen bg-[#FFF7ED] text-gray-900 overflow-x-hidden">
+    <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden">
 
       {/* ── Navbar ── */}
       <motion.nav
@@ -195,10 +203,10 @@ export default function HomePage() {
         className="fixed top-0 inset-x-0 z-50"
       >
         <div className="mx-4 mt-4">
-          <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-xl border border-orange-200 rounded-2xl px-6 h-14 flex items-center justify-between shadow-[0_4px_20px_rgba(251,146,60,0.12)]">
-            <div className="flex items-center gap-2.5">
-              <Logo size={32} />
-            </div>
+          <div className="max-w-6xl mx-auto bg-white/90 backdrop-blur-xl border border-gray-200 rounded-2xl px-6 h-14 flex items-center justify-between shadow-[0_4px_20px_rgba(15,23,42,0.06)]">
+            <Link href="/" className="flex items-center">
+              <img src="/tarea-logo.png" alt="Tarea" className="h-8 w-auto" />
+            </Link>
             <div className="hidden md:flex items-center gap-7 text-sm text-gray-500">
               {[["Services", "#services"], ["How it works", "#how-it-works"], ["Reviews", "#reviews"]].map(([l, h]) => (
                 <a key={l} href={h} className="hover:text-gray-900 transition-colors">{l}</a>
@@ -223,7 +231,7 @@ export default function HomePage() {
           <VideoBg />
         </motion.div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 w-full text-center">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 w-full text-center">
 
             <motion.div
               initial={mounted ? { opacity: 0, y: 20 } : false}
@@ -239,7 +247,7 @@ export default function HomePage() {
               initial={mounted ? { opacity: 0, y: 30 } : false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.8 }}
-              className="text-6xl lg:text-7xl font-extrabold leading-[1.04] tracking-tight mb-6 text-white"
+              className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.04] tracking-tight mb-6 text-white"
             >
               Your Home,{" "}
               <span
@@ -256,33 +264,54 @@ export default function HomePage() {
               initial={mounted ? { opacity: 0, y: 20 } : false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="text-white/80 text-lg leading-relaxed max-w-xl mx-auto mb-10"
+              className="text-white/80 text-lg leading-relaxed max-w-xl mx-auto mb-8"
             >
               Connect with verified, skilled handymen in your area — from plumbing to painting, booked in minutes.
             </motion.p>
 
+            {/* Search bar — primary hero CTA */}
+            <motion.form
+              onSubmit={onSearch}
+              initial={mounted ? { opacity: 0, y: 20 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="relative max-w-2xl mx-auto mb-6"
+            >
+              <label htmlFor="hero-search" className="sr-only">Search for a service</label>
+              <input
+                id="hero-search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                type="text"
+                placeholder="Search for any service…"
+                className="w-full h-14 sm:h-16 pl-6 pr-16 rounded-2xl bg-white text-gray-900 placeholder:text-gray-400 text-base sm:text-lg shadow-2xl outline-none focus:ring-4 focus:ring-orange-500/40 transition"
+              />
+              <button
+                type="submit"
+                aria-label="Search"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center rounded-xl bg-tarea-dark hover:bg-tarea-dark-deeper text-white transition-colors cursor-pointer"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+            </motion.form>
+
+            {/* Popular category pills */}
             <motion.div
               initial={mounted ? { opacity: 0, y: 20 } : false}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.65 }}
-              className="flex flex-col sm:flex-row gap-4 mb-8 justify-center"
+              transition={{ delay: 0.7 }}
+              className="flex flex-wrap gap-2.5 mb-10 max-w-2xl mx-auto justify-center"
             >
-              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+              {services.slice(0, 6).map(({ label, href }) => (
                 <Link
-                  href="/register"
-                  className="flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-4 rounded-2xl text-base shadow-[0_0_40px_rgba(249,115,22,0.5)] hover:shadow-[0_0_60px_rgba(249,115,22,0.7)] transition-all duration-300"
+                  key={label}
+                  href={href}
+                  className="group inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 hover:border-white/50 backdrop-blur-sm text-white text-sm font-medium px-4 py-2 rounded-full transition-all cursor-pointer"
                 >
-                  Book a Handyman <ArrowRight className="w-4 h-4" />
+                  {label}
+                  <ArrowRight className="w-3.5 h-3.5 opacity-70 group-hover:translate-x-0.5 transition-transform" />
                 </Link>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                <Link
-                  href="/register?role=HANDYMAN"
-                  className="flex items-center justify-center gap-2 border-2 border-white/40 text-white font-bold px-8 py-4 rounded-2xl text-base hover:bg-white/10 backdrop-blur-sm transition-all duration-300"
-                >
-                  Join as a Pro
-                </Link>
-              </motion.div>
+              ))}
             </motion.div>
 
             {/* App store badges */}
@@ -352,7 +381,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Stats ── */}
-      <section className="border-y border-orange-100 bg-orange-50/50">
+      <section className="border-y border-gray-200 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
@@ -419,7 +448,7 @@ export default function HomePage() {
                     <motion.div
                       whileHover={{ y: -5 }}
                       transition={{ duration: 0.2 }}
-                      className="group bg-white border border-orange-100 rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition-all"
+                      className="group bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition-all"
                     >
                       {/* Colored top band with emoji icon */}
                       <div
@@ -462,7 +491,7 @@ export default function HomePage() {
       <InstantQuoteSection />
 
       {/* ── How it works ── */}
-      <section id="how-it-works" className="py-28 bg-orange-50/40 border-y border-orange-100">
+      <section id="how-it-works" className="py-28 bg-white border-y border-gray-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <motion.p
@@ -524,7 +553,7 @@ export default function HomePage() {
                 transition={{ delay: i * 0.12 }}
               >
                 <TiltCard className="h-full">
-                  <div className="h-full bg-white border border-orange-100 rounded-2xl p-8 hover:border-orange-300 hover:shadow-md transition-all duration-300">
+                  <div className="h-full bg-white border border-gray-200 rounded-2xl p-8 hover:border-orange-300 hover:shadow-md transition-all duration-300">
                     <div className="w-14 h-14 bg-orange-100 border border-orange-200 rounded-2xl flex items-center justify-center mb-5">
                       <Icon className="w-7 h-7 text-orange-500" />
                     </div>
@@ -539,7 +568,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Reviews ── */}
-      <section id="reviews" className="py-28 bg-orange-50/40 border-y border-orange-100 overflow-hidden">
+      <section id="reviews" className="py-28 bg-white border-y border-gray-200 overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
           <div className="text-center">
             <motion.p
@@ -565,7 +594,7 @@ export default function HomePage() {
 
       {/* ── For handymen ── */}
       <section className="py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-orange-50 to-amber-50" />
+        <div className="absolute inset-0 bg-white" />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -608,7 +637,7 @@ export default function HomePage() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="flex items-start gap-4 bg-white border border-orange-100 rounded-xl p-4 hover:border-orange-200 hover:shadow-sm transition-all"
+                  className="flex items-start gap-4 bg-white border border-gray-200 rounded-xl p-4 hover:border-orange-200 hover:shadow-sm transition-all"
                 >
                   <div className="w-10 h-10 bg-orange-100 border border-orange-200 rounded-xl flex items-center justify-center flex-shrink-0">
                     <Icon className="w-5 h-5 text-orange-500" />
@@ -689,12 +718,12 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="bg-orange-50 border-t border-orange-200 py-16">
+      <footer className="bg-white border-t border-gray-200 py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-10 mb-12">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Logo size={32} />
+                <img src="/tarea-logo.png" alt="Tarea" className="h-8 w-auto" />
               </div>
               <p className="text-gray-500 text-sm leading-relaxed">
                 Your trusted platform for home maintenance and repair services.
@@ -744,7 +773,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <div className="border-t border-orange-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-400 text-sm">© 2026 Tarea. All rights reserved.</p>
             <div className="flex gap-6 text-gray-500 text-sm">
               <Link href="/contact" className="hover:text-gray-900 transition-colors">Contact & Support</Link>
