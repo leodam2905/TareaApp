@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+// Queries the DB — must run at request time, not be prerendered at build time
+// (build-time prerender can't load the Prisma engine / libssl in the Alpine image).
+export const dynamic = "force-dynamic";
+
 // Returns available handymen for the customer browse screen. Shape matches what
 // the mobile/web browse expects: a flat user object with `handymanProfile` and
 // a top-level `services` array, and `id` = the USER id (the detail screen calls
