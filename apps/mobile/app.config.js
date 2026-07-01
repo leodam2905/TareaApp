@@ -7,7 +7,7 @@ export default {
     version: "1.0.0",
     scheme: IS_HANDYMAN ? "tareapro" : "tarea",
     orientation: "portrait",
-    icon: "./assets/icon.png",
+    icon: IS_HANDYMAN ? "./assets/icon-pro.png" : "./assets/icon.png",
     userInterfaceStyle: "dark",
     splash: {
       image: "./assets/splash.png",
@@ -24,7 +24,7 @@ export default {
         NSLocationWhenInUseUsageDescription: "Tarea uses your location to share your position with the customer while on the way.",
         ITSAppUsesNonExemptEncryption: false,
       },
-      buildNumber: "1",
+      buildNumber: "2",
     },
     android: {
       adaptiveIcon: {
