@@ -60,6 +60,34 @@ export default function ProfileScreen() {
 
   const logout = async () => { await clearAuth(); router.replace("/(auth)/landing" as any); };
 
+  const deleteAccount = () => {
+    Alert.alert(
+      "Delete Account",
+      "This permanently deletes your account and personal data (profile, documents, and contact info). This cannot be undone. Continue?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const res = await api.delete("/account");
+              if (res.ok) {
+                await clearAuth();
+                Alert.alert("Account Deleted", "Your account and personal data have been deleted.");
+                router.replace("/(auth)/landing" as any);
+              } else {
+                Alert.alert("Error", "Could not delete your account. Please try again or contact support@taptarea.com.");
+              }
+            } catch {
+              Alert.alert("Error", "Network error. Please check your connection and try again.");
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (loading) return <View style={s.center}><ActivityIndicator color={C.sky} size="large" /></View>;
 
   const hp = profile?.handymanProfile;
@@ -128,6 +156,9 @@ export default function ProfileScreen() {
         <TouchableOpacity style={s.logoutBtn} onPress={logout}>
           <Text style={s.logoutText}>Sign Out</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={s.deleteBtn} onPress={deleteAccount}>
+          <Text style={s.deleteText}>Delete Account</Text>
+        </TouchableOpacity>
         <View style={{ height: 32 }} />
       </ScrollView>
     </SafeAreaView>
@@ -164,4 +195,6 @@ const s = StyleSheet.create({
   checklistBtnText:  { color: C.sky, fontWeight: "700", fontSize: 14 },
   logoutBtn:         { margin: 16, backgroundColor: "rgba(239,68,68,0.08)", borderRadius: 14, paddingVertical: 14, alignItems: "center", borderWidth: 1, borderColor: "rgba(239,68,68,0.2)" },
   logoutText:        { color: C.red, fontWeight: "700", fontSize: 14 },
+  deleteBtn:         { marginHorizontal: 16, marginBottom: 28, paddingVertical: 10, alignItems: "center" },
+  deleteText:        { color: C.slate500, fontWeight: "600", fontSize: 13, textDecorationLine: "underline" },
 });

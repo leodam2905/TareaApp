@@ -381,7 +381,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Stats ── */}
-      <section className="border-y border-gray-200 bg-white">
+      <section className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl border border-gray-200 bg-gray-50 overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
@@ -412,7 +412,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Services ── */}
-      <section id="services" className="py-28 relative">
+      <section id="services" className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl border border-gray-200 bg-gray-50 overflow-hidden py-16 sm:py-24">
         <MeshBackground />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -491,49 +491,73 @@ export default function HomePage() {
       <InstantQuoteSection />
 
       {/* ── How it works ── */}
-      <section id="how-it-works" className="py-28 bg-white border-y border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-orange-500 text-sm font-semibold uppercase tracking-widest mb-3"
-            >
-              Simple process
-            </motion.p>
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
+      <section id="how-it-works" className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl overflow-hidden bg-gradient-to-br from-[#1E3A8A] via-[#1E3A8A] to-[#0F2560] px-8 sm:px-14 py-14 sm:py-16">
+
+        {/* How Tarea Works */}
+        <div className="text-center mb-12">
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-orange-300 text-sm font-semibold uppercase tracking-widest mb-3"
+          >
+            Two ways to get it done
+          </motion.p>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl sm:text-5xl font-extrabold text-white"
+          >
+            How <span className="logo-script">Tarea</span> Works
+          </motion.h2>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          {[
+            {
+              tag: "Way 1", Icon: Search, title: "Book a pro yourself",
+              blurb: "For when you know exactly what you need.",
+              points: ["Browse services & compare verified pros", "Pick your handyman with upfront pricing", "Book instantly — sorted in minutes"],
+            },
+            {
+              tag: "Way 2", Icon: Sparkles, title: "Let Tarea match you",
+              blurb: "For when you'd rather we handle it.",
+              points: ["Tell us what you need", "We source, vet & send the right pro", "Sit back — the job gets done"],
+            },
+          ].map(({ tag, Icon, title, blurb, points }, i) => (
+            <motion.div
+              key={title}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-5xl font-extrabold text-gray-900"
+              transition={{ delay: i * 0.12 }}
+              className="rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8"
             >
-              How Tarea Works
-            </motion.h2>
-          </div>
-
-          <div className="grid md:grid-cols-4 gap-8 relative">
-            <div className="hidden md:block absolute top-10 left-[12%] right-[12%] h-px bg-gradient-to-r from-transparent via-orange-300 to-transparent" />
-            {steps.map(({ n, title, desc }, i) => (
-              <motion.div
-                key={n}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
-                className="text-center relative"
-              >
-                <motion.div
-                  whileHover={{ scale: 1.08, rotate: 3 }}
-                  className="w-20 h-20 bg-gradient-to-br from-orange-100 to-orange-200 border border-orange-300 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(251,146,60,0.15)]"
+              <div className="flex items-center gap-3.5 mb-5">
+                <Link
+                  href="/register"
+                  aria-label={`Get started — ${title}`}
+                  className="w-12 h-12 rounded-xl bg-orange-500/15 border border-orange-500/25 hover:bg-orange-500/30 hover:border-orange-500/50 flex items-center justify-center flex-shrink-0 transition-colors cursor-pointer"
                 >
-                  <span className="text-orange-600 font-extrabold text-2xl">{n}</span>
-                </motion.div>
-                <h3 className="text-gray-900 font-bold text-lg mb-2">{title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
-              </motion.div>
-            ))}
-          </div>
+                  <Icon className="w-6 h-6 text-orange-400" />
+                </Link>
+                <div>
+                  <p className="text-orange-300 text-xs font-bold uppercase tracking-widest">{tag}</p>
+                  <h3 className="text-white font-extrabold text-xl leading-tight">{title}</h3>
+                </div>
+              </div>
+              <p className="text-white/60 text-sm mb-6">{blurb}</p>
+              <ol className="space-y-3.5">
+                {points.map((p, j) => (
+                  <li key={j} className="flex items-start gap-3">
+                    <span className="w-6 h-6 flex-shrink-0 rounded-full bg-white/10 border border-white/15 text-white text-xs font-bold flex items-center justify-center">{j + 1}</span>
+                    <span className="text-white/85 text-sm leading-relaxed">{p}</span>
+                  </li>
+                ))}
+              </ol>
+            </motion.div>
+          ))}
         </div>
       </section>
 
@@ -541,7 +565,7 @@ export default function HomePage() {
       <DiagnoseSection />
 
       {/* ── Trust ── */}
-      <section className="py-28">
+      <section className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl border border-gray-200 bg-gray-50 overflow-hidden py-16 sm:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-6">
             {trust.map(({ icon: Icon, title, desc }, i) => (
@@ -568,7 +592,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Reviews ── */}
-      <section id="reviews" className="py-28 bg-white border-y border-gray-200 overflow-hidden">
+      <section id="reviews" className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl border border-gray-200 bg-gray-50 overflow-hidden py-16 sm:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
           <div className="text-center">
             <motion.p
@@ -593,8 +617,7 @@ export default function HomePage() {
       </section>
 
       {/* ── For handymen ── */}
-      <section className="py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-white" />
+      <section className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl border border-gray-200 bg-gray-50 overflow-hidden py-16 sm:py-24">
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -604,7 +627,7 @@ export default function HomePage() {
             >
               <p className="text-orange-500 text-sm font-semibold uppercase tracking-widest mb-4">For professionals</p>
               <h2 className="text-5xl font-extrabold text-gray-900 mb-5 leading-tight">
-                Grow Your Business<br />with Tarea
+                Grow Your Business<br />with <span className="logo-script">Tarea</span>
               </h2>
               <p className="text-gray-600 leading-relaxed mb-8">
                 Join thousands of skilled handymen earning more — on their own schedule, with zero marketing spend. We bring the customers, you do the work.
@@ -654,7 +677,7 @@ export default function HomePage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="relative py-28 overflow-hidden">
+      <section className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl overflow-hidden py-24">
         <div className="absolute inset-0 bg-gradient-to-br from-[#7C2D12] via-[#9A3412] to-[#7C2D12]" />
         <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(ellipse at 50% 50%, rgba(251,146,60,0.25) 0%, transparent 65%)" }} />
         <motion.div
@@ -774,7 +797,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400 text-sm">© 2026 Tarea. All rights reserved.</p>
+            <p className="text-gray-400 text-sm">© 2026 <span className="logo-script">Tarea</span>. All rights reserved.</p>
             <div className="flex gap-6 text-gray-500 text-sm">
               <Link href="/contact" className="hover:text-gray-900 transition-colors">Contact & Support</Link>
               <Link href="/privacy" className="hover:text-gray-900 transition-colors">Privacy Policy</Link>

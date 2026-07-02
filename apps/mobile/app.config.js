@@ -19,12 +19,12 @@ export default {
       bundleIdentifier: IS_HANDYMAN ? "com.taptarea.handyman" : "com.taptarea.customer",
       googleServicesFile: "./GoogleService-Info.plist",
       infoPlist: {
-        NSPhotoLibraryUsageDescription: "Allow Tarea to access your photos to upload profile and document images.",
-        NSCameraUsageDescription: "Allow Tarea to use your camera to take ID and document photos.",
+        NSPhotoLibraryUsageDescription: "Tarea uses your photo library so you can attach images to your account — for example, choosing a profile photo, uploading portfolio images of your past work to show customers, or selecting a photo of your ID or license during Pro verification.",
+        NSCameraUsageDescription: "Tarea uses your camera to take photos for your account — for example, capturing your ID and license for Pro verification, or photographing completed work to share with the customer.",
         NSLocationWhenInUseUsageDescription: "Tarea uses your location to share your position with the customer while on the way.",
         ITSAppUsesNonExemptEncryption: false,
       },
-      buildNumber: "2",
+      buildNumber: "3",
     },
     android: {
       adaptiveIcon: {
@@ -54,8 +54,8 @@ export default {
       [
         "expo-image-picker",
         {
-          photosPermission: "Allow Tarea to access your photos.",
-          cameraPermission: "Allow Tarea to use your camera.",
+          photosPermission: "Tarea uses your photo library so you can attach images to your account — for example, choosing a profile photo, uploading portfolio images of your work, or selecting a photo of your ID or license for verification.",
+          cameraPermission: "Tarea uses your camera to take photos for your account — for example, capturing your ID and license for verification, or photographing completed work to share with the customer.",
         },
       ],
       [

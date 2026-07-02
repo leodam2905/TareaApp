@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import fs from 'node:fs';
 export const KEY_ID = '54F786QLW9';
 export const ISSUER_ID = 'd4043b84-ff32-4cd9-bef8-a0d183c13991';
-const P8 = '/Users/monsegueadah/Downloads/AuthKey_54F786QLW9.p8';
+const P8 = '/Users/monsegueadah/TareaApp/apps/mobile/store/appstore/AuthKey_54F786QLW9.p8';
 export function token() {
   const key = fs.readFileSync(P8);
   return jwt.sign({}, key, {

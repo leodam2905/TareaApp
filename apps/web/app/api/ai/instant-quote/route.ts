@@ -7,7 +7,7 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 export async function POST(req: NextRequest) {
   // Public endpoint — rate limit per IP to prevent API-key cost abuse.
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  if (!rateLimit(`ai:${ip}`, 20, 60_000).ok) {
+  if (!rateLimit(`ai:${ip}`, 8, 60_000).ok) {
     return NextResponse.json({ error: "Too many requests. Please wait a moment." }, { status: 429 });
   }
 
@@ -15,6 +15,15 @@ export async function POST(req: NextRequest) {
 
   if (!category || !task) {
     return NextResponse.json({ error: "Category and task required" }, { status: 400 });
+  }
+
+  // Guard the (public) prompt inputs — cap sizes to limit abuse / token cost.
+  if (
+    typeof category !== "string" || category.length > 60 ||
+    typeof task !== "string" || task.length > 120 ||
+    (details != null && JSON.stringify(details).length > 1000)
+  ) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
   const detailsText = details && Object.keys(details).length

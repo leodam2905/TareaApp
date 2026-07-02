@@ -3,6 +3,15 @@
 @tailwind utilities;
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap");
+
+/* Brand wordmark — matches the "Tarea" script in the logo */
+.logo-script {
+  font-family: "Kaushan Script", "Brush Script MT", cursive;
+  font-weight: 400;
+  font-size: 1.15em;
+  line-height: 1;
+}
 
 @keyframes shimmer {
   0%   { background-position: 0% 50%; }

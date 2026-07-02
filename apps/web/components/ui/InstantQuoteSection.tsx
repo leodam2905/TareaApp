@@ -1,9 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Zap, Loader2, BadgeCheck, ArrowRight, Clock, ChevronRight, RotateCcw, CheckCircle } from "lucide-react";
+
+// Rotating "popular requests" shown in the placeholder
+const POPULAR = [
+  { label: "Install Ceiling Fan", cat: "Electrical",  icon: "⚡" },
+  { label: "AC Tune-Up",           cat: "HVAC",        icon: "❄️" },
+  { label: "Lawn Mowing",          cat: "Landscaping", icon: "🌿" },
+  { label: "TV Mounting",          cat: "General",     icon: "🛠️" },
+  { label: "Fix Leaky Faucet",     cat: "Plumbing",    icon: "🔧" },
+];
 
 type DetailField = { key: string; label: string; options: string[] };
 type Task        = { label: string; details: DetailField[] };
@@ -137,8 +146,14 @@ export default function InstantQuoteSection() {
 
   const activeMeta = category ? CATEGORY_META[category] : null;
 
+  const [spin, setSpin] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setSpin(s => (s + 1) % POPULAR.length), 2200);
+    return () => clearInterval(id);
+  }, []);
+
   return (
-    <section className="py-28 bg-gray-950 relative overflow-hidden">
+    <section className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl bg-gray-950 overflow-hidden py-4 sm:py-6">
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl" />
@@ -148,7 +163,7 @@ export default function InstantQuoteSection() {
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Section heading */}
-        <div className="text-center mb-14">
+        <div className="text-center mb-3">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -163,7 +178,7 @@ export default function InstantQuoteSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.08 }}
-            className="text-5xl font-extrabold text-white mb-4"
+            className="text-3xl font-extrabold text-white mb-2"
           >
             Get an Instant Quote
           </motion.h2>
@@ -172,30 +187,49 @@ export default function InstantQuoteSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.14 }}
-            className="text-gray-400 text-lg max-w-xl mx-auto"
+            className="text-gray-400 text-base max-w-xl mx-auto"
           >
             Tell us what you need — we'll give you a price range before you book. No consultations, no hidden fees.
           </motion.p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
+        <div className="grid lg:grid-cols-2 gap-8 items-stretch">
 
-          {/* ── Left: configurator ── */}
+          {/* ── Left: illustration ── */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="bg-white/5 border border-white/10 rounded-3xl p-7 space-y-7"
+            className="flex items-center justify-center lg:h-full"
+          >
+            <motion.img
+              src="/instant-quote.png?v=1"
+              alt="Get an instant quote in seconds"
+              className="w-full h-auto lg:h-full lg:w-auto lg:max-w-full object-contain"
+              animate={{ y: [0, -14, 0] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </motion.div>
+
+          {/* ── Right: quote result + service picker (stacked) ── */}
+          <div className="flex flex-col gap-6">
+
+          {/* ── Choose a service (configurator) ── */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="order-1 bg-white/5 border border-white/10 rounded-3xl p-4 space-y-4"
           >
 
             {/* Step 1 — Category grid */}
             <div>
-              <p className="text-white text-sm font-bold mb-4 flex items-center gap-2">
-                <span className="w-5 h-5 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-black">1</span>
+              <p className="text-white text-sm font-bold mb-3 text-center">
                 Choose a service
               </p>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-1.5">
                 {CATEGORIES.map(c => {
                   const meta   = CATEGORY_META[c];
                   const active = category === c;
@@ -204,7 +238,7 @@ export default function InstantQuoteSection() {
                       key={c}
                       type="button"
                       onClick={() => selectCategory(c)}
-                      className="flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all duration-150 text-center"
+                      className="flex flex-col items-center gap-1 p-2 rounded-xl border transition-all duration-150 text-center"
                       style={{
                         backgroundColor: active ? `${meta.color}14` : "rgba(255,255,255,0.04)",
                         borderColor:     active ? `${meta.color}50` : "rgba(255,255,255,0.08)",
@@ -230,8 +264,7 @@ export default function InstantQuoteSection() {
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <p className="text-white text-sm font-bold mb-3 flex items-center gap-2">
-                    <span className="w-5 h-5 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-black">2</span>
+                  <p className="text-white text-sm font-bold mb-3">
                     What specifically?
                   </p>
                   <div className="space-y-1.5">
@@ -270,8 +303,7 @@ export default function InstantQuoteSection() {
                   transition={{ duration: 0.3 }}
                   className="space-y-4"
                 >
-                  <p className="text-white text-sm font-bold flex items-center gap-2">
-                    <span className="w-5 h-5 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-black">3</span>
+                  <p className="text-white text-sm font-bold">
                     A few details
                   </p>
                   {task.details.map(d => (
@@ -328,12 +360,13 @@ export default function InstantQuoteSection() {
 
           </motion.div>
 
-          {/* ── Right: result panel ── */}
+          {/* ── Your quote appears here (result) ── */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
+            className="order-2"
           >
             <AnimatePresence mode="wait">
 
@@ -446,45 +479,50 @@ export default function InstantQuoteSection() {
               {/* Placeholder */}
               {!quote && !loading && !error && (
                 <motion.div key="placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="border-2 border-dashed border-white/8 rounded-3xl p-10 flex flex-col items-center justify-center gap-6 text-center min-h-[400px]"
+                  className="border-2 border-dashed border-white/8 rounded-3xl p-4 flex flex-col items-center justify-center gap-3 text-center min-h-[90px]"
                 >
-                  <div className="w-16 h-16 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center justify-center">
-                    <Zap className="w-8 h-8 text-orange-400" />
+                  <div className="w-12 h-12 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center justify-center">
+                    <Zap className="w-6 h-6 text-orange-400" />
                   </div>
                   <div>
-                    <p className="text-white font-bold text-lg">Your quote appears here</p>
-                    <p className="text-gray-500 text-sm mt-1.5 max-w-xs leading-relaxed">
-                      Pick a service and task on the left to get a real price in seconds
+                    <p className="text-white font-bold text-base">Your quote appears here</p>
+                    <p className="text-gray-500 text-xs mt-1 max-w-xs leading-relaxed">
+                      Pick a service above to get a real price in seconds
                     </p>
                   </div>
-                  {/* Quick picks */}
-                  <div className="space-y-2 w-full">
-                    <p className="text-gray-600 text-xs font-semibold uppercase tracking-wider mb-3">Popular requests</p>
-                    {[
-                      { label: "Install Ceiling Fan", cat: "Electrical",  icon: "⚡" },
-                      { label: "AC Tune-Up",           cat: "HVAC",        icon: "❄️" },
-                      { label: "Lawn Mowing",          cat: "Landscaping", icon: "🌿" },
-                      { label: "TV Mounting",          cat: "General",     icon: "🛠️" },
-                    ].map(({ label, cat, icon }) => (
-                      <button key={label} type="button"
+                  {/* Rotating popular request */}
+                  <div className="w-full" style={{ perspective: "700px" }}>
+                    <p className="text-gray-600 text-xs font-semibold uppercase tracking-wider mb-2">Popular requests</p>
+                    <AnimatePresence mode="wait">
+                      <motion.button
+                        key={spin}
+                        type="button"
+                        initial={{ rotateX: -90, opacity: 0 }}
+                        animate={{ rotateX: 0, opacity: 1 }}
+                        exit={{ rotateX: 90, opacity: 0 }}
+                        transition={{ duration: 0.4, ease: "easeInOut" }}
+                        style={{ transformStyle: "preserve-3d" }}
                         onClick={() => {
+                          const { cat, label } = POPULAR[spin];
                           selectCategory(cat);
                           const found = TASKS[cat].find(t => t.label === label || label.startsWith(t.label.split(" ")[0]));
                           if (found) selectTask(found);
                         }}
-                        className="w-full text-left flex items-center gap-3 px-4 py-3 bg-white/4 border border-white/8 rounded-xl hover:bg-white/8 hover:border-white/15 transition-all text-sm group"
+                        className="w-full text-left flex items-center gap-2 px-3 py-2.5 bg-white/4 border border-white/8 rounded-xl hover:bg-white/8 hover:border-white/15 transition-colors text-sm group"
                       >
-                        <span className="text-base">{icon}</span>
-                        <span className="text-gray-300 font-medium flex-1">{label}</span>
+                        <span className="text-base">{POPULAR[spin].icon}</span>
+                        <span className="text-gray-300 font-medium flex-1">{POPULAR[spin].label}</span>
                         <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-orange-400 transition-colors" />
-                      </button>
-                    ))}
+                      </motion.button>
+                    </AnimatePresence>
                   </div>
                 </motion.div>
               )}
 
             </AnimatePresence>
           </motion.div>
+
+          </div>
 
         </div>
       </div>

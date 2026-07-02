@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
-  Upload, Sparkles, Loader2, AlertTriangle, Clock,
+  Upload, Camera, Sparkles, Loader2, AlertTriangle, Clock,
   CheckCircle2, ArrowRight, X, ImagePlus, Lightbulb,
 } from "lucide-react";
 import { SERVICE_CATEGORY_LABELS } from "@/lib/utils";
@@ -42,6 +42,54 @@ export default function DiagnoseSection() {
   const [error, setError]         = useState<string | null>(null);
   const [dragging, setDragging]   = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const cameraRef = useRef<HTMLInputElement>(null);
+
+  const openCamera = async () => {
+    try {
+      // Triggers the browser's camera-permission prompt.
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
+      streamRef.current = stream;
+      setCameraOpen(true);
+    } catch {
+      setError("Couldn't access the camera. Allow camera permission, or upload a photo instead.");
+    }
+  };
+
+  // Hybrid: native camera app on phones, in-page webcam preview on desktop.
+  const takePhoto = () => {
+    const isMobile = typeof navigator !== "undefined" && /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
+    if (isMobile) cameraRef.current?.click();
+    else openCamera();
+  };
+
+  const closeCamera = () => {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+    setCameraOpen(false);
+  };
+
+  const capturePhoto = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d")?.drawImage(video, 0, 0);
+    canvas.toBlob((blob) => {
+      if (blob) handleFile(new File([blob], "camera-photo.jpg", { type: "image/jpeg" }));
+      closeCamera();
+    }, "image/jpeg", 0.9);
+  };
+
+  useEffect(() => {
+    if (cameraOpen && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [cameraOpen]);
 
   const handleFile = useCallback((file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -92,55 +140,57 @@ export default function DiagnoseSection() {
   const urgency = result ? urgencyConfig[result.urgency] : null;
 
   return (
-    <section className="py-28 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-white to-amber-50" />
+    <section className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl border border-gray-200 bg-gray-50 overflow-hidden py-4 sm:py-6">
+      <div className="absolute inset-0 bg-gray-50" />
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
-        <div className="text-center mb-14">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 bg-orange-100 border border-orange-200 rounded-full px-4 py-1.5 mb-4"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-orange-500" />
-            <span className="text-orange-600 text-sm font-semibold">AI-Powered</span>
-          </motion.div>
+        <div className="text-center mb-4">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.08 }}
-            className="text-5xl font-extrabold text-gray-900 mb-4"
+            className="text-3xl font-extrabold text-gray-900 mb-2"
           >
             Not Sure What You Need?
           </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.14 }}
-            className="text-gray-500 text-lg max-w-xl mx-auto"
-          >
-            Upload a photo of your home issue and our AI will instantly tell you which pro to call — no guesswork.
-          </motion.p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-10 items-start">
+        <div className="grid lg:grid-cols-[3fr_2fr] gap-8 items-center">
 
-          {/* Left — input */}
+          {/* Illustration */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="bg-white border border-orange-100 rounded-3xl p-7 shadow-[0_4px_24px_rgba(251,146,60,0.10)] space-y-5"
+            className="flex items-center justify-center"
+          >
+            <motion.img
+              src="/diagnose.png"
+              alt="Diagnose your home issue with AI"
+              className="w-full h-auto lg:max-h-[200px] object-contain"
+              animate={{ y: [0, -14, 0] }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </motion.div>
+
+          {/* Right — upload + diagnostic stacked */}
+          <div className="space-y-4">
+
+          {/* Upload / input */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="bg-white border border-orange-100 rounded-3xl p-3 shadow-[0_4px_24px_rgba(251,146,60,0.10)] space-y-3"
           >
             {/* Upload zone */}
             <div>
               <p className="text-gray-700 text-sm font-semibold mb-3">
-                Upload a photo <span className="text-gray-400 font-normal">(recommended)</span>
+                Upload a picture or take a picture
               </p>
               <AnimatePresence mode="wait">
                 {preview ? (
@@ -169,19 +219,28 @@ export default function DiagnoseSection() {
                     onDragLeave={() => setDragging(false)}
                     onDrop={onDrop}
                     onClick={() => fileRef.current?.click()}
-                    className={`border-2 border-dashed rounded-2xl p-8 flex flex-col items-center gap-3 cursor-pointer transition-all duration-200
+                    className={`border-2 border-dashed rounded-2xl p-3 flex flex-col items-center gap-2 cursor-pointer transition-all duration-200
                       ${dragging ? "border-orange-400 bg-orange-50" : "border-orange-200 hover:border-orange-400 hover:bg-orange-50/50"}`}
                   >
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${dragging ? "bg-orange-100" : "bg-orange-50"}`}>
-                      <ImagePlus className={`w-6 h-6 ${dragging ? "text-orange-500" : "text-orange-300"}`} />
+                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors ${dragging ? "bg-orange-100" : "bg-orange-50"}`}>
+                      <ImagePlus className={`w-5 h-5 ${dragging ? "text-orange-500" : "text-orange-300"}`} />
                     </div>
-                    <div className="text-center">
-                      <p className="text-gray-700 font-semibold text-sm">Drop photo here or click to upload</p>
-                      <p className="text-gray-400 text-xs mt-1">JPG, PNG, WebP</p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}
+                        className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                      >
+                        <Upload className="w-4 h-4" /> Upload
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); takePhoto(); }}
+                        className="flex items-center gap-1.5 bg-white border border-orange-200 hover:border-orange-400 text-orange-600 text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                      >
+                        <Camera className="w-4 h-4" /> Take Photo
+                      </button>
                     </div>
-                    <span className="flex items-center gap-1.5 text-orange-500 text-sm font-semibold">
-                      <Upload className="w-4 h-4" /> Choose Photo
-                    </span>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -189,6 +248,14 @@ export default function DiagnoseSection() {
                 ref={fileRef}
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }}
+              />
+              <input
+                ref={cameraRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
                 className="hidden"
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }}
               />
@@ -201,7 +268,7 @@ export default function DiagnoseSection() {
                 value={description}
                 onChange={(e) => setDesc(e.target.value)}
                 placeholder="e.g. There's a wet patch on my ceiling that appeared after heavy rain…"
-                rows={3}
+                rows={1}
                 className="w-full border border-orange-100 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-orange-300 transition"
               />
             </div>
@@ -212,7 +279,7 @@ export default function DiagnoseSection() {
               whileTap={{ scale: 0.97 }}
               onClick={analyze}
               disabled={loading || (!imageBase64 && !description.trim())}
-              className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white font-bold py-3.5 rounded-xl transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white font-bold py-2.5 rounded-xl transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {loading
                 ? <><Loader2 className="w-4 h-4 animate-spin" /><span>Analyzing…</span></>
@@ -273,7 +340,7 @@ export default function DiagnoseSection() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="bg-white border border-orange-100 rounded-3xl p-7 shadow-[0_4px_24px_rgba(251,146,60,0.10)] space-y-5"
+                  className="bg-white border border-orange-100 rounded-3xl p-3 shadow-[0_4px_24px_rgba(251,146,60,0.10)] space-y-3"
                 >
                   <div className="flex items-center justify-between">
                     <span className="flex items-center gap-1.5 text-orange-500 text-sm font-semibold">
@@ -380,8 +447,24 @@ export default function DiagnoseSection() {
               )}
             </AnimatePresence>
           </motion.div>
+
+          </div>
         </div>
       </div>
+      {/* Camera capture overlay */}
+      {cameraOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center p-4">
+          <video ref={videoRef} playsInline muted className="max-w-full max-h-[70vh] rounded-2xl bg-black" />
+          <div className="flex items-center gap-3 mt-6">
+            <button type="button" onClick={capturePhoto} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl transition-colors">
+              <Camera className="w-5 h-5" /> Capture
+            </button>
+            <button type="button" onClick={closeCamera} className="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
