@@ -157,7 +157,7 @@ export default function DiagnoseSection() {
           </motion.h2>
         </div>
 
-        <div className="grid lg:grid-cols-[3fr_2fr] gap-8 items-center">
+        <div className="grid lg:grid-cols-[3fr_2fr] gap-8 items-stretch">
 
           {/* Illustration */}
           <motion.div
@@ -165,12 +165,12 @@ export default function DiagnoseSection() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="flex items-center justify-center"
+            className="flex items-center justify-center lg:h-full"
           >
             <motion.img
               src="/diagnose.png"
               alt="Diagnose your home issue with AI"
-              className="w-full h-auto lg:max-h-[200px] object-contain"
+              className="w-full h-auto lg:h-full lg:w-auto lg:max-w-full object-contain"
               animate={{ y: [0, -14, 0] }}
               transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
             />
@@ -185,7 +185,7 @@ export default function DiagnoseSection() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="bg-white border border-orange-100 rounded-3xl p-3 shadow-[0_4px_24px_rgba(251,146,60,0.10)] space-y-3"
+            className="bg-white border border-violet-100 rounded-3xl p-3 shadow-[0_4px_24px_rgba(139,92,246,0.12)] space-y-3"
           >
             {/* Upload zone */}
             <div>
@@ -199,7 +199,7 @@ export default function DiagnoseSection() {
                     initial={{ opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
-                    className="relative rounded-2xl overflow-hidden border border-orange-100"
+                    className="relative rounded-2xl overflow-hidden border border-violet-100"
                   >
                     <img src={preview} alt="Issue" className="w-full max-h-52 object-cover" />
                     <button
@@ -220,23 +220,23 @@ export default function DiagnoseSection() {
                     onDrop={onDrop}
                     onClick={() => fileRef.current?.click()}
                     className={`border-2 border-dashed rounded-2xl p-3 flex flex-col items-center gap-2 cursor-pointer transition-all duration-200
-                      ${dragging ? "border-orange-400 bg-orange-50" : "border-orange-200 hover:border-orange-400 hover:bg-orange-50/50"}`}
+                      ${dragging ? "border-violet-400 bg-violet-50" : "border-violet-200 hover:border-violet-400 hover:bg-violet-50/50"}`}
                   >
-                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors ${dragging ? "bg-orange-100" : "bg-orange-50"}`}>
-                      <ImagePlus className={`w-5 h-5 ${dragging ? "text-orange-500" : "text-orange-300"}`} />
+                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-colors ${dragging ? "bg-violet-100" : "bg-violet-50"}`}>
+                      <ImagePlus className={`w-5 h-5 ${dragging ? "text-violet-500" : "text-violet-300"}`} />
                     </div>
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); fileRef.current?.click(); }}
-                        className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                        className="flex items-center gap-1.5 bg-violet-500 hover:bg-violet-600 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors"
                       >
                         <Upload className="w-4 h-4" /> Upload
                       </button>
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); takePhoto(); }}
-                        className="flex items-center gap-1.5 bg-white border border-orange-200 hover:border-orange-400 text-orange-600 text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                        className="flex items-center gap-1.5 bg-white border border-violet-200 hover:border-violet-400 text-violet-600 text-sm font-semibold px-3 py-1.5 rounded-lg transition-colors"
                       >
                         <Camera className="w-4 h-4" /> Take Photo
                       </button>
@@ -269,7 +269,7 @@ export default function DiagnoseSection() {
                 onChange={(e) => setDesc(e.target.value)}
                 placeholder="e.g. There's a wet patch on my ceiling that appeared after heavy rain…"
                 rows={1}
-                className="w-full border border-orange-100 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-orange-300 transition"
+                className="w-full border border-violet-100 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-violet-300 transition"
               />
             </div>
 
@@ -279,7 +279,7 @@ export default function DiagnoseSection() {
               whileTap={{ scale: 0.97 }}
               onClick={analyze}
               disabled={loading || (!imageBase64 && !description.trim())}
-              className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white font-bold py-2.5 rounded-xl transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white font-bold py-2.5 rounded-xl transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {loading
                 ? <><Loader2 className="w-4 h-4 animate-spin" /><span>Analyzing…</span></>
@@ -301,7 +301,7 @@ export default function DiagnoseSection() {
                       key={i}
                       animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
                       transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
-                      className="w-2 h-2 bg-orange-400 rounded-full"
+                      className="w-2 h-2 bg-violet-400 rounded-full"
                     />
                   ))}
                   <span className="text-gray-400 text-xs ml-2">AI is analyzing your issue…</span>
@@ -340,10 +340,10 @@ export default function DiagnoseSection() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="bg-white border border-orange-100 rounded-3xl p-3 shadow-[0_4px_24px_rgba(251,146,60,0.10)] space-y-3"
+                  className="bg-white border border-violet-100 rounded-3xl p-3 shadow-[0_4px_24px_rgba(139,92,246,0.12)] space-y-3"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 text-orange-500 text-sm font-semibold">
+                    <span className="flex items-center gap-1.5 text-violet-500 text-sm font-semibold">
                       <Sparkles className="w-4 h-4" /> AI Diagnosis
                     </span>
                     <span className={`text-xs font-semibold ${confidenceColor[result.confidence]}`}>
@@ -358,7 +358,7 @@ export default function DiagnoseSection() {
                     transition={{ delay: 0.1 }}
                     className="flex items-center gap-4"
                   >
-                    <div className="w-16 h-16 bg-orange-50 border border-orange-200 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0">
+                    <div className="w-16 h-16 bg-violet-50 border border-violet-200 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0">
                       {CATEGORY_EMOJI[result.category] || "🛠️"}
                     </div>
                     <div>
@@ -389,9 +389,9 @@ export default function DiagnoseSection() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2 + i * 0.1 }}
-                        className="flex items-start gap-2.5 bg-orange-50 rounded-xl p-3"
+                        className="flex items-start gap-2.5 bg-violet-50 rounded-xl p-3"
                       >
-                        <span className="w-5 h-5 bg-orange-200 text-orange-700 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                        <span className="w-5 h-5 bg-violet-200 text-violet-700 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                           {i + 1}
                         </span>
                         <p className="text-gray-700 text-sm">{tip}</p>
@@ -403,7 +403,7 @@ export default function DiagnoseSection() {
                   <div className="flex gap-3 pt-1">
                     <Link
                       href={`/register?category=${result.category}`}
-                      className="flex-1 flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors text-sm"
+                      className="flex-1 flex items-center justify-center gap-2 bg-violet-500 hover:bg-violet-600 text-white font-bold py-3 rounded-xl transition-colors text-sm"
                     >
                       Book a {SERVICE_CATEGORY_LABELS[result.category] || "Pro"} Now
                       <ArrowRight className="w-4 h-4" />
@@ -425,9 +425,9 @@ export default function DiagnoseSection() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="border-2 border-dashed border-orange-200 rounded-3xl p-10 flex flex-col items-center justify-center gap-4 text-center min-h-[320px]"
+                  className="border-2 border-dashed border-violet-200 rounded-3xl p-10 flex flex-col items-center justify-center gap-4 text-center min-h-[320px]"
                 >
-                  <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-3xl">🔍</div>
+                  <div className="w-16 h-16 bg-violet-50 rounded-2xl flex items-center justify-center text-3xl">🔍</div>
                   <div>
                     <p className="text-gray-700 font-bold text-lg">Your diagnosis will appear here</p>
                     <p className="text-gray-400 text-sm mt-1">Upload a photo or describe the issue to get started</p>
@@ -437,7 +437,7 @@ export default function DiagnoseSection() {
                       <button
                         key={ex}
                         onClick={() => setDesc(ex.replace("?", ""))}
-                        className="text-xs bg-orange-50 border border-orange-200 text-orange-600 px-3 py-1.5 rounded-full hover:bg-orange-100 transition-colors font-medium"
+                        className="text-xs bg-violet-50 border border-violet-200 text-violet-600 px-3 py-1.5 rounded-full hover:bg-violet-100 transition-colors font-medium"
                       >
                         {ex}
                       </button>
@@ -456,7 +456,7 @@ export default function DiagnoseSection() {
         <div className="fixed inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center p-4">
           <video ref={videoRef} playsInline muted className="max-w-full max-h-[70vh] rounded-2xl bg-black" />
           <div className="flex items-center gap-3 mt-6">
-            <button type="button" onClick={capturePhoto} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl transition-colors">
+            <button type="button" onClick={capturePhoto} className="flex items-center gap-2 bg-violet-500 hover:bg-violet-600 text-white font-bold px-6 py-3 rounded-xl transition-colors">
               <Camera className="w-5 h-5" /> Capture
             </button>
             <button type="button" onClick={closeCamera} className="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-xl transition-colors">

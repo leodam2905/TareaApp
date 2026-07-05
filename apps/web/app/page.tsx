@@ -38,18 +38,18 @@ function VideoBg() {
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
-const services = [
-  { Icon: Droplets,  label: "Plumbing",           desc: "Leaks, pipes & installations",     href: "/register?category=PLUMBING",    from: "#3B82F6", rate: "$75–$150/hr" },
-  { Icon: Zap,       label: "Electrical",          desc: "Wiring, panels & smart home",      href: "/register?category=ELECTRICAL",  from: "#F59E0B", rate: "$80–$150/hr" },
-  { Icon: Hammer,    label: "Carpentry",           desc: "Furniture, floors & custom work",  href: "/register?category=CARPENTRY",   from: "#F97316", rate: "$50–$100/hr" },
-  { Icon: Paintbrush,label: "Painting",            desc: "Interior & exterior finishes",     href: "/register?category=PAINTING",    from: "#EC4899", rate: "$40–$80/hr"  },
-  { Icon: Wind,      label: "HVAC",                desc: "AC, heating & air quality",        href: "/register?category=HVAC",        from: "#06B6D4", rate: "$80–$150/hr" },
-  { Icon: TreePine,  label: "Landscaping",         desc: "Lawn care & garden design",        href: "/register?category=LANDSCAPING", from: "#22C55E", rate: "$35–$65/hr"  },
-  { Icon: SprayCan,  label: "Cleaning",            desc: "Deep clean, recurring & move-out", href: "/register?category=CLEANING",    from: "#10B981", rate: "$25–$50/hr"  },
-  { Icon: Truck,     label: "Moving",              desc: "Local moves, packing & hauling",   href: "/register?category=MOVING",      from: "#6366F1", rate: "$90–$140/hr" },
-  { Icon: Shirt,     label: "Wash & Fold",         desc: "Laundry pickup, wash & delivery",  href: "/register?category=CLEANING",    from: "#0EA5E9", rate: "$1.50–$2/lb" },
-  { Icon: Wrench,    label: "Assembly & Mounting", desc: "Furniture, TV mounts & shelves",   href: "/register?category=GENERAL",     from: "#A855F7", rate: "$50–$100/hr" },
-  { Icon: Settings2, label: "General",             desc: "Odd jobs & home repairs",          href: "/register?category=GENERAL",     from: "#F43F5E", rate: "$50–$90/hr"  },
+const services: { Icon: React.ElementType; label: string; desc: string; href: string; from: string; rate: string; img?: string }[] = [
+  { Icon: Droplets,  label: "Plumbing",           desc: "Leaks, pipes & installations",     href: "/register?category=PLUMBING",    from: "#3B82F6", rate: "$75–$150/hr", img: "/plumbing.png" },
+  { Icon: Zap,       label: "Electrical",          desc: "Wiring, panels & smart home",      href: "/register?category=ELECTRICAL",  from: "#F59E0B", rate: "$80–$150/hr", img: "/electrical.png" },
+  { Icon: Hammer,    label: "Carpentry",           desc: "Furniture, floors & custom work",  href: "/register?category=CARPENTRY",   from: "#F97316", rate: "$50–$100/hr", img: "/carpentry.png" },
+  { Icon: Paintbrush,label: "Painting",            desc: "Interior & exterior finishes",     href: "/register?category=PAINTING",    from: "#EC4899", rate: "$40–$80/hr", img: "/painting.png"  },
+  { Icon: Wind,      label: "HVAC",                desc: "AC, heating & air quality",        href: "/register?category=HVAC",        from: "#06B6D4", rate: "$80–$150/hr", img: "/hvac.png?v=2" },
+  { Icon: TreePine,  label: "Landscaping",         desc: "Lawn care & garden design",        href: "/register?category=LANDSCAPING", from: "#22C55E", rate: "$35–$65/hr", img: "/landscaping.png"  },
+  { Icon: SprayCan,  label: "Cleaning",            desc: "Deep clean, recurring & move-out", href: "/register?category=CLEANING",    from: "#10B981", rate: "$25–$50/hr", img: "/cleaning.png"  },
+  { Icon: Truck,     label: "Moving",              desc: "Local moves, packing & hauling",   href: "/register?category=MOVING",      from: "#6366F1", rate: "$90–$140/hr", img: "/moving.png" },
+  { Icon: Shirt,     label: "Wash & Fold",         desc: "Laundry pickup, wash & delivery",  href: "/register?category=CLEANING",    from: "#0EA5E9", rate: "$1.50–$2/lb", img: "/wash-fold.png" },
+  { Icon: Wrench,    label: "Assembly & Mounting", desc: "Furniture, TV mounts & shelves",   href: "/register?category=GENERAL",     from: "#A855F7", rate: "$50–$100/hr", img: "/mounting.png" },
+  { Icon: Settings2, label: "General",             desc: "Odd jobs & home repairs",          href: "/register?category=GENERAL",     from: "#F43F5E", rate: "$50–$90/hr", img: "/general.png"  },
 ];
 
 const steps = [
@@ -247,7 +247,8 @@ export default function HomePage() {
               initial={mounted ? { opacity: 0, y: 30 } : false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.8 }}
-              className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.04] tracking-tight mb-6 text-white"
+              className="text-5xl sm:text-6xl lg:text-7xl mb-6 text-white"
+              style={{ fontFamily: '"Great Vibes", cursive', lineHeight: 1.25 }}
             >
               Your Home,{" "}
               <span
@@ -412,7 +413,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Services ── */}
-      <section id="services" className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl border border-gray-200 bg-gray-50 overflow-hidden py-16 sm:py-24">
+      <section id="services" className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl border border-white/10 bg-[#1E3A8A] overflow-hidden py-16 sm:py-24">
         <MeshBackground />
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -428,14 +429,14 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-5xl font-extrabold text-gray-900"
+              className="text-5xl font-extrabold text-white"
             >
               Every Service You Need
             </motion.h2>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {services.map(({ Icon, label, desc, href, from, rate }, i) => (
+            {services.map(({ Icon, label, desc, href, from, rate, img }, i) => (
               <motion.div
                 key={label}
                 initial={{ opacity: 0, y: 30 }}
@@ -450,18 +451,24 @@ export default function HomePage() {
                       transition={{ duration: 0.2 }}
                       className="group bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition-all"
                     >
-                      {/* Colored top band with emoji icon */}
-                      <div
-                        className="flex flex-col items-center justify-center pt-6 pb-4"
-                        style={{ background: `linear-gradient(135deg, ${from}18 0%, ${from}08 100%)` }}
-                      >
-                        <div
-                          className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-md mb-1"
-                          style={{ background: `linear-gradient(135deg, ${from}22, ${from}44)`, border: `2px solid ${from}44`, boxShadow: `0 6px 20px ${from}30` }}
-                        >
-                          <Icon className="w-8 h-8" style={{ color: from }} strokeWidth={1.5} />
+                      {/* Top: line-art illustration (test on Plumbing) or colored icon band */}
+                      {img ? (
+                        <div className="flex items-center justify-center bg-white h-28 px-4 pt-3">
+                          <img src={img} alt={label} className="max-h-full w-auto object-contain" />
                         </div>
-                      </div>
+                      ) : (
+                        <div
+                          className="flex flex-col items-center justify-center pt-6 pb-4"
+                          style={{ background: `linear-gradient(135deg, ${from}18 0%, ${from}08 100%)` }}
+                        >
+                          <div
+                            className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-md mb-1"
+                            style={{ background: `linear-gradient(135deg, ${from}22, ${from}44)`, border: `2px solid ${from}44`, boxShadow: `0 6px 20px ${from}30` }}
+                          >
+                            <Icon className="w-8 h-8" style={{ color: from }} strokeWidth={1.5} />
+                          </div>
+                        </div>
+                      )}
                       {/* White bottom with text */}
                       <div className="px-4 pt-3 pb-4 text-center">
                         <div className="flex items-center justify-center gap-1.5 mb-1">
@@ -565,8 +572,18 @@ export default function HomePage() {
       <DiagnoseSection />
 
       {/* ── Trust ── */}
-      <section className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl border border-gray-200 bg-gray-50 overflow-hidden py-16 sm:py-24">
+      <section className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl border border-white/10 bg-[#059669] overflow-hidden py-16 sm:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-4xl sm:text-5xl font-extrabold text-white"
+            >
+              <span className="logo-script">Tarea</span>&apos;s Promise
+            </motion.h2>
+          </div>
           <div className="grid md:grid-cols-3 gap-6">
             {trust.map(({ icon: Icon, title, desc }, i) => (
               <motion.div
@@ -617,7 +634,7 @@ export default function HomePage() {
       </section>
 
       {/* ── For handymen ── */}
-      <section className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl border border-gray-200 bg-gray-50 overflow-hidden py-16 sm:py-24">
+      <section className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl border border-white/10 bg-[#374151] overflow-hidden py-16 sm:py-24">
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <motion.div
@@ -626,10 +643,10 @@ export default function HomePage() {
               viewport={{ once: true }}
             >
               <p className="text-orange-500 text-sm font-semibold uppercase tracking-widest mb-4">For professionals</p>
-              <h2 className="text-5xl font-extrabold text-gray-900 mb-5 leading-tight">
+              <h2 className="text-5xl font-extrabold text-white mb-5 leading-tight">
                 Grow Your Business<br />with <span className="logo-script">Tarea</span>
               </h2>
-              <p className="text-gray-600 leading-relaxed mb-8">
+              <p className="text-gray-300 leading-relaxed mb-8">
                 Join thousands of skilled handymen earning more — on their own schedule, with zero marketing spend. We bring the customers, you do the work.
               </p>
               <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
