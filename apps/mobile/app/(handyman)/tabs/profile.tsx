@@ -195,6 +195,6 @@ const s = StyleSheet.create({
   checklistBtnText:  { color: C.sky, fontWeight: "700", fontSize: 14 },
   logoutBtn:         { margin: 16, backgroundColor: "rgba(239,68,68,0.08)", borderRadius: 14, paddingVertical: 14, alignItems: "center", borderWidth: 1, borderColor: "rgba(239,68,68,0.2)" },
   logoutText:        { color: C.red, fontWeight: "700", fontSize: 14 },
-  deleteBtn:         { marginHorizontal: 16, marginBottom: 28, paddingVertical: 10, alignItems: "center" },
-  deleteText:        { color: C.slate500, fontWeight: "600", fontSize: 13, textDecorationLine: "underline" },
+  deleteBtn:         { marginHorizontal: 16, marginBottom: 28, paddingVertical: 14, alignItems: "center", borderRadius: 14, borderWidth: 1, borderColor: "rgba(239,68,68,0.45)", backgroundColor: "rgba(239,68,68,0.06)" },
+  deleteText:        { color: C.red, fontWeight: "700", fontSize: 15 },
 });
