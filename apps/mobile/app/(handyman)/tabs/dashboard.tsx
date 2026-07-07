@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, Alert } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl } from "react-native";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "expo-router";
 import { useCallback } from "react";
@@ -44,34 +44,6 @@ export default function HandymanDashboard() {
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
   const logout = async () => { await clearAuth(); router.replace("/(auth)/landing" as any); };
-
-  const deleteAccount = () => {
-    Alert.alert(
-      "Delete Account",
-      "This permanently deletes your account and personal data (profile, documents, and contact info). This cannot be undone. Continue?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              const res = await api.delete("/account");
-              if (res.ok) {
-                await clearAuth();
-                Alert.alert("Account Deleted", "Your account and personal data have been deleted.");
-                router.replace("/(auth)/landing" as any);
-              } else {
-                Alert.alert("Error", "Could not delete your account. Please try again or contact support@taptarea.com.");
-              }
-            } catch {
-              Alert.alert("Error", "Network error. Please check your connection and try again.");
-            }
-          },
-        },
-      ]
-    );
-  };
 
   if (loading) return <View style={s.center}><ActivityIndicator color={C.sky} size="large" /></View>;
 
@@ -138,6 +110,7 @@ export default function HandymanDashboard() {
           {[
             { label: "Find Jobs",       emoji: "🔍", href: "/(handyman)/tabs/find-jobs" },
             { label: "My Jobs",         emoji: "📋", href: "/(handyman)/tabs/jobs" },
+            { label: "Profile",         emoji: "👤", href: "/(handyman)/tabs/profile" },
             { label: "Setup Checklist", emoji: "✅", href: "/(handyman)/setup-checklist" },
             { label: "Earnings",        emoji: "💰", href: "/(handyman)/tabs/earnings" },
           ].map(a => (
@@ -147,13 +120,6 @@ export default function HandymanDashboard() {
             </TouchableOpacity>
           ))}
         </View>
-
-        {/* Account */}
-        <Text style={s.sectionTitle}>Account</Text>
-        <TouchableOpacity style={s.deleteBtn} onPress={deleteAccount}>
-          <Text style={s.deleteText}>Delete Account</Text>
-        </TouchableOpacity>
-        <View style={{ height: 28 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -168,8 +134,6 @@ const s = StyleSheet.create({
   name:          { color: C.white, fontSize: 26, fontWeight: "900" },
   logoutBtn:     { backgroundColor: "rgba(239,68,68,0.1)", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 7, borderWidth: 1, borderColor: "rgba(239,68,68,0.2)" },
   logoutText:    { color: C.red, fontSize: 13, fontWeight: "600" },
-  deleteBtn:     { marginHorizontal: 16, marginTop: 4, paddingVertical: 14, alignItems: "center", borderRadius: 14, borderWidth: 1, borderColor: "rgba(239,68,68,0.45)", backgroundColor: "rgba(239,68,68,0.06)" },
-  deleteText:    { color: C.red, fontWeight: "700", fontSize: 15 },
   card:          { margin: 16, backgroundColor: "#1E293B", borderRadius: 20, padding: 18, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
   cardTitle:     { color: C.white, fontWeight: "800", fontSize: 16, marginBottom: 2 },
   cardSub:       { color: C.slate400, fontSize: 13, marginBottom: 12 },
