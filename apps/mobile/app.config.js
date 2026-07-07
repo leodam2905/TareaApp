@@ -24,7 +24,7 @@ export default {
         NSLocationWhenInUseUsageDescription: "Tarea uses your location to share your position with the customer while on the way.",
         ITSAppUsesNonExemptEncryption: false,
       },
-      buildNumber: "4",
+      buildNumber: "5",
     },
     android: {
       adaptiveIcon: {
