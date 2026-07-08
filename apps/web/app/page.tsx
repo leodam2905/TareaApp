@@ -240,7 +240,7 @@ export default function HomePage() {
               className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/30 rounded-full px-4 py-1.5 text-white text-sm font-semibold mb-8"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              Trusted by 10,000+ homeowners
+              Verified pros in all 50 states
             </motion.div>
 
             <motion.h1
@@ -363,7 +363,7 @@ export default function HomePage() {
               </div>
               <div className="text-left">
                 <div className="flex text-orange-400 text-sm">★★★★★</div>
-                <p className="text-white/60 text-xs mt-0.5">4.9 · 3,200+ reviews</p>
+                <p className="text-white/60 text-xs mt-0.5">Verified · Licensed &amp; insured</p>
               </div>
             </motion.div>
 
@@ -386,10 +386,10 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { to: 10000, suffix: "+", label: "Happy Customers", icon: Users },
-              { to: 2000,  suffix: "+", label: "Verified Pros",   icon: Shield },
-              { to: 50,    suffix: "+", label: "Service Types",   icon: Wrench },
-              { to: 49,    suffix: "",  label: "Avg Rating ★",    icon: TrendingUp, display: "4.9" },
+              { to: 50,   suffix: "",   label: "States Covered",         icon: Users },
+              { to: 10,   suffix: "+",  label: "Service Categories",     icon: Wrench },
+              { to: 100,  suffix: "%",  label: "Background-Checked Pros", icon: Shield },
+              { to: 24,   suffix: "/7", label: "Customer Support",       icon: TrendingUp },
             ].map(({ to, suffix, label, icon: Icon, display }, i) => (
               <motion.div
                 key={label}
@@ -647,7 +647,7 @@ export default function HomePage() {
                 Grow Your Business<br />with <span className="logo-script">Tarea</span>
               </h2>
               <p className="text-gray-300 leading-relaxed mb-8">
-                Join thousands of skilled handymen earning more — on their own schedule, with zero marketing spend. We bring the customers, you do the work.
+                Join skilled handymen earning more — on their own schedule, with zero marketing spend. We bring the customers, you do the work.
               </p>
               <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
                 <Link
@@ -715,7 +715,7 @@ export default function HomePage() {
             </span>
           </h2>
           <p className="text-orange-100/80 text-xl mb-12 leading-relaxed">
-            Join thousands of homeowners who trust Tarea for every home repair need.
+            Join homeowners who trust Tarea for every home repair need.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }}>

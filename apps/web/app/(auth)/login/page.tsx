@@ -176,10 +176,10 @@ export default function LoginPage() {
       <div className="space-y-6">
         <h2 className="text-4xl font-extrabold text-white leading-tight">Your trusted handyman platform</h2>
         <p className="text-blue-100 text-lg leading-relaxed">
-          Thousands of verified professionals ready to help with any home repair or maintenance task.
+          Verified professionals ready to help with any home repair or maintenance task.
         </p>
         <div className="space-y-4">
-          {["10,000+ satisfied customers", "Background-checked professionals", "On-time guarantee"].map((item) => (
+          {["Available in all 50 states", "Background-checked professionals", "Secure, insured payments"].map((item) => (
             <div key={item} className="flex items-center gap-3">
               <div className="w-5 h-5 bg-tarea-sky rounded-full flex items-center justify-center">
                 <span className="text-white text-xs">✓</span>

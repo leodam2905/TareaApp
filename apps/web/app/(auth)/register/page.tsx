@@ -251,7 +251,7 @@ function RegisterForm() {
           </h2>
           <p className="text-blue-100 text-lg leading-relaxed">
             {role === "HANDYMAN"
-              ? "Join 2,000+ handymen earning great income on their own schedule."
+              ? "Join handymen earning great income on their own schedule."
               : "Book trusted professionals for any home repair in minutes."}
           </p>
           <div className="space-y-4">
