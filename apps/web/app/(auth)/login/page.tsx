@@ -172,7 +172,7 @@ export default function LoginPage() {
   // ────────────────────────────────────────────────────────────────────────
   const leftPanel = (
     <div className="hidden lg:flex lg:w-1/2 bg-hero-gradient flex-col justify-between p-12">
-      <Logo size={36} light />
+      <Logo size={64} light />
       <div className="space-y-6">
         <h2 className="text-4xl font-extrabold text-white leading-tight">Your trusted handyman platform</h2>
         <p className="text-blue-100 text-lg leading-relaxed">
