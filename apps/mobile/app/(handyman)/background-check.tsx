@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Lin
 import { useRouter } from "expo-router";
 import { api } from "@/lib/api";
 import { C } from "@/constants/colors";
+import BackBar from "@/components/ui/BackBar";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BackgroundCheckScreen() {
@@ -29,6 +30,7 @@ export default function BackgroundCheckScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
+      <BackBar />
       <View style={s.container}>
         <Text style={s.title}>Background Check</Text>
         <Text style={s.sub}>Required before you can receive job requests from customers.</Text>

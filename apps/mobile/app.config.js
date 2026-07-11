@@ -4,15 +4,15 @@ export default {
   expo: {
     name: IS_HANDYMAN ? "Tarea Pro" : "Tarea",
     slug: "tarea",
-    version: "1.0.0",
+    version: "1.0.1",
     scheme: IS_HANDYMAN ? "tareapro" : "tarea",
     orientation: "portrait",
     icon: IS_HANDYMAN ? "./assets/icon-pro.png" : "./assets/icon.png",
     userInterfaceStyle: "dark",
     splash: {
-      image: "./assets/splash.png",
+      image: IS_HANDYMAN ? "./assets/splash-pro.png" : "./assets/splash-home.png",
       resizeMode: "contain",
-      backgroundColor: "#0F172A",
+      backgroundColor: "#FFFFFF",
     },
     ios: {
       supportsTablet: false,
@@ -24,7 +24,7 @@ export default {
         NSLocationWhenInUseUsageDescription: "Tarea uses your location to share your position with the customer while on the way.",
         ITSAppUsesNonExemptEncryption: false,
       },
-      buildNumber: "6",
+      buildNumber: "7",
     },
     android: {
       adaptiveIcon: {
@@ -46,7 +46,7 @@ export default {
           apiKey: "AIzaSyCqDnoc2Ga5hTkSXd_xHsrk2Wf7p2bo3eI",
         },
       },
-      versionCode: 1,
+      versionCode: 2,
     },
     plugins: [
       "expo-router",

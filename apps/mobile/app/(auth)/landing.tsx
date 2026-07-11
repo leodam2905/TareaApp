@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Image } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useVideoPlayer, VideoView } from "expo-video";
@@ -43,10 +43,7 @@ export default function LandingScreen() {
         <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
           <View style={s.hero}>
-            <View style={s.logoWrap}>
-              <Text style={s.logoEmoji}>🔧</Text>
-            </View>
-            <Text style={s.brand}>{IS_HANDYMAN ? "Tarea Pro" : "Tarea"}</Text>
+            <Image source={require("../../assets/tarea-logo-white.png")} style={s.logoImg} resizeMode="contain" />
             <Text style={s.tagline}>{IS_HANDYMAN ? "Grow your business, on your schedule" : "Your trusted home service pros"}</Text>
           </View>
 
@@ -135,12 +132,13 @@ export default function LandingScreen() {
 const s = StyleSheet.create({
   root:               { flex: 1, backgroundColor: "#0F172A" },
   video:              { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 },
-  overlay:            { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(15,23,42,0.72)" },
+  overlay:            { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(15,23,42,0.58)" },
   safe:               { flex: 1 },
   scroll:             { flexGrow: 1, paddingHorizontal: 24, paddingBottom: 40, minHeight: height },
 
   hero:               { alignItems: "center", paddingTop: 60, paddingBottom: 48 },
   logoWrap:           { width: 88, height: 88, borderRadius: 28, backgroundColor: "rgba(56,189,248,0.15)", alignItems: "center", justifyContent: "center", marginBottom: 20, borderWidth: 1, borderColor: "rgba(56,189,248,0.3)" },
+  logoImg:            { width: 236, height: 107, marginBottom: 14 },
   logoEmoji:          { fontSize: 42 },
   brand:              { fontSize: 52, fontWeight: "900", color: C.white, letterSpacing: -2 },
   tagline:            { color: "rgba(255,255,255,0.7)", fontSize: 16, marginTop: 8, textAlign: "center" },

@@ -4,6 +4,7 @@ import { useRouter, useFocusEffect } from "expo-router";
 import { useState } from "react";
 import { api } from "@/lib/api";
 import { C } from "@/constants/colors";
+import BackBar from "@/components/ui/BackBar";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type Checklist = { ica: boolean; profile: boolean; services: boolean; availability: boolean; backgroundCheck: boolean; stripe: boolean };
@@ -39,6 +40,7 @@ export default function SetupChecklistScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
+      <BackBar />
       <ScrollView style={s.scroll}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={C.sky} />}>
         <View style={s.header}>

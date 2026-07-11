@@ -6,6 +6,7 @@ import * as SecureStore from "expo-secure-store";
 import { api, API_BASE } from "@/lib/api";
 import { getToken } from "@/lib/storage";
 import { C } from "@/constants/colors";
+import BackBar from "@/components/ui/BackBar";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type DocField = "idFront" | "idBack" | "licenseDoc" | "insuranceDoc" | "avatar";
@@ -88,6 +89,7 @@ export default function OnboardingProfileScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
+      <BackBar />
       <ScrollView style={s.scroll} keyboardShouldPersistTaps="handled">
         <View style={s.header}>
           <Text style={s.title}>Profile & Documents</Text>

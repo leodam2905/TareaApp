@@ -1,9 +1,11 @@
 export const C = {
   ink:       "#0F172A",
+  inkDeep:   "#0A0E1A",
   inkLight:  "#1E293B",
   border:    "#1E293B",
   sky:       "#38BDF8",
   skyDark:   "#0EA5E9",
+  skyDeep:   "#0284C7",
   white:     "#FFFFFF",
   slate300:  "#CBD5E1",
   slate400:  "#94A3B8",

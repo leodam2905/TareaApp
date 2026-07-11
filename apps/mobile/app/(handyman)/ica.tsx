@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, ActivityIn
 import { useRouter } from "expo-router";
 import { api } from "@/lib/api";
 import { C } from "@/constants/colors";
+import BackBar from "@/components/ui/BackBar";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ICAScreen() {
@@ -30,6 +31,7 @@ export default function ICAScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
+      <BackBar />
       <View style={s.container}>
         <Text style={s.title}>Independent Contractor Agreement</Text>
         <Text style={s.sub}>Scroll to the bottom, then sign to continue</Text>

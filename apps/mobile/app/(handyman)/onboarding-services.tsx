@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { api } from "@/lib/api";
 import { C } from "@/constants/colors";
+import BackBar from "@/components/ui/BackBar";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const SERVICES = [
@@ -63,6 +64,7 @@ export default function OnboardingServicesScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
+      <BackBar />
       <View style={s.container}>
         <View style={s.header}>
           <Text style={s.title}>Your Services</Text>
