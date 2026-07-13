@@ -1,7 +1,8 @@
 import { useState, useCallback } from "react";
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, Linking, Alert } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, Linking, Alert, Modal, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { api } from "@/lib/api";
+import { createBankAccountToken } from "@/lib/stripe";
 import { C } from "@/constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -18,6 +19,12 @@ export default function EarningsScreen() {
   const [loading, setLoading]   = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [connecting, setConnecting] = useState(false);
+  const [busyId, setBusyId]     = useState<string | null>(null);
+
+  // Add-bank modal
+  const [showAddBank, setShowAddBank] = useState(false);
+  const [bankForm, setBankForm] = useState({ holderName: "", routing: "", account: "", accountConfirm: "" });
+  const [addingBank, setAddingBank] = useState(false);
 
   const load = useCallback(async () => {
     const [earningsRes, methodsRes] = await Promise.all([
@@ -48,7 +55,68 @@ export default function EarningsScreen() {
     setConnecting(false);
   };
 
-  const openManageMethods = () => Linking.openURL(WEB_PAYOUT_URL);
+  const setBankField = (k: keyof typeof bankForm, v: string) => setBankForm(f => ({ ...f, [k]: v }));
+
+  const submitBank = async () => {
+    const holderName = bankForm.holderName.trim();
+    const routing    = bankForm.routing.trim();
+    const account    = bankForm.account.trim();
+
+    if (!holderName)                        { Alert.alert("Required", "Enter the account holder's name."); return; }
+    if (!/^\d{9}$/.test(routing))           { Alert.alert("Invalid routing number", "The routing number must be exactly 9 digits."); return; }
+    if (account.length < 4)                 { Alert.alert("Invalid account number", "Enter a valid account number."); return; }
+    if (account !== bankForm.accountConfirm.trim()) { Alert.alert("Account numbers don't match", "Re-enter your account number so both fields match."); return; }
+
+    setAddingBank(true);
+    // 1) Tokenize with Stripe (raw details never hit our backend)
+    const tok = await createBankAccountToken({ routingNumber: routing, accountNumber: account, accountHolderName: holderName });
+    if (tok.error || !tok.id) {
+      setAddingBank(false);
+      Alert.alert("Couldn't add bank", tok.error ?? "Please check your details and try again.");
+      return;
+    }
+    // 2) Attach to the connected account (becomes the new default automatically)
+    const res = await api.post("/handyman/payout-methods", { token: tok.id, type: "bank_account" });
+    setAddingBank(false);
+    if (res.ok) {
+      setShowAddBank(false);
+      setBankForm({ holderName: "", routing: "", account: "", accountConfirm: "" });
+      Alert.alert("Bank added", "Your new bank account is now your default payout method.");
+      load();
+    } else {
+      let msg = "Failed to add bank account.";
+      try { msg = (await res.json())?.error ?? msg; } catch {}
+      Alert.alert("Couldn't add bank", msg);
+    }
+  };
+
+  const removeMethod = (id: string, label: string) => {
+    Alert.alert(
+      "Remove payout method",
+      `Remove ${label}? Payouts will no longer be sent here.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Remove", style: "destructive",
+          onPress: async () => {
+            setBusyId(id);
+            const res = await api.delete(`/handyman/payout-methods/${id}`);
+            setBusyId(null);
+            if (res.ok) load();
+            else Alert.alert("Couldn't remove", "You can't remove your only default method. Add another first, then remove this one.");
+          },
+        },
+      ]
+    );
+  };
+
+  const setDefault = async (id: string) => {
+    setBusyId(id);
+    const res = await api.patch(`/handyman/payout-methods/${id}`, {});
+    setBusyId(null);
+    if (res.ok) load();
+    else Alert.alert("Error", "Could not set as default. Try again.");
+  };
 
   if (loading) return <View style={s.center}><ActivityIndicator color={C.sky} size="large" /></View>;
 
@@ -87,18 +155,13 @@ export default function EarningsScreen() {
 
         {/* Payout Methods */}
         <View style={s.card}>
-          <View style={s.cardHeader}>
-            <Text style={s.cardTitle}>Payout Methods</Text>
-            <TouchableOpacity onPress={openManageMethods} style={s.manageBtn}>
-              <Text style={s.manageBtnText}>Manage →</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={s.cardTitle}>Payout Methods</Text>
 
           {/* Stripe identity status */}
           {!stripeActive ? (
             <View style={s.stripeSetup}>
               <Text style={s.stripeSetupText}>
-                Verify your identity with Stripe to enable payouts and add payout methods.
+                Verify your identity with Stripe to enable payouts and add a bank account.
               </Text>
               <TouchableOpacity
                 style={[s.stripeBtn, connecting && s.stripeBtnDisabled]}
@@ -120,6 +183,41 @@ export default function EarningsScreen() {
                 </View>
               </View>
 
+              {/* Bank accounts */}
+              <View style={s.methodSection}>
+                <View style={s.sectionHeader}>
+                  <Text style={s.methodSectionLabel}>BANK ACCOUNTS</Text>
+                  <TouchableOpacity onPress={() => setShowAddBank(true)} style={s.addBtn}>
+                    <Text style={s.addBtnText}>+ Add bank</Text>
+                  </TouchableOpacity>
+                </View>
+                {banks.length === 0 ? (
+                  <Text style={s.emptyLine}>No bank account yet. Add one for free weekly payouts.</Text>
+                ) : banks.map(bank => (
+                  <View key={bank.id} style={s.methodRow}>
+                    <View style={[s.methodIcon, { backgroundColor: "#38BDF811", borderColor: "#38BDF844" }]}>
+                      <Text style={{ fontSize: 16 }}>🏦</Text>
+                    </View>
+                    <View style={s.methodInfo}>
+                      <Text style={s.methodName}>{bank.bankName ?? "Bank"} ···· {bank.last4}</Text>
+                      {bank.routingNumber && (
+                        <Text style={s.methodSub}>Routing ···{bank.routingNumber.slice(-4)}</Text>
+                      )}
+                    </View>
+                    {bank.isDefault ? (
+                      <View style={s.defaultBadge}><Text style={s.defaultBadgeText}>Default</Text></View>
+                    ) : (
+                      <TouchableOpacity onPress={() => setDefault(bank.id)} disabled={busyId === bank.id} style={s.linkBtn}>
+                        <Text style={s.linkBtnText}>Set default</Text>
+                      </TouchableOpacity>
+                    )}
+                    <TouchableOpacity onPress={() => removeMethod(bank.id, `${bank.bankName ?? "bank"} ···· ${bank.last4}`)} disabled={busyId === bank.id} style={s.removeBtn}>
+                      {busyId === bank.id ? <ActivityIndicator color={C.red} size="small" /> : <Text style={s.removeBtnText}>Remove</Text>}
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+
               {/* Debit cards */}
               {debitCards.length > 0 && (
                 <View style={s.methodSection}>
@@ -133,54 +231,68 @@ export default function EarningsScreen() {
                         <Text style={s.methodName}>{card.brand} ···· {card.last4}</Text>
                         <Text style={s.methodSub}>Expires {card.expMonth}/{card.expYear}</Text>
                       </View>
-                      {card.isDefault && (
-                        <View style={s.defaultBadge}>
-                          <Text style={s.defaultBadgeText}>Default</Text>
-                        </View>
+                      {card.isDefault ? (
+                        <View style={s.defaultBadge}><Text style={s.defaultBadgeText}>Default</Text></View>
+                      ) : (
+                        <TouchableOpacity onPress={() => setDefault(card.id)} disabled={busyId === card.id} style={s.linkBtn}>
+                          <Text style={s.linkBtnText}>Set default</Text>
+                        </TouchableOpacity>
                       )}
+                      <TouchableOpacity onPress={() => removeMethod(card.id, `${card.brand} ···· ${card.last4}`)} disabled={busyId === card.id} style={s.removeBtn}>
+                        {busyId === card.id ? <ActivityIndicator color={C.red} size="small" /> : <Text style={s.removeBtnText}>Remove</Text>}
+                      </TouchableOpacity>
                     </View>
                   ))}
                 </View>
               )}
 
-              {/* Bank accounts */}
-              {banks.length > 0 && (
-                <View style={s.methodSection}>
-                  <Text style={s.methodSectionLabel}>BANK ACCOUNTS</Text>
-                  {banks.map(bank => (
-                    <View key={bank.id} style={s.methodRow}>
-                      <View style={[s.methodIcon, { backgroundColor: "#38BDF811", borderColor: "#38BDF844" }]}>
-                        <Text style={{ fontSize: 16 }}>🏦</Text>
-                      </View>
-                      <View style={s.methodInfo}>
-                        <Text style={s.methodName}>{bank.bankName ?? "Bank"} ···· {bank.last4}</Text>
-                        {bank.routingNumber && (
-                          <Text style={s.methodSub}>Routing ···{bank.routingNumber.slice(-4)}</Text>
-                        )}
-                      </View>
-                      {bank.isDefault && (
-                        <View style={s.defaultBadge}>
-                          <Text style={s.defaultBadgeText}>Default</Text>
-                        </View>
-                      )}
-                    </View>
-                  ))}
-                </View>
-              )}
+              {/* Add a debit card (needs card entry — handled on secure web page) */}
+              <TouchableOpacity onPress={() => Linking.openURL(WEB_PAYOUT_URL)} style={s.webLink}>
+                <Text style={s.webLinkText}>Add or manage a debit card on the web →</Text>
+              </TouchableOpacity>
 
-              {/* Empty state */}
               {hasNoMethods && (
-                <View style={s.emptyMethods}>
-                  <Text style={s.emptyMethodsText}>No payout methods added yet.</Text>
-                  <TouchableOpacity onPress={openManageMethods} style={s.addMethodBtn}>
-                    <Text style={s.addMethodBtnText}>+ Add Debit Card or Bank Account</Text>
-                  </TouchableOpacity>
-                </View>
+                <Text style={s.emptyMethodsText}>Add a bank account above to start receiving payouts.</Text>
               )}
             </>
           )}
         </View>
       </ScrollView>
+
+      {/* Add bank account modal */}
+      <Modal visible={showAddBank} animationType="slide" transparent onRequestClose={() => setShowAddBank(false)}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={s.modalWrap}>
+          <View style={s.modalCard}>
+            <View style={s.modalHeader}>
+              <Text style={s.modalTitle}>Add Bank Account</Text>
+              <TouchableOpacity onPress={() => setShowAddBank(false)} disabled={addingBank}>
+                <Text style={s.modalClose}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={s.modalSub}>US bank accounts only. Your details go directly to Stripe — Tarea never stores your account number.</Text>
+
+            <Text style={s.modalLabel}>Account holder name</Text>
+            <TextInput style={s.modalInput} value={bankForm.holderName} onChangeText={v => setBankField("holderName", v)}
+              placeholder="Full name on the account" placeholderTextColor={C.slate500} autoCapitalize="words" />
+
+            <Text style={s.modalLabel}>Routing number (9 digits)</Text>
+            <TextInput style={s.modalInput} value={bankForm.routing} onChangeText={v => setBankField("routing", v.replace(/[^0-9]/g, ""))}
+              placeholder="123456789" placeholderTextColor={C.slate500} keyboardType="number-pad" maxLength={9} />
+
+            <Text style={s.modalLabel}>Account number</Text>
+            <TextInput style={s.modalInput} value={bankForm.account} onChangeText={v => setBankField("account", v.replace(/[^0-9]/g, ""))}
+              placeholder="Account number" placeholderTextColor={C.slate500} keyboardType="number-pad" secureTextEntry />
+
+            <Text style={s.modalLabel}>Confirm account number</Text>
+            <TextInput style={s.modalInput} value={bankForm.accountConfirm} onChangeText={v => setBankField("accountConfirm", v.replace(/[^0-9]/g, ""))}
+              placeholder="Re-enter account number" placeholderTextColor={C.slate500} keyboardType="number-pad" />
+
+            <TouchableOpacity style={[s.modalBtn, addingBank && s.stripeBtnDisabled]} onPress={submitBank} disabled={addingBank}>
+              {addingBank ? <ActivityIndicator color={C.ink} /> : <Text style={s.modalBtnText}>Add Bank Account</Text>}
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -200,10 +312,7 @@ const s = StyleSheet.create({
   statLabel:          { color: C.slate400, fontSize: 12 },
   statValue:          { fontSize: 24, fontWeight: "900", marginTop: 4 },
   card:               { margin: 16, backgroundColor: "#1E293B", borderRadius: 20, padding: 20, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
-  cardHeader:         { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 14 },
-  cardTitle:          { color: C.white, fontWeight: "800", fontSize: 16 },
-  manageBtn:          { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10, borderWidth: 1, borderColor: "rgba(56,189,248,0.3)", backgroundColor: "rgba(56,189,248,0.08)" },
-  manageBtnText:      { color: C.sky, fontSize: 12, fontWeight: "700" },
+  cardTitle:          { color: C.white, fontWeight: "800", fontSize: 16, marginBottom: 14 },
   stripeSetup:        { gap: 14 },
   stripeSetupText:    { color: C.slate400, fontSize: 14, lineHeight: 20 },
   stripeBtn:          { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 14, alignItems: "center" },
@@ -213,16 +322,34 @@ const s = StyleSheet.create({
   infoChip:           { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, borderWidth: 1 },
   infoChipText:       { fontSize: 12, fontWeight: "600" },
   methodSection:      { marginBottom: 14 },
-  methodSectionLabel: { color: C.slate500, fontSize: 10, fontWeight: "700", letterSpacing: 1, marginBottom: 8 },
-  methodRow:          { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.05)" },
+  sectionHeader:      { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 },
+  methodSectionLabel: { color: C.slate500, fontSize: 10, fontWeight: "700", letterSpacing: 1 },
+  addBtn:             { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10, borderWidth: 1, borderColor: "rgba(56,189,248,0.3)", backgroundColor: "rgba(56,189,248,0.08)" },
+  addBtnText:         { color: C.sky, fontSize: 12, fontWeight: "700" },
+  emptyLine:          { color: C.slate400, fontSize: 13, paddingVertical: 6 },
+  methodRow:          { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.05)" },
   methodIcon:         { width: 36, height: 36, borderRadius: 10, borderWidth: 1, alignItems: "center", justifyContent: "center" },
   methodInfo:         { flex: 1 },
   methodName:         { color: C.white, fontWeight: "700", fontSize: 14 },
   methodSub:          { color: C.slate400, fontSize: 11, marginTop: 1 },
   defaultBadge:       { backgroundColor: "rgba(16,185,129,0.12)", borderWidth: 1, borderColor: "rgba(16,185,129,0.25)", borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 },
   defaultBadgeText:   { color: C.emerald, fontSize: 10, fontWeight: "700" },
-  emptyMethods:       { alignItems: "center", paddingVertical: 16, gap: 12 },
-  emptyMethodsText:   { color: C.slate400, fontSize: 14 },
-  addMethodBtn:       { backgroundColor: "rgba(56,189,248,0.1)", borderWidth: 1, borderColor: "rgba(56,189,248,0.3)", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 10 },
-  addMethodBtnText:   { color: C.sky, fontWeight: "700", fontSize: 13 },
+  linkBtn:            { paddingHorizontal: 8, paddingVertical: 4 },
+  linkBtnText:        { color: C.sky, fontSize: 11, fontWeight: "700" },
+  removeBtn:          { paddingHorizontal: 8, paddingVertical: 4, minWidth: 54, alignItems: "center" },
+  removeBtnText:      { color: C.red, fontSize: 11, fontWeight: "700" },
+  webLink:            { marginTop: 6, paddingVertical: 8 },
+  webLinkText:        { color: C.slate400, fontSize: 12, textDecorationLine: "underline" },
+  emptyMethodsText:   { color: C.slate400, fontSize: 13, textAlign: "center", paddingVertical: 8 },
+  // Modal
+  modalWrap:          { flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "flex-end" },
+  modalCard:          { backgroundColor: "#0F172A", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 22, paddingBottom: 34, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
+  modalHeader:        { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 },
+  modalTitle:         { color: C.white, fontSize: 20, fontWeight: "900" },
+  modalClose:         { color: C.slate400, fontSize: 20, fontWeight: "700", padding: 4 },
+  modalSub:           { color: C.slate400, fontSize: 12, lineHeight: 18, marginBottom: 16 },
+  modalLabel:         { color: C.slate400, fontSize: 12, fontWeight: "600", marginBottom: 6, marginTop: 10 },
+  modalInput:         { backgroundColor: "rgba(255,255,255,0.07)", borderWidth: 1, borderColor: "rgba(255,255,255,0.12)", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, color: C.white, fontSize: 15 },
+  modalBtn:           { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 15, alignItems: "center", marginTop: 22 },
+  modalBtnText:       { color: C.ink, fontWeight: "800", fontSize: 16 },
 });
