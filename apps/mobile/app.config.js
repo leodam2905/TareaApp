@@ -24,7 +24,7 @@ export default {
         NSLocationWhenInUseUsageDescription: "Tarea uses your location to share your position with the customer while on the way.",
         ITSAppUsesNonExemptEncryption: false,
       },
-      buildNumber: "7",
+      buildNumber: "8",
     },
     android: {
       adaptiveIcon: {
@@ -46,7 +46,7 @@ export default {
           apiKey: "AIzaSyCqDnoc2Ga5hTkSXd_xHsrk2Wf7p2bo3eI",
         },
       },
-      versionCode: 2,
+      versionCode: 3,
     },
     plugins: [
       "expo-router",
