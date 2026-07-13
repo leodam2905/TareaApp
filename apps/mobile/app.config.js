@@ -5,6 +5,10 @@ export default {
     name: IS_HANDYMAN ? "Tarea Pro" : "Tarea",
     slug: "tarea",
     version: "1.0.1",
+    runtimeVersion: { policy: "appVersion" },
+    updates: {
+      url: "https://u.expo.dev/3a6f73e3-7b6a-4a56-ae3d-cfbe407bd26b",
+    },
     scheme: IS_HANDYMAN ? "tareapro" : "tarea",
     orientation: "portrait",
     icon: IS_HANDYMAN ? "./assets/icon-pro.png" : "./assets/icon.png",
@@ -24,7 +28,7 @@ export default {
         NSLocationWhenInUseUsageDescription: "Tarea uses your location to share your position with the customer while on the way.",
         ITSAppUsesNonExemptEncryption: false,
       },
-      buildNumber: "9",
+      buildNumber: "10",
     },
     android: {
       adaptiveIcon: {
@@ -46,7 +50,7 @@ export default {
           apiKey: "AIzaSyCqDnoc2Ga5hTkSXd_xHsrk2Wf7p2bo3eI",
         },
       },
-      versionCode: 4,
+      versionCode: 5,
     },
     plugins: [
       "expo-router",
