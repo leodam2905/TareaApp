@@ -4,8 +4,8 @@ import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  motion, useScroll, useTransform, useInView,
-  useMotionValue, useSpring, animate,
+  motion, MotionConfig, useScroll, useTransform, useInView,
+  useMotionValue, useSpring, useReducedMotion, animate,
 } from "framer-motion";
 import {
   Star, Shield, Clock, CheckCircle2, ArrowRight,
@@ -59,13 +59,20 @@ const steps = [
   { n: "04", title: "Job Done Right",    desc: "Your handyman arrives on time and leaves your home spotless." },
 ];
 
-const reviews = [
-  { name: "Maria L.",   role: "Homeowner",         rating: 5, text: "The plumber fixed everything in under an hour. Tarea is now my go-to for any home issue." },
-  { name: "James K.",   role: "Property Manager",  rating: 5, text: "I manage 12 units — Tarea saves me hours every week. Reliable, transparent, and fast." },
-  { name: "Sofia R.",   role: "First-time User",   rating: 5, text: "The electrician was professional and thorough. Will definitely book again." },
-  { name: "Carlos M.",  role: "Homeowner",         rating: 5, text: "Incredible service. The handyman arrived early and fixed three things I thought would take days." },
-  { name: "Aisha T.",   role: "Interior Designer", rating: 5, text: "My clients rave about my renovation projects. Tarea pros are always top-tier." },
-  { name: "Derek W.",   role: "Landlord",          rating: 5, text: "Tarea handymen are so reliable I've stopped keeping my own maintenance guy on retainer." },
+const highlights = [
+  { title: "Verified professionals", text: "Every pro is identity-verified and background-checked before they can accept a single job." },
+  { title: "Upfront pricing",        text: "See transparent hourly ranges before you book — no surprise fees once the work is done." },
+  { title: "Book in minutes",        text: "Browse categories, pick a pro, and confirm a time slot in just a few taps." },
+  { title: "Or let us match you",    text: "Not sure who to pick? Tell us the job and we'll source and vet the right pro for you." },
+  { title: "Secure by design",       text: "Payments, messaging, and scheduling all happen safely inside the platform." },
+  { title: "Real support",           text: "Questions before or after a job? Our support team and AI assistant are here to help." },
+];
+
+const stats: { to?: number; suffix?: string; display?: string; label: string; icon: React.ElementType }[] = [
+  { display: "Upfront", label: "Transparent Pricing",  icon: CheckCircle2 },
+  { to: 10, suffix: "+",  label: "Service Categories",  icon: Wrench },
+  { to: 100, suffix: "%", label: "Background-Checked",  icon: Shield },
+  { to: 24, suffix: "/7", label: "AI Support",          icon: Sparkles },
 ];
 
 const trust = [
@@ -131,12 +138,14 @@ function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
   const [val, setVal] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (!inView) return;
+    if (reduceMotion) { setVal(to); return; }
     const c = animate(0, to, { duration: 2, ease: "easeOut", onUpdate: v => setVal(Math.round(v)) });
     return c.stop;
-  }, [inView, to]);
+  }, [inView, to, reduceMotion]);
 
   return <span ref={ref}>{val.toLocaleString()}{suffix}</span>;
 }
@@ -144,7 +153,7 @@ function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
 // ─── Review marquee ───────────────────────────────────────────────────────────
 
 function Marquee() {
-  const items = [...reviews, ...reviews];
+  const items = [...highlights, ...highlights];
   return (
     <div className="overflow-hidden">
       <motion.div
@@ -152,25 +161,50 @@ function Marquee() {
         transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
         className="flex gap-6 w-max"
       >
-        {items.map((r, i) => (
+        {items.map((h, i) => (
           <div
             key={i}
             className="w-80 flex-shrink-0 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm"
           >
-            <div className="flex text-orange-400 mb-3 text-sm">{"★".repeat(r.rating)}</div>
-            <p className="text-gray-600 text-sm leading-relaxed mb-5">"{r.text}"</p>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-xs font-bold">
-                {r.name[0]}
-              </div>
-              <div>
-                <p className="text-gray-900 font-semibold text-sm">{r.name}</p>
-                <p className="text-gray-400 text-xs">{r.role}</p>
-              </div>
+            <div className="w-10 h-10 rounded-xl bg-orange-100 border border-orange-200 flex items-center justify-center mb-4">
+              <CheckCircle2 className="w-5 h-5 text-orange-500" />
             </div>
+            <h3 className="text-gray-900 font-bold text-base mb-2">{h.title}</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">{h.text}</p>
           </div>
         ))}
       </motion.div>
+    </div>
+  );
+}
+
+// ─── Coming-soon store badges (app not yet publicly listed) ────────────────────
+
+function StoreBadgePair({ tone }: { tone: "dark" | "glass" }) {
+  const style =
+    tone === "dark"
+      ? "bg-black/40 border-white/15"
+      : "bg-white/5 border-white/15";
+  const badges = [
+    { big: "App Store",   path: "M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" },
+    { big: "Google Play", path: "M3.18 23.76c.33.18.7.22 1.06.14L14.84 12 11 8.16 3.18 23.76zm17.34-10.93c.36-.26.6-.67.6-1.17 0-.46-.21-.86-.54-1.12l-2.29-1.33-4.14 4.14 3.8 3.8 2.57-4.32zM3.54.26C3.2.06 2.82 0 2.47.14L13.42 12 3.54.26zM2.47.14L13.42 12l1.42-1.42L3.6.05C3.23-.09 2.82.01 2.47.14z" },
+  ];
+  return (
+    <div className="flex items-center gap-3 flex-wrap justify-center">
+      {badges.map((b) => (
+        <div
+          key={b.big}
+          aria-disabled="true"
+          title="Mobile app coming soon"
+          className={`flex items-center gap-2.5 border ${style} text-white/75 px-5 py-2.5 rounded-xl cursor-default select-none`}
+        >
+          <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current flex-shrink-0 opacity-70"><path d={b.path} /></svg>
+          <div className="text-left">
+            <div className="text-[9px] text-white/50 leading-none">Coming soon</div>
+            <div className="text-sm font-bold leading-tight">{b.big}</div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -193,6 +227,7 @@ export default function HomePage() {
   };
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden">
 
       {/* ── Navbar ── */}
@@ -205,10 +240,10 @@ export default function HomePage() {
         <div className="mx-4 mt-4">
           <div className="max-w-6xl mx-auto bg-white/90 backdrop-blur-xl border border-gray-200 rounded-2xl px-6 h-14 flex items-center justify-between shadow-[0_4px_20px_rgba(15,23,42,0.06)]">
             <Link href="/" className="flex items-center">
-              <img src="/tarea-logo.png?v=2" alt="Tarea" className="h-8 w-auto" />
+              <img src="/tarea-logo-home.png?v=1" alt="Tarea" className="h-9 w-auto" />
             </Link>
             <div className="hidden md:flex items-center gap-7 text-sm text-gray-500">
-              {[["Services", "#services"], ["How it works", "#how-it-works"], ["Reviews", "#reviews"]].map(([l, h]) => (
+              {[["Services", "#services"], ["How it works", "#how-it-works"], ["Why Tarea", "#reviews"]].map(([l, h]) => (
                 <a key={l} href={h} className="hover:text-gray-900 transition-colors">{l}</a>
               ))}
             </div>
@@ -240,15 +275,15 @@ export default function HomePage() {
               className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/30 rounded-full px-4 py-1.5 text-white text-sm font-semibold mb-8"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              Verified pros in all 50 states
+              Verified, background-checked pros
             </motion.div>
 
             <motion.h1
               initial={mounted ? { opacity: 0, y: 30 } : false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.8 }}
-              className="text-5xl sm:text-6xl lg:text-7xl mb-6 text-white"
-              style={{ fontFamily: '"Great Vibes", cursive', lineHeight: 1.25 }}
+              className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 text-white"
+              style={{ lineHeight: 1.1 }}
             >
               Your Home,{" "}
               <span
@@ -322,23 +357,8 @@ export default function HomePage() {
               transition={{ delay: 0.75 }}
               className="flex flex-col items-center gap-3 mb-10"
             >
-              <p className="text-white/50 text-xs font-medium uppercase tracking-widest">Also available on</p>
-              <div className="flex items-center gap-3 flex-wrap justify-center">
-                <a href="#" className="flex items-center gap-2.5 bg-black/70 hover:bg-black border border-white/20 backdrop-blur-sm text-white px-5 py-2.5 rounded-xl transition-all duration-200 hover:border-white/40">
-                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white flex-shrink-0"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-                  <div className="text-left">
-                    <div className="text-[9px] text-white/60 leading-none">Download on the</div>
-                    <div className="text-sm font-bold leading-tight">App Store</div>
-                  </div>
-                </a>
-                <a href="#" className="flex items-center gap-2.5 bg-black/70 hover:bg-black border border-white/20 backdrop-blur-sm text-white px-5 py-2.5 rounded-xl transition-all duration-200 hover:border-white/40">
-                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white flex-shrink-0"><path d="M3.18 23.76c.33.18.7.22 1.06.14L14.84 12 11 8.16 3.18 23.76zm17.34-10.93c.36-.26.6-.67.6-1.17 0-.46-.21-.86-.54-1.12l-2.29-1.33-4.14 4.14 3.8 3.8 2.57-4.32zM3.54.26C3.2.06 2.82 0 2.47.14L13.42 12 3.54.26zM2.47.14L13.42 12l1.42-1.42L3.6.05C3.23-.09 2.82.01 2.47.14z"/></svg>
-                  <div className="text-left">
-                    <div className="text-[9px] text-white/60 leading-none">Get it on</div>
-                    <div className="text-sm font-bold leading-tight">Google Play</div>
-                  </div>
-                </a>
-              </div>
+              <p className="text-white/50 text-xs font-medium uppercase tracking-widest">Mobile apps coming soon</p>
+              <StoreBadgePair tone="dark" />
             </motion.div>
 
             {/* Social proof */}
@@ -385,12 +405,7 @@ export default function HomePage() {
       <section className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl border border-gray-200 bg-gray-50 overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { to: 50,   suffix: "",   label: "States Covered",         icon: Users },
-              { to: 10,   suffix: "+",  label: "Service Categories",     icon: Wrench },
-              { to: 100,  suffix: "%",  label: "Background-Checked Pros", icon: Shield },
-              { to: 24,   suffix: "/7", label: "Customer Support",       icon: TrendingUp },
-            ].map(({ to, suffix, label, icon: Icon, display }, i) => (
+            {stats.map(({ to, suffix, label, icon: Icon, display }, i) => (
               <motion.div
                 key={label}
                 initial={{ opacity: 0, y: 20 }}
@@ -403,7 +418,7 @@ export default function HomePage() {
                   <Icon className="w-5 h-5 text-orange-500" />
                 </div>
                 <p className="text-4xl font-extrabold text-gray-900 mb-1">
-                  {display ?? <Counter to={to} suffix={suffix} />}
+                  {display ?? <Counter to={to ?? 0} suffix={suffix} />}
                 </p>
                 <p className="text-gray-500 text-sm">{label}</p>
               </motion.div>
@@ -618,7 +633,7 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="text-orange-500 text-sm font-semibold uppercase tracking-widest mb-3"
             >
-              Customer love
+              Why Tarea
             </motion.p>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -626,7 +641,7 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="text-5xl font-extrabold text-gray-900"
             >
-              What People Are Saying
+              Built Around Trust
             </motion.h2>
           </div>
         </div>
@@ -736,23 +751,8 @@ export default function HomePage() {
             </motion.div>
           </div>
           <div className="flex flex-col items-center gap-3">
-            <p className="text-orange-200/60 text-xs font-medium uppercase tracking-widest">Get the app</p>
-            <div className="flex items-center gap-3 flex-wrap justify-center">
-              <a href="#" className="flex items-center gap-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-5 py-2.5 rounded-xl transition-all duration-200">
-                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white flex-shrink-0"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-                <div className="text-left">
-                  <div className="text-[9px] text-white/60 leading-none">Download on the</div>
-                  <div className="text-sm font-bold leading-tight">App Store</div>
-                </div>
-              </a>
-              <a href="#" className="flex items-center gap-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-5 py-2.5 rounded-xl transition-all duration-200">
-                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white flex-shrink-0"><path d="M3.18 23.76c.33.18.7.22 1.06.14L14.84 12 11 8.16 3.18 23.76zm17.34-10.93c.36-.26.6-.67.6-1.17 0-.46-.21-.86-.54-1.12l-2.29-1.33-4.14 4.14 3.8 3.8 2.57-4.32zM3.54.26C3.2.06 2.82 0 2.47.14L13.42 12 3.54.26zM2.47.14L13.42 12l1.42-1.42L3.6.05C3.23-.09 2.82.01 2.47.14z"/></svg>
-                <div className="text-left">
-                  <div className="text-[9px] text-white/60 leading-none">Get it on</div>
-                  <div className="text-sm font-bold leading-tight">Google Play</div>
-                </div>
-              </a>
-            </div>
+            <p className="text-orange-200/60 text-xs font-medium uppercase tracking-widest">Mobile apps coming soon</p>
+            <StoreBadgePair tone="glass" />
           </div>
         </motion.div>
       </section>
@@ -763,7 +763,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-4 gap-10 mb-12">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <img src="/tarea-logo.png?v=2" alt="Tarea" className="h-8 w-auto" />
+                <img src="/tarea-logo-home.png?v=1" alt="Tarea" className="h-9 w-auto" />
               </div>
               <p className="text-gray-500 text-sm leading-relaxed">
                 Your trusted platform for home maintenance and repair services.
@@ -782,8 +782,13 @@ export default function HomePage() {
             <div>
               <h4 className="text-orange-600 font-bold text-sm uppercase tracking-wider mb-4">Company</h4>
               <ul className="space-y-2.5 text-gray-500 text-sm">
-                {["About Us", "Careers", "Blog", "Press", "Partners"].map(item => (
-                  <li key={item}><Link href="#" className="hover:text-gray-900 transition-colors">{item}</Link></li>
+                {[
+                  { label: "Contact & Support", href: "/contact" },
+                  { label: "Privacy Policy",    href: "/privacy" },
+                  { label: "Terms of Service",  href: "/terms" },
+                  { label: "Delete Account",    href: "/delete-account" },
+                ].map(({ label, href }) => (
+                  <li key={label}><Link href={href} className="hover:text-gray-900 transition-colors">{label}</Link></li>
                 ))}
               </ul>
             </div>
@@ -796,20 +801,18 @@ export default function HomePage() {
               </ul>
               <h4 className="text-orange-600 font-bold text-sm uppercase tracking-wider mb-3">Get the App</h4>
               <div className="flex flex-col gap-2">
-                <a href="#" className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-3 py-2 rounded-lg transition-colors w-fit">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white flex-shrink-0"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-                  <div>
-                    <div className="text-[8px] text-white/60 leading-none">Download on the</div>
-                    <div className="text-xs font-bold leading-tight">App Store</div>
+                {[
+                  { big: "App Store",   path: "M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" },
+                  { big: "Google Play", path: "M3.18 23.76c.33.18.7.22 1.06.14L14.84 12 11 8.16 3.18 23.76zm17.34-10.93c.36-.26.6-.67.6-1.17 0-.46-.21-.86-.54-1.12l-2.29-1.33-4.14 4.14 3.8 3.8 2.57-4.32zM3.54.26C3.2.06 2.82 0 2.47.14L13.42 12 3.54.26zM2.47.14L13.42 12l1.42-1.42L3.6.05C3.23-.09 2.82.01 2.47.14z" },
+                ].map((b) => (
+                  <div key={b.big} aria-disabled="true" title="Mobile app coming soon" className="flex items-center gap-2 bg-gray-900/80 text-white/75 px-3 py-2 rounded-lg w-fit cursor-default select-none">
+                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current flex-shrink-0 opacity-70"><path d={b.path}/></svg>
+                    <div>
+                      <div className="text-[8px] text-white/50 leading-none">Coming soon</div>
+                      <div className="text-xs font-bold leading-tight">{b.big}</div>
+                    </div>
                   </div>
-                </a>
-                <a href="#" className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-3 py-2 rounded-lg transition-colors w-fit">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white flex-shrink-0"><path d="M3.18 23.76c.33.18.7.22 1.06.14L14.84 12 11 8.16 3.18 23.76zm17.34-10.93c.36-.26.6-.67.6-1.17 0-.46-.21-.86-.54-1.12l-2.29-1.33-4.14 4.14 3.8 3.8 2.57-4.32zM3.54.26C3.2.06 2.82 0 2.47.14L13.42 12 3.54.26zM2.47.14L13.42 12l1.42-1.42L3.6.05C3.23-.09 2.82.01 2.47.14z"/></svg>
-                  <div>
-                    <div className="text-[8px] text-white/60 leading-none">Get it on</div>
-                    <div className="text-xs font-bold leading-tight">Google Play</div>
-                  </div>
-                </a>
+                ))}
               </div>
             </div>
           </div>
@@ -831,5 +834,6 @@ export default function HomePage() {
         }
       `}</style>
     </div>
+    </MotionConfig>
   );
 }

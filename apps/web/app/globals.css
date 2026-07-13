@@ -26,6 +26,30 @@
   50%       { transform: translateY(-10px); }
 }
 
+/* Respect users who ask for less motion (OS-level setting).
+   Neutralizes CSS keyframe animations (shimmer, float) and smooth scroll;
+   framer-motion transforms are handled via <MotionConfig reducedMotion="user">. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Visible keyboard focus for interactive elements (mouse clicks unaffected).
+   Uses the brand orange with an offset so it reads on both light and dark sections. */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: 2px solid #FB923C;
+  outline-offset: 2px;
+}
+
 /* ── Theme variables ────────────────────────────────────────────────────── */
 :root {
   /* Day (default) */
