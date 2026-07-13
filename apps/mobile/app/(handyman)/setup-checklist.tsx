@@ -7,7 +7,10 @@ import { C } from "@/constants/colors";
 import BackBar from "@/components/ui/BackBar";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-type Checklist = { ica: boolean; profile: boolean; services: boolean; availability: boolean; backgroundCheck: boolean; stripe: boolean };
+type Checklist = { ica: boolean; profile: boolean; services: boolean; availability: boolean; backgroundCheck: boolean; stripe: boolean; backgroundCheckStatus?: string };
+
+const STEP_KEYS = ["ica", "profile", "services", "availability", "backgroundCheck", "stripe"] as const;
+const BG_PENDING = ["DEFERRED", "PAID", "IN_PROGRESS"];
 
 const STEPS = [
   { key: "ica",             label: "Sign Contractor Agreement",  desc: "Read and e-sign the Independent Contractor Agreement.",            href: "/(handyman)/ica",                       requires: null },
@@ -34,7 +37,19 @@ export default function SetupChecklistScreen() {
 
   if (loading) return <View style={s.center}><ActivityIndicator color={C.sky} size="large" /></View>;
 
-  const completedCount = checklist ? Object.values(checklist).filter(Boolean).length : 0;
+  // Background check is only truly "complete" once admin-approves it (PASSED).
+  // Paid/deferred counts toward unlocking later steps but shows as "Pending".
+  const bgStatus    = checklist?.backgroundCheckStatus;
+  const hasBgStatus = typeof bgStatus === "string";
+  const bgComplete  = bgStatus === "PASSED";
+  const bgPending   = hasBgStatus && BG_PENDING.includes(bgStatus);
+
+  const isStepComplete = (key: (typeof STEP_KEYS)[number]) => {
+    if (key === "backgroundCheck") return hasBgStatus ? bgComplete : (checklist?.backgroundCheck ?? false);
+    return checklist?.[key] ?? false;
+  };
+
+  const completedCount = checklist ? STEP_KEYS.filter(isStepComplete).length : 0;
   const allDone = completedCount === 6;
   const pct = (completedCount / 6) * 100;
 
@@ -62,29 +77,41 @@ export default function SetupChecklistScreen() {
         {/* Steps */}
         <View style={s.steps}>
           {STEPS.map((step, index) => {
-            const done   = checklist?.[step.key as keyof Checklist] ?? false;
+            const isBg   = step.key === "backgroundCheck";
+            const done   = isStepComplete(step.key as (typeof STEP_KEYS)[number]);
+            const pending = isBg && bgPending && !bgComplete;
             const locked = step.requires !== null && !(checklist?.[step.requires as keyof Checklist] ?? false);
+
+            const label = isBg && bgComplete ? "Background Check Complete"
+                        : isBg && pending    ? "Background Check Pending"
+                        : step.label;
+            const desc  = isBg && bgComplete ? "Approved by Tarea — you're fully verified."
+                        : isBg && pending    ? "Payment received. Your check is under review — you can accept jobs while it processes."
+                        : step.desc;
+
             return (
               <TouchableOpacity
                 key={step.key}
-                style={[s.stepCard, done && s.stepDone, locked && s.stepLocked]}
-                onPress={() => !done && !locked && router.push(step.href as any)}
-                disabled={done || locked}
+                style={[s.stepCard, done && s.stepDone, pending && s.stepPending, locked && s.stepLocked]}
+                onPress={() => !done && !pending && !locked && router.push(step.href as any)}
+                disabled={done || pending || locked}
               >
                 {/* Circle */}
-                <View style={[s.circle, done && s.circleDone, locked && s.circleLocked]}>
-                  <Text style={s.circleText}>{done ? "✓" : locked ? "🔒" : String(index + 1)}</Text>
+                <View style={[s.circle, done && s.circleDone, pending && s.circlePending, locked && s.circleLocked]}>
+                  <Text style={s.circleText}>{done ? "✓" : pending ? "⏳" : locked ? "🔒" : String(index + 1)}</Text>
                 </View>
 
                 {/* Text */}
                 <View style={s.stepBody}>
-                  <Text style={[s.stepLabel, done && s.stepLabelDone, locked && s.stepLabelLocked]}>{step.label}</Text>
-                  <Text style={s.stepDesc}>{step.desc}</Text>
+                  <Text style={[s.stepLabel, done && s.stepLabelDone, locked && s.stepLabelLocked]}>{label}</Text>
+                  <Text style={s.stepDesc}>{desc}</Text>
                 </View>
 
                 {/* Badge */}
                 {done ? (
                   <View style={s.doneBadge}><Text style={s.doneBadgeText}>Done</Text></View>
+                ) : pending ? (
+                  <View style={s.pendingBadge}><Text style={s.pendingBadgeText}>Pending</Text></View>
                 ) : locked ? (
                   <View style={s.lockedBadge}><Text style={s.lockedBadgeText}>Locked</Text></View>
                 ) : (
@@ -119,9 +146,11 @@ const s = StyleSheet.create({
   steps:            { paddingHorizontal: 16, gap: 10 },
   stepCard:         { flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: "#1E293B", borderRadius: 18, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
   stepDone:         { borderColor: "rgba(16,185,129,0.2)", backgroundColor: "rgba(16,185,129,0.04)" },
+  stepPending:      { borderColor: "rgba(245,158,11,0.35)", backgroundColor: "rgba(245,158,11,0.06)" },
   stepLocked:       { opacity: 0.4 },
   circle:           { width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(56,189,248,0.15)", borderWidth: 1, borderColor: "rgba(56,189,248,0.3)", alignItems: "center", justifyContent: "center", flexShrink: 0 },
   circleDone:       { backgroundColor: C.emerald, borderColor: C.emerald },
+  circlePending:    { backgroundColor: "rgba(245,158,11,0.18)", borderColor: "rgba(245,158,11,0.4)" },
   circleLocked:     { backgroundColor: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" },
   circleText:       { color: C.white, fontWeight: "900", fontSize: 13 },
   stepBody:         { flex: 1 },
@@ -131,6 +160,8 @@ const s = StyleSheet.create({
   stepDesc:         { color: C.slate500, fontSize: 12, marginTop: 2, lineHeight: 16 },
   doneBadge:        { backgroundColor: "rgba(16,185,129,0.15)", borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
   doneBadgeText:    { color: C.emerald, fontSize: 11, fontWeight: "700" },
+  pendingBadge:     { backgroundColor: "rgba(245,158,11,0.15)", borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
+  pendingBadgeText: { color: C.amber, fontSize: 11, fontWeight: "700" },
   lockedBadge:      { backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
   lockedBadgeText:  { color: C.slate600, fontSize: 11, fontWeight: "700" },
   startBadge:       { backgroundColor: "rgba(56,189,248,0.15)", borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },

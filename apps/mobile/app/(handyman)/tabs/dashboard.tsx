@@ -14,6 +14,9 @@ type Profile = {
 };
 type Checklist = { ica: boolean; profile: boolean; services: boolean; availability: boolean; backgroundCheck: boolean; stripe: boolean };
 
+const STEP_KEYS = ["ica", "profile", "services", "availability", "backgroundCheck", "stripe"] as const;
+const BG_PENDING = ["DEFERRED", "PAID", "IN_PROGRESS"];
+
 const STEPS = [
   { key: "ica",             label: "Sign Agreement",      href: "/(handyman)/ica" },
   { key: "profile",         label: "Complete Profile",    href: "/(handyman)/onboarding-profile" },
@@ -48,7 +51,14 @@ export default function HandymanDashboard() {
   if (loading) return <View style={s.center}><ActivityIndicator color={C.sky} size="large" /></View>;
 
   const hp = profile?.handymanProfile;
-  const completedSteps = checklist ? Object.values(checklist).filter(Boolean).length : 0;
+  // Background check is only "complete" once admin-approves it (PASSED);
+  // paid/deferred shows as "Pending".
+  const bgStatus   = hp?.backgroundCheckStatus ?? "";
+  const bgComplete = bgStatus === "PASSED";
+  const bgPending  = BG_PENDING.includes(bgStatus);
+  const isStepComplete = (key: (typeof STEP_KEYS)[number]) =>
+    key === "backgroundCheck" ? bgComplete : (checklist?.[key] ?? false);
+  const completedSteps = checklist ? STEP_KEYS.filter(isStepComplete).length : 0;
   const allDone = completedSteps === 6;
 
   return (
@@ -77,12 +87,19 @@ export default function HandymanDashboard() {
             </View>
             <View style={s.stepsGrid}>
               {STEPS.map(step => {
-                const done   = checklist[step.key as keyof Checklist];
+                const isBg    = step.key === "backgroundCheck";
+                const done    = isStepComplete(step.key as (typeof STEP_KEYS)[number]);
+                const pending = isBg && bgPending && !bgComplete;
+                const label   = isBg && bgComplete ? "Background Complete"
+                              : isBg && pending    ? "Background Pending"
+                              : step.label;
                 return (
-                  <TouchableOpacity key={step.key} style={[s.stepPill, done && s.stepDone]}
-                    onPress={() => !done && router.push(step.href as any)}>
-                    <Text style={s.stepEmoji}>{done ? "✅" : "⭕"}</Text>
-                    <Text style={[s.stepLabel, done && s.stepLabelDone]}>{step.label}</Text>
+                  <TouchableOpacity key={step.key} style={[s.stepPill, done && s.stepDone, pending && s.stepPending]}
+                    onPress={() => !done && !pending && router.push(step.href as any)}
+                    disabled={done || pending}>
+                    <Text style={s.stepEmoji}>{done ? "✅" : pending ? "⏳" : "⭕"}</Text>
+                    <Text style={[s.stepLabel, done && s.stepLabelDone]}>{label}</Text>
+                    {pending && <Text style={s.pendingTag}>Under review</Text>}
                   </TouchableOpacity>
                 );
               })}
@@ -142,9 +159,11 @@ const s = StyleSheet.create({
   stepsGrid:     { gap: 8 },
   stepPill:      { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, backgroundColor: "rgba(255,255,255,0.05)", borderRadius: 12, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
   stepDone:      { backgroundColor: "rgba(16,185,129,0.05)", borderColor: "rgba(16,185,129,0.2)" },
+  stepPending:   { backgroundColor: "rgba(245,158,11,0.06)", borderColor: "rgba(245,158,11,0.3)" },
   stepEmoji:     { fontSize: 16 },
-  stepLabel:     { color: C.white, fontSize: 14, fontWeight: "600" },
+  stepLabel:     { color: C.white, fontSize: 14, fontWeight: "600", flex: 1 },
   stepLabelDone: { color: C.slate400, textDecorationLine: "line-through" },
+  pendingTag:    { color: C.amber, fontSize: 11, fontWeight: "700" },
   statsRow:      { flexDirection: "row", gap: 10, paddingHorizontal: 16, marginBottom: 4 },
   statCard:      { flex: 1, backgroundColor: "#1E293B", borderRadius: 16, padding: 14, alignItems: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.06)" },
   statValue:     { fontSize: 20, fontWeight: "900" },

@@ -24,6 +24,9 @@ export async function GET() {
     services:        ownServicesCount > 0,
     availability:    availabilityCount > 0,
     backgroundCheck: BG_INITIATED.includes(profile.backgroundCheckStatus as string),
+    // Raw status so the app can distinguish "pending review" (paid/deferred)
+    // from "complete" (admin-approved = PASSED).
+    backgroundCheckStatus: profile.backgroundCheckStatus,
     stripe:          user.stripeAccountStatus === "active",
   });
 }

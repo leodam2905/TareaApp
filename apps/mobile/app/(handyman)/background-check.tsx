@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Linking } from "react-native";
 import { useRouter } from "expo-router";
 import { api } from "@/lib/api";
@@ -6,9 +6,24 @@ import { C } from "@/constants/colors";
 import BackBar from "@/components/ui/BackBar";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const PENDING_STATUSES = ["DEFERRED", "PAID", "IN_PROGRESS"];
+
 export default function BackgroundCheckScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [status, setStatus]   = useState<string | null>(null);
+  const [checking, setChecking] = useState(true);
+
+  // Load current status so we can show pending/complete instead of the pay options.
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await api.get("/handyman/background-check");
+        if (res.ok) setStatus((await res.json()).status ?? null);
+      } catch { /* ignore — show pay options */ }
+      setChecking(false);
+    })();
+  }, []);
 
   const choose = async (method: "now" | "deferred") => {
     setLoading(true);
@@ -27,6 +42,43 @@ export default function BackgroundCheckScreen() {
     }
     setLoading(false);
   };
+
+  if (checking) {
+    return <View style={s.center}><ActivityIndicator color={C.sky} size="large" /></View>;
+  }
+
+  const isComplete = status === "PASSED";
+  const isPending  = !!status && PENDING_STATUSES.includes(status);
+  const isFailed   = status === "FAILED";
+
+  // Already initiated or approved — show status instead of the pay options.
+  if (isComplete || isPending || isFailed) {
+    return (
+      <SafeAreaView style={s.safe}>
+        <BackBar />
+        <View style={s.container}>
+          <Text style={s.title}>Background Check</Text>
+          <View style={[s.statusCard,
+            isComplete ? s.statusComplete : isFailed ? s.statusFailed : s.statusPending]}>
+            <Text style={s.statusEmoji}>{isComplete ? "✅" : isFailed ? "⚠️" : "⏳"}</Text>
+            <Text style={s.statusTitle}>
+              {isComplete ? "Background Check Complete" : isFailed ? "Background Check Not Passed" : "Background Check Pending"}
+            </Text>
+            <Text style={s.statusText}>
+              {isComplete
+                ? "You've been approved by Tarea. You're fully verified and can receive bookings."
+                : isFailed
+                ? "Your background check was not approved. Please contact support@taptarea.com for next steps."
+                : "Payment received. Your check is under review — this usually takes 1–3 business days. You can accept jobs while it processes."}
+            </Text>
+          </View>
+          <TouchableOpacity style={s.doneBtn} onPress={() => router.replace("/(handyman)/tabs/dashboard")}>
+            <Text style={s.doneBtnText}>Go to Dashboard</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={s.safe}>
@@ -68,8 +120,18 @@ export default function BackgroundCheckScreen() {
 
 const s = StyleSheet.create({
   safe:                { flex: 1, backgroundColor: C.ink },
+  center:              { flex: 1, backgroundColor: C.ink, alignItems: "center", justifyContent: "center" },
   container:           { flex: 1, padding: 24, gap: 16 },
   title:               { color: C.white, fontSize: 26, fontWeight: "900" },
+  statusCard:          { borderRadius: 18, padding: 22, borderWidth: 1, alignItems: "center", gap: 10, marginTop: 8 },
+  statusComplete:      { backgroundColor: "rgba(16,185,129,0.08)", borderColor: "rgba(16,185,129,0.3)" },
+  statusPending:       { backgroundColor: "rgba(245,158,11,0.08)", borderColor: "rgba(245,158,11,0.35)" },
+  statusFailed:        { backgroundColor: "rgba(239,68,68,0.08)", borderColor: "rgba(239,68,68,0.35)" },
+  statusEmoji:         { fontSize: 44 },
+  statusTitle:         { color: C.white, fontSize: 19, fontWeight: "800", textAlign: "center" },
+  statusText:          { color: C.slate300, fontSize: 14, lineHeight: 21, textAlign: "center" },
+  doneBtn:             { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 15, alignItems: "center", marginTop: 4 },
+  doneBtnText:         { color: C.ink, fontWeight: "800", fontSize: 16 },
   sub:                 { color: C.slate400, fontSize: 14, lineHeight: 20 },
   infoCard:            { flexDirection: "row", gap: 14, backgroundColor: "rgba(56,189,248,0.08)", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: "rgba(56,189,248,0.15)", alignItems: "flex-start" },
   infoEmoji:           { fontSize: 28 },
