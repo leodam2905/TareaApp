@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
@@ -24,6 +24,27 @@ export default function OnboardingAvailabilityScreen() {
   );
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
   const [saving, setSaving]           = useState(false);
+
+  // Restore already-saved availability so users don't start over after logging out.
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await api.get("/profile");
+        if (!res.ok) return;
+        const d = await res.json();
+        const avail: any[] = d.handymanProfile?.availability || [];
+        if (!avail.length) return;
+        const days = new Set<number>();
+        const sl: Record<number, Slot> = {};
+        for (const a of avail) {
+          days.add(a.dayOfWeek);
+          sl[a.dayOfWeek] = { dayOfWeek: a.dayOfWeek, startHour: a.startHour, endHour: a.endHour };
+        }
+        setActiveDays(days);
+        setSlots(sl);
+      } catch { /* ignore — defaults remain */ }
+    })();
+  }, []);
 
   const toggleDay = (d: number) => {
     setActiveDays(prev => {

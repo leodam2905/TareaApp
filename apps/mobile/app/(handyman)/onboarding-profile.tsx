@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator, Image, Linking } from "react-native";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
@@ -22,6 +22,31 @@ export default function OnboardingProfileScreen() {
 
   const [uris, setUris] = useState<Record<DocField, string>>({ avatar: "", idFront: "", idBack: "", licenseDoc: "", insuranceDoc: "" });
   const [urls, setUrls] = useState<Record<DocField, string>>({ avatar: "", idFront: "", idBack: "", licenseDoc: "", insuranceDoc: "" });
+
+  // Restore already-saved profile + documents so users don't start over after logging out.
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await api.get("/profile");
+        if (!res.ok) return;
+        const d = await res.json();
+        const hp = d.handymanProfile || {};
+        if (hp.bio) setBio(hp.bio);
+        if (hp.hourlyRate != null) setRate(String(hp.hourlyRate));
+        if (hp.yearsExperience != null) setYears(String(hp.yearsExperience));
+        if (hp.licenseNumber) setLicenseNum(hp.licenseNumber);
+        const loaded: Record<DocField, string> = {
+          avatar: d.avatarUrl || "",
+          idFront: hp.idFrontUrl || "",
+          idBack: hp.idBackUrl || "",
+          licenseDoc: hp.licenseDocUrl || "",
+          insuranceDoc: hp.insuranceDocUrl || "",
+        };
+        setUrls(loaded);
+        setUris(loaded); // remote URLs render fine in <Image>
+      } catch { /* ignore — user can re-upload */ }
+    })();
+  }, []);
 
   const pickAndUpload = async (field: DocField, aspect?: [number, number]) => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -66,7 +91,12 @@ export default function OnboardingProfileScreen() {
     if (urls.licenseDoc)  patchBody.licenseDocUrl  = urls.licenseDoc;
     if (urls.insuranceDoc) patchBody.insuranceDocUrl = urls.insuranceDoc;
     if (licenseNum.trim()) patchBody.licenseNumber  = licenseNum.trim();
-    await api.patch("/handyman/onboarding", patchBody);
+    const res = await api.patch("/handyman/onboarding", patchBody);
+    if (!res.ok) {
+      setSaving(false);
+      Alert.alert("Couldn't save", "Your documents didn't save. Please check your connection and try again.");
+      return;
+    }
     // Store profile data for next step
     await SecureStore.setItemAsync("ob_bio",   bio);
     await SecureStore.setItemAsync("ob_rate",  rate);

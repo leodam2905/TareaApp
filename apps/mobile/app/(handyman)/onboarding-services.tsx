@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
@@ -29,6 +29,30 @@ export default function OnboardingServicesScreen() {
   const [details, setDetails]       = useState<Record<string, Detail>>({});
   const [expanded, setExpanded]     = useState<string | null>(null);
   const [saving, setSaving]         = useState(false);
+
+  // Restore already-selected services so users don't start over after logging out.
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await api.get("/profile");
+        if (!res.ok) return;
+        const d = await res.json();
+        const svcs: any[] = d.handymanProfile?.services || [];
+        if (!svcs.length) return;
+        const sel = new Set<string>();
+        const det: Record<string, Detail> = {};
+        for (const s of svcs) {
+          sel.add(s.category);
+          det[s.category] = {
+            category: s.category, title: s.title || "", description: s.description || "",
+            minPrice: String(s.minPrice ?? "50"), maxPrice: String(s.maxPrice ?? "150"), duration: String(s.duration ?? "60"),
+          };
+        }
+        setSelected(sel);
+        setDetails(det);
+      } catch { /* ignore — user can re-select */ }
+    })();
+  }, []);
 
   const toggle = (cat: string, label: string, desc: string) => {
     setSelected(prev => {
