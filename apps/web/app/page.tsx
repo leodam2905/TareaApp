@@ -240,7 +240,7 @@ export default function HomePage() {
         <div className="mx-4 mt-4">
           <div className="max-w-6xl mx-auto bg-white/90 backdrop-blur-xl border border-gray-200 rounded-2xl px-6 h-14 flex items-center justify-between shadow-[0_4px_20px_rgba(15,23,42,0.06)]">
             <Link href="/" className="flex items-center">
-              <img src="/tarea-logo-home.png?v=1" alt="Tarea" className="h-9 w-auto" />
+              <img src="/tarea-logo.png?v=3" alt="Tarea" className="h-9 w-auto" />
             </Link>
             <div className="hidden md:flex items-center gap-7 text-sm text-gray-500">
               {[["Services", "#services"], ["How it works", "#how-it-works"], ["Why Tarea", "#reviews"]].map(([l, h]) => (
@@ -763,7 +763,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-4 gap-10 mb-12">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <img src="/tarea-logo-home.png?v=1" alt="Tarea" className="h-9 w-auto" />
+                <img src="/tarea-logo.png?v=3" alt="Tarea" className="h-9 w-auto" />
               </div>
               <p className="text-gray-500 text-sm leading-relaxed">
                 Your trusted platform for home maintenance and repair services.
