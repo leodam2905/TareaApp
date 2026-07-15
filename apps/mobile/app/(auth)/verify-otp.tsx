@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { API_BASE } from "@/lib/api";
 import { saveToken, saveRole } from "@/lib/storage";
@@ -53,7 +53,8 @@ export default function VerifyOtpScreen() {
   };
 
   return (
-    <View style={s.container}>
+    <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+      <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled" bounces={false}>
       <View style={s.header}>
         <Text style={s.logo}>Tarea</Text>
         <Text style={s.title}>Verify your phone</Text>
@@ -87,12 +88,14 @@ export default function VerifyOtpScreen() {
           <Text style={s.backText}>← Back to sign up</Text>
         </TouchableOpacity>
       </View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const s = StyleSheet.create({
-  container:  { flex: 1, backgroundColor: C.ink, justifyContent: "center", padding: 24 },
+  flex:       { flex: 1, backgroundColor: C.ink },
+  container:  { flexGrow: 1, backgroundColor: C.ink, justifyContent: "center", padding: 24 },
   header:     { alignItems: "center", marginBottom: 40 },
   logo:       { fontSize: 42, fontWeight: "900", color: C.sky, letterSpacing: -1 },
   title:      { color: C.white, fontSize: 22, fontWeight: "800", marginTop: 16 },
