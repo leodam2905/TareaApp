@@ -5,7 +5,7 @@ import { CUSTOMER_FEE_RATE } from "@/lib/fees";
 
 export async function GET() {
   const user = await getCurrentUser();
-  if (!user || user.role !== "CUSTOMER") {
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

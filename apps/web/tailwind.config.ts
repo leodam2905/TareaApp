@@ -25,7 +25,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Open Sans", "Inter", "system-ui", "sans-serif"],
+        serif: ["Instrument Serif", "Georgia", "Times New Roman", "serif"],
       },
       backgroundImage: {
         "hero-gradient": "linear-gradient(135deg, #7C2D12 0%, #C2410C 50%, #FB923C 100%)",

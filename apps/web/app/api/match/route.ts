@@ -34,6 +34,8 @@ export async function GET(req: NextRequest) {
         services: { some: { category: category as never, isActive: true } },
         user: {
           avatarUrl: { not: null },
+          // A dual-role account shouldn't see itself as a bookable handyman.
+          ...(user ? { id: { not: user.id } } : {}),
           ...(stateFilter ? { state: stateFilter } : {}),
         },
       },

@@ -7,7 +7,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
-  if (!user || user.role !== "CUSTOMER") {
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

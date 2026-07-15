@@ -83,7 +83,7 @@ export async function GET() {
 // Customer creates a job request
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
-  if (!user || user.role !== "CUSTOMER") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { category, title, description, address, city, scheduledAt, budgetMin, budgetMax, latitude, longitude, imageUrls } = await req.json();
 

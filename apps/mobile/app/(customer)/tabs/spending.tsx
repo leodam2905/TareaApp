@@ -26,7 +26,7 @@ export default function SpendingScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
-    const res = await api.get("/bookings");
+    const res = await api.get("/bookings?role=customer");
     if (res.ok) {
       const all: Booking[] = await res.json();
       setBookings(all.filter(b => b.status === "COMPLETED"));

@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { useRouter } from "expo-router";
 import Constants from "expo-constants";
 import * as SplashScreen from "expo-splash-screen";
-import { getToken, getRole, clearAuth } from "@/lib/storage";
+import { getToken, getRole } from "@/lib/storage";
 
 const APP_VARIANT = (Constants.expoConfig?.extra?.appVariant ?? "customer") as "customer" | "handyman";
 const IS_HANDYMAN = APP_VARIANT === "handyman";
@@ -22,13 +22,14 @@ export default function Index() {
       const decide = (async (): Promise<string> => {
         try {
           const token = await getToken();
-          const role = await getRole();
           if (!token) return "/(auth)/landing";
-          if (IS_HANDYMAN && role === "HANDYMAN") return "/(handyman)/tabs/dashboard";
-          if (!IS_HANDYMAN && role === "CUSTOMER") return "/(customer)/tabs/dashboard";
-          // Wrong app for this role — clear auth and send to landing
-          await clearAuth();
-          return "/(auth)/landing";
+          // One account works in both apps. The app you opened decides the mode:
+          //  • Home → always the customer (hire) experience — anyone can book.
+          //  • Pro  → the handyman (work) experience; a customer who opens Pro
+          //    is offered the "Become a Pro" onboarding on the same account.
+          if (!IS_HANDYMAN) return "/(customer)/tabs/dashboard";
+          const role = await getRole();
+          return role === "HANDYMAN" ? "/(handyman)/tabs/dashboard" : "/(handyman)/become-pro";
         } catch {
           return "/(auth)/landing";
         }

@@ -16,7 +16,7 @@ export default function CustomerDashboard() {
 
   const load = async () => {
     try {
-      const [pRes, bRes] = await Promise.all([api.get("/profile"), api.get("/bookings")]);
+      const [pRes, bRes] = await Promise.all([api.get("/profile"), api.get("/bookings?role=customer")]);
       if (pRes.ok) { const p = await pRes.json(); setName(p.name ?? ""); }
       if (bRes.ok) { const b = await bRes.json(); setRecent((b as Booking[]).slice(0, 3)); }
     } finally { setLoading(false); setRefreshing(false); }

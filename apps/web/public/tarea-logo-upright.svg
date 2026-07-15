@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 470 178" role="img" aria-labelledby="title desc">
+  <title id="title">Tarea connected local pros mark</title>
+  <desc id="desc">A modern home mark with connected task lines and the Tarea wordmark.</desc>
+  <path d="M94 28 153 72v78H35V72L94 28Z" fill="#263238" stroke="#fff" stroke-width="12" stroke-linejoin="round"/>
+  <path d="M65 110h58" stroke="#00a99d" stroke-width="14" stroke-linecap="round"/>
+  <path d="M65 82h58" stroke="#ff7a59" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="65" cy="82" r="12" fill="#fff"/>
+  <circle cx="123" cy="110" r="12" fill="#fff"/>
+  <path d="M131 46 149 30l7 8-16 16" fill="none" stroke="#ff7a59" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="182" y="120" fill="#263238" font-family="Inter, Helvetica, Arial, sans-serif" font-size="84" font-weight="800" letter-spacing="-3">Tarea</text>
+</svg>

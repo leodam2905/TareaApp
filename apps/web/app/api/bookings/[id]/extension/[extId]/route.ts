@@ -12,7 +12,7 @@ export async function PATCH(
   { params }: { params: { id: string; extId: string } }
 ) {
   const user = await getCurrentUser();
-  if (!user || user.role !== "CUSTOMER") {
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -22,7 +22,7 @@ export default function CustomerBookings() {
 
   const load = async () => {
     try {
-      const res = await api.get("/bookings");
+      const res = await api.get("/bookings?role=customer");
       if (res.ok) setBookings(await res.json());
     } finally { setLoading(false); setRefreshing(false); }
   };

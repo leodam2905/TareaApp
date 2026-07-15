@@ -24,27 +24,33 @@ export default function OnboardingProfileScreen() {
   const [urls, setUrls] = useState<Record<DocField, string>>({ avatar: "", idFront: "", idBack: "", licenseDoc: "", insuranceDoc: "" });
 
   // Restore already-saved profile + documents so users don't start over after logging out.
+  // Backend is the source of truth; SecureStore is a fallback for fields typed but
+  // not yet persisted server-side (e.g. left mid-step).
   useEffect(() => {
     (async () => {
+      let hp: any = {};
+      let avatarUrl = "";
       try {
         const res = await api.get("/profile");
-        if (!res.ok) return;
-        const d = await res.json();
-        const hp = d.handymanProfile || {};
-        if (hp.bio) setBio(hp.bio);
-        if (hp.hourlyRate != null) setRate(String(hp.hourlyRate));
-        if (hp.yearsExperience != null) setYears(String(hp.yearsExperience));
-        if (hp.licenseNumber) setLicenseNum(hp.licenseNumber);
-        const loaded: Record<DocField, string> = {
-          avatar: d.avatarUrl || "",
-          idFront: hp.idFrontUrl || "",
-          idBack: hp.idBackUrl || "",
-          licenseDoc: hp.licenseDocUrl || "",
-          insuranceDoc: hp.insuranceDocUrl || "",
-        };
-        setUrls(loaded);
-        setUris(loaded); // remote URLs render fine in <Image>
-      } catch { /* ignore — user can re-upload */ }
+        if (res.ok) {
+          const d = await res.json();
+          hp = d.handymanProfile || {};
+          avatarUrl = d.avatarUrl || "";
+          const loaded: Record<DocField, string> = {
+            avatar: avatarUrl,
+            idFront: hp.idFrontUrl || "",
+            idBack: hp.idBackUrl || "",
+            licenseDoc: hp.licenseDocUrl || "",
+            insuranceDoc: hp.insuranceDocUrl || "",
+          };
+          setUrls(loaded);
+          setUris(loaded); // remote URLs render fine in <Image>
+        }
+      } catch { /* ignore — fall back to local */ }
+      setBio(hp.bio || (await SecureStore.getItemAsync("ob_bio")) || "");
+      setRate(hp.hourlyRate != null ? String(hp.hourlyRate) : (await SecureStore.getItemAsync("ob_rate")) || "50");
+      setYears(hp.yearsExperience != null && hp.yearsExperience !== 0 ? String(hp.yearsExperience) : (await SecureStore.getItemAsync("ob_years")) || "1");
+      setLicenseNum(hp.licenseNumber || (await SecureStore.getItemAsync("ob_license")) || "");
     })();
   }, []);
 
@@ -75,10 +81,22 @@ export default function OnboardingProfileScreen() {
     const token = await getToken();
     const endpoint = field === "avatar" ? "/api/upload/avatar" : "/api/upload/image";
     const res = await fetch(`${API_BASE}${endpoint}`, { method: "POST", body: form, headers: { Authorization: `Bearer ${token}` } });
-    if (res.ok) { const d = await res.json(); setUrls(p => ({ ...p, [field]: d.url })); }
-    else Alert.alert("Upload failed", "Please try again");
+    if (res.ok) {
+      const d = await res.json();
+      setUrls(p => ({ ...p, [field]: d.url }));
+      // Persist the document to the backend right away so it survives logout
+      // even if the user leaves before tapping "Next". (avatar is persisted by
+      // its own upload endpoint.)
+      if (field !== "avatar") {
+        api.patch("/handyman/onboarding", { [`${field}Url`]: d.url }).catch(() => {});
+      }
+    } else Alert.alert("Upload failed", "Please try again");
     setUploading(false);
   };
+
+  // Persist a typed field locally the moment the user leaves it, so nothing is
+  // lost if they navigate away mid-step.
+  const persistField = (key: string, value: string) => { SecureStore.setItemAsync(key, value).catch(() => {}); };
 
   const next = async () => {
     if (!urls.avatar)  { Alert.alert("Required", "Please upload a profile photo"); return; }
@@ -87,7 +105,10 @@ export default function OnboardingProfileScreen() {
     if (!bio.trim())   { Alert.alert("Required", "Please write a short bio"); return; }
     setSaving(true);
     // Save ID + docs via PATCH
-    const patchBody: Record<string, string> = { idFrontUrl: urls.idFront, idBackUrl: urls.idBack };
+    const patchBody: Record<string, string> = {
+      idFrontUrl: urls.idFront, idBackUrl: urls.idBack,
+      bio: bio.trim(), hourlyRate: rate, yearsExperience: years,
+    };
     if (urls.licenseDoc)  patchBody.licenseDocUrl  = urls.licenseDoc;
     if (urls.insuranceDoc) patchBody.insuranceDocUrl = urls.insuranceDoc;
     if (licenseNum.trim()) patchBody.licenseNumber  = licenseNum.trim();
@@ -146,6 +167,7 @@ export default function OnboardingProfileScreen() {
           {/* License */}
           <Text style={[s.sectionTitle, { marginTop: 20 }]}>License</Text>
           <TextInput style={s.input} value={licenseNum} onChangeText={setLicenseNum}
+            onBlur={() => persistField("ob_license", licenseNum)}
             placeholder="License number (optional)" placeholderTextColor={C.slate500} />
           <View style={s.docRow}>
             <DocTile field="licenseDoc" label="License Doc" />
@@ -155,17 +177,18 @@ export default function OnboardingProfileScreen() {
           {/* Bio */}
           <Text style={[s.sectionTitle, { marginTop: 20 }]}>Bio *</Text>
           <TextInput style={[s.input, s.inputMulti]} value={bio} onChangeText={setBio}
+            onBlur={() => persistField("ob_bio", bio)}
             placeholder="Describe your experience and skills…" placeholderTextColor={C.slate500} multiline numberOfLines={4} />
 
           {/* Rate & Experience */}
           <View style={s.row}>
             <View style={s.rowItem}>
               <Text style={s.label}>Hourly Rate ($)</Text>
-              <TextInput style={s.input} value={rate} onChangeText={setRate} keyboardType="numeric" placeholder="50" placeholderTextColor={C.slate500} />
+              <TextInput style={s.input} value={rate} onChangeText={setRate} onBlur={() => persistField("ob_rate", rate)} keyboardType="numeric" placeholder="50" placeholderTextColor={C.slate500} />
             </View>
             <View style={s.rowItem}>
               <Text style={s.label}>Years Exp.</Text>
-              <TextInput style={s.input} value={years} onChangeText={setYears} keyboardType="numeric" placeholder="1" placeholderTextColor={C.slate500} />
+              <TextInput style={s.input} value={years} onChangeText={setYears} onBlur={() => persistField("ob_years", years)} keyboardType="numeric" placeholder="1" placeholderTextColor={C.slate500} />
             </View>
           </View>
         </View>

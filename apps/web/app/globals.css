@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
@@ -96,10 +98,18 @@ html.dark {
   }
 
   body {
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: "Open Sans", system-ui, sans-serif;
     background-color: var(--app-bg-body);
     color: var(--text-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Headings use the Instrument Serif display face; it ships a single (400)
+     weight, so we let size — not weight — carry the hierarchy. */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Instrument Serif", Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    letter-spacing: 0;
   }
 }
 

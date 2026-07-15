@@ -25,10 +25,14 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status");
 
-  const where: Record<string, unknown> =
-    user.role === "HANDYMAN"
-      ? { handymanId: user.id }
-      : { customerId: user.id };
+  // A dual-role account has bookings on both sides. The app passes `role` to say
+  // which side it wants: the Home app requests `role=customer`, the Pro app
+  // `role=handyman`. Falls back to the stored role for older clients.
+  const roleParam = searchParams.get("role");
+  const viewAsHandyman = roleParam ? roleParam === "handyman" : user.role === "HANDYMAN";
+  const where: Record<string, unknown> = viewAsHandyman
+    ? { handymanId: user.id }
+    : { customerId: user.id };
 
   if (status) where.status = status;
 
@@ -48,7 +52,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
-  if (!user || user.role !== "CUSTOMER") {
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -60,6 +64,11 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const data = createSchema.parse(body);
+
+    // A dual-role account can hire, but not itself.
+    if (data.handymanUserId === user.id) {
+      return NextResponse.json({ error: "You can't book yourself." }, { status: 400 });
+    }
 
     // Authoritative price check: the client-supplied totalPrice must fall within
     // the service's server-side price range. Prevents price tampering (e.g. paying

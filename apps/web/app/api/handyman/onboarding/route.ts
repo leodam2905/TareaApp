@@ -39,19 +39,25 @@ export async function PATCH(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user || user.role !== "HANDYMAN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { idFrontUrl, idBackUrl, licenseNumber, licenseDocUrl, insuranceDocUrl } = await req.json();
+  const { idFrontUrl, idBackUrl, licenseNumber, licenseDocUrl, insuranceDocUrl, bio, hourlyRate, yearsExperience } = await req.json();
 
-  const data: Record<string, string> = {};
+  // Persist any field the client sends. This is called incrementally during
+  // onboarding (e.g. right after each document upload) so partial progress is
+  // never lost if the user leaves before finishing the step.
+  const data: Record<string, string | number> = {};
   if (idFrontUrl)      data.idFrontUrl      = idFrontUrl;
   if (idBackUrl)       data.idBackUrl       = idBackUrl;
   if (licenseNumber)   data.licenseNumber   = licenseNumber;
   if (licenseDocUrl)   data.licenseDocUrl   = licenseDocUrl;
   if (insuranceDocUrl) data.insuranceDocUrl = insuranceDocUrl;
+  if (bio !== undefined && bio !== null)             data.bio             = String(bio);
+  if (hourlyRate !== undefined && hourlyRate !== null && hourlyRate !== "")             data.hourlyRate      = Number(hourlyRate) || 0;
+  if (yearsExperience !== undefined && yearsExperience !== null && yearsExperience !== "") data.yearsExperience = Number(yearsExperience) || 0;
 
   await prisma.handymanProfile.upsert({
     where: { userId: user.id },
     update: data,
-    create: { userId: user.id, hourlyRate: 0, ...data },
+    create: { userId: user.id, hourlyRate: typeof data.hourlyRate === "number" ? data.hourlyRate : 0, ...data },
   });
 
   return NextResponse.json({ ok: true });

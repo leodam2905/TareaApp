@@ -14,6 +14,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   if (!jobRequest || jobRequest.status !== "OPEN") {
     return NextResponse.json({ error: "Job not available" }, { status: 400 });
   }
+  // A dual-role account can't apply to a job it posted itself.
+  if (jobRequest.customerId === user.id) {
+    return NextResponse.json({ error: "You can't apply to your own job request." }, { status: 400 });
+  }
 
   const { message, proposedPrice, materialsEstimate } = await req.json();
 

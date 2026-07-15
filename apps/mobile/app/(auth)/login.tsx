@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
+import Constants from "expo-constants";
 import { API_BASE } from "@/lib/api";
 import { saveToken, saveRole } from "@/lib/storage";
 import { C } from "@/constants/colors";
+
+const IS_HANDYMAN = (Constants.expoConfig?.extra?.appVariant ?? "customer") === "handyman";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -28,8 +31,10 @@ export default function LoginScreen() {
       }
       await saveToken(data.token);
       await saveRole(data.role);
+      // Route by the app you're in, not your stored role — one account, two modes.
+      if (!IS_HANDYMAN) { router.replace("/(customer)/tabs/dashboard"); return; }
       if (data.role === "HANDYMAN") router.replace("/(handyman)/tabs/dashboard");
-      else router.replace("/(customer)/tabs/dashboard");
+      else router.replace("/(handyman)/become-pro");
     } catch {
       Alert.alert("Error", "Could not connect. Check your internet connection.");
     } finally {
