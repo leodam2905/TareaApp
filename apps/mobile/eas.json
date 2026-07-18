@@ -20,6 +20,16 @@
         "buildType": "apk"
       }
     },
+    "preview-handyman": {
+      "env": {
+        "APP_VARIANT": "handyman"
+      },
+      "distribution": "internal",
+      "channel": "production",
+      "android": {
+        "buildType": "apk"
+      }
+    },
     "production": {
       "autoIncrement": true,
       "ios": {
