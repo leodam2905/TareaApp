@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator, RefreshControl, Image } from "react-native";
 import { useFocusEffect, useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
+import * as Updates from "expo-updates";
 import { api } from "@/lib/api";
 import { API_BASE } from "@/lib/api";
 import { clearAuth, getToken } from "@/lib/storage";
@@ -59,6 +60,26 @@ export default function ProfileScreen() {
   };
 
   const logout = async () => { await clearAuth(); router.replace("/(auth)/landing" as any); };
+
+  const [updating, setUpdating] = useState(false);
+  const checkForUpdates = async () => {
+    setUpdating(true);
+    try {
+      const res = await Updates.checkForUpdateAsync();
+      if (res.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        Alert.alert("Update ready", "Restarting to apply the latest version.", [
+          { text: "OK", onPress: () => Updates.reloadAsync() },
+        ]);
+      } else {
+        Alert.alert("Up to date", "You're already on the latest version.");
+      }
+    } catch {
+      Alert.alert("Couldn't check", "Please check your connection and try again.");
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   const deleteAccount = () => {
     Alert.alert(
@@ -153,6 +174,12 @@ export default function ProfileScreen() {
           <Text style={s.checklistBtnText}>📋 View Setup Checklist</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity style={s.updateBtn} onPress={checkForUpdates} disabled={updating}>
+          {updating
+            ? <ActivityIndicator color={C.sky} />
+            : <Text style={s.updateBtnText}>⬇️  Check for Updates</Text>}
+        </TouchableOpacity>
+
         <TouchableOpacity style={s.logoutBtn} onPress={logout}>
           <Text style={s.logoutText}>Sign Out</Text>
         </TouchableOpacity>
@@ -193,6 +220,8 @@ const s = StyleSheet.create({
   docArrow:          { color: C.sky, fontSize: 22 },
   checklistBtn:      { margin: 16, marginBottom: 0, backgroundColor: "rgba(56,189,248,0.08)", borderRadius: 14, paddingVertical: 14, alignItems: "center", borderWidth: 1, borderColor: "rgba(56,189,248,0.2)" },
   checklistBtnText:  { color: C.sky, fontWeight: "700", fontSize: 14 },
+  updateBtn:         { margin: 16, marginBottom: 0, backgroundColor: "rgba(56,189,248,0.08)", borderRadius: 14, paddingVertical: 14, alignItems: "center", borderWidth: 1, borderColor: "rgba(56,189,248,0.2)" },
+  updateBtnText:     { color: C.sky, fontWeight: "700", fontSize: 14 },
   logoutBtn:         { margin: 16, backgroundColor: "rgba(239,68,68,0.08)", borderRadius: 14, paddingVertical: 14, alignItems: "center", borderWidth: 1, borderColor: "rgba(239,68,68,0.2)" },
   logoutText:        { color: C.red, fontWeight: "700", fontSize: 14 },
   deleteBtn:         { marginHorizontal: 16, marginBottom: 28, paddingVertical: 14, alignItems: "center", borderRadius: 14, borderWidth: 1, borderColor: "rgba(239,68,68,0.45)", backgroundColor: "rgba(239,68,68,0.06)" },
