@@ -8,16 +8,23 @@ export async function POST(req: NextRequest) {
 
   const { bio, hourlyRate, yearsExperience, services } = await req.json();
 
+  // Only update the fields actually provided — never blank out existing data
+  // on a partial/empty save (that was wiping onboarding progress).
+  const update: Record<string, string | number> = {};
+  if (bio !== undefined && bio !== null && bio !== "") update.bio = String(bio);
+  if (hourlyRate !== undefined && hourlyRate !== null && hourlyRate !== "") update.hourlyRate = parseFloat(hourlyRate) || 0;
+  if (yearsExperience !== undefined && yearsExperience !== null && yearsExperience !== "") update.yearsExperience = parseInt(yearsExperience) || 0;
+
   const profile = await prisma.handymanProfile.upsert({
     where: { userId: user.id },
-    update: { bio, hourlyRate: parseFloat(hourlyRate), yearsExperience: parseInt(yearsExperience) },
-    create: { userId: user.id, bio, hourlyRate: parseFloat(hourlyRate), yearsExperience: parseInt(yearsExperience) },
+    update,
+    create: { userId: user.id, hourlyRate: typeof update.hourlyRate === "number" ? update.hourlyRate : 0, ...update },
   });
 
-  // Delete existing services and recreate with new selections
-  await prisma.service.deleteMany({ where: { handymanId: profile.id } });
-
-  if (services?.length) {
+  // Only replace services when a non-empty list is provided. Never delete on an
+  // empty/absent list — that was erasing previously-saved services.
+  if (Array.isArray(services) && services.length > 0) {
+    await prisma.service.deleteMany({ where: { handymanId: profile.id } });
     await prisma.service.createMany({
       data: services.map((s: { category: string; title: string; description: string; minPrice: string; maxPrice: string; duration: string }) => ({
         handymanId: profile.id,

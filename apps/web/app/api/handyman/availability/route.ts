@@ -26,10 +26,10 @@ export async function POST(req: NextRequest) {
   // slots: Array<{ dayOfWeek: number; startHour: number; endHour: number }>
   const { slots } = await req.json();
 
-  // Delete all existing and recreate
-  await prisma.handymanAvailability.deleteMany({ where: { profileId: profile.id } });
-
-  if (slots && slots.length > 0) {
+  // Only replace availability when a non-empty list is provided. Never delete on
+  // an empty/absent list — that was erasing previously-saved availability.
+  if (Array.isArray(slots) && slots.length > 0) {
+    await prisma.handymanAvailability.deleteMany({ where: { profileId: profile.id } });
     await prisma.handymanAvailability.createMany({
       data: slots.map((s: { dayOfWeek: number; startHour: number; endHour: number }) => ({
         profileId: profile.id,
