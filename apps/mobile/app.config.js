@@ -33,7 +33,7 @@ export default {
     android: {
       adaptiveIcon: {
         foregroundImage: IS_HANDYMAN ? "./assets/adaptive-icon-pro.png" : "./assets/adaptive-icon-home.png",
-        backgroundColor: IS_HANDYMAN ? "#263238" : "#FFFFFF",
+        backgroundColor: "#FFFFFF",
       },
       package: IS_HANDYMAN ? "com.taptarea.handyman" : "com.taptarea.customer",
       googleServicesFile: "./google-services.json",
