@@ -70,8 +70,13 @@ export default function ProfileScreen() {
       // either way we then reloadAsync() to APPLY whatever's downloaded, which
       // fixes the case where a pending update never got applied.
       const res = await Updates.checkForUpdateAsync();
-      if (res.isAvailable) await Updates.fetchUpdateAsync();
-      await Updates.reloadAsync();
+      if (res.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync();   // reload ONLY after fetching a genuinely newer update
+      } else {
+        setUpdating(false);
+        Alert.alert("Up to date", "You're on the latest version.");
+      }
     } catch {
       setUpdating(false);
       Alert.alert("Couldn't update", "Please check your connection and try again.");
