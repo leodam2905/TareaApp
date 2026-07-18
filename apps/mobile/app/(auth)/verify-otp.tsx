@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
+import Constants from "expo-constants";
 import { API_BASE } from "@/lib/api";
 import { saveToken, saveRole } from "@/lib/storage";
 import { C } from "@/constants/colors";
+
+const IS_HANDYMAN = (Constants.expoConfig?.extra?.appVariant ?? "customer") === "handyman";
 
 export default function VerifyOtpScreen() {
   const router = useRouter();
@@ -25,8 +28,13 @@ export default function VerifyOtpScreen() {
       if (!res.ok) { Alert.alert("Verification failed", data.error || "Invalid code"); return; }
       await saveToken(data.token);
       await saveRole(data.role);
-      if (data.role === "HANDYMAN") router.replace("/(handyman)/ica" as any);
-      else router.replace("/(customer)/tabs/dashboard" as any);
+      // This screen runs on EVERY OTP login, not just first signup — so route to
+      // the app's home (by mode), never into onboarding. Sending handymen to /ica
+      // here forced already-onboarded users to redo setup on every single login.
+      // New handymen still get the setup checklist from the dashboard.
+      if (!IS_HANDYMAN) { router.replace("/(customer)/tabs/dashboard" as any); return; }
+      if (data.role === "HANDYMAN") router.replace("/(handyman)/tabs/dashboard" as any);
+      else router.replace("/(handyman)/become-pro" as any);
     } catch {
       Alert.alert("Error", "Could not connect. Check your internet connection.");
     } finally {
