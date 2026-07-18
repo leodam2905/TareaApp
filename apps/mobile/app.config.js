@@ -8,6 +8,9 @@ export default {
     runtimeVersion: { policy: "appVersion" },
     updates: {
       url: "https://u.expo.dev/3a6f73e3-7b6a-4a56-ae3d-cfbe407bd26b",
+      // Wait briefly on launch for a new OTA and apply it this launch, so an
+      // update shows on a single reopen (no double relaunch needed).
+      fallbackToCacheTimeout: 8000,
     },
     scheme: IS_HANDYMAN ? "tareapro" : "tarea",
     orientation: "portrait",
