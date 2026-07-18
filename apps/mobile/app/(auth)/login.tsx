@@ -65,6 +65,10 @@ export default function LoginScreen() {
             {loading ? <ActivityIndicator color={C.ink} /> : <Text style={s.btnText}>Sign In</Text>}
           </TouchableOpacity>
 
+          <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password" as any)} style={s.forgot}>
+            <Text style={s.forgotText}>Forgot password?</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity onPress={() => router.push("/(auth)/register")} style={s.link}>
             <Text style={s.linkText}>Don't have an account? <Text style={s.linkBold}>Sign up</Text></Text>
           </TouchableOpacity>
@@ -86,6 +90,8 @@ const s = StyleSheet.create({
   btn:         { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 15, alignItems: "center", marginTop: 20 },
   btnDisabled: { opacity: 0.6 },
   btnText:     { color: C.ink, fontWeight: "800", fontSize: 16 },
+  forgot:      { alignItems: "center", marginTop: 14 },
+  forgotText:  { color: C.sky, fontSize: 14, fontWeight: "600" },
   link:        { alignItems: "center", marginTop: 20 },
   linkText:    { color: C.slate400, fontSize: 14 },
   linkBold:    { color: C.sky, fontWeight: "700" },
