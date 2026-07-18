@@ -120,10 +120,10 @@ function Field({ icon, right, ...props }: any) {
 
 const s = StyleSheet.create({
   flex:        { flex: 1, backgroundColor: C.bg },
-  scroll:      { padding: 24, paddingTop: 8, paddingBottom: 32 },
-  back:        { alignSelf: "flex-start", paddingVertical: 8 },
+  scroll:      { padding: 24, paddingTop: 8, paddingBottom: 16 },
+  back:        { alignSelf: "flex-start", paddingVertical: 6 },
 
-  headerRow:   { flexDirection: "row", alignItems: "flex-start", marginBottom: 22 },
+  headerRow:   { flexDirection: "row", alignItems: "flex-start", marginBottom: 16 },
   headerLeft:  { flex: 1, paddingTop: 6 },
   brandRow:    { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 12 },
   logo:        { width: 40, height: 40 },
@@ -132,10 +132,10 @@ const s = StyleSheet.create({
   sub:         { fontSize: 14, color: C.textMuted, lineHeight: 20 },
   illo:        { width: 130, height: 150, marginLeft: -4 },
 
-  field:       { flexDirection: "row", alignItems: "center", gap: 12, borderWidth: 1, borderColor: C.line, borderRadius: 14, paddingHorizontal: 16, height: 56, marginBottom: 12 },
+  field:       { flexDirection: "row", alignItems: "center", gap: 12, borderWidth: 1, borderColor: C.line, borderRadius: 14, paddingHorizontal: 16, height: 50, marginBottom: 9 },
   input:       { flex: 1, color: C.text, fontSize: 15 },
 
-  terms:       { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 4, marginBottom: 18 },
+  terms:       { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 2, marginBottom: 12 },
   checkbox:    { width: 20, height: 20, borderRadius: 6, borderWidth: 1.5, borderColor: "#CBD5E1", alignItems: "center", justifyContent: "center" },
   checkboxOn:  { backgroundColor: BLUE, borderColor: BLUE },
   termsText:   { flex: 1, color: C.textMuted, fontSize: 13, lineHeight: 18 },
@@ -144,13 +144,13 @@ const s = StyleSheet.create({
   signup:      { backgroundColor: BLUE, borderRadius: 14, paddingVertical: 16, alignItems: "center" },
   signupText:  { color: C.text, fontSize: 16, fontWeight: "800" },
 
-  orRow:       { flexDirection: "row", alignItems: "center", gap: 12, marginVertical: 20 },
+  orRow:       { flexDirection: "row", alignItems: "center", gap: 12, marginVertical: 14 },
   orLine:      { flex: 1, height: 1, backgroundColor: C.line },
   orText:      { color: C.textMuted, fontSize: 13, fontWeight: "600" },
 
-  social:      { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, borderWidth: 1, borderColor: C.line, borderRadius: 14, paddingVertical: 15, marginBottom: 12 },
+  social:      { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, borderWidth: 1, borderColor: C.line, borderRadius: 14, paddingVertical: 13, marginBottom: 10 },
   socialText:  { color: C.text, fontSize: 15, fontWeight: "700" },
 
-  loginLink:   { alignItems: "center", marginTop: 10 },
+  loginLink:   { alignItems: "center", marginTop: 8 },
   loginText:   { color: C.textMuted, fontSize: 14 },
 });
