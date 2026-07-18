@@ -65,19 +65,16 @@ export default function ProfileScreen() {
   const checkForUpdates = async () => {
     setUpdating(true);
     try {
+      // Download the latest update if the server has a newer one. If it was
+      // already fetched in the background on a prior launch, this is a no-op —
+      // either way we then reloadAsync() to APPLY whatever's downloaded, which
+      // fixes the case where a pending update never got applied.
       const res = await Updates.checkForUpdateAsync();
-      if (res.isAvailable) {
-        await Updates.fetchUpdateAsync();
-        Alert.alert("Update ready", "Restarting to apply the latest version.", [
-          { text: "OK", onPress: () => Updates.reloadAsync() },
-        ]);
-      } else {
-        Alert.alert("Up to date", "You're already on the latest version.");
-      }
+      if (res.isAvailable) await Updates.fetchUpdateAsync();
+      await Updates.reloadAsync();
     } catch {
-      Alert.alert("Couldn't check", "Please check your connection and try again.");
-    } finally {
       setUpdating(false);
+      Alert.alert("Couldn't update", "Please check your connection and try again.");
     }
   };
 
