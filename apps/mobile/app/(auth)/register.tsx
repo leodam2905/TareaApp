@@ -1,22 +1,20 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter } from "expo-router";
+import Constants from "expo-constants";
 import { API_BASE } from "@/lib/api";
 import { C } from "@/constants/colors";
 
-const ROLES = [
-  { value: "CUSTOMER", label: "I need services", emoji: "🏠" },
-  { value: "HANDYMAN", label: "I offer services", emoji: "🔧" },
-];
+const IS_HANDYMAN = (Constants.expoConfig?.extra?.appVariant ?? "customer") === "handyman";
 
 export default function RegisterScreen() {
   const router = useRouter();
-  const { role: initialRole } = useLocalSearchParams<{ role?: string }>();
+  // The app you're in decides the role: Pro app = handyman, Home app = customer.
+  const role: "CUSTOMER" | "HANDYMAN" = IS_HANDYMAN ? "HANDYMAN" : "CUSTOMER";
   const [name, setName]               = useState("");
   const [email, setEmail]             = useState("");
   const [phone, setPhone]             = useState("");
   const [password, setPassword]       = useState("");
-  const [role, setRole]               = useState<"CUSTOMER" | "HANDYMAN">(initialRole === "HANDYMAN" ? "HANDYMAN" : "CUSTOMER");
   const [isCompany, setIsCompany]     = useState(false);
   const [companyName, setCompanyName] = useState("");
   const [referralCode, setReferralCode] = useState("");
@@ -67,23 +65,11 @@ export default function RegisterScreen() {
     <KeyboardAvoidingView style={s.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled">
         <View style={s.header}>
-          <Text style={s.logo}>Tarea</Text>
-          <Text style={s.subtitle}>Create your account</Text>
+          <Text style={s.logo}>{IS_HANDYMAN ? "Tarea Pro" : "Tarea"}</Text>
+          <Text style={s.subtitle}>{IS_HANDYMAN ? "Create your Pro account" : "Create your account"}</Text>
         </View>
 
         <View style={s.card}>
-          {/* Role selector */}
-          <Text style={s.label}>I want to…</Text>
-          <View style={s.roleRow}>
-            {ROLES.map(r => (
-              <TouchableOpacity key={r.value} style={[s.roleBtn, role === r.value && s.roleBtnActive]}
-                onPress={() => { setRole(r.value as "CUSTOMER" | "HANDYMAN"); setIsCompany(false); }}>
-                <Text style={s.roleEmoji}>{r.emoji}</Text>
-                <Text style={[s.roleLabel, role === r.value && s.roleLabelActive]}>{r.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
           {/* Account type toggle — only for customers */}
           {role === "CUSTOMER" && (
             <>
