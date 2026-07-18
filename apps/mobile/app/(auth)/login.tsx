@@ -79,20 +79,20 @@ export default function LoginScreen() {
 }
 
 const s = StyleSheet.create({
-  flex:        { flex: 1, backgroundColor: C.ink },
+  flex:        { flex: 1, backgroundColor: C.bg },
   container:   { flexGrow: 1, justifyContent: "center", padding: 24 },
   header:      { alignItems: "center", marginBottom: 40 },
   logo:        { fontSize: 42, fontWeight: "900", color: C.sky, letterSpacing: -1 },
-  subtitle:    { color: C.slate400, fontSize: 15, marginTop: 6 },
-  card:        { backgroundColor: "#1E293B", borderRadius: 20, padding: 24, gap: 4 },
-  label:       { color: C.slate400, fontSize: 13, fontWeight: "600", marginTop: 12, marginBottom: 6 },
-  input:       { backgroundColor: "rgba(255,255,255,0.07)", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 13, color: C.white, fontSize: 15 },
+  subtitle:    { color: C.textMuted, fontSize: 15, marginTop: 6 },
+  card:        { backgroundColor: C.surface, borderRadius: 20, padding: 24, gap: 4 },
+  label:       { color: C.textMuted, fontSize: 13, fontWeight: "600", marginTop: 12, marginBottom: 6 },
+  input:       { backgroundColor: C.surface, borderWidth: 1, borderColor: C.line, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 13, color: C.text, fontSize: 15 },
   btn:         { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 15, alignItems: "center", marginTop: 20 },
   btnDisabled: { opacity: 0.6 },
   btnText:     { color: C.ink, fontWeight: "800", fontSize: 16 },
   forgot:      { alignItems: "center", marginTop: 14 },
   forgotText:  { color: C.sky, fontSize: 14, fontWeight: "600" },
   link:        { alignItems: "center", marginTop: 20 },
-  linkText:    { color: C.slate400, fontSize: 14 },
+  linkText:    { color: C.textMuted, fontSize: 14 },
   linkBold:    { color: C.sky, fontWeight: "700" },
 });

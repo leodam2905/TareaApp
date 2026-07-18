@@ -15,4 +15,10 @@ export const C = {
   amber:     "#F59E0B",
   red:       "#EF4444",
   orange:    "#F97316",
+  // Light-theme semantic tokens (Pro app)
+  bg:        "#FFFFFF",   // screen background
+  surface:   "#F1F5F9",   // cards / inputs / secondary surfaces
+  text:      "#0F172A",   // primary text
+  textMuted: "#64748B",   // secondary text
+  line:      "#E2E8F0",   // borders
 } as const;

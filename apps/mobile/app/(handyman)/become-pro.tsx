@@ -68,17 +68,17 @@ export default function BecomeProScreen() {
 }
 
 const s = StyleSheet.create({
-  safe:          { flex: 1, backgroundColor: C.ink },
+  safe:          { flex: 1, backgroundColor: C.bg },
   container:     { flex: 1, padding: 24 },
   header:        { paddingTop: 12, gap: 8 },
-  title:         { color: C.white, fontSize: 28, fontWeight: "900" },
-  sub:           { color: C.slate400, fontSize: 14, lineHeight: 21 },
+  title:         { color: C.text, fontSize: 28, fontWeight: "900" },
+  sub:           { color: C.textMuted, fontSize: 14, lineHeight: 21 },
   perks:         { marginTop: 28, gap: 16 },
-  perk:          { flexDirection: "row", gap: 14, alignItems: "flex-start", backgroundColor: "#1E293B", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
+  perk:          { flexDirection: "row", gap: 14, alignItems: "flex-start", backgroundColor: C.surface, borderRadius: 16, padding: 16, borderWidth: 1, borderColor: C.line },
   perkEmoji:     { fontSize: 26 },
   perkBody:      { flex: 1 },
-  perkTitle:     { color: C.white, fontWeight: "800", fontSize: 15 },
-  perkDesc:      { color: C.slate400, fontSize: 13, marginTop: 2, lineHeight: 18 },
+  perkTitle:     { color: C.text, fontWeight: "800", fontSize: 15 },
+  perkDesc:      { color: C.textMuted, fontSize: 13, marginTop: 2, lineHeight: 18 },
   btn:           { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 16, alignItems: "center" },
   btnDisabled:   { opacity: 0.5 },
   btnText:       { color: C.ink, fontWeight: "800", fontSize: 16 },

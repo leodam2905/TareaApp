@@ -89,17 +89,17 @@ export default function HandymanNotifications() {
 }
 
 const s = StyleSheet.create({
-  safe:           { flex: 1, backgroundColor: C.ink },
+  safe:           { flex: 1, backgroundColor: C.bg },
   center:         { flex: 1, alignItems: "center", justifyContent: "center" },
   header:         { flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 20, paddingBottom: 8 },
-  title:          { color: C.white, fontSize: 24, fontWeight: "800" },
+  title:          { color: C.text, fontSize: 24, fontWeight: "800" },
   markAll:        { color: C.sky, fontSize: 13, fontWeight: "600" },
-  empty:          { color: C.slate400, fontSize: 15 },
-  card:           { flexDirection: "row", alignItems: "flex-start", gap: 12, backgroundColor: "#1E293B", borderRadius: 14, padding: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)" },
+  empty:          { color: C.textMuted, fontSize: 15 },
+  card:           { flexDirection: "row", alignItems: "flex-start", gap: 12, backgroundColor: C.surface, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: C.line },
   cardUnread:     { borderColor: "rgba(56,189,248,0.2)", backgroundColor: "#1A2440" },
   dot:            { width: 8, height: 8, borderRadius: 4, marginTop: 5 },
-  notifTitle:     { color: C.slate400, fontSize: 14, fontWeight: "600", marginBottom: 2 },
-  notifTitleUnread:{ color: C.white },
+  notifTitle:     { color: C.textMuted, fontSize: 14, fontWeight: "600", marginBottom: 2 },
+  notifTitleUnread:{ color: C.text },
   notifBody:      { color: C.slate500, fontSize: 13, lineHeight: 18 },
   notifTime:      { color: C.slate600, fontSize: 11, marginTop: 4 },
   unreadDot:      { width: 8, height: 8, borderRadius: 4, backgroundColor: C.sky, marginTop: 5 },

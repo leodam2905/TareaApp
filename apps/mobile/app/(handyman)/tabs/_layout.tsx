@@ -17,7 +17,7 @@ export default function HandymanTabs() {
   return (
     <Tabs screenOptions={{
       headerShown: false,
-      tabBarStyle: { backgroundColor: "#0F172A", borderTopColor: "rgba(255,255,255,0.08)", height: 110 },
+      tabBarStyle: { backgroundColor: C.bg, borderTopColor: C.line, height: 110 },
       tabBarItemStyle: { paddingBottom: 55 },
       tabBarShowLabel: false,
     }}>
