@@ -11,7 +11,7 @@ const BLUE = "#2563EB";
 type Profile = { name: string; avatarUrl: string | null; handymanProfile: { rating: number; totalJobs: number } | null };
 type Earnings = { totalEarnings: number; pendingEarnings: number; totalJobs: number };
 type Booking = { id: string; scheduledAt: string; address: string; city: string; status: string; totalPrice: number; service: { title: string } | null };
-type Review = { id: string; rating: number; comment: string | null; createdAt: string; author: { name: string } };
+type Review = { id: string; rating: number; comment: string | null; createdAt: string; author: { name: string; avatarUrl: string | null } };
 type JobReq = { id: string; title: string; scheduledAt: string; budgetMin: number; budgetMax: number; category: string };
 type Checklist = Record<string, boolean | string>;
 
@@ -182,7 +182,9 @@ export default function HandymanDashboard() {
             {reviews.slice(0, 2).map(rv => (
               <View key={rv.id} style={s.reviewRow}>
                 <View style={s.reviewTop}>
-                  <View style={s.reviewAv}><Text style={s.reviewInit}>{rv.author.name?.[0]?.toUpperCase()}</Text></View>
+                  {rv.author.avatarUrl
+                    ? <Image source={{ uri: rv.author.avatarUrl }} style={s.reviewAv} />
+                    : <View style={s.reviewAv}><Text style={s.reviewInit}>{rv.author.name?.[0]?.toUpperCase()}</Text></View>}
                   <Text style={s.reviewName}>{rv.author.name}</Text>
                   <View style={s.stars}>{Array.from({ length: rv.rating }).map((_, i) => <Ionicons key={i} name="star" size={12} color="#F59E0B" />)}</View>
                 </View>
