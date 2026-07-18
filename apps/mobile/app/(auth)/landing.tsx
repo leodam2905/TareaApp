@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Image
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useVideoPlayer, VideoView } from "expo-video";
+import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import { API_BASE } from "@/lib/api";
 import { saveToken, saveRole } from "@/lib/storage";
@@ -19,16 +20,16 @@ const LINE = "#E2E8F0";
 const SOFT = "#F1F5F9";
 
 const STEPS = [
-  { icon: "👤", n: "1", title: "Create your profile", desc: "Add your skills, photos and service areas." },
-  { icon: "📋", n: "2", title: "Get job requests",   desc: "We'll send jobs that match your skills and availability." },
-  { icon: "✅", n: "3", title: "Do great work",       desc: "Complete the job, get paid and build happy clients." },
-];
+  { icon: "person-outline",           n: "1", title: "Create your profile", desc: "Add your skills, photos and service areas." },
+  { icon: "list-outline",             n: "2", title: "Get job requests",    desc: "We'll send jobs that match your skills and availability." },
+  { icon: "checkmark-circle-outline", n: "3", title: "Do great work",       desc: "Complete the job, get paid and build happy clients." },
+] as const;
 
 const TRUST = [
-  { icon: "🛡️", label: "Background\nverified pros" },
-  { icon: "🎧", label: "24/7\nsupport" },
-  { icon: "🔒", label: "Safe &\nsecure" },
-];
+  { icon: "shield-checkmark-outline", label: "Background\nverified pros" },
+  { icon: "headset-outline",          label: "24/7\nsupport" },
+  { icon: "lock-closed-outline",      label: "Safe &\nsecure" },
+] as const;
 
 export default function LandingScreen() {
   return IS_HANDYMAN ? <ProLanding /> : <CustomerLanding />;
@@ -81,7 +82,8 @@ function ProLanding() {
                 <Text style={p.brand}>Tarea</Text>
               </View>
               <View style={p.verifiedPill}>
-                <Text style={p.verifiedText}>🛡️ Verified Pros</Text>
+                <Ionicons name="shield-checkmark-outline" size={15} color={BLUE} />
+                <Text style={p.verifiedText}>Verified Pros</Text>
               </View>
             </View>
 
@@ -105,7 +107,7 @@ function ProLanding() {
             <View style={p.steps}>
               {STEPS.map(st => (
                 <View key={st.n} style={p.step}>
-                  <View style={p.stepIcon}><Text style={{ fontSize: 22 }}>{st.icon}</Text></View>
+                  <View style={p.stepIcon}><Ionicons name={st.icon} size={26} color={BLUE} /></View>
                   <View style={p.stepNum}><Text style={p.stepNumText}>{st.n}</Text></View>
                   <Text style={p.stepTitle}>{st.title}</Text>
                   <Text style={p.stepDesc}>{st.desc}</Text>
@@ -116,18 +118,18 @@ function ProLanding() {
             {/* Login card */}
             <View style={p.card}>
               <View style={p.field}>
-                <Text style={p.fieldIcon}>✉️</Text>
+                <Ionicons name="mail-outline" size={18} color={GRAY} style={p.fieldIcon} />
                 <TextInput style={p.input} value={email} onChangeText={setEmail}
                   placeholder="Email address" placeholderTextColor={GRAY}
                   autoCapitalize="none" keyboardType="email-address" autoComplete="email" />
               </View>
               <View style={p.field}>
-                <Text style={p.fieldIcon}>🔒</Text>
+                <Ionicons name="lock-closed-outline" size={18} color={GRAY} style={p.fieldIcon} />
                 <TextInput style={p.input} value={password} onChangeText={setPassword}
                   placeholder="Password" placeholderTextColor={GRAY}
                   secureTextEntry={!showPw} autoComplete="password" />
                 <TouchableOpacity onPress={() => setShowPw(v => !v)} hitSlop={10}>
-                  <Text style={p.eye}>{showPw ? "🙈" : "👁️"}</Text>
+                  <Ionicons name={showPw ? "eye-off-outline" : "eye-outline"} size={20} color={GRAY} />
                 </TouchableOpacity>
               </View>
 
@@ -154,7 +156,7 @@ function ProLanding() {
             <View style={p.trust}>
               {TRUST.map((t, i) => (
                 <View key={t.label} style={[p.trustItem, i < TRUST.length - 1 && p.trustDivider]}>
-                  <Text style={p.trustIcon}>{t.icon}</Text>
+                  <Ionicons name={t.icon} size={22} color="#475569" />
                   <Text style={p.trustLabel}>{t.label}</Text>
                 </View>
               ))}
@@ -175,7 +177,7 @@ const p = StyleSheet.create({
   brandRow:     { flexDirection: "row", alignItems: "center", gap: 8 },
   logo:         { width: 40, height: 40 },
   brand:        { fontSize: 26, fontWeight: "900", color: INK, letterSpacing: -1 },
-  verifiedPill: { flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#BFD3F5", backgroundColor: "#EFF5FF", borderRadius: 20, paddingHorizontal: 12, paddingVertical: 7 },
+  verifiedPill: { flexDirection: "row", alignItems: "center", gap: 5, borderWidth: 1, borderColor: "#BFD3F5", backgroundColor: "#EFF5FF", borderRadius: 20, paddingHorizontal: 12, paddingVertical: 7 },
   verifiedText: { color: BLUE, fontWeight: "700", fontSize: 13 },
 
   hero:         { flexDirection: "row", marginTop: 12, gap: 8 },
