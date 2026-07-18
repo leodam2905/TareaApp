@@ -56,6 +56,15 @@ export default {
       "expo-router",
       "expo-secure-store",
       [
+        "expo-splash-screen",
+        {
+          image: IS_HANDYMAN ? "./assets/splash-pro.png" : "./assets/splash-home.png",
+          backgroundColor: "#FFFFFF",
+          imageWidth: 240,
+          resizeMode: "contain",
+        },
+      ],
+      [
         "expo-image-picker",
         {
           photosPermission: "Tarea uses your photo library so you can attach images to your account — for example, choosing a profile photo, uploading portfolio images of your work, or selecting a photo of your ID or license for verification.",
