@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, Alert,
 import { useFocusEffect, useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as Updates from "expo-updates";
+import { Ionicons } from "@expo/vector-icons";
 import { api } from "@/lib/api";
 import { API_BASE } from "@/lib/api";
 import { clearAuth, getToken } from "@/lib/storage";
@@ -171,10 +172,21 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Setup checklist link */}
-        <TouchableOpacity style={s.checklistBtn} onPress={() => router.push("/(handyman)/setup-checklist")}>
-          <Text style={s.checklistBtnText}>📋 View Setup Checklist</Text>
-        </TouchableOpacity>
+        {/* Business */}
+        <View style={s.menuCard}>
+          <Text style={s.cardTitle}>Business</Text>
+          <MenuRow icon="construct-outline" label="Manage Services" onPress={() => router.push("/(handyman)/onboarding-services")} />
+          <MenuRow icon="calendar-outline" label="Manage Availability" onPress={() => router.push("/(handyman)/onboarding-availability")} />
+          <MenuRow icon="card-outline" label="Manage Payout Methods" onPress={() => router.push("/(handyman)/tabs/earnings")} last />
+        </View>
+
+        {/* Preferences */}
+        <View style={s.menuCard}>
+          <Text style={s.cardTitle}>More</Text>
+          <MenuRow icon="settings-outline" label="Settings" onPress={() => router.push("/(handyman)/settings" as any)} />
+          <MenuRow icon="shield-checkmark-outline" label="Legal & Support" onPress={() => router.push("/(handyman)/support" as any)} />
+          <MenuRow icon="list-outline" label="Setup Checklist" onPress={() => router.push("/(handyman)/setup-checklist")} last />
+        </View>
 
         <TouchableOpacity style={s.updateBtn} onPress={checkForUpdates} disabled={updating}>
           {updating
@@ -194,8 +206,23 @@ export default function ProfileScreen() {
   );
 }
 
+function MenuRow({ icon, label, onPress, last }: { icon: any; label: string; onPress: () => void; last?: boolean }) {
+  return (
+    <TouchableOpacity style={[s.menuRow, !last && s.menuRowBorder]} onPress={onPress}>
+      <View style={s.menuIcon}><Ionicons name={icon} size={19} color={C.sky} /></View>
+      <Text style={s.menuLabel}>{label}</Text>
+      <Ionicons name="chevron-forward" size={18} color={C.textMuted} />
+    </TouchableOpacity>
+  );
+}
+
 const s = StyleSheet.create({
   safe:              { flex: 1, backgroundColor: C.bg },
+  menuCard:          { margin: 16, marginBottom: 0, backgroundColor: C.surface, borderRadius: 20, paddingHorizontal: 18, paddingTop: 18, paddingBottom: 4, borderWidth: 1, borderColor: C.line },
+  menuRow:           { flexDirection: "row", alignItems: "center", gap: 14, paddingVertical: 14 },
+  menuRowBorder:     { borderBottomWidth: 1, borderBottomColor: C.line },
+  menuIcon:          { width: 34, height: 34, borderRadius: 10, backgroundColor: "rgba(56,189,248,0.12)", alignItems: "center", justifyContent: "center" },
+  menuLabel:         { flex: 1, color: C.text, fontSize: 15, fontWeight: "600" },
   scroll:            { flex: 1 },
   center:            { flex: 1, backgroundColor: C.bg, alignItems: "center", justifyContent: "center" },
   header:            { padding: 24, paddingBottom: 12 },
