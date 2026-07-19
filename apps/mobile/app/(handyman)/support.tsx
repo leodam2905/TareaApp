@@ -6,7 +6,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const BLUE = "#2563EB";
 const SUPPORT_EMAIL = "support@taptarea.com";
-const SUPPORT_PHONE = "+1 (800) 000-0000"; // TODO: confirm real support number
 
 function Row({ icon, label, value, onPress }: { icon: any; label: string; value?: string; onPress: () => void }) {
   return (
@@ -32,9 +31,7 @@ export default function SupportScreen() {
         <View style={s.card}>
           <Row icon="mail-outline" label="Email support" value={SUPPORT_EMAIL} onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}`)} />
           <View style={s.sep} />
-          <Row icon="call-outline" label="Call support" value={SUPPORT_PHONE} onPress={() => Linking.openURL(`tel:${SUPPORT_PHONE.replace(/[^\d+]/g, "")}`)} />
-          <View style={s.sep} />
-          <Row icon="chatbubbles-outline" label="Message support" value="Reply within 24h" onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=Tarea%20Pro%20Support`)} />
+          <Row icon="chatbubbles-outline" label="Message support" value="We reply within 24h" onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=Tarea%20Pro%20Support`)} />
         </View>
 
         <Text style={s.section}>LEGAL</Text>
