@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Image } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Image, Keyboard } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
@@ -17,6 +17,13 @@ export default function LoginScreen() {
   const [showPw, setShowPw]     = useState(false);
   const [remember, setRemember] = useState(true);
   const [loading, setLoading]   = useState(false);
+  const [kbd, setKbd]           = useState(false);
+
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardDidShow", () => setKbd(true));
+    const hide = Keyboard.addListener("keyboardDidHide", () => setKbd(false));
+    return () => { show.remove(); hide.remove(); };
+  }, []);
 
   const submit = async () => {
     if (!email.trim() || !password) { Alert.alert("Error", "Please enter your email and password"); return; }
@@ -58,7 +65,7 @@ export default function LoginScreen() {
             <Text style={s.h1}>Welcome back!</Text>
             <Text style={s.sub}>{IS_HANDYMAN ? "Log in to your account and continue finding jobs and growing your business." : "Log in to your account and book trusted pros in minutes."}</Text>
           </View>
-          <Image source={require("../../assets/login-illustration.png")} style={s.illo} resizeMode="contain" />
+          {!kbd && <Image source={require("../../assets/login-illustration.png")} style={s.illo} resizeMode="contain" />}
         </View>
 
         {/* Login card */}
