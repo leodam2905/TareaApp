@@ -1,10 +1,10 @@
 import { useState, useCallback } from "react";
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, TextInput, Alert } from "react-native";
-import { useRouter } from "expo-router";
-import { useFocusEffect } from "expo-router";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl } from "react-native";
+import { useRouter, useFocusEffect } from "expo-router";
 import { api } from "@/lib/api";
 import { C } from "@/constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
+import type { Job as DetailJob } from "@/components/JobDetailsScreen";
 
 type Job = { id: string; title: string; category: string; description: string; city: string; budgetMin: number; budgetMax: number; scheduledAt: string; distanceKm: number | null; applications: { id: string }[]; customer: { name: string } };
 type Checklist = { ica: boolean; profile: boolean; services: boolean; availability: boolean; backgroundCheck: boolean; stripe: boolean };
@@ -18,17 +18,38 @@ const STEPS = [
   { key: "stripe",          label: "Connect Payout",    href: "/(handyman)/tabs/earnings" },
 ] as const;
 
+// Map an open job request to the JobDetailsScreen shape.
+function toDetailJob(j: Job): DetailJob {
+  return {
+    id: j.id,
+    title: j.title,
+    category: (j.category || "General").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
+    description: j.description,
+    price: j.budgetMax || j.budgetMin,
+    currency: "USD",
+    pricingType: "fixed",
+    distanceMiles: j.distanceKm != null ? Math.round(j.distanceKm * 0.621371 * 10) / 10 : 0,
+    address: j.city,
+    preferredDate: new Date(j.scheduledAt).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" }),
+    preferredTime: new Date(j.scheduledAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }),
+    estimatedDuration: "To be discussed",
+    customerProvides: [],
+    customer: {
+      id: "",
+      name: j.customer?.name || "Customer",
+      initials: (j.customer?.name || "?").trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase(),
+      rating: 0, reviewCount: 0, verified: false, joinedDate: "",
+    },
+    status: "available",
+  };
+}
+
 export default function FindJobsScreen() {
   const router = useRouter();
   const [jobs, setJobs]           = useState<Job[]>([]);
   const [checklist, setChecklist] = useState<Checklist | null>(null);
   const [loading, setLoading]     = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [expanded, setExpanded]   = useState<string | null>(null);
-  const [applied, setApplied]     = useState<Set<string>>(new Set());
-  const [message, setMessage]     = useState("");
-  const [price, setPrice]         = useState("");
-  const [sending, setSending]     = useState(false);
 
   const load = useCallback(async () => {
     const [cRes, jRes] = await Promise.all([
@@ -42,19 +63,8 @@ export default function FindJobsScreen() {
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
-  const apply = async (jobId: string) => {
-    setSending(true);
-    const res = await api.post(`/job-requests/${jobId}/apply`, { message: message.trim() || null, proposedPrice: price || null });
-    if (res.ok) {
-      setApplied(p => new Set([...p, jobId]));
-      setJobs(p => p.filter(j => j.id !== jobId));
-      setExpanded(null); setMessage(""); setPrice("");
-    } else {
-      const b = await res.json();
-      Alert.alert("Error", b.error || "Failed to apply");
-    }
-    setSending(false);
-  };
+  const openJob = (job: Job) =>
+    router.push({ pathname: "/(handyman)/job-request-detail" as any, params: { job: JSON.stringify(toDetailJob(job)) } });
 
   const setupDone = checklist ? Object.values(checklist).every(Boolean) : false;
   const completedCount = checklist ? Object.values(checklist).filter(Boolean).length : 0;
@@ -101,55 +111,23 @@ export default function FindJobsScreen() {
           </View>
         )}
 
-        {setupDone && jobs.map((job, i) => {
-          const isExpanded = expanded === job.id;
-          const wasApplied = applied.has(job.id);
-          return (
-            <View key={job.id} style={[s.jobCard, i === 0 && s.jobCardTop]}>
-              {i === 0 && <Text style={s.bestMatch}>⭐ Best match</Text>}
-              <View style={s.jobHeader}>
-                <View style={s.jobInfo}>
-                  <Text style={s.jobTitle}>{job.title}</Text>
-                  <Text style={s.jobCity}>📍 {job.city}{job.distanceKm != null ? ` · ${job.distanceKm.toFixed(0)} km` : ""}</Text>
-                </View>
-                <Text style={s.jobBudget}>${job.budgetMin}–${job.budgetMax}</Text>
+        {setupDone && jobs.map((job, i) => (
+          <TouchableOpacity key={job.id} style={[s.jobCard, i === 0 && s.jobCardTop]} activeOpacity={0.85} onPress={() => openJob(job)}>
+            {i === 0 && <Text style={s.bestMatch}>⭐ Best match</Text>}
+            <View style={s.jobHeader}>
+              <View style={s.jobInfo}>
+                <Text style={s.jobTitle}>{job.title}</Text>
+                <Text style={s.jobCity}>📍 {job.city}{job.distanceKm != null ? ` · ${job.distanceKm.toFixed(0)} km` : ""}</Text>
               </View>
-              <Text style={s.jobDesc} numberOfLines={isExpanded ? undefined : 2}>{job.description}</Text>
-              {job.applications.length > 0 && <Text style={s.jobApps}>⚡ {job.applications.length} applied</Text>}
-
-              <View style={s.jobActions}>
-                <TouchableOpacity style={s.detailBtn} onPress={() => setExpanded(isExpanded ? null : job.id)}>
-                  <Text style={s.detailBtnText}>{isExpanded ? "Less" : "Details"}</Text>
-                </TouchableOpacity>
-                {!wasApplied && !isExpanded && (
-                  <TouchableOpacity style={s.applyBtn} onPress={() => setExpanded(job.id)}>
-                    <Text style={s.applyBtnText}>Apply →</Text>
-                  </TouchableOpacity>
-                )}
-                {wasApplied && <View style={s.appliedBadge}><Text style={s.appliedText}>✓ Applied</Text></View>}
-              </View>
-
-              {isExpanded && !wasApplied && (
-                <View style={s.applyForm}>
-                  <Text style={s.formLabel}>Message (optional)</Text>
-                  <TextInput style={s.formInput} value={message} onChangeText={setMessage}
-                    placeholder="Describe your approach…" placeholderTextColor={C.slate500} multiline numberOfLines={3} />
-                  <Text style={s.formLabel}>Your price offer $ (optional)</Text>
-                  <TextInput style={s.formInput} value={price} onChangeText={setPrice}
-                    placeholder="Leave blank to accept budget" placeholderTextColor={C.slate500} keyboardType="numeric" />
-                  <View style={s.formBtns}>
-                    <TouchableOpacity style={s.cancelBtn} onPress={() => setExpanded(null)}>
-                      <Text style={s.cancelBtnText}>Cancel</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[s.sendBtn, sending && s.sendBtnDisabled]} onPress={() => apply(job.id)} disabled={sending}>
-                      <Text style={s.sendBtnText}>{sending ? "Sending…" : "Send Application"}</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )}
+              <Text style={s.jobBudget}>${job.budgetMin}–${job.budgetMax}</Text>
             </View>
-          );
-        })}
+            <Text style={s.jobDesc} numberOfLines={2}>{job.description}</Text>
+            {job.applications.length > 0 && <Text style={s.jobApps}>⚡ {job.applications.length} applied</Text>}
+            <View style={s.jobActions}>
+              <View style={s.viewBtn}><Text style={s.viewBtnText}>View details →</Text></View>
+            </View>
+          </TouchableOpacity>
+        ))}
         <View style={{ height: 32 }} />
       </ScrollView>
     </SafeAreaView>
@@ -189,19 +167,6 @@ const s = StyleSheet.create({
   jobDesc:        { color: C.textMuted, fontSize: 13, lineHeight: 19 },
   jobApps:        { color: C.amber, fontSize: 12, marginTop: 6 },
   jobActions:     { flexDirection: "row", gap: 8, marginTop: 12 },
-  detailBtn:      { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, borderWidth: 1, borderColor: C.line },
-  detailBtnText:  { color: C.textMuted, fontSize: 13, fontWeight: "600" },
-  applyBtn:       { flex: 1, backgroundColor: C.sky, borderRadius: 10, paddingVertical: 8, alignItems: "center" },
-  applyBtnText:   { color: C.ink, fontWeight: "800", fontSize: 14 },
-  appliedBadge:   { flex: 1, backgroundColor: "rgba(16,185,129,0.1)", borderRadius: 10, paddingVertical: 8, alignItems: "center", borderWidth: 1, borderColor: "rgba(16,185,129,0.2)" },
-  appliedText:    { color: C.emerald, fontWeight: "700", fontSize: 14 },
-  applyForm:      { marginTop: 14, gap: 6, borderTopWidth: 1, borderTopColor: C.line, paddingTop: 14 },
-  formLabel:      { color: C.textMuted, fontSize: 12, fontWeight: "600" },
-  formInput:      { backgroundColor: C.surface, borderWidth: 1, borderColor: C.line, borderRadius: 10, padding: 12, color: C.text, fontSize: 14 },
-  formBtns:       { flexDirection: "row", gap: 8, marginTop: 4 },
-  cancelBtn:      { flex: 1, borderWidth: 1, borderColor: C.line, borderRadius: 10, paddingVertical: 10, alignItems: "center" },
-  cancelBtnText:  { color: C.textMuted, fontWeight: "600" },
-  sendBtn:        { flex: 2, backgroundColor: C.sky, borderRadius: 10, paddingVertical: 10, alignItems: "center" },
-  sendBtnDisabled:{ opacity: 0.5 },
-  sendBtnText:    { color: C.ink, fontWeight: "800", fontSize: 14 },
+  viewBtn:        { flex: 1, backgroundColor: "#EFF5FF", borderRadius: 10, paddingVertical: 9, alignItems: "center" },
+  viewBtnText:    { color: "#2563EB", fontWeight: "800", fontSize: 14 },
 });

@@ -36,6 +36,9 @@ One account = one `User` with a single `role` (CUSTOMER / HANDYMAN / ADMIN). The
 - **Native changes** (icons, splash, native config, new native deps) require a rebuild: `npx eas build -p android --profile preview-handyman` (direct-install APK for testing) or `--profile production-handyman` (store bundle).
 - Web deploy: `cd apps/web && gcloud builds submit --config cloudbuild.yaml` (Cloud Run).
 
+## Backend = REST API, NOT Firebase
+This app does **not** use Firebase/Firestore. All data goes through the Next.js API in `apps/web/app/api/**` (Prisma + Postgres), called from mobile via `@/lib/api` against `https://taptarea.com/api`. Examples: a handyman applies to a job with `POST /job-requests/{id}/apply`; reviews at `GET /reviews/received`; earnings at `GET /handyman/earnings`. Do not add Firebase.
+
 ## Guardrails (important)
 - **Never commit secrets.** Env/keys (Stripe, DB, gcloud, JWT) live in local `.env` files and cloud secrets — they are **not** in the repo and must stay out. `EXPO_PUBLIC_*` keys in `apps/mobile/.env` are publishable-only.
 - **Do NOT submit to the App Store / Play Store** without explicit owner approval. Store submission is a deliberate, separate step (bump version → build production profile → `eas submit` → promote/submit for review).
