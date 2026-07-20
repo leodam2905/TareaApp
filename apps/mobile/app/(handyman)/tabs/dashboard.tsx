@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, Image } from "react-native";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, Image, Animated, Easing } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { api } from "@/lib/api";
@@ -92,7 +92,10 @@ export default function HandymanDashboard() {
 
         {/* Welcome */}
         <View style={s.pad}>
-          <Text style={s.welcome}>Welcome back, {profile?.name?.split(" ")[0]}! 👋</Text>
+          <View style={s.welcomeRow}>
+            <Text style={s.welcome}>Welcome back, {profile?.name?.split(" ")[0]}! </Text>
+            <WavingHand />
+          </View>
           <Text style={s.welcomeSub}>Here's what's happening with your business today.</Text>
         </View>
 
@@ -200,6 +203,25 @@ export default function HandymanDashboard() {
   );
 }
 
+function WavingHand() {
+  const rot = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const anim = Animated.loop(
+      Animated.sequence([
+        Animated.timing(rot, { toValue: 1,  duration: 140, easing: Easing.linear, useNativeDriver: true }),
+        Animated.timing(rot, { toValue: -1, duration: 140, easing: Easing.linear, useNativeDriver: true }),
+        Animated.timing(rot, { toValue: 1,  duration: 140, easing: Easing.linear, useNativeDriver: true }),
+        Animated.timing(rot, { toValue: 0,  duration: 140, easing: Easing.linear, useNativeDriver: true }),
+        Animated.delay(1200),
+      ])
+    );
+    anim.start();
+    return () => anim.stop();
+  }, [rot]);
+  const rotate = rot.interpolate({ inputRange: [-1, 1], outputRange: ["-22deg", "22deg"] });
+  return <Animated.Text style={{ fontSize: 24, transform: [{ rotate }] }}>👋</Animated.Text>;
+}
+
 function Stat({ icon, tint, iconColor, label, value, sub, star }: any) {
   return (
     <View style={s.statCard}>
@@ -235,6 +257,7 @@ const s = StyleSheet.create({
   avatarPh:    { width: 40, height: 40, borderRadius: 20, backgroundColor: "#EFF5FF", alignItems: "center", justifyContent: "center" },
   avatarInit:  { color: BLUE, fontWeight: "800", fontSize: 16 },
 
+  welcomeRow:  { flexDirection: "row", alignItems: "center", flexWrap: "wrap" },
   welcome:     { fontSize: 24, fontWeight: "900", color: C.text, letterSpacing: -0.5 },
   welcomeSub:  { fontSize: 14, color: C.textMuted, marginTop: 4 },
 

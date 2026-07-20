@@ -22,6 +22,7 @@ import {
   UserRound,
   Wrench,
 } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /**
  * Change these colors to match the existing Tarea theme.
@@ -132,6 +133,7 @@ export default function JobDetailsScreen({
   onSubmitInterest,
 }: JobDetailsScreenProps) {
   const job = useMemo(() => incomingJob ?? demoJob, [incomingJob]);
+  const insets = useSafeAreaInsets();
 
   const [status, setStatus] = useState<JobStatus>(job.status);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -300,7 +302,7 @@ export default function JobDetailsScreen({
         </View>
       </ScrollView>
 
-      <View style={styles.bottomBar}>
+      <View style={[styles.bottomBar, { paddingBottom: insets.bottom + 14 }]}>
         <View style={styles.bottomPrice}>
           <Text style={styles.bottomPriceLabel}>Potential earnings</Text>
           <Text style={styles.bottomPriceValue}>{formatCurrency(job.price, job.currency)}</Text>
@@ -342,7 +344,7 @@ const styles = StyleSheet.create({
   backButton: { alignItems: "center", height: 40, justifyContent: "center", width: 40 },
   headerTitle: { color: COLORS.text, fontSize: 18, fontWeight: "700" },
   headerPlaceholder: { height: 40, width: 40 },
-  scrollContent: { paddingBottom: 130, paddingHorizontal: 16, paddingTop: 16 },
+  scrollContent: { paddingBottom: 160, paddingHorizontal: 16, paddingTop: 16 },
   demoBanner: { backgroundColor: COLORS.warningBackground, borderRadius: 14, marginBottom: 14, paddingHorizontal: 15, paddingVertical: 12 },
   demoBannerTitle: { color: COLORS.warningText, fontSize: 12, fontWeight: "800", letterSpacing: 0.7, marginBottom: 3 },
   demoBannerText: { color: COLORS.warningText, fontSize: 13, lineHeight: 19 },
