@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, Alert,
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as SecureStore from "expo-secure-store";
+import * as Location from "expo-location";
 import { api, API_BASE } from "@/lib/api";
 import { getToken } from "@/lib/storage";
 import { C } from "@/constants/colors";
@@ -19,6 +20,11 @@ export default function OnboardingProfileScreen() {
   const [licenseNum, setLicenseNum] = useState("");
   const [uploading, setUploading]   = useState(false);
   const [saving, setSaving]         = useState(false);
+  // Work area
+  const [address, setAddress]       = useState("");
+  const [radius, setRadius]         = useState("50");
+  const [coords, setCoords]         = useState<{ lat: number; lng: number } | null>(null);
+  const [locBusy, setLocBusy]       = useState(false);
 
   const [uris, setUris] = useState<Record<DocField, string>>({ avatar: "", idFront: "", idBack: "", licenseDoc: "", insuranceDoc: "" });
   const [urls, setUrls] = useState<Record<DocField, string>>({ avatar: "", idFront: "", idBack: "", licenseDoc: "", insuranceDoc: "" });
@@ -45,6 +51,9 @@ export default function OnboardingProfileScreen() {
           };
           setUrls(loaded);
           setUris(loaded); // remote URLs render fine in <Image>
+          if (d.address) setAddress(d.address);
+          if (d.latitude != null && d.longitude != null) setCoords({ lat: d.latitude, lng: d.longitude });
+          if (hp.serviceRadius != null) setRadius(String(hp.serviceRadius));
         }
       } catch { /* ignore — fall back to local */ }
       setBio(hp.bio || (await SecureStore.getItemAsync("ob_bio")) || "");
@@ -98,6 +107,50 @@ export default function OnboardingProfileScreen() {
   // lost if they navigate away mid-step.
   const persistField = (key: string, value: string) => { SecureStore.setItemAsync(key, value).catch(() => {}); };
 
+  // Discrete "use my location": grab GPS + fill the address field.
+  const useMyLocation = async () => {
+    setLocBusy(true);
+    try {
+      const perm = await Location.requestForegroundPermissionsAsync();
+      if (!perm.granted) { Alert.alert("Location off", "Allow location access, or just type your work address."); setLocBusy(false); return; }
+      const pos = await Location.getCurrentPositionAsync({});
+      setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      const geo = await Location.reverseGeocodeAsync({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
+      const g = geo[0];
+      if (g) {
+        const line = [g.streetNumber, g.street].filter(Boolean).join(" ");
+        const full = [line || g.name, g.city, g.region].filter(Boolean).join(", ");
+        if (full) setAddress(full);
+      }
+    } catch { Alert.alert("Couldn't get location", "Please type your work address instead."); }
+    setLocBusy(false);
+  };
+
+  // Save the work area — geocode the typed address to coordinates (the radius is
+  // measured from here) and store city/state + radius.
+  const saveWorkArea = async () => {
+    if (!address.trim()) return;
+    let loc = coords;
+    let city: string | undefined, state: string | undefined;
+    try {
+      if (!loc) {
+        const g = await Location.geocodeAsync(address.trim());
+        if (g[0]) loc = { lat: g[0].latitude, lng: g[0].longitude };
+      }
+      if (loc) {
+        const rev = await Location.reverseGeocodeAsync({ latitude: loc.lat, longitude: loc.lng });
+        if (rev[0]) { city = rev[0].city || undefined; state = rev[0].region || undefined; }
+      }
+    } catch { /* geocode may fail offline — still save the text address + radius */ }
+    await api.patch("/profile", {
+      address: address.trim(),
+      ...(city && { city }),
+      ...(state && { state }),
+      ...(loc && { latitude: loc.lat, longitude: loc.lng }),
+      serviceRadius: radius,
+    }).catch(() => {});
+  };
+
   const next = async () => {
     if (!urls.avatar)  { Alert.alert("Required", "Please upload a profile photo"); return; }
     if (!urls.idFront) { Alert.alert("Required", "Please upload the front of your government ID"); return; }
@@ -122,6 +175,7 @@ export default function OnboardingProfileScreen() {
     await SecureStore.setItemAsync("ob_bio",   bio);
     await SecureStore.setItemAsync("ob_rate",  rate);
     await SecureStore.setItemAsync("ob_years", years);
+    await saveWorkArea();
     setSaving(false);
     router.push("/(handyman)/onboarding-services");
   };
@@ -193,6 +247,28 @@ export default function OnboardingProfileScreen() {
           </View>
         </View>
 
+        {/* Work Area */}
+        <View style={s.card}>
+          <View style={s.waHead}>
+            <Text style={s.sectionTitle}>Work Area</Text>
+            <TouchableOpacity onPress={useMyLocation} disabled={locBusy}>
+              <Text style={s.useLoc}>{locBusy ? "Locating…" : "📍 Use my location"}</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={s.sectionSub}>Where you take jobs. Customers within your travel distance can find you.</Text>
+          <TextInput style={s.input} value={address}
+            onChangeText={t => { setAddress(t); setCoords(null); }}
+            placeholder="Address, city or ZIP" placeholderTextColor={C.slate500} />
+          <Text style={[s.label, { marginTop: 12 }]}>Travel distance from here</Text>
+          <View style={s.radiusRow}>
+            {["10", "25", "50", "75"].map(r => (
+              <TouchableOpacity key={r} style={[s.radiusChip, radius === r && s.radiusChipOn]} onPress={() => setRadius(r)}>
+                <Text style={[s.radiusChipText, radius === r && s.radiusChipTextOn]}>{r} mi</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
         {uploading && (
           <View style={s.uploadingBanner}>
             <ActivityIndicator color={C.sky} size="small" />
@@ -225,6 +301,13 @@ const s = StyleSheet.create({
   card:             { margin: 16, backgroundColor: C.surface, borderRadius: 20, padding: 18, borderWidth: 1, borderColor: C.line },
   sectionTitle:     { color: C.text, fontWeight: "800", fontSize: 15, marginBottom: 4 },
   sectionSub:       { color: C.slate500, fontSize: 12, marginBottom: 12 },
+  waHead:           { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  useLoc:           { color: "#2563EB", fontSize: 13, fontWeight: "700" },
+  radiusRow:        { flexDirection: "row", gap: 8, marginTop: 6 },
+  radiusChip:       { flex: 1, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: C.line, alignItems: "center" },
+  radiusChipOn:     { backgroundColor: "#EFF5FF", borderColor: "#2563EB" },
+  radiusChipText:   { color: C.textMuted, fontWeight: "700", fontSize: 13 },
+  radiusChipTextOn: { color: "#2563EB" },
   docRow:           { flexDirection: "row", gap: 10 },
   docTile:          { flex: 1, height: 100, borderRadius: 14, borderWidth: 2, borderColor: C.line, borderStyle: "dashed", overflow: "hidden" },
   docPreview:       { width: "100%", height: "100%" },
