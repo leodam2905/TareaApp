@@ -16,9 +16,6 @@ const GROUPS = [
   { key: "pref_language", title: "Preferred Language", options: [
     { value: "en", label: "English" }, { value: "es", label: "Español" }, { value: "fr", label: "Français" },
   ], def: "en" },
-  { key: "pref_theme", title: "Preferred Theme", options: [
-    { value: "light", label: "Light" }, { value: "dark", label: "Dark" }, { value: "system", label: "System default" },
-  ], def: "light" },
 ];
 
 export default function SettingsScreen() {
@@ -58,7 +55,7 @@ export default function SettingsScreen() {
           </View>
         ))}
 
-        <Text style={s.note}>Your preferences are saved on this device. Full app-wide currency, language, and dark theme are rolling out soon.</Text>
+        <Text style={s.note}>Your preferences are saved on this device. Full app-wide currency and language support are rolling out soon.</Text>
         <View style={{ height: 24 }} />
       </ScrollView>
     </SafeAreaView>

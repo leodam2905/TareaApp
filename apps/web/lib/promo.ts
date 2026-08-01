@@ -1,4 +1,12 @@
 import type { PromoCode } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
+
+// A customer's "first order" = they have no prior paid booking. Used to gate
+// first-order-only promo codes.
+export async function hasPriorPaidOrder(userId: string): Promise<boolean> {
+  const count = await prisma.booking.count({ where: { customerId: userId, isPaid: true } });
+  return count > 0;
+}
 
 export interface PromoCheckResult {
   ok: boolean;
@@ -16,9 +24,12 @@ export interface PromoCheckResult {
  * applied through one path while bypassing checks on another.
  */
 export function assertPromoUsable(
-  promo: Pick<PromoCode, "isActive" | "expiresAt" | "maxUses" | "usesCount" | "discountType" | "discountValue" | "ownerId">,
+  promo: Pick<PromoCode, "isActive" | "expiresAt" | "maxUses" | "usesCount" | "discountType" | "discountValue" | "ownerId" | "firstOrderOnly">,
   userId: string,
-  totalPrice: number
+  totalPrice: number,
+  // Pass the caller's knowledge of whether this user already has a paid order,
+  // so a first-order-only code can be rejected for returning customers.
+  hasPriorPaidOrder = false
 ): PromoCheckResult {
   if (!promo.isActive) {
     return { ok: false, error: "This promo code is no longer active", discountAmount: 0 };
@@ -28,6 +39,9 @@ export function assertPromoUsable(
   }
   if (promo.maxUses !== null && promo.usesCount >= promo.maxUses) {
     return { ok: false, error: "This promo code has reached its usage limit", discountAmount: 0 };
+  }
+  if (promo.firstOrderOnly && hasPriorPaidOrder) {
+    return { ok: false, error: "This code is only valid on your first order", discountAmount: 0 };
   }
   if (promo.ownerId && promo.ownerId !== userId) {
     // Don't reveal that the code exists for someone else — generic message.

@@ -2,11 +2,9 @@ import { useState, useCallback } from "react";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, Linking, Alert, Modal, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { api } from "@/lib/api";
-import { createBankAccountToken } from "@/lib/stripe";
+import { createBankAccountToken, createCardToken } from "@/lib/stripe";
 import { C } from "@/constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const WEB_PAYOUT_URL = "https://taptarea.com/handyman/payout-methods";
 
 type EarningsData = { totalEarnings: number; pendingEarnings: number; totalJobs: number; stripeAccountStatus: string | null };
 type Card         = { id: string; brand: string; last4: string; expMonth: number; expYear: number; funding: string; isDefault: boolean };
@@ -25,6 +23,11 @@ export default function EarningsScreen() {
   const [showAddBank, setShowAddBank] = useState(false);
   const [bankForm, setBankForm] = useState({ holderName: "", routing: "", account: "", accountConfirm: "" });
   const [addingBank, setAddingBank] = useState(false);
+
+  // Add-debit-card modal
+  const [showAddCard, setShowAddCard] = useState(false);
+  const [cardForm, setCardForm] = useState({ name: "", number: "", exp: "", cvc: "" });
+  const [addingCard, setAddingCard] = useState(false);
 
   const load = useCallback(async () => {
     const [earningsRes, methodsRes] = await Promise.all([
@@ -87,6 +90,44 @@ export default function EarningsScreen() {
       let msg = "Failed to add bank account.";
       try { msg = (await res.json())?.error ?? msg; } catch {}
       Alert.alert("Couldn't add bank", msg);
+    }
+  };
+
+  const setCardField = (k: keyof typeof cardForm, v: string) => setCardForm(f => ({ ...f, [k]: v }));
+
+  const submitCard = async () => {
+    const name   = cardForm.name.trim();
+    const number = cardForm.number.replace(/\s/g, "");
+    const cvc    = cardForm.cvc.trim();
+    const [mm, yy] = cardForm.exp.split("/").map(s => s.trim());
+
+    if (number.length < 15)                     { Alert.alert("Invalid card number", "Enter the full card number."); return; }
+    if (!mm || !yy || !/^\d{1,2}$/.test(mm) || !/^\d{2,4}$/.test(yy)) {
+      Alert.alert("Invalid expiry", "Enter the expiry date as MM/YY.");
+      return;
+    }
+    if (!/^\d{3,4}$/.test(cvc))                 { Alert.alert("Invalid CVC", "Enter the 3- or 4-digit security code."); return; }
+
+    setAddingCard(true);
+    // 1) Tokenize with Stripe (raw card details never hit our backend)
+    const tok = await createCardToken({ number, expMonth: mm, expYear: yy, cvc, name: name || undefined });
+    if (tok.error || !tok.id) {
+      setAddingCard(false);
+      Alert.alert("Couldn't add card", tok.error ?? "Please check your details and try again.");
+      return;
+    }
+    // 2) Attach to the connected account (becomes the new default automatically)
+    const res = await api.post("/handyman/payout-methods", { token: tok.id, type: "card" });
+    setAddingCard(false);
+    if (res.ok) {
+      setShowAddCard(false);
+      setCardForm({ name: "", number: "", exp: "", cvc: "" });
+      Alert.alert("Debit card added", "Your debit card is set up for instant payouts.");
+      load();
+    } else {
+      let msg = "Failed to add debit card.";
+      try { msg = (await res.json())?.error ?? msg; } catch {}
+      Alert.alert("Couldn't add card", msg);
     }
   };
 
@@ -246,9 +287,9 @@ export default function EarningsScreen() {
                 </View>
               )}
 
-              {/* Add a debit card (needs card entry — handled on secure web page) */}
-              <TouchableOpacity onPress={() => Linking.openURL(WEB_PAYOUT_URL)} style={s.webLink}>
-                <Text style={s.webLinkText}>Add or manage a debit card on the web →</Text>
+              {/* Add a debit card (native, tokenized directly with Stripe) */}
+              <TouchableOpacity onPress={() => setShowAddCard(true)} style={s.addBtn}>
+                <Text style={s.addBtnText}>+ Add debit card</Text>
               </TouchableOpacity>
 
               {hasNoMethods && (
@@ -289,6 +330,52 @@ export default function EarningsScreen() {
 
             <TouchableOpacity style={[s.modalBtn, addingBank && s.stripeBtnDisabled]} onPress={submitBank} disabled={addingBank}>
               {addingBank ? <ActivityIndicator color={C.ink} /> : <Text style={s.modalBtnText}>Add Bank Account</Text>}
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Add debit card modal */}
+      <Modal visible={showAddCard} animationType="slide" transparent onRequestClose={() => setShowAddCard(false)}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={s.modalWrap}>
+          <View style={s.modalCard}>
+            <View style={s.modalHeader}>
+              <Text style={s.modalTitle}>Add Debit Card</Text>
+              <TouchableOpacity onPress={() => setShowAddCard(false)} disabled={addingCard}>
+                <Text style={s.modalClose}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={s.modalSub}>Debit cards only, for instant payouts (1% fee). Your card details go directly to Stripe — Tarea never stores them.</Text>
+
+            <Text style={s.modalLabel}>Name on card (optional)</Text>
+            <TextInput style={s.modalInput} value={cardForm.name} onChangeText={v => setCardField("name", v)}
+              placeholder="Full name on the card" placeholderTextColor={C.slate500} autoCapitalize="words" />
+
+            <Text style={s.modalLabel}>Card number</Text>
+            <TextInput style={s.modalInput} value={cardForm.number}
+              onChangeText={v => setCardField("number", v.replace(/[^0-9]/g, "").slice(0, 19))}
+              placeholder="Debit card number" placeholderTextColor={C.slate500} keyboardType="number-pad" />
+
+            <View style={s.modalRow}>
+              <View style={{ flex: 1 }}>
+                <Text style={s.modalLabel}>Expiry (MM/YY)</Text>
+                <TextInput style={s.modalInput} value={cardForm.exp}
+                  onChangeText={v => {
+                    const d = v.replace(/[^0-9]/g, "").slice(0, 4);
+                    setCardField("exp", d.length >= 3 ? `${d.slice(0, 2)}/${d.slice(2)}` : d);
+                  }}
+                  placeholder="MM/YY" placeholderTextColor={C.slate500} keyboardType="number-pad" maxLength={5} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={s.modalLabel}>CVC</Text>
+                <TextInput style={s.modalInput} value={cardForm.cvc}
+                  onChangeText={v => setCardField("cvc", v.replace(/[^0-9]/g, "").slice(0, 4))}
+                  placeholder="123" placeholderTextColor={C.slate500} keyboardType="number-pad" secureTextEntry />
+              </View>
+            </View>
+
+            <TouchableOpacity style={[s.modalBtn, addingCard && s.stripeBtnDisabled]} onPress={submitCard} disabled={addingCard}>
+              {addingCard ? <ActivityIndicator color={C.ink} /> : <Text style={s.modalBtnText}>Add Debit Card</Text>}
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
@@ -350,6 +437,7 @@ const s = StyleSheet.create({
   modalSub:           { color: C.textMuted, fontSize: 12, lineHeight: 18, marginBottom: 16 },
   modalLabel:         { color: C.textMuted, fontSize: 12, fontWeight: "600", marginBottom: 6, marginTop: 10 },
   modalInput:         { backgroundColor: C.surface, borderWidth: 1, borderColor: C.line, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, color: C.text, fontSize: 15 },
+  modalRow:           { flexDirection: "row", gap: 12 },
   modalBtn:           { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 15, alignItems: "center", marginTop: 22 },
   modalBtnText:       { color: C.ink, fontWeight: "800", fontSize: 16 },
 });

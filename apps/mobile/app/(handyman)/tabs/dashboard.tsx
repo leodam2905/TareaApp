@@ -1,14 +1,15 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, Image, Animated, Easing } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, Image, Animated, Easing, Alert, Linking } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import * as Location from "expo-location";
 import { api } from "@/lib/api";
 import { C } from "@/constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const BLUE = "#2563EB";
 
-type Profile = { name: string; avatarUrl: string | null; handymanProfile: { rating: number; totalJobs: number } | null };
+type Profile = { name: string; avatarUrl: string | null; handymanProfile: { rating: number; totalJobs: number; isAvailable?: boolean; licenseDocUrl?: string | null; insuranceDocUrl?: string | null } | null };
 type Earnings = { totalEarnings: number; pendingEarnings: number; totalJobs: number };
 type Booking = { id: string; scheduledAt: string; address: string; city: string; status: string; totalPrice: number; service: { title: string } | null };
 type Review = { id: string; rating: number; comment: string | null; createdAt: string; author: { name: string; avatarUrl: string | null } };
@@ -28,13 +29,14 @@ export default function HandymanDashboard() {
   const [checklist, setChecklist] = useState<Checklist | null>(null);
   const [loading, setLoading]   = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [available, setAvailable] = useState(false);
 
   const load = useCallback(async () => {
     const [p, e, b, rv, rq, c] = await Promise.all([
       api.get("/profile"), api.get("/handyman/earnings"), api.get("/bookings?role=handyman"),
       api.get("/reviews/received"), api.get("/job-requests"), api.get("/handyman/checklist"),
     ]);
-    if (p.ok)  setProfile(await p.json());
+    if (p.ok)  { const pj = await p.json(); setProfile(pj); setAvailable(!!pj.handymanProfile?.isAvailable); }
     if (e.ok)  setEarn(await e.json());
     if (b.ok)  setBookings(await b.json());
     if (rv.ok) setReviews(await rv.json());
@@ -45,9 +47,48 @@ export default function HandymanDashboard() {
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
+  const goOnlineWithLocation = async () => {
+    // Going online needs location so customers nearby can find and book this pro.
+    let perm = await Location.getForegroundPermissionsAsync();
+    if (!perm.granted) perm = await Location.requestForegroundPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert(
+        "Location needed to get jobs",
+        "Turn on location so nearby customers can find you and send jobs. You won't appear in local searches without it.",
+        [
+          { text: "Not now", style: "cancel" },
+          { text: "Open Settings", onPress: () => Linking.openSettings() },
+        ]
+      );
+      return false;
+    }
+    try {
+      const pos = await Location.getCurrentPositionAsync({});
+      const patch: Record<string, unknown> = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+      const geo = await Location.reverseGeocodeAsync({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
+      const g = geo[0];
+      if (g?.city) patch.city = g.city;
+      if (g?.region) patch.state = g.region;
+      await api.patch("/profile", patch).catch(() => {});
+    } catch { /* still allow going online even if the fix fails */ }
+    return true;
+  };
+
+  const toggleOnline = async () => {
+    const next = !available;
+    if (next) {
+      const ok = await goOnlineWithLocation();
+      if (!ok) return; // stay offline if they declined location
+    }
+    setAvailable(next);
+    const res = await api.patch("/profile", { isAvailable: next });
+    if (!res.ok) setAvailable(!next); // revert if it didn't save
+  };
+
   if (loading) return <View style={s.center}><ActivityIndicator color={BLUE} size="large" /></View>;
 
   const hp = profile?.handymanProfile;
+  const licensed = !!(hp?.licenseDocUrl && hp?.insuranceDocUrl);
   const now = new Date();
   const in7 = new Date(Date.now() + 7 * 864e5);
   const upcoming = bookings
@@ -97,6 +138,18 @@ export default function HandymanDashboard() {
             <WavingHand />
           </View>
           <Text style={s.welcomeSub}>Here's what's happening with your business today.</Text>
+          <View style={s.statusRow}>
+            <TouchableOpacity style={[s.onlineToggle, { borderColor: available ? "#16A34A" : C.line, backgroundColor: available ? "#ECFDF3" : C.bg }]} onPress={toggleOnline} activeOpacity={0.8}>
+              <View style={[s.onlineDot, { backgroundColor: available ? "#16A34A" : "#94A3B8" }]} />
+              <Text style={[s.onlineText, { color: available ? "#16A34A" : C.textMuted }]}>{available ? "Online" : "Offline"}</Text>
+            </TouchableOpacity>
+            {licensed && (
+              <View style={s.liBadge}>
+                <Ionicons name="shield-checkmark" size={14} color={BLUE} />
+                <Text style={s.liBadgeText}>Licensed & Insured</Text>
+              </View>
+            )}
+          </View>
         </View>
 
         {/* Stat cards */}
@@ -260,6 +313,12 @@ const s = StyleSheet.create({
   welcomeRow:  { flexDirection: "row", alignItems: "center", flexWrap: "wrap" },
   welcome:     { fontSize: 24, fontWeight: "900", color: C.text, letterSpacing: -0.5 },
   welcomeSub:  { fontSize: 14, color: C.textMuted, marginTop: 4 },
+  statusRow:   { flexDirection: "row", alignItems: "center", gap: 10, marginTop: 12, flexWrap: "wrap" },
+  onlineToggle:{ flexDirection: "row", alignItems: "center", gap: 8, borderWidth: 1, borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8 },
+  onlineDot:   { width: 9, height: 9, borderRadius: 5 },
+  onlineText:  { fontSize: 14, fontWeight: "800" },
+  liBadge:     { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "#EFF5FF", borderRadius: 20, paddingHorizontal: 12, paddingVertical: 8 },
+  liBadgeText: { color: BLUE, fontSize: 13, fontWeight: "700" },
 
   statsRow:    { flexDirection: "row", gap: 12, paddingHorizontal: 16, marginBottom: 12 },
   statCard:    { flex: 1, backgroundColor: C.bg, borderRadius: 16, padding: 14, borderWidth: 1, borderColor: C.line },

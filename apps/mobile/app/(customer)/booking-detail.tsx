@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, RefreshControl } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, RefreshControl, Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
 import { api } from "@/lib/api";
 import { C } from "@/constants/colors";
 
 type Phase = { id: string; title: string; startedAt: string; confirmedAt: string | null };
+type Extension = { id: string; additionalMinutes: number; extraAmount: number; reason: string | null; status: string; respondedAt: string | null };
 type Booking = {
   id: string; status: string; scheduledAt: string; totalPrice: number; address: string; city: string;
   notes: string | null; isPaid: boolean; jobStartedAt: string | null; completedAt: string | null;
@@ -14,7 +15,13 @@ type Booking = {
   customer: { id: string; name: string };
   review: { id: string; rating: number } | null;
   phases: Phase[];
+  extensions: Extension[];
 };
+
+function fmtMins(mins: number) {
+  const h = Math.floor(mins / 60), m = mins % 60;
+  return h > 0 ? `${h}h${m > 0 ? ` ${m}m` : ""}` : `${m}m`;
+}
 
 const STATUS_COLOR: Record<string, string> = {
   PENDING: C.amber, ACCEPTED: C.sky, IN_PROGRESS: C.orange, COMPLETED: C.emerald, CANCELLED: C.red,
@@ -75,10 +82,35 @@ export default function CustomerBookingDetail() {
     setActing(false);
   };
 
+  const respondExtension = async (extId: string, action: "approve" | "decline") => {
+    setActing(true);
+    const res = await api.post(`/bookings/${id}/extension/${extId}`, { action });
+    const data = await res.json().catch(() => ({}));
+    setActing(false);
+    if (res.ok) {
+      if (action === "approve" && data.checkoutUrl) {
+        Alert.alert("Approved", "Pay the extra amount to confirm the additional work.", [
+          { text: "Later", style: "cancel" },
+          { text: "Pay now", onPress: () => Linking.openURL(data.checkoutUrl) },
+        ]);
+      } else if (action === "approve") {
+        Alert.alert("Approved", "The extra time was added to your booking.");
+      }
+      await load();
+    } else {
+      Alert.alert("Error", data.error || "Could not respond. Please try again.");
+    }
+  };
+
+  const askDecline = (extId: string) => Alert.alert("Decline extra work?", "The handyman will be told you declined the additional time/cost.", [
+    { text: "Keep reviewing", style: "cancel" },
+    { text: "Decline", style: "destructive", onPress: () => respondExtension(extId, "decline") },
+  ]);
+
   if (loading) return <View style={s.center}><ActivityIndicator color={C.sky} size="large" /></View>;
   if (!booking) return <View style={s.center}><Text style={s.empty}>Booking not found.</Text></View>;
 
-  const statusColor = STATUS_COLOR[booking.status] ?? C.slate400;
+  const statusColor = STATUS_COLOR[booking.status] ?? "#64748B";
   const canReview = booking.status === "COMPLETED" && !booking.review;
 
   return (
@@ -140,6 +172,43 @@ export default function CustomerBookingDetail() {
           </View>
         )}
 
+        {/* Extra time / supplemental work requests */}
+        {booking.extensions?.length > 0 && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>Extra Time / Work Requests</Text>
+            {booking.extensions.map(ext => {
+              const isPending = ext.status === "PENDING";
+              const color = ext.status === "APPROVED" ? C.emerald : ext.status === "DECLINED" ? C.red : C.amber;
+              return (
+                <View key={ext.id} style={s.extCard}>
+                  <View style={s.extHead}>
+                    <Text style={s.extTitle}>
+                      +{fmtMins(ext.additionalMinutes)}{ext.extraAmount > 0 ? ` · +$${ext.extraAmount.toFixed(2)}` : " · no extra charge"}
+                    </Text>
+                    {!isPending && (
+                      <Text style={[s.extStatus, { color }]}>{ext.status === "APPROVED" ? "Approved" : "Declined"}</Text>
+                    )}
+                  </View>
+                  {ext.reason ? <Text style={s.extReason}>{ext.reason}</Text> : null}
+                  {isPending && (
+                    <>
+                      <Text style={s.extAsk}>Your handyman needs more time to finish. Approve to extend the job{ext.extraAmount > 0 ? " and add the extra cost" : ""}.</Text>
+                      <View style={s.extBtns}>
+                        <TouchableOpacity style={[s.extDecline, acting && s.btnDisabled]} onPress={() => askDecline(ext.id)} disabled={acting}>
+                          <Text style={s.extDeclineText}>Decline</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[s.extApprove, acting && s.btnDisabled]} onPress={() => respondExtension(ext.id, "approve")} disabled={acting}>
+                          <Text style={s.extApproveText}>{ext.extraAmount > 0 ? `Approve · $${ext.extraAmount.toFixed(2)}` : "Approve"}</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </>
+                  )}
+                </View>
+              );
+            })}
+          </View>
+        )}
+
         {/* Actions */}
         <View style={s.actions}>
           {/* Chat */}
@@ -174,39 +243,39 @@ export default function CustomerBookingDetail() {
 function Row({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 5 }}>
-      <Text style={{ color: C.slate400, fontSize: 13 }}>{label}</Text>
-      <Text style={{ color: highlight ? C.emerald : C.white, fontSize: 13, fontWeight: highlight ? "800" : "600", maxWidth: "60%", textAlign: "right" }}>{value}</Text>
+      <Text style={{ color: "#64748B", fontSize: 13 }}>{label}</Text>
+      <Text style={{ color: highlight ? C.emerald : "#0F172A", fontSize: 13, fontWeight: highlight ? "800" : "600", maxWidth: "60%", textAlign: "right" }}>{value}</Text>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  safe:          { flex: 1, backgroundColor: C.ink },
-  center:        { flex: 1, backgroundColor: C.ink, alignItems: "center", justifyContent: "center" },
-  empty:         { color: C.slate400 },
+  safe:          { flex: 1, backgroundColor: "#FFFFFF" },
+  center:        { flex: 1, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center" },
+  empty:         { color: "#64748B" },
   topBar:        { flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 20, paddingBottom: 8 },
   back:          { color: C.sky, fontSize: 15, fontWeight: "600" },
   statusBadge:   { borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
   statusText:    { fontSize: 12, fontWeight: "700" },
-  card:          { margin: 16, backgroundColor: "#1E293B", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.07)" },
-  serviceTitle:  { color: C.white, fontSize: 18, fontWeight: "900", marginBottom: 2 },
+  card:          { margin: 16, backgroundColor: "#F1F5F9", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: "#E2E8F0" },
+  serviceTitle:  { color: "#0F172A", fontSize: 18, fontWeight: "900", marginBottom: 2 },
   serviceCat:    { color: C.sky, fontSize: 12, marginBottom: 12 },
-  divider:       { height: 1, backgroundColor: "rgba(255,255,255,0.07)", marginVertical: 10 },
+  divider:       { height: 1, backgroundColor: "#E2E8F0", marginVertical: 10 },
   payNotice:     { color: C.amber, fontSize: 12, marginTop: 8 },
-  notes:         { color: C.slate400, fontSize: 13, lineHeight: 19 },
-  timerCard:     { margin: 16, backgroundColor: "#1E2D1A", borderRadius: 16, padding: 20, alignItems: "center", borderWidth: 1, borderColor: "rgba(16,185,129,0.3)" },
+  notes:         { color: "#64748B", fontSize: 13, lineHeight: 19 },
+  timerCard:     { margin: 16, backgroundColor: "#ECFDF5", borderRadius: 16, padding: 20, alignItems: "center", borderWidth: 1, borderColor: "rgba(16,185,129,0.3)" },
   timerLabel:    { color: C.emerald, fontSize: 12, fontWeight: "700", letterSpacing: 1, marginBottom: 8 },
-  timerValue:    { color: C.white, fontSize: 48, fontWeight: "900", letterSpacing: 4, fontVariant: ["tabular-nums"] },
-  timerSub:      { color: C.slate500, fontSize: 12, marginTop: 6 },
+  timerValue:    { color: "#0F172A", fontSize: 48, fontWeight: "900", letterSpacing: 4, fontVariant: ["tabular-nums"] },
+  timerSub:      { color: "#94A3B8", fontSize: 12, marginTop: 6 },
   section:       { marginHorizontal: 16, marginTop: 8 },
-  sectionTitle:  { color: C.white, fontSize: 15, fontWeight: "800", marginBottom: 10 },
-  phaseRow:      { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.05)" },
+  sectionTitle:  { color: "#0F172A", fontSize: 15, fontWeight: "800", marginBottom: 10 },
+  phaseRow:      { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: "#E2E8F0" },
   phaseIcon:     { width: 28, height: 28, borderRadius: 14, alignItems: "center", justifyContent: "center" },
   phasePending:  { backgroundColor: "rgba(245,158,11,0.2)" },
   phaseConfirmed:{ backgroundColor: "rgba(16,185,129,0.2)" },
-  phaseIconText: { color: C.white, fontSize: 14, fontWeight: "700" },
-  phaseTitle:    { color: C.white, fontWeight: "600", fontSize: 14 },
-  phaseMeta:     { color: C.slate500, fontSize: 11, marginTop: 1 },
+  phaseIconText: { color: "#0F172A", fontSize: 14, fontWeight: "700" },
+  phaseTitle:    { color: "#0F172A", fontWeight: "600", fontSize: 14 },
+  phaseMeta:     { color: "#94A3B8", fontSize: 11, marginTop: 1 },
   confirmBtn:    { backgroundColor: C.emerald + "22", borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: C.emerald + "44" },
   confirmBtnText:{ color: C.emerald, fontWeight: "700", fontSize: 12 },
   actions:       { margin: 16, gap: 10 },
@@ -218,4 +287,16 @@ const s = StyleSheet.create({
   reviewedText:  { color: C.emerald, fontWeight: "600", fontSize: 14 },
   cancelBtn:     { backgroundColor: "rgba(239,68,68,0.08)", borderRadius: 14, paddingVertical: 14, alignItems: "center", borderWidth: 1, borderColor: "rgba(239,68,68,0.2)" },
   cancelBtnText: { color: C.red, fontWeight: "700", fontSize: 15 },
+  extCard:       { backgroundColor: "#F1F5F9", borderRadius: 14, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: "rgba(245,158,11,0.25)" },
+  extHead:       { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  extTitle:      { color: "#0F172A", fontWeight: "800", fontSize: 15, flex: 1 },
+  extStatus:     { fontSize: 12, fontWeight: "800" },
+  extReason:     { color: "#64748B", fontSize: 13, marginTop: 6, lineHeight: 18 },
+  extAsk:        { color: "#64748B", fontSize: 12, marginTop: 8, lineHeight: 17 },
+  extBtns:       { flexDirection: "row", gap: 10, marginTop: 12 },
+  extDecline:    { flex: 1, backgroundColor: "rgba(239,68,68,0.1)", borderRadius: 12, paddingVertical: 12, alignItems: "center", borderWidth: 1, borderColor: "rgba(239,68,68,0.25)" },
+  extDeclineText:{ color: C.red, fontWeight: "700", fontSize: 14 },
+  extApprove:    { flex: 2, backgroundColor: C.emerald, borderRadius: 12, paddingVertical: 12, alignItems: "center" },
+  extApproveText:{ color: "#0F172A", fontWeight: "900", fontSize: 14 },
+  btnDisabled:   { opacity: 0.5 },
 });

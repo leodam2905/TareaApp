@@ -3,7 +3,7 @@ import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
-import { assertPromoUsable } from "@/lib/promo";
+import { assertPromoUsable, hasPriorPaidOrder } from "@/lib/promo";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
@@ -34,7 +34,10 @@ export async function POST(req: NextRequest) {
   // just isActive — a code valid at booking creation may no longer be usable.
   let discountAmount = 0;
   if (booking.promoCode) {
-    const check = assertPromoUsable(booking.promoCode, user.id, booking.totalPrice);
+    // For a first-order-only code, this booking itself is unpaid, so "prior paid
+    // order" correctly reflects whether they've completed a payment before.
+    const prior = await hasPriorPaidOrder(user.id);
+    const check = assertPromoUsable(booking.promoCode, user.id, booking.totalPrice, prior);
     if (check.ok) discountAmount = check.discountAmount;
   }
   const discountedPrice = Math.max(0, booking.totalPrice - discountAmount);

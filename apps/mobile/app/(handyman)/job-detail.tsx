@@ -6,6 +6,7 @@ import { api } from "@/lib/api";
 import { C } from "@/constants/colors";
 
 type Phase = { id: string; title: string; startedAt: string; confirmedAt: string | null };
+type Extension = { id: string; additionalMinutes: number; extraAmount: number; reason: string | null; status: string; respondedAt: string | null };
 type Booking = {
   id: string; status: string; scheduledAt: string; totalPrice: number;
   address: string; city: string; notes: string | null; isPaid: boolean;
@@ -15,7 +16,13 @@ type Booking = {
   handyman: { id: string; name: string };
   review: { rating: number } | null;
   phases: Phase[];
+  extensions: Extension[];
 };
+
+function fmtMins(mins: number) {
+  const h = Math.floor(mins / 60), m = mins % 60;
+  return h > 0 ? `${h}h${m > 0 ? ` ${m}m` : ""}` : `${m}m`;
+}
 
 const STATUS_COLOR: Record<string, string> = {
   PENDING: C.amber, ACCEPTED: C.sky, IN_PROGRESS: C.orange, COMPLETED: C.emerald, CANCELLED: C.red,
@@ -39,6 +46,11 @@ export default function JobDetailScreen() {
   const [phaseTitle, setPhaseTitle] = useState("");
   const [addingPhase, setAddingPhase] = useState(false);
   const [showPhaseInput, setShowPhaseInput] = useState(false);
+  const [showExtForm, setShowExtForm] = useState(false);
+  const [extMinutes, setExtMinutes] = useState("");
+  const [extAmount, setExtAmount]   = useState("");
+  const [extReason, setExtReason]   = useState("");
+  const [requestingExt, setRequestingExt] = useState(false);
   const [onMyWay, setOnMyWay]     = useState(false);
   const [sendingLocation, setSendingLocation] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -133,6 +145,28 @@ export default function JobDetailScreen() {
     { text: "Complete", onPress: () => patch("COMPLETED") },
   ]);
 
+  const requestExtension = async () => {
+    const mins = parseInt(extMinutes);
+    if (!mins || mins <= 0) { Alert.alert("Add time", "Enter how many extra minutes you need."); return; }
+    const amt = extAmount.trim() ? parseFloat(extAmount) : 0;
+    if (isNaN(amt) || amt < 0) { Alert.alert("Invalid amount", "Enter a valid extra charge, or leave it blank."); return; }
+    setRequestingExt(true);
+    const res = await api.post(`/bookings/${id}/extension`, {
+      additionalMinutes: mins,
+      extraAmount: amt,
+      reason: extReason.trim() || undefined,
+    });
+    setRequestingExt(false);
+    if (res.ok) {
+      setShowExtForm(false); setExtMinutes(""); setExtAmount(""); setExtReason("");
+      Alert.alert("Request sent", "The customer was asked to approve the extra time and cost. You'll be notified of their response.");
+      await load();
+    } else {
+      const b = await res.json().catch(() => ({}));
+      Alert.alert("Couldn't send request", b.error || "Please try again.");
+    }
+  };
+
   const addPhase = async () => {
     if (!phaseTitle.trim()) return;
     setAddingPhase(true);
@@ -153,6 +187,9 @@ export default function JobDetailScreen() {
   const isAccepted  = booking.status === "ACCEPTED";
   const isInProgress = booking.status === "IN_PROGRESS";
   const isDone      = ["COMPLETED", "CANCELLED"].includes(booking.status);
+  const isActive    = isAccepted || isInProgress;
+  const extensions  = booking.extensions ?? [];
+  const pendingExt  = extensions.find(e => e.status === "PENDING");
 
   return (
     <SafeAreaView style={s.safe}>
@@ -238,6 +275,69 @@ export default function JobDetailScreen() {
                 <Text style={s.addPhaseBtnText}>+ Add Work Phase</Text>
               </TouchableOpacity>
             )}
+          </View>
+        )}
+
+        {/* More time / supplemental work */}
+        {(isActive || extensions.length > 0) && (
+          <View style={s.section}>
+            <Text style={s.sectionTitle}>More Time / Extra Work</Text>
+
+            {/* Existing requests + their status */}
+            {extensions.map(ext => {
+              const color = ext.status === "APPROVED" ? C.emerald : ext.status === "DECLINED" ? C.red : C.amber;
+              const label = ext.status === "APPROVED" ? "Approved by customer" : ext.status === "DECLINED" ? "Declined by customer" : "Waiting for customer";
+              return (
+                <View key={ext.id} style={s.extRow}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={s.extTitle}>
+                      +{fmtMins(ext.additionalMinutes)}{ext.extraAmount > 0 ? ` · +$${ext.extraAmount.toFixed(2)}` : ""}
+                    </Text>
+                    {ext.reason ? <Text style={s.extReason}>{ext.reason}</Text> : null}
+                  </View>
+                  <Text style={[s.extStatus, { color }]}>{label}</Text>
+                </View>
+              );
+            })}
+
+            {/* Request form */}
+            {isActive && (pendingExt ? (
+              <Text style={s.extPendingNote}>⏳ A request is pending. You can send another once the customer responds.</Text>
+            ) : showExtForm ? (
+              <View style={s.extForm}>
+                <Text style={s.extLabel}>Extra time needed</Text>
+                <View style={s.chipRow}>
+                  {["30", "60", "90", "120"].map(m => (
+                    <TouchableOpacity key={m} style={[s.chip, extMinutes === m && s.chipOn]} onPress={() => setExtMinutes(m)}>
+                      <Text style={[s.chipText, extMinutes === m && s.chipTextOn]}>{fmtMins(parseInt(m))}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                <TextInput style={s.extInput} value={extMinutes} onChangeText={v => setExtMinutes(v.replace(/[^0-9]/g, ""))}
+                  placeholder="Or type minutes" placeholderTextColor={C.slate500} keyboardType="number-pad" />
+
+                <Text style={s.extLabel}>Extra charge (optional)</Text>
+                <TextInput style={s.extInput} value={extAmount} onChangeText={v => setExtAmount(v.replace(/[^0-9.]/g, ""))}
+                  placeholder="$ additional cost for the extra work" placeholderTextColor={C.slate500} keyboardType="decimal-pad" />
+
+                <Text style={s.extLabel}>Reason (optional)</Text>
+                <TextInput style={[s.extInput, { height: 64, textAlignVertical: "top" }]} value={extReason} onChangeText={setExtReason}
+                  placeholder="e.g. Extra outlet needed / pipe more corroded than expected" placeholderTextColor={C.slate500} multiline />
+
+                <View style={s.phaseFormBtns}>
+                  <TouchableOpacity style={s.phaseCancelBtn} onPress={() => { setShowExtForm(false); setExtMinutes(""); setExtAmount(""); setExtReason(""); }}>
+                    <Text style={s.phaseCancelText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[s.phaseAddBtn, requestingExt && s.btnDisabled]} onPress={requestExtension} disabled={requestingExt}>
+                    <Text style={s.phaseAddText}>{requestingExt ? "Sending…" : "Send Request"}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : (
+              <TouchableOpacity style={s.extRequestBtn} onPress={() => setShowExtForm(true)}>
+                <Text style={s.extRequestText}>+ Request More Time / Extra Work</Text>
+              </TouchableOpacity>
+            ))}
           </View>
         )}
 
@@ -348,6 +448,21 @@ const s = StyleSheet.create({
   phaseAddText:  { color: C.ink, fontWeight: "800", fontSize: 14 },
   addPhaseBtn:   { borderWidth: 1, borderColor: "rgba(56,189,248,0.25)", borderRadius: 12, paddingVertical: 12, alignItems: "center", borderStyle: "dashed" },
   addPhaseBtnText:{ color: C.sky, fontWeight: "700", fontSize: 14 },
+  extRow:        { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: C.line },
+  extTitle:      { color: C.text, fontWeight: "700", fontSize: 14 },
+  extReason:     { color: C.textMuted, fontSize: 12, marginTop: 2 },
+  extStatus:     { fontSize: 12, fontWeight: "700", maxWidth: "40%", textAlign: "right" },
+  extPendingNote:{ color: C.amber, fontSize: 13, marginTop: 10, lineHeight: 18 },
+  extForm:       { backgroundColor: C.surface, borderRadius: 14, padding: 14, marginTop: 10, gap: 8, borderWidth: 1, borderColor: C.line },
+  extLabel:      { color: C.textMuted, fontSize: 12, fontWeight: "600", marginTop: 4 },
+  extInput:      { backgroundColor: C.bg, borderWidth: 1, borderColor: C.line, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, color: C.text, fontSize: 14 },
+  chipRow:       { flexDirection: "row", gap: 8 },
+  chip:          { flex: 1, paddingVertical: 9, borderRadius: 10, borderWidth: 1, borderColor: C.line, alignItems: "center" },
+  chipOn:        { backgroundColor: "rgba(56,189,248,0.12)", borderColor: C.sky },
+  chipText:      { color: C.textMuted, fontWeight: "700", fontSize: 13 },
+  chipTextOn:    { color: C.sky },
+  extRequestBtn: { borderWidth: 1, borderColor: "rgba(245,158,11,0.4)", borderRadius: 12, paddingVertical: 12, alignItems: "center", borderStyle: "dashed", backgroundColor: "rgba(245,158,11,0.06)" },
+  extRequestText:{ color: C.amber, fontWeight: "800", fontSize: 14 },
   actions:       { margin: 16, gap: 10 },
   row2:          { flexDirection: "row", gap: 10 },
   halfBtn:       { flex: 1 },

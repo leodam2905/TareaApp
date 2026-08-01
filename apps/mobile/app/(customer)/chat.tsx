@@ -96,7 +96,7 @@ export default function ChatScreen() {
             value={text}
             onChangeText={setText}
             placeholder="Type a message…"
-            placeholderTextColor={C.slate500}
+            placeholderTextColor={"#94A3B8"}
             multiline
             maxLength={1000}
             returnKeyType="send"
@@ -112,23 +112,23 @@ export default function ChatScreen() {
 }
 
 const s = StyleSheet.create({
-  safe:        { flex: 1, backgroundColor: C.ink },
+  safe:        { flex: 1, backgroundColor: "#FFFFFF" },
   center:      { flex: 1, alignItems: "center", justifyContent: "center" },
-  empty:       { color: C.slate500, fontSize: 14 },
-  header:      { flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 16, borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.08)" },
+  empty:       { color: "#94A3B8", fontSize: 14 },
+  header:      { flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 16, borderBottomWidth: 1, borderBottomColor: "#E2E8F0" },
   back:        { color: C.sky, fontSize: 15, fontWeight: "600", width: 60 },
-  title:       { color: C.white, fontSize: 16, fontWeight: "800" },
+  title:       { color: "#0F172A", fontSize: 16, fontWeight: "800" },
   list:        { padding: 16, gap: 8, paddingBottom: 8 },
   bubble:      { maxWidth: "80%", borderRadius: 16, padding: 12 },
   bubbleMine:  { alignSelf: "flex-end", backgroundColor: C.sky, borderBottomRightRadius: 4 },
-  bubbleTheirs:{ alignSelf: "flex-start", backgroundColor: "#1E293B", borderBottomLeftRadius: 4 },
+  bubbleTheirs:{ alignSelf: "flex-start", backgroundColor: "#F1F5F9", borderBottomLeftRadius: 4 },
   senderName:  { color: C.sky, fontSize: 11, fontWeight: "700", marginBottom: 3 },
   msgText:     { fontSize: 15, lineHeight: 21 },
   msgMine:     { color: C.ink },
-  msgTheirs:   { color: C.white },
+  msgTheirs:   { color: "#0F172A" },
   time:        { fontSize: 10, marginTop: 4, opacity: 0.6, alignSelf: "flex-end", color: C.ink },
-  inputRow:    { flexDirection: "row", alignItems: "flex-end", padding: 12, gap: 10, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.08)" },
-  input:       { flex: 1, backgroundColor: "#1E293B", borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, color: C.white, fontSize: 15, maxHeight: 120, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
+  inputRow:    { flexDirection: "row", alignItems: "flex-end", padding: 12, gap: 10, borderTopWidth: 1, borderTopColor: "#E2E8F0" },
+  input:       { flex: 1, backgroundColor: "#F1F5F9", borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, color: "#0F172A", fontSize: 15, maxHeight: 120, borderWidth: 1, borderColor: "#E2E8F0" },
   sendBtn:     { width: 42, height: 42, borderRadius: 21, backgroundColor: C.sky, alignItems: "center", justifyContent: "center" },
   sendDisabled:{ opacity: 0.4 },
   sendIcon:    { color: C.ink, fontWeight: "900", fontSize: 18 },

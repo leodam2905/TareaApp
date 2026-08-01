@@ -5,6 +5,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { getToken } from "@/lib/storage";
 import { C } from "@/constants/colors";
 
 const API = "https://taptarea.com/api";
@@ -63,8 +64,8 @@ const CATEGORY_API: Record<string, string> = {
 const CATEGORIES = Object.keys(TASKS);
 
 function StepDot({ n, active, done }: { n: number; active: boolean; done: boolean }) {
-  const bg = done ? C.emerald : active ? C.sky : "rgba(255,255,255,0.08)";
-  const tc = done || active ? C.ink : "rgba(255,255,255,0.3)";
+  const bg = done ? C.emerald : active ? C.sky : "#E2E8F0";
+  const tc = done || active ? C.ink : "#64748B";
   return (
     <View style={[sd.dot, { backgroundColor: bg }]}>
       <Text style={[sd.dotText, { color: tc }]}>{done ? "✓" : n}</Text>
@@ -324,13 +325,21 @@ export default function InstantQuoteScreen() {
                 </View>
               )}
 
-              {/* Book */}
+              {/* Post this job */}
               <TouchableOpacity
                 style={s.bookBtn}
-                onPress={() => router.push({ pathname: "/(auth)/register" as any, params: { role: "CUSTOMER" } })}
+                onPress={async () => {
+                  const jobParams = {
+                    ...(category && CATEGORY_API[category] ? { category: CATEGORY_API[category] } : {}),
+                    budgetMin: String(quote.minPrice), budgetMax: String(quote.maxPrice),
+                  };
+                  const token = await getToken();
+                  if (token) router.push({ pathname: "/(customer)/post-job" as any, params: jobParams });
+                  else router.push({ pathname: "/(auth)/register" as any, params: { role: "CUSTOMER" } });
+                }}
                 activeOpacity={0.85}
               >
-                <Text style={s.bookBtnText}>Sign Up & Lock This Price  →</Text>
+                <Text style={s.bookBtnText}>Post this job  →</Text>
               </TouchableOpacity>
             </View>
 
@@ -344,51 +353,51 @@ export default function InstantQuoteScreen() {
 }
 
 const s = StyleSheet.create({
-  safe:          { flex: 1, backgroundColor: C.ink },
+  safe:          { flex: 1, backgroundColor: "#FFFFFF" },
   scroll:        { padding: 20 },
   back:          { marginBottom: 22 },
   backText:      { color: C.sky, fontSize: 15, fontWeight: "600" },
 
   headerRow:     { flexDirection: "row", alignItems: "center", gap: 14, marginBottom: 28 },
   headerIcon:    { width: 56, height: 56, borderRadius: 18, backgroundColor: "rgba(56,189,248,0.08)", borderWidth: 1, borderColor: "rgba(56,189,248,0.2)", alignItems: "center", justifyContent: "center" },
-  heading:       { color: "#fff", fontSize: 24, fontWeight: "900" },
-  sub:           { color: "rgba(255,255,255,0.38)", fontSize: 13, marginTop: 3 },
+  heading:       { color: "#0F172A", fontSize: 24, fontWeight: "900" },
+  sub:           { color: "#64748B", fontSize: 13, marginTop: 3 },
 
   // Stepper
   stepper:       { flexDirection: "row", alignItems: "center", marginBottom: 28, paddingHorizontal: 4 },
   stepItem:      { flexDirection: "row", alignItems: "center", flex: 1 },
-  stepLabel:     { color: "rgba(255,255,255,0.28)", fontSize: 11, fontWeight: "700", marginLeft: 6 },
-  stepLabelActive:{ color: "rgba(255,255,255,0.7)" },
-  stepLine:      { flex: 1, height: 1.5, backgroundColor: "rgba(255,255,255,0.08)", marginHorizontal: 6 },
+  stepLabel:     { color: "#94A3B8", fontSize: 11, fontWeight: "700", marginLeft: 6 },
+  stepLabelActive:{ color: "#334155" },
+  stepLine:      { flex: 1, height: 1.5, backgroundColor: "#E2E8F0", marginHorizontal: 6 },
   stepLineDone:  { backgroundColor: C.emerald + "60" },
 
   // Section
   section:       { marginBottom: 24 },
-  sectionTitle:  { color: "rgba(255,255,255,0.5)", fontSize: 12, fontWeight: "800", textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 14 },
+  sectionTitle:  { color: "#64748B", fontSize: 12, fontWeight: "800", textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 14 },
 
   // Category grid
   catGrid:       { flexDirection: "row", flexWrap: "wrap", gap: 10 },
-  catCard:       { width: "47%", backgroundColor: "#1E293B", borderRadius: 16, padding: 14, borderWidth: 1.5, borderColor: "rgba(255,255,255,0.07)", alignItems: "center", gap: 8 },
+  catCard:       { width: "47%", backgroundColor: "#F1F5F9", borderRadius: 16, padding: 14, borderWidth: 1.5, borderColor: "#E2E8F0", alignItems: "center", gap: 8 },
   catIconCircle: { width: 48, height: 48, borderRadius: 14, alignItems: "center", justifyContent: "center" },
-  catCardLabel:  { color: "rgba(255,255,255,0.7)", fontSize: 13, fontWeight: "700" },
+  catCardLabel:  { color: "#334155", fontSize: 13, fontWeight: "700" },
   catCheck:      { position: "absolute", top: 8, right: 8, width: 18, height: 18, borderRadius: 9, alignItems: "center", justifyContent: "center" },
   catCheckText:  { color: "#0F172A", fontSize: 10, fontWeight: "900" },
 
   // Task list
   taskList:      { gap: 8 },
-  taskCard:      { flexDirection: "row", alignItems: "center", backgroundColor: "#1E293B", borderRadius: 14, paddingHorizontal: 16, paddingVertical: 15, borderWidth: 1.5, borderColor: "rgba(255,255,255,0.07)" },
+  taskCard:      { flexDirection: "row", alignItems: "center", backgroundColor: "#F1F5F9", borderRadius: 14, paddingHorizontal: 16, paddingVertical: 15, borderWidth: 1.5, borderColor: "#E2E8F0" },
   taskCardOn:    { backgroundColor: C.sky, borderColor: C.sky },
-  taskLabel:     { flex: 1, color: "rgba(255,255,255,0.75)", fontSize: 14, fontWeight: "600" },
+  taskLabel:     { flex: 1, color: "#334155", fontSize: 14, fontWeight: "600" },
   taskLabelOn:   { color: C.ink, fontWeight: "800" },
-  taskArrow:     { color: "rgba(255,255,255,0.3)", fontSize: 20, fontWeight: "300" },
+  taskArrow:     { color: "#64748B", fontSize: 20, fontWeight: "300" },
 
   // Detail chips
   detailBlock:   { marginBottom: 16 },
-  detailLabel:   { color: "rgba(255,255,255,0.38)", fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 10 },
+  detailLabel:   { color: "#64748B", fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 10 },
   chipRow:       { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  chip:          { backgroundColor: "#1E293B", borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1.5, borderColor: "rgba(255,255,255,0.08)" },
+  chip:          { backgroundColor: "#F1F5F9", borderRadius: 20, paddingHorizontal: 14, paddingVertical: 8, borderWidth: 1.5, borderColor: "#E2E8F0" },
   chipOn:        { backgroundColor: C.sky, borderColor: C.sky },
-  chipText:      { color: "rgba(255,255,255,0.55)", fontSize: 13, fontWeight: "600" },
+  chipText:      { color: "#64748B", fontSize: 13, fontWeight: "600" },
   chipTextOn:    { color: C.ink, fontWeight: "800" },
 
   // Get Quote button
@@ -401,30 +410,30 @@ const s = StyleSheet.create({
   errorText:     { color: "#EF4444", fontSize: 13, lineHeight: 20 },
 
   // Quote card
-  quoteCard:     { borderRadius: 22, overflow: "hidden", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
-  quoteBand:     { backgroundColor: "#1E293B", padding: 20, flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.06)" },
-  quoteBandLabel:{ color: "rgba(255,255,255,0.38)", fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 4 },
-  quoteBandTask: { color: "#fff", fontSize: 16, fontWeight: "800" },
+  quoteCard:     { borderRadius: 22, overflow: "hidden", borderWidth: 1, borderColor: "#E2E8F0" },
+  quoteBand:     { backgroundColor: "#F1F5F9", padding: 20, flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderBottomWidth: 1, borderBottomColor: "#E2E8F0" },
+  quoteBandLabel:{ color: "#64748B", fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 4 },
+  quoteBandTask: { color: "#0F172A", fontSize: 16, fontWeight: "800" },
   confBadge:     { borderRadius: 20, paddingHorizontal: 12, paddingVertical: 5 },
   confText:      { fontSize: 12, fontWeight: "700" },
 
-  quoteBody:     { backgroundColor: "#0F1C2E", padding: 20, gap: 14 },
+  quoteBody:     { backgroundColor: "#FFFFFF", padding: 20, gap: 14 },
 
   priceRow:      { flexDirection: "row", alignItems: "flex-start" },
   priceDollar:   { color: C.sky, fontSize: 28, fontWeight: "900", marginTop: 8, marginRight: 2 },
-  priceMain:     { color: "#fff", fontSize: 56, fontWeight: "900", lineHeight: 60 },
+  priceMain:     { color: "#0F172A", fontSize: 56, fontWeight: "900", lineHeight: 60 },
 
   durationRow:   { flexDirection: "row", alignItems: "center", gap: 6 },
   durationDot:   { fontSize: 14 },
-  durationText:  { color: "rgba(255,255,255,0.45)", fontSize: 14 },
+  durationText:  { color: "#64748B", fontSize: 14 },
 
-  quoteSep:      { height: 1, backgroundColor: "rgba(255,255,255,0.07)" },
+  quoteSep:      { height: 1, backgroundColor: "#E2E8F0" },
 
-  includesTitle: { color: "rgba(255,255,255,0.32)", fontSize: 10, fontWeight: "800", textTransform: "uppercase", letterSpacing: 1.4 },
+  includesTitle: { color: "#64748B", fontSize: 10, fontWeight: "800", textTransform: "uppercase", letterSpacing: 1.4 },
   includeRow:    { flexDirection: "row", alignItems: "center", gap: 10 },
   checkCircle:   { width: 22, height: 22, borderRadius: 11, backgroundColor: "rgba(16,185,129,0.2)", alignItems: "center", justifyContent: "center" },
   checkMark:     { color: C.emerald, fontSize: 11, fontWeight: "900" },
-  includeText:   { color: "rgba(255,255,255,0.72)", fontSize: 13, lineHeight: 20, flex: 1 },
+  includeText:   { color: "#334155", fontSize: 13, lineHeight: 20, flex: 1 },
 
   noteBox:       { backgroundColor: "rgba(249,115,22,0.08)", borderRadius: 12, padding: 12, borderWidth: 1, borderColor: "rgba(249,115,22,0.2)" },
   noteText:      { color: "#FB923C", fontSize: 12, lineHeight: 19 },

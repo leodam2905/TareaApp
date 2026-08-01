@@ -22,7 +22,6 @@ export default function OnboardingProfileScreen() {
   const [saving, setSaving]         = useState(false);
   // Work area
   const [address, setAddress]       = useState("");
-  const [radius, setRadius]         = useState("50");
   const [coords, setCoords]         = useState<{ lat: number; lng: number } | null>(null);
   const [locBusy, setLocBusy]       = useState(false);
 
@@ -53,7 +52,6 @@ export default function OnboardingProfileScreen() {
           setUris(loaded); // remote URLs render fine in <Image>
           if (d.address) setAddress(d.address);
           if (d.latitude != null && d.longitude != null) setCoords({ lat: d.latitude, lng: d.longitude });
-          if (hp.serviceRadius != null) setRadius(String(hp.serviceRadius));
         }
       } catch { /* ignore — fall back to local */ }
       setBio(hp.bio || (await SecureStore.getItemAsync("ob_bio")) || "");
@@ -147,7 +145,7 @@ export default function OnboardingProfileScreen() {
       ...(city && { city }),
       ...(state && { state }),
       ...(loc && { latitude: loc.lat, longitude: loc.lng }),
-      serviceRadius: radius,
+      serviceRadius: 50,
     }).catch(() => {});
   };
 
@@ -180,15 +178,17 @@ export default function OnboardingProfileScreen() {
     router.push("/(handyman)/onboarding-services");
   };
 
-  const DocTile = ({ field, label, required }: { field: DocField; label: string; required?: boolean }) => (
-    <TouchableOpacity style={s.docTile} onPress={() => pickAndUpload(field)} disabled={uploading}>
+  const DocTile = ({ field, label, required, locked }: { field: DocField; label: string; required?: boolean; locked?: boolean }) => (
+    <TouchableOpacity style={s.docTile} onPress={() => pickAndUpload(field)} disabled={uploading || locked}>
       {uris[field]
         ? <Image source={{ uri: uris[field] }} style={s.docPreview} />
         : <View style={s.docPlaceholder}>
             <Text style={s.docIcon}>📄</Text>
             <Text style={s.docLabel}>{label}{required ? " *" : ""}</Text>
           </View>}
-      {urls[field] ? <View style={s.docDone}><Text style={s.docDoneText}>✓</Text></View> : null}
+      {locked
+        ? <View style={s.docLock}><Text style={s.docLockText}>🔒</Text></View>
+        : urls[field] ? <View style={s.docDone}><Text style={s.docDoneText}>✓</Text></View> : null}
     </TouchableOpacity>
   );
 
@@ -214,9 +214,12 @@ export default function OnboardingProfileScreen() {
           <Text style={s.sectionTitle}>Government-Issued ID *</Text>
           <Text style={s.sectionSub}>Both sides of your driver's license, passport, or state ID.</Text>
           <View style={s.docRow}>
-            <DocTile field="idFront" label="Front (Recto)" required />
-            <DocTile field="idBack"  label="Back (Verso)"  required />
+            <DocTile field="idFront" label="Front (Recto)" required locked={!!urls.idFront} />
+            <DocTile field="idBack"  label="Back (Verso)"  required locked={!!urls.idBack} />
           </View>
+          {(!!urls.idFront || !!urls.idBack) && (
+            <Text style={s.lockNote}>🔒 Your ID is locked once submitted. Contact support to change it.</Text>
+          )}
 
           {/* License */}
           <Text style={[s.sectionTitle, { marginTop: 20 }]}>License</Text>
@@ -255,18 +258,10 @@ export default function OnboardingProfileScreen() {
               <Text style={s.useLoc}>{locBusy ? "Locating…" : "📍 Use my location"}</Text>
             </TouchableOpacity>
           </View>
-          <Text style={s.sectionSub}>Where you take jobs. Customers within your travel distance can find you.</Text>
+          <Text style={s.sectionSub}>Where you're based. We'll match you to jobs within about 50 miles.</Text>
           <TextInput style={s.input} value={address}
             onChangeText={t => { setAddress(t); setCoords(null); }}
             placeholder="Address, city or ZIP" placeholderTextColor={C.slate500} />
-          <Text style={[s.label, { marginTop: 12 }]}>Travel distance from here</Text>
-          <View style={s.radiusRow}>
-            {["10", "25", "50", "75"].map(r => (
-              <TouchableOpacity key={r} style={[s.radiusChip, radius === r && s.radiusChipOn]} onPress={() => setRadius(r)}>
-                <Text style={[s.radiusChipText, radius === r && s.radiusChipTextOn]}>{r} mi</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
         </View>
 
         {uploading && (
@@ -316,6 +311,9 @@ const s = StyleSheet.create({
   docLabel:         { color: C.textMuted, fontSize: 11, fontWeight: "600", textAlign: "center" },
   docDone:          { position: "absolute", top: 6, right: 6, backgroundColor: C.emerald, borderRadius: 10, width: 20, height: 20, alignItems: "center", justifyContent: "center" },
   docDoneText:      { color: C.text, fontSize: 11, fontWeight: "900" },
+  docLock:          { position: "absolute", top: 6, right: 6, backgroundColor: "rgba(15,23,42,0.75)", borderRadius: 10, width: 20, height: 20, alignItems: "center", justifyContent: "center" },
+  docLockText:      { fontSize: 10 },
+  lockNote:         { color: C.slate500, fontSize: 11, marginTop: 8, lineHeight: 15 },
   input:            { backgroundColor: C.surface, borderWidth: 1, borderColor: C.line, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 11, color: C.text, fontSize: 14, marginBottom: 10 },
   inputMulti:       { minHeight: 90, textAlignVertical: "top" },
   row:              { flexDirection: "row", gap: 10 },

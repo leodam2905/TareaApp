@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { assertPromoUsable } from "@/lib/promo";
+import { assertPromoUsable, hasPriorPaidOrder } from "@/lib/promo";
 
 export async function POST(req: NextRequest) {
   // Require auth so codes can't be enumerated anonymously, and so ownership
@@ -23,7 +23,8 @@ export async function POST(req: NextRequest) {
   }
 
   // amount is optional here (used only to preview the discount); default to 0.
-  const check = assertPromoUsable(promo, user.id, typeof amount === "number" ? amount : 0);
+  const prior = await hasPriorPaidOrder(user.id);
+  const check = assertPromoUsable(promo, user.id, typeof amount === "number" ? amount : 0, prior);
   if (!check.ok) {
     return NextResponse.json({ valid: false, error: check.error });
   }

@@ -50,6 +50,7 @@ enum ServiceCategory {
   LANDSCAPING
   MOVING
   APPLIANCE_REPAIR
+  LAUNDRY
   GENERAL
 }
 
@@ -304,6 +305,7 @@ model JobRequest {
   scheduledAt DateTime
   budgetMin   Float
   budgetMax   Float
+  materialsCost Float         @default(0) // furniture/materials the customer buys; excluded from the $500 labor gate
   status      String          @default("OPEN") // OPEN, ASSIGNED, CLOSED
   imageUrls   String[]        @default([])
   createdAt   DateTime        @default(now())
@@ -382,6 +384,7 @@ model PromoCode {
   usesCount     Int      @default(0)
   expiresAt     DateTime?
   isActive      Boolean  @default(true)
+  firstOrderOnly Boolean @default(false) // redeemable only on the customer's first paid booking
   ownerId       String?  // if set, only this user may redeem the code (null = public/global)
   createdAt     DateTime @default(now())
 

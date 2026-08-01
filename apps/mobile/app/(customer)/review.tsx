@@ -74,7 +74,7 @@ export default function ReviewScreen() {
           value={comment}
           onChangeText={setComment}
           placeholder="Describe your experience…"
-          placeholderTextColor={C.slate500}
+          placeholderTextColor={"#94A3B8"}
           multiline
           numberOfLines={4}
           textAlignVertical="top"
@@ -98,7 +98,7 @@ export default function ReviewScreen() {
           value={customTip}
           onChangeText={v => { setCustomTip(v); setTip(null); }}
           placeholder="Custom amount ($)"
-          placeholderTextColor={C.slate500}
+          placeholderTextColor={"#94A3B8"}
           keyboardType="numeric"
         />
         {finalTip != null && finalTip > 0 && (
@@ -115,26 +115,26 @@ export default function ReviewScreen() {
 }
 
 const s = StyleSheet.create({
-  safe:        { flex: 1, backgroundColor: C.ink },
+  safe:        { flex: 1, backgroundColor: "#FFFFFF" },
   scroll:      { padding: 24 },
   backRow:     { marginBottom: 16 },
   back:        { color: C.sky, fontSize: 15, fontWeight: "600" },
-  title:       { color: C.white, fontSize: 26, fontWeight: "900", marginBottom: 4 },
-  sub:         { color: C.slate400, fontSize: 14, marginBottom: 32 },
+  title:       { color: "#0F172A", fontSize: 26, fontWeight: "900", marginBottom: 4 },
+  sub:         { color: "#64748B", fontSize: 14, marginBottom: 32 },
   starsRow:    { flexDirection: "row", justifyContent: "center", gap: 8, marginBottom: 8 },
   starBtn:     { padding: 4 },
   star:        { fontSize: 44, color: C.slate600 },
   starActive:  { color: C.amber },
-  ratingLabel: { textAlign: "center", color: C.slate400, fontSize: 14, marginBottom: 28 },
-  label:       { color: C.slate400, fontSize: 13, fontWeight: "600", marginBottom: 8, marginTop: 16 },
-  opt:         { color: C.slate500, fontWeight: "400" },
-  textarea:    { backgroundColor: "#1E293B", borderRadius: 12, padding: 14, color: C.white, fontSize: 15, height: 100, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
+  ratingLabel: { textAlign: "center", color: "#64748B", fontSize: 14, marginBottom: 28 },
+  label:       { color: "#64748B", fontSize: 13, fontWeight: "600", marginBottom: 8, marginTop: 16 },
+  opt:         { color: "#94A3B8", fontWeight: "400" },
+  textarea:    { backgroundColor: "#F1F5F9", borderRadius: 12, padding: 14, color: "#0F172A", fontSize: 15, height: 100, borderWidth: 1, borderColor: "#E2E8F0" },
   tipRow:      { flexDirection: "row", gap: 8, marginBottom: 10 },
-  tipBtn:      { flex: 1, backgroundColor: "#1E293B", borderRadius: 12, paddingVertical: 12, alignItems: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
+  tipBtn:      { flex: 1, backgroundColor: "#F1F5F9", borderRadius: 12, paddingVertical: 12, alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0" },
   tipActive:   { backgroundColor: "rgba(16,185,129,0.15)", borderColor: C.emerald },
-  tipText:     { color: C.slate400, fontWeight: "700", fontSize: 15 },
+  tipText:     { color: "#64748B", fontWeight: "700", fontSize: 15 },
   tipTextActive:{ color: C.emerald },
-  input:       { backgroundColor: "#1E293B", borderRadius: 12, padding: 14, color: C.white, fontSize: 15, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
+  input:       { backgroundColor: "#F1F5F9", borderRadius: 12, padding: 14, color: "#0F172A", fontSize: 15, borderWidth: 1, borderColor: "#E2E8F0" },
   tipPreview:  { color: C.emerald, fontSize: 13, fontWeight: "600", marginTop: 6 },
   btn:         { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 16, alignItems: "center", marginTop: 32 },
   btnDisabled: { opacity: 0.6 },

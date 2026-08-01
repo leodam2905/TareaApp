@@ -18,6 +18,7 @@ const SERVICES = [
   { category: "LANDSCAPING",      emoji: "🌿", label: "Landscaping",      desc: "Lawn care, trimming, planting" },
   { category: "MOVING",           emoji: "📦", label: "Moving",           desc: "Packing, hauling, assembly" },
   { category: "APPLIANCE_REPAIR", emoji: "🔌", label: "Appliance Repair", desc: "Washer, dryer, fridge" },
+  { category: "LAUNDRY",          emoji: "🧺", label: "Laundry",          desc: "Wash, dry & fold service" },
   { category: "GENERAL",          emoji: "🛠️", label: "General",          desc: "Odd jobs, handyman tasks" },
 ];
 

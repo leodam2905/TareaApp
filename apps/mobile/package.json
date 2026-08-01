@@ -4,10 +4,17 @@
   "main": "index.js",
   "scripts": {
     "start": "expo start",
+    "start:pro": "APP_VARIANT=handyman expo start",
+    "start:customer": "APP_VARIANT=customer expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
+    "android:pro": "APP_VARIANT=handyman expo run:android",
+    "android:customer": "APP_VARIANT=customer expo run:android",
     "build:ios": "eas build --platform ios",
-    "build:android": "eas build --platform android"
+    "build:android": "eas build --platform android",
+    "build:pro": "eas build --platform android --profile preview-handyman",
+    "update:pro": "APP_VARIANT=handyman eas update --branch production-handyman",
+    "update:customer": "APP_VARIANT=customer eas update --branch production"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",

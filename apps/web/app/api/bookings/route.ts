@@ -4,7 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
-import { assertPromoUsable } from "@/lib/promo";
+import { assertPromoUsable, hasPriorPaidOrder } from "@/lib/promo";
 
 const createSchema = z.object({
   serviceId: z.string(),
@@ -100,7 +100,8 @@ export async function POST(req: NextRequest) {
       const promo = await prisma.promoCode.findUnique({
         where: { code: data.promoCode.toUpperCase() },
       });
-      if (promo && assertPromoUsable(promo, user.id, data.totalPrice).ok) {
+      const prior = await hasPriorPaidOrder(user.id);
+      if (promo && assertPromoUsable(promo, user.id, data.totalPrice, prior).ok) {
         promoCodeId = promo.id;
         await prisma.promoCode.update({ where: { id: promo.id }, data: { usesCount: { increment: 1 } } });
       }

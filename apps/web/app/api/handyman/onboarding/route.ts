@@ -48,12 +48,18 @@ export async function PATCH(req: NextRequest) {
 
   const { idFrontUrl, idBackUrl, licenseNumber, licenseDocUrl, insuranceDocUrl, bio, hourlyRate, yearsExperience } = await req.json();
 
+  // Government ID can be set ONCE. Once on file it's locked — only an admin can
+  // change it. So we only accept idFront/idBack if they're not already set.
+  const existing = await prisma.handymanProfile.findUnique({
+    where: { userId: user.id }, select: { idFrontUrl: true, idBackUrl: true },
+  });
+
   // Persist any field the client sends. This is called incrementally during
   // onboarding (e.g. right after each document upload) so partial progress is
   // never lost if the user leaves before finishing the step.
   const data: Record<string, string | number> = {};
-  if (idFrontUrl)      data.idFrontUrl      = idFrontUrl;
-  if (idBackUrl)       data.idBackUrl       = idBackUrl;
+  if (idFrontUrl && !existing?.idFrontUrl) data.idFrontUrl = idFrontUrl;
+  if (idBackUrl  && !existing?.idBackUrl)  data.idBackUrl  = idBackUrl;
   if (licenseNumber)   data.licenseNumber   = licenseNumber;
   if (licenseDocUrl)   data.licenseDocUrl   = licenseDocUrl;
   if (insuranceDocUrl) data.insuranceDocUrl = insuranceDocUrl;

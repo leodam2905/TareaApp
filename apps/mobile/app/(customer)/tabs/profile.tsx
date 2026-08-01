@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert, ActivityIndicator, Image, Linking } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter, useFocusEffect } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { api, API_BASE } from "@/lib/api";
@@ -107,14 +108,31 @@ export default function CustomerProfileScreen() {
 
         <View style={s.card}>
           <Text style={s.label}>Full Name</Text>
-          <TextInput style={s.input} value={name} onChangeText={setName} placeholder="Your name" placeholderTextColor={C.slate500} />
+          <TextInput style={s.input} value={name} onChangeText={setName} placeholder="Your name" placeholderTextColor={"#94A3B8"} />
 
           <Text style={s.label}>Phone</Text>
-          <TextInput style={s.input} value={phone} onChangeText={setPhone} placeholder="+1 (555) 000-0000" placeholderTextColor={C.slate500} keyboardType="phone-pad" />
+          <TextInput style={s.input} value={phone} onChangeText={setPhone} placeholder="+1 (555) 000-0000" placeholderTextColor={"#94A3B8"} keyboardType="phone-pad" />
 
           <TouchableOpacity style={[s.btn, (saving || uploading) && s.btnDisabled]} onPress={save} disabled={saving || uploading}>
             {saving ? <ActivityIndicator color={C.ink} /> : <Text style={s.btnText}>Save Changes</Text>}
           </TouchableOpacity>
+        </View>
+
+        <View style={s.menu}>
+          {[
+            { label: "Saved Pros",    icon: "heart-outline" as const,        route: "/(customer)/favorites" },
+            { label: "Refer & Earn",  icon: "gift-outline" as const,         route: "/(customer)/refer-earn" },
+            { label: "Spending",      icon: "wallet-outline" as const,       route: "/(customer)/spending" },
+            { label: "Notifications", icon: "notifications-outline" as const, route: "/(customer)/notifications" },
+            { label: "My Requests",   icon: "document-text-outline" as const, route: "/(customer)/requests" },
+            { label: "Settings",      icon: "settings-outline" as const,      route: "/(customer)/settings" },
+          ].map((m, i, arr) => (
+            <TouchableOpacity key={m.label} style={[s.menuRow, i < arr.length - 1 && s.menuBorder]} onPress={() => router.push(m.route as any)}>
+              <Ionicons name={m.icon} size={20} color="#475569" />
+              <Text style={s.menuLabel}>{m.label}</Text>
+              <Ionicons name="chevron-forward" size={18} color="#CBD5E1" />
+            </TouchableOpacity>
+          ))}
         </View>
 
         <TouchableOpacity style={s.logoutBtn} onPress={logout}>
@@ -130,19 +148,23 @@ export default function CustomerProfileScreen() {
 }
 
 const s = StyleSheet.create({
-  safe:          { flex: 1, backgroundColor: C.ink },
-  center:        { flex: 1, backgroundColor: C.ink, alignItems: "center", justifyContent: "center" },
+  safe:          { flex: 1, backgroundColor: "#FFFFFF" },
+  center:        { flex: 1, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center" },
   header:        { padding: 24, paddingBottom: 8 },
-  title:         { color: C.white, fontSize: 24, fontWeight: "800" },
+  title:         { color: "#0F172A", fontSize: 24, fontWeight: "800" },
+  menu:          { marginHorizontal: 16, marginTop: 4, backgroundColor: "#F1F5F9", borderRadius: 16, paddingHorizontal: 16, borderWidth: 1, borderColor: "#E2E8F0" },
+  menuRow:       { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 15 },
+  menuBorder:    { borderBottomWidth: 1, borderBottomColor: "#E2E8F0" },
+  menuLabel:     { flex: 1, color: "#0F172A", fontSize: 15, fontWeight: "600" },
   avatarWrap:    { alignSelf: "center", marginVertical: 16 },
   avatar:        { width: 96, height: 96, borderRadius: 48 },
   avatarFallback:{ backgroundColor: C.sky + "33", alignItems: "center", justifyContent: "center" },
   avatarInitial: { color: C.sky, fontSize: 36, fontWeight: "800" },
   avatarEdit:    { position: "absolute", bottom: 0, right: 0, backgroundColor: C.sky, borderRadius: 16, width: 32, height: 32, alignItems: "center", justifyContent: "center" },
   avatarEditText:{ fontSize: 14 },
-  card:          { margin: 16, backgroundColor: "#1E293B", borderRadius: 20, padding: 20, borderWidth: 1, borderColor: "rgba(255,255,255,0.07)" },
-  label:         { color: C.slate400, fontSize: 12, fontWeight: "600", marginBottom: 6, marginTop: 12 },
-  input:         { backgroundColor: "rgba(255,255,255,0.07)", borderWidth: 1, borderColor: "rgba(255,255,255,0.1)", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 13, color: C.white, fontSize: 15 },
+  card:          { margin: 16, backgroundColor: "#F1F5F9", borderRadius: 20, padding: 20, borderWidth: 1, borderColor: "#E2E8F0" },
+  label:         { color: "#64748B", fontSize: 12, fontWeight: "600", marginBottom: 6, marginTop: 12 },
+  input:         { backgroundColor: "#E2E8F0", borderWidth: 1, borderColor: "#E2E8F0", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 13, color: "#0F172A", fontSize: 15 },
   btn:           { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 15, alignItems: "center", marginTop: 20 },
   btnDisabled:   { opacity: 0.5 },
   btnText:       { color: C.ink, fontWeight: "800", fontSize: 16 },

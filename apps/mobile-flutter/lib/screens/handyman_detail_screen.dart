@@ -1,0 +1,202 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../theme.dart';
+import '../api.dart';
+
+class HandymanDetailScreen extends StatefulWidget {
+  final Map<String, dynamic> pro;
+  const HandymanDetailScreen({super.key, required this.pro});
+  @override
+  State<HandymanDetailScreen> createState() => _HandymanDetailScreenState();
+}
+
+class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
+  List<dynamic> _reviews = [];
+  Map<String, dynamic> _p = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _p = Map<String, dynamic>.from(widget.pro);
+    _load();
+  }
+
+  String get _userId => (_p['id'] ?? '').toString();
+
+  Future<void> _load() async {
+    try {
+      final res = await Api.get('/users/$_userId');
+      if (res.statusCode == 200) {
+        final full = jsonDecode(res.body);
+        if (full is Map && mounted) setState(() => _p = {..._p, ...Map<String, dynamic>.from(full)});
+      }
+    } catch (_) {}
+    try {
+      final res = await Api.get('/reviews/handyman/$_userId');
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        if (mounted) setState(() => _reviews = data is List ? data : (data['reviews'] ?? []));
+      }
+    } catch (_) {}
+  }
+
+  void _book({Map? service}) {
+    final hp = _p['handymanProfile'] ?? {};
+    context.push('/post-job', extra: {
+      'handymanId': _userId,
+      'proName': (_p['name'] ?? 'Pro').toString(),
+      if (service != null) 'serviceId': service['id'],
+      if (service != null) 'category': (service['category'] ?? '').toString(),
+      if (service != null) 'serviceMin': service['minPrice'] ?? hp['hourlyRate'],
+      if (service != null) 'serviceMax': service['maxPrice'] ?? hp['hourlyRate'],
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final name = (_p['name'] ?? 'Pro').toString();
+    final hp = _p['handymanProfile'] ?? {};
+    final rating = hp['rating'];
+    final totalJobs = hp['totalJobs'] ?? 0;
+    final hourly = hp['hourlyRate'];
+    final years = hp['yearsExperience'];
+    final bio = (hp['bio'] ?? '').toString();
+    final services = (hp['services'] ?? _p['services'] as List?) ?? const [];
+    final isVerified = _p['isVerified'] == true;
+
+    return Scaffold(
+      backgroundColor: C.bg,
+      appBar: AppBar(
+        backgroundColor: C.bg, surfaceTintColor: Colors.transparent, elevation: 0,
+        leading: IconButton(icon: const Icon(Icons.chevron_left, color: C.ink, size: 30), onPressed: () => context.pop()),
+        actions: const [Icon(Icons.favorite_border, color: C.ink), SizedBox(width: 16)],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        children: [
+          // Header
+          Center(
+            child: Column(children: [
+              CircleAvatar(radius: 42, backgroundColor: C.surface,
+                  child: Text(name.isNotEmpty ? name[0].toUpperCase() : '?', style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900, color: C.blue))),
+              const SizedBox(height: 12),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Text(name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: C.ink)),
+                if (isVerified) ...[const SizedBox(width: 6), const Icon(Icons.verified, color: C.blue, size: 20)],
+              ]),
+              if (rating != null) ...[
+                const SizedBox(height: 6),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  const Icon(Icons.star, color: Color(0xFFF59E0B), size: 18),
+                  const SizedBox(width: 4),
+                  Text('${(rating as num).toStringAsFixed(1)} ($totalJobs jobs)', style: const TextStyle(fontWeight: FontWeight.w700, color: C.ink)),
+                ]),
+              ],
+            ]),
+          ),
+          const SizedBox(height: 20),
+          // Stats
+          Row(children: [
+            if (hourly != null) _stat('\$${(hourly as num).round()}/hr', 'Rate'),
+            _stat('$totalJobs', 'Jobs'),
+            if (years != null) _stat('$years yr', 'Experience'),
+          ]),
+          if (bio.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            const Text('About', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+            const SizedBox(height: 8),
+            Text(bio, style: const TextStyle(color: C.muted, height: 1.5)),
+          ],
+          if (services.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            const Text('Services', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+            const SizedBox(height: 8),
+            ...services.map<Widget>((sv) => _serviceRow(sv)),
+          ],
+          if (_reviews.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            Text('Reviews (${_reviews.length})', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+            const SizedBox(height: 8),
+            ..._reviews.take(5).map<Widget>((r) => _reviewRow(r)),
+          ],
+        ],
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+          child: FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))),
+            onPressed: () => _book(),
+            child: Text('Request ${name.split(' ').first}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _stat(String value, String label) => Expanded(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(14)),
+          child: Column(children: [
+            Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+            const SizedBox(height: 2),
+            Text(label, style: const TextStyle(color: C.muted, fontSize: 12)),
+          ]),
+        ),
+      );
+
+  Widget _serviceRow(dynamic sv) {
+    final title = (sv['title'] ?? _pretty((sv['category'] ?? '').toString())).toString();
+    final min = sv['minPrice'];
+    final max = sv['maxPrice'];
+    final priceText = min != null ? '\$${(min as num).round()}${max != null ? '–\$${(max as num).round()}' : ''}' : '';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(14)),
+      child: Row(children: [
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink, fontSize: 15)),
+            if (priceText.isNotEmpty) Text(priceText, style: const TextStyle(color: C.muted)),
+          ]),
+        ),
+        GestureDetector(
+          onTap: () => _book(service: sv is Map ? sv : null),
+          child: const Text('Book →', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+        ),
+      ]),
+    );
+  }
+
+  Widget _reviewRow(dynamic r) {
+    final author = (r['author']?['name'] ?? 'Customer').toString();
+    final rating = (r['rating'] ?? 0) as num;
+    final comment = (r['comment'] ?? '').toString();
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(14)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Text(author, style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink)),
+          const Spacer(),
+          Text('★' * rating.round() + '☆' * (5 - rating.round()), style: const TextStyle(color: Color(0xFFF59E0B))),
+        ]),
+        if (comment.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Text(comment, style: const TextStyle(color: C.muted, height: 1.4)),
+        ],
+      ]),
+    );
+  }
+
+  String _pretty(String c) {
+    if (c.isEmpty) return 'Service';
+    return c[0].toUpperCase() + c.substring(1).toLowerCase().replaceAll('_', ' ');
+  }
+}

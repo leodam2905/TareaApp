@@ -7,12 +7,18 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+      "env": {
+        "APP_VARIANT": "handyman"
+      },
       "ios": {
         "simulator": true
       }
     },
     "preview": {
       "distribution": "internal",
+      "env": {
+        "APP_VARIANT": "handyman"
+      },
       "ios": {
         "simulator": false
       },
@@ -25,6 +31,16 @@
         "APP_VARIANT": "handyman"
       },
       "distribution": "internal",
+      "channel": "production-handyman",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview-customer": {
+      "env": {
+        "APP_VARIANT": "customer"
+      },
+      "distribution": "internal",
       "channel": "production",
       "android": {
         "buildType": "apk"
@@ -32,6 +48,9 @@
     },
     "production": {
       "autoIncrement": true,
+      "env": {
+        "APP_VARIANT": "customer"
+      },
       "ios": {
         "simulator": false
       },
@@ -61,7 +80,7 @@
       "android": {
         "buildType": "app-bundle"
       },
-      "channel": "production"
+      "channel": "production-handyman"
     }
   },
   "submit": {

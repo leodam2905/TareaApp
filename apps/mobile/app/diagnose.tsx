@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
+import { getToken } from "@/lib/storage";
 import { C } from "@/constants/colors";
 
 const API = "https://taptarea.com/api";
@@ -69,19 +70,40 @@ export default function DiagnoseScreen() {
     }
   }, [result]);
 
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") { Alert.alert("Permission required", "Allow photo access to upload an image."); return; }
-    const res = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.7,
-      base64: true,
-    });
+  const applyAsset = (res: ImagePicker.ImagePickerResult) => {
     if (!res.canceled && res.assets[0]) {
       setImageUri(res.assets[0].uri);
       setBase64(res.assets[0].base64 || null);
       setResult(null);
     }
+  };
+
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") { Alert.alert("Permission required", "Allow photo access to upload an image."); return; }
+    applyAsset(await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.7,
+      base64: true,
+    }));
+  };
+
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") { Alert.alert("Permission required", "Allow camera access to take a photo."); return; }
+    applyAsset(await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.7,
+      base64: true,
+    }));
+  };
+
+  const choosePhoto = () => {
+    Alert.alert("Add a photo", "Take a new photo or choose one from your library.", [
+      { text: "Take Photo", onPress: takePhoto },
+      { text: "Choose from Library", onPress: pickImage },
+      { text: "Cancel", style: "cancel" },
+    ]);
   };
 
   const analyze = async () => {
@@ -128,7 +150,7 @@ export default function DiagnoseScreen() {
         </View>
 
         {/* Photo upload */}
-        <TouchableOpacity style={[s.imageBox, imageUri && s.imageBoxFilled]} onPress={pickImage} activeOpacity={0.85}>
+        <TouchableOpacity style={[s.imageBox, imageUri && s.imageBoxFilled]} onPress={choosePhoto} activeOpacity={0.85}>
           {imageUri ? (
             <>
               <Image source={{ uri: imageUri }} style={s.imagePreview} resizeMode="cover" />
@@ -139,8 +161,8 @@ export default function DiagnoseScreen() {
           ) : (
             <View style={s.imagePlaceholder}>
               <View style={s.cameraRing}><Text style={{ fontSize: 30 }}>📷</Text></View>
-              <Text style={s.imageTitle}>Upload a photo</Text>
-              <Text style={s.imageSub}>Tap to browse your library</Text>
+              <Text style={s.imageTitle}>Add a photo</Text>
+              <Text style={s.imageSub}>Take a photo or choose from your library</Text>
             </View>
           )}
         </TouchableOpacity>
@@ -154,7 +176,7 @@ export default function DiagnoseScreen() {
         <TextInput
           style={s.input}
           placeholder="e.g. Water stain on ceiling after heavy rain…"
-          placeholderTextColor="rgba(255,255,255,0.22)"
+          placeholderTextColor="#94A3B8"
           value={description}
           onChangeText={setDesc}
           multiline
@@ -221,10 +243,15 @@ export default function DiagnoseScreen() {
               {/* CTA */}
               <TouchableOpacity
                 style={s.bookBtn}
-                onPress={() => router.push({ pathname: "/(auth)/register" as any, params: { role: "CUSTOMER" } })}
+                onPress={async () => {
+                  const jobParams = { category: result.category, description: description.trim() || result.explanation };
+                  const token = await getToken();
+                  if (token) router.push({ pathname: "/(customer)/post-job" as any, params: jobParams });
+                  else router.push({ pathname: "/(auth)/register" as any, params: { role: "CUSTOMER" } });
+                }}
                 activeOpacity={0.85}
               >
-                <Text style={s.bookBtnText}>Book a {catMeta.label} Pro  →</Text>
+                <Text style={s.bookBtnText}>Post this job  →</Text>
               </TouchableOpacity>
             </View>
 
@@ -240,7 +267,7 @@ export default function DiagnoseScreen() {
 const CORNER_SIZE = 18;
 
 const s = StyleSheet.create({
-  safe:            { flex: 1, backgroundColor: C.ink },
+  safe:            { flex: 1, backgroundColor: "#FFFFFF" },
   scroll:          { padding: 20 },
   back:            { marginBottom: 24 },
   backText:        { color: C.sky, fontSize: 15, fontWeight: "600" },
@@ -249,32 +276,32 @@ const s = StyleSheet.create({
   hero:            { alignItems: "center", marginBottom: 28 },
   heroRing:        { width: 76, height: 76, borderRadius: 38, backgroundColor: "rgba(56,189,248,0.08)", borderWidth: 1.5, borderColor: "rgba(56,189,248,0.25)", alignItems: "center", justifyContent: "center", marginBottom: 18 },
   heroEmoji:       { fontSize: 34 },
-  heading:         { color: "#fff", fontSize: 26, fontWeight: "900", textAlign: "center", marginBottom: 10 },
-  sub:             { color: "rgba(255,255,255,0.42)", fontSize: 14, lineHeight: 21, textAlign: "center", maxWidth: 300 },
+  heading:         { color: "#0F172A", fontSize: 26, fontWeight: "900", textAlign: "center", marginBottom: 10 },
+  sub:             { color: "#64748B", fontSize: 14, lineHeight: 21, textAlign: "center", maxWidth: 300 },
 
   // Image box
   imageBox:        { borderWidth: 1.5, borderColor: "rgba(56,189,248,0.18)", borderStyle: "dashed", borderRadius: 20, overflow: "hidden", marginBottom: 22, backgroundColor: "rgba(56,189,248,0.03)", minHeight: 160 },
   imageBoxFilled:  { borderStyle: "solid", borderColor: "rgba(56,189,248,0.35)" },
   imagePlaceholder:{ alignItems: "center", paddingVertical: 36 },
   cameraRing:      { width: 64, height: 64, borderRadius: 32, backgroundColor: "rgba(56,189,248,0.1)", alignItems: "center", justifyContent: "center", marginBottom: 14 },
-  imageTitle:      { color: "#fff", fontWeight: "700", fontSize: 15, marginBottom: 5 },
-  imageSub:        { color: "rgba(255,255,255,0.28)", fontSize: 12 },
+  imageTitle:      { color: "#0F172A", fontWeight: "700", fontSize: 15, marginBottom: 5 },
+  imageSub:        { color: "#94A3B8", fontSize: 12 },
   imagePreview:    { width: "100%", height: 220 },
   // scan corners
   cornerTL:        { position: "absolute", top: 8, left: 8,   width: CORNER_SIZE, height: CORNER_SIZE, borderTopWidth: 2.5, borderLeftWidth: 2.5,   borderColor: C.sky, borderTopLeftRadius: 4 },
   cornerTR:        { position: "absolute", top: 8, right: 8,  width: CORNER_SIZE, height: CORNER_SIZE, borderTopWidth: 2.5, borderRightWidth: 2.5,  borderColor: C.sky, borderTopRightRadius: 4 },
   cornerBL:        { position: "absolute", bottom: 36, left: 8,  width: CORNER_SIZE, height: CORNER_SIZE, borderBottomWidth: 2.5, borderLeftWidth: 2.5,  borderColor: C.sky, borderBottomLeftRadius: 4 },
   cornerBR:        { position: "absolute", bottom: 36, right: 8, width: CORNER_SIZE, height: CORNER_SIZE, borderBottomWidth: 2.5, borderRightWidth: 2.5, borderColor: C.sky, borderBottomRightRadius: 4 },
-  retapeBanner:    { position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "rgba(15,23,42,0.72)", paddingVertical: 9, alignItems: "center" },
-  retapeText:      { color: "rgba(255,255,255,0.6)", fontSize: 12, fontWeight: "600" },
+  retapeBanner:    { position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "rgba(15,23,42,0.55)", paddingVertical: 9, alignItems: "center" },
+  retapeText:      { color: "#334155", fontSize: 12, fontWeight: "600" },
 
   // Divider
   orRow:           { flexDirection: "row", alignItems: "center", marginBottom: 16 },
-  orLine:          { flex: 1, height: 1, backgroundColor: "rgba(255,255,255,0.07)" },
-  orText:          { color: "rgba(255,255,255,0.28)", fontSize: 12, marginHorizontal: 14 },
+  orLine:          { flex: 1, height: 1, backgroundColor: "#E2E8F0" },
+  orText:          { color: "#94A3B8", fontSize: 12, marginHorizontal: 14 },
 
   // Input
-  input:           { backgroundColor: "#1E293B", borderRadius: 14, padding: 14, color: "#fff", fontSize: 14, minHeight: 90, textAlignVertical: "top", borderWidth: 1, borderColor: "rgba(255,255,255,0.07)", marginBottom: 20 },
+  input:           { backgroundColor: "#F1F5F9", borderRadius: 14, padding: 14, color: "#0F172A", fontSize: 14, minHeight: 90, textAlignVertical: "top", borderWidth: 1, borderColor: "#E2E8F0", marginBottom: 20 },
 
   // Button
   btn:             { backgroundColor: C.sky, borderRadius: 16, paddingVertical: 18, alignItems: "center", marginBottom: 30 },
@@ -284,28 +311,28 @@ const s = StyleSheet.create({
   btnText:         { color: C.ink, fontWeight: "900", fontSize: 16, letterSpacing: 0.3 },
 
   // Result card
-  resultCard:      { borderRadius: 22, overflow: "hidden", borderWidth: 1, borderColor: "rgba(255,255,255,0.08)" },
+  resultCard:      { borderRadius: 22, overflow: "hidden", borderWidth: 1, borderColor: "#E2E8F0" },
 
   catHeader:       { flexDirection: "row", alignItems: "center", padding: 20, gap: 16 },
   catEmoji:        { fontSize: 44 },
   catText:         { flex: 1 },
-  catEyebrow:      { color: "rgba(255,255,255,0.4)", fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 4 },
+  catEyebrow:      { color: "#64748B", fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 4 },
   catName:         { fontSize: 24, fontWeight: "900" },
 
-  cardBody:        { backgroundColor: "#1E293B", padding: 20, gap: 14 },
+  cardBody:        { backgroundColor: "#F1F5F9", padding: 20, gap: 14 },
 
   urgencyPill:     { flexDirection: "row", alignItems: "center", padding: 12, borderRadius: 12, borderLeftWidth: 3 },
   urgencyText:     { fontWeight: "700", fontSize: 14 },
 
-  sectionLabel:    { color: "rgba(255,255,255,0.32)", fontSize: 10, fontWeight: "800", textTransform: "uppercase", letterSpacing: 1.4 },
-  explanation:     { color: "rgba(255,255,255,0.78)", fontSize: 14, lineHeight: 23 },
+  sectionLabel:    { color: "#64748B", fontSize: 10, fontWeight: "800", textTransform: "uppercase", letterSpacing: 1.4 },
+  explanation:     { color: "#334155", fontSize: 14, lineHeight: 23 },
 
-  sep:             { height: 1, backgroundColor: "rgba(255,255,255,0.07)" },
+  sep:             { height: 1, backgroundColor: "#E2E8F0" },
 
   tipRow:          { flexDirection: "row", gap: 10, alignItems: "flex-start" },
   tipArrow:        { width: 22, height: 22, borderRadius: 11, backgroundColor: "rgba(56,189,248,0.15)", alignItems: "center", justifyContent: "center", marginTop: 1 },
   tipArrowText:    { color: C.sky, fontSize: 15, fontWeight: "900", lineHeight: 20 },
-  tipText:         { color: "rgba(255,255,255,0.62)", fontSize: 13, lineHeight: 21, flex: 1 },
+  tipText:         { color: "#334155", fontSize: 13, lineHeight: 21, flex: 1 },
 
   bookBtn:         { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 15, alignItems: "center", marginTop: 4 },
   bookBtnText:     { color: C.ink, fontWeight: "900", fontSize: 15, letterSpacing: 0.3 },

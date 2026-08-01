@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+// Trades that legally require a license — "Licensed" badge only shows for these.
+const LICENSE_REQUIRED = new Set(["PLUMBING", "ELECTRICAL", "HVAC", "ROOFING", "GENERAL"]);
+
 // Queries the DB — must run at request time, not be prerendered at build time
 // (build-time prerender can't load the Prisma engine / libssl in the Alpine image).
 export const dynamic = "force-dynamic";
@@ -25,6 +28,8 @@ export async function GET(_req: NextRequest) {
       latitude: true,
       longitude: true,
       isVerified: true,
+      phone: true,
+      stripeAccountStatus: true,
       handymanProfile: {
         select: {
           bio: true,
@@ -32,6 +37,10 @@ export async function GET(_req: NextRequest) {
           rating: true,
           totalJobs: true,
           isPremium: true,
+          yearsExperience: true,
+          backgroundCheckStatus: true,
+          licenseDocUrl: true,
+          insuranceDocUrl: true,
           services: {
             where: { isActive: true },
             select: { title: true, category: true },
@@ -45,26 +54,43 @@ export async function GET(_req: NextRequest) {
     ],
   });
 
-  const result = handymen.map((h) => ({
-    id: h.id,
-    name: h.name,
-    avatarUrl: h.avatarUrl,
-    city: h.city,
-    state: h.state,
-    latitude: h.latitude,
-    longitude: h.longitude,
-    isVerified: h.isVerified,
-    handymanProfile: h.handymanProfile
-      ? {
-          bio: h.handymanProfile.bio,
-          hourlyRate: h.handymanProfile.hourlyRate,
-          rating: h.handymanProfile.rating,
-          totalJobs: h.handymanProfile.totalJobs,
-          isPremium: h.handymanProfile.isPremium,
-        }
-      : null,
-    services: h.handymanProfile?.services ?? [],
-  }));
+  const result = handymen.map((h) => {
+    const hp = h.handymanProfile;
+    const rating = hp?.rating ?? 0;
+    const jobs = hp?.totalJobs ?? 0;
+    return {
+      id: h.id,
+      name: h.name,
+      avatarUrl: h.avatarUrl,
+      city: h.city,
+      state: h.state,
+      latitude: h.latitude,
+      longitude: h.longitude,
+      isVerified: h.isVerified,
+      handymanProfile: hp
+        ? {
+            bio: hp.bio,
+            hourlyRate: hp.hourlyRate,
+            rating: hp.rating,
+            totalJobs: hp.totalJobs,
+            isPremium: hp.isPremium,
+            yearsExperience: hp.yearsExperience,
+          }
+        : null,
+      services: hp?.services ?? [],
+      // Trust signals — the client shows only the top few that apply.
+      trust: {
+        identityVerified: h.isVerified,
+        phoneVerified: !!h.phone,
+        backgroundChecked: hp?.backgroundCheckStatus === "PASSED",
+        licensed: !!hp?.licenseDocUrl && (hp?.services ?? []).some(sv => LICENSE_REQUIRED.has(sv.category)),
+        insured: !!hp?.insuranceDocUrl,
+        paymentVerified: h.stripeAccountStatus === "active",
+        topRated: rating >= 4.8 && jobs >= 10,
+        topPro: !!hp?.isPremium,
+      },
+    };
+  });
 
   return NextResponse.json(result);
 }

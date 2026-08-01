@@ -50,7 +50,12 @@ export default function HandymanDetailScreen() {
   };
 
   const bookService = (service: Service) => {
-    router.push({ pathname: "/(customer)/book" as any, params: { handymanId: userId, serviceId: service.id, serviceTitle: service.title, servicePrice: service.minPrice ?? 0 } });
+    // Same rich flow as Post a Job, but directed to this one pro (accept/decline).
+    router.push({ pathname: "/(customer)/post-job" as any, params: {
+      handymanId: userId, serviceId: service.id, proName: profile?.name ?? "Pro",
+      category: service.category, description: service.title,
+      serviceMin: String(service.minPrice ?? 0), serviceMax: String(service.maxPrice ?? service.minPrice ?? 0),
+    } });
   };
 
   if (loading) return <View style={s.center}><ActivityIndicator color={C.sky} size="large" /></View>;
@@ -162,9 +167,9 @@ export default function HandymanDetailScreen() {
 }
 
 const s = StyleSheet.create({
-  safe:          { flex: 1, backgroundColor: C.ink },
-  center:        { flex: 1, backgroundColor: C.ink, alignItems: "center", justifyContent: "center" },
-  empty:         { color: C.slate400, fontSize: 15 },
+  safe:          { flex: 1, backgroundColor: "#FFFFFF" },
+  center:        { flex: 1, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center" },
+  empty:         { color: "#64748B", fontSize: 15 },
   topBar:        { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 },
   backBtn:       { padding: 8 },
   backText:      { color: C.sky, fontSize: 15, fontWeight: "600" },
@@ -173,7 +178,7 @@ const s = StyleSheet.create({
   avatar:        { width: 96, height: 96, borderRadius: 48, marginBottom: 12 },
   avatarFallback:{ backgroundColor: "rgba(56,189,248,0.15)", alignItems: "center", justifyContent: "center" },
   avatarInitial: { color: C.sky, fontSize: 36, fontWeight: "800" },
-  name:          { color: C.white, fontSize: 24, fontWeight: "900", marginBottom: 8 },
+  name:          { color: "#0F172A", fontSize: 24, fontWeight: "900", marginBottom: 8 },
   badgeRow:      { flexDirection: "row", gap: 6, flexWrap: "wrap", justifyContent: "center", marginBottom: 8 },
   verifiedBadge: { backgroundColor: "rgba(16,185,129,0.15)", borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 },
   verifiedText:  { color: C.emerald, fontSize: 11, fontWeight: "700" },
@@ -181,33 +186,33 @@ const s = StyleSheet.create({
   proText:       { color: C.amber, fontSize: 11, fontWeight: "700" },
   bgBadge:       { backgroundColor: "rgba(56,189,248,0.1)", borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3 },
   bgText:        { color: C.sky, fontSize: 11, fontWeight: "600" },
-  location:      { color: C.slate400, fontSize: 13, marginBottom: 8 },
+  location:      { color: "#64748B", fontSize: 13, marginBottom: 8 },
   ratingRow:     { flexDirection: "row", alignItems: "center", gap: 8 },
   stars:         { color: C.amber, fontSize: 16 },
-  ratingNum:     { color: C.slate400, fontSize: 13 },
-  statsRow:      { flexDirection: "row", justifyContent: "space-around", marginHorizontal: 16, marginBottom: 8, backgroundColor: "#1E293B", borderRadius: 16, padding: 16 },
+  ratingNum:     { color: "#64748B", fontSize: 13 },
+  statsRow:      { flexDirection: "row", justifyContent: "space-around", marginHorizontal: 16, marginBottom: 8, backgroundColor: "#F1F5F9", borderRadius: 16, padding: 16 },
   stat:          { alignItems: "center" },
   statVal:       { color: C.sky, fontWeight: "800", fontSize: 15 },
-  statLabel:     { color: C.slate500, fontSize: 11, marginTop: 2 },
+  statLabel:     { color: "#94A3B8", fontSize: 11, marginTop: 2 },
   section:       { marginHorizontal: 16, marginTop: 16 },
-  sectionTitle:  { color: C.white, fontSize: 17, fontWeight: "800", marginBottom: 10 },
-  bio:           { color: C.slate400, fontSize: 14, lineHeight: 21 },
-  serviceCard:   { backgroundColor: "#1E293B", borderRadius: 14, padding: 14, marginBottom: 8, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.07)" },
-  serviceTitle:  { color: C.white, fontWeight: "700", fontSize: 14 },
+  sectionTitle:  { color: "#0F172A", fontSize: 17, fontWeight: "800", marginBottom: 10 },
+  bio:           { color: "#64748B", fontSize: 14, lineHeight: 21 },
+  serviceCard:   { backgroundColor: "#F1F5F9", borderRadius: 14, padding: 14, marginBottom: 8, flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#E2E8F0" },
+  serviceTitle:  { color: "#0F172A", fontWeight: "700", fontSize: 14 },
   serviceCategory:{ color: C.sky, fontSize: 11, marginTop: 2 },
-  serviceMeta:   { color: C.slate500, fontSize: 11, marginTop: 2 },
+  serviceMeta:   { color: "#94A3B8", fontSize: 11, marginTop: 2 },
   serviceRight:  { alignItems: "flex-end", gap: 4 },
   servicePrice:  { color: C.emerald, fontWeight: "800", fontSize: 14 },
   bookNow:       { color: C.sky, fontSize: 12, fontWeight: "700" },
-  reviewCard:    { backgroundColor: "#1E293B", borderRadius: 12, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)" },
+  reviewCard:    { backgroundColor: "#F1F5F9", borderRadius: 12, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: "#E2E8F0" },
   reviewHeader:  { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 6 },
   reviewAvatar:  { width: 32, height: 32, borderRadius: 16, backgroundColor: "rgba(56,189,248,0.15)", alignItems: "center", justifyContent: "center" },
   reviewInitial: { color: C.sky, fontWeight: "700", fontSize: 14 },
-  reviewName:    { color: C.white, fontWeight: "600", fontSize: 13 },
+  reviewName:    { color: "#0F172A", fontWeight: "600", fontSize: 13 },
   reviewStars:   { color: C.amber, fontSize: 12 },
-  reviewDate:    { color: C.slate500, fontSize: 11 },
-  reviewComment: { color: C.slate400, fontSize: 13, lineHeight: 19 },
-  stickyBar:     { position: "absolute", bottom: 0, left: 0, right: 0, padding: 16, backgroundColor: C.ink, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.08)" },
+  reviewDate:    { color: "#94A3B8", fontSize: 11 },
+  reviewComment: { color: "#64748B", fontSize: 13, lineHeight: 19 },
+  stickyBar:     { position: "absolute", bottom: 0, left: 0, right: 0, padding: 16, backgroundColor: "#FFFFFF", borderTopWidth: 1, borderTopColor: "#E2E8F0" },
   bookBtn:       { backgroundColor: C.sky, borderRadius: 14, paddingVertical: 15, alignItems: "center" },
   bookBtnText:   { color: C.ink, fontWeight: "900", fontSize: 16 },
 });

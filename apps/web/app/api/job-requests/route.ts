@@ -48,6 +48,12 @@ export async function GET() {
   });
   const myCategories = myServices.map(s => s.category);
 
+  // Jobs over $500 are reserved for Licensed & Insured pros (license + insurance on file).
+  const docs = await prisma.handymanProfile.findUnique({
+    where: { id: profile.id }, select: { licenseDocUrl: true, insuranceDocUrl: true },
+  });
+  const licensedInsured = !!(docs?.licenseDocUrl && docs?.insuranceDocUrl);
+
   const requests = await prisma.jobRequest.findMany({
     where: {
       status: "OPEN",
@@ -75,6 +81,9 @@ export async function GET() {
       return { ...r, distanceKm, score: 0 };
     })
     .filter(r => r.distanceKm === null || r.distanceKm <= RADIUS_KM)
+    // Jobs whose LABOR value (budget minus furniture/materials the customer buys)
+    // exceeds $500 are reserved for Licensed & Insured pros.
+    .filter(r => licensedInsured || (r.budgetMax - (r.materialsCost ?? 0)) <= 500)
     .sort((a, b) => (a.distanceKm ?? 999) - (b.distanceKm ?? 999));
 
   return NextResponse.json(scored);
@@ -85,9 +94,9 @@ export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { category, title, description, address, city, scheduledAt, budgetMin, budgetMax, latitude, longitude, imageUrls } = await req.json();
+  const { category, title, description, address, city, scheduledAt, budgetMin, budgetMax, materialsCost, latitude, longitude, imageUrls } = await req.json();
 
-  if (!category || !title || !description || !address || !city || !scheduledAt || !budgetMin || !budgetMax) {
+  if (!category || !title || !description || !address || !city || !scheduledAt) {
     return NextResponse.json({ error: "All fields are required" }, { status: 400 });
   }
 
@@ -102,8 +111,9 @@ export async function POST(req: NextRequest) {
       latitude:  latitude  ? parseFloat(latitude)  : undefined,
       longitude: longitude ? parseFloat(longitude) : undefined,
       scheduledAt: new Date(scheduledAt),
-      budgetMin: parseFloat(budgetMin),
-      budgetMax: parseFloat(budgetMax),
+      budgetMin: budgetMin ? parseFloat(budgetMin) : 0,
+      budgetMax: budgetMax ? parseFloat(budgetMax) : 0,
+      materialsCost: materialsCost ? parseFloat(materialsCost) : 0,
       imageUrls: Array.isArray(imageUrls) ? imageUrls : [],
     },
   });
@@ -116,10 +126,19 @@ export async function POST(req: NextRequest) {
       user: { avatarUrl: { not: null } },
       services: { some: { category: category as never, isActive: true } },
     },
-    include: { user: { select: { id: true, city: true, email: true, name: true, expoPushToken: true } } },
+    include: { user: { select: { id: true, city: true, email: true, name: true, expoPushToken: true, latitude: true, longitude: true } } },
   });
 
-  const nearby = handymen.filter(h => h.user.city?.toLowerCase() === city.toLowerCase());
+  // Match by distance (catches pros in nearby towns, not just an exact city-name
+  // match). Fall back to city only when coordinates are missing on either side.
+  const jLat = jobRequest.latitude, jLng = jobRequest.longitude;
+  const nearby = handymen.filter(h => {
+    const u = h.user;
+    if (jLat != null && jLng != null && u.latitude != null && u.longitude != null) {
+      return haversine(jLat, jLng, u.latitude, u.longitude) <= RADIUS_KM;
+    }
+    return u.city?.toLowerCase() === city.toLowerCase();
+  });
 
   if (nearby.length > 0) {
     // In-app notifications (bulk)
@@ -136,7 +155,9 @@ export async function POST(req: NextRequest) {
     // Email + push per handyman (fire and forget)
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://taptarea.com";
     const jobUrl = `${appUrl}/handyman/find-jobs`;
-    const budgetStr = `$${parseFloat(budgetMin).toFixed(0)}–$${parseFloat(budgetMax).toFixed(0)}`;
+    const budgetStr = (budgetMin || budgetMax)
+      ? `$${parseFloat(budgetMin || "0").toFixed(0)}–$${parseFloat(budgetMax || "0").toFixed(0)}`
+      : "Open / flexible";
     const categoryLabel = category.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase());
 
     await Promise.allSettled(nearby.map(async h => {

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Image, TextInput, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useVideoPlayer, VideoView } from "expo-video";
 import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import { API_BASE } from "@/lib/api";
@@ -38,36 +37,6 @@ export default function LandingScreen() {
 // ════════════════════════ PRO (handyman) LANDING ════════════════════════════
 function ProLanding() {
   const router = useRouter();
-  const [email, setEmail]       = useState("");
-  const [password, setPassword] = useState("");
-  const [showPw, setShowPw]     = useState(false);
-  const [remember, setRemember] = useState(true);
-  const [loading, setLoading]   = useState(false);
-
-  const login = async () => {
-    if (!email.trim() || !password) { Alert.alert("Error", "Please enter your email and password"); return; }
-    setLoading(true);
-    try {
-      const res  = await fetch(`${API_BASE}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
-      });
-      const data = await res.json();
-      if (!res.ok) { Alert.alert("Login failed", data.error || "Invalid credentials"); return; }
-      if (data.requiresOtp) {
-        router.push({ pathname: "/(auth)/verify-otp", params: { pendingToken: data.pendingToken, phoneMask: data.phoneMask ?? "" } });
-        return;
-      }
-      await saveToken(data.token);
-      await saveRole(data.role);
-      router.replace(data.role === "HANDYMAN" ? "/(handyman)/tabs/dashboard" : "/(handyman)/become-pro" as any);
-    } catch {
-      Alert.alert("Error", "Could not connect. Check your internet connection.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <View style={p.root}>
@@ -101,6 +70,9 @@ function ProLanding() {
             <TouchableOpacity style={p.ctaBtn} onPress={() => router.push("/(auth)/register" as any)} activeOpacity={0.9}>
               <Text style={p.ctaText}>Join Tarea as a Pro  →</Text>
             </TouchableOpacity>
+            <TouchableOpacity style={p.loginOutline} onPress={() => router.push("/(auth)/login" as any)} activeOpacity={0.9}>
+              <Text style={p.loginOutlineText}>Log in</Text>
+            </TouchableOpacity>
 
             {/* How it works */}
             <Text style={p.sectionTitle}>How it works</Text>
@@ -113,43 +85,6 @@ function ProLanding() {
                   <Text style={p.stepDesc}>{st.desc}</Text>
                 </View>
               ))}
-            </View>
-
-            {/* Login card */}
-            <View style={p.card}>
-              <View style={p.field}>
-                <Ionicons name="mail-outline" size={18} color={GRAY} style={p.fieldIcon} />
-                <TextInput style={p.input} value={email} onChangeText={setEmail}
-                  placeholder="Email address" placeholderTextColor={GRAY}
-                  autoCapitalize="none" keyboardType="email-address" autoComplete="email" />
-              </View>
-              <View style={p.field}>
-                <Ionicons name="lock-closed-outline" size={18} color={GRAY} style={p.fieldIcon} />
-                <TextInput style={p.input} value={password} onChangeText={setPassword}
-                  placeholder="Password" placeholderTextColor={GRAY}
-                  secureTextEntry={!showPw} autoComplete="password" />
-                <TouchableOpacity onPress={() => setShowPw(v => !v)} hitSlop={10}>
-                  <Ionicons name={showPw ? "eye-off-outline" : "eye-outline"} size={20} color={GRAY} />
-                </TouchableOpacity>
-              </View>
-
-              <View style={p.rowBetween}>
-                <TouchableOpacity style={p.remember} onPress={() => setRemember(v => !v)}>
-                  <View style={[p.checkbox, remember && p.checkboxOn]}>{remember && <Text style={p.checkTick}>✓</Text>}</View>
-                  <Text style={p.rememberText}>Remember me</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push("/(auth)/forgot-password" as any)}>
-                  <Text style={p.forgot}>Forgot password?</Text>
-                </TouchableOpacity>
-              </View>
-
-              <TouchableOpacity style={[p.loginBtn, loading && { opacity: 0.6 }]} onPress={login} disabled={loading}>
-                {loading ? <ActivityIndicator color="#fff" /> : <Text style={p.loginText}>Log in</Text>}
-              </TouchableOpacity>
-
-              <TouchableOpacity style={p.signup} onPress={() => router.push("/(auth)/register" as any)}>
-                <Text style={p.signupText}>Don't have an account? <Text style={p.signupBold}>Sign up</Text></Text>
-              </TouchableOpacity>
             </View>
 
             {/* Trust bar */}
@@ -189,6 +124,8 @@ const p = StyleSheet.create({
 
   ctaBtn:       { backgroundColor: BLUE, borderRadius: 14, paddingVertical: 16, alignItems: "center", marginTop: 18 },
   ctaText:      { color: "#fff", fontSize: 16, fontWeight: "800" },
+  loginOutline: { borderWidth: 1.5, borderColor: BLUE, borderRadius: 14, paddingVertical: 15, alignItems: "center", marginTop: 10 },
+  loginOutlineText: { color: BLUE, fontSize: 16, fontWeight: "800" },
 
   sectionTitle: { fontSize: 20, fontWeight: "800", color: INK, marginTop: 30, marginBottom: 16 },
   steps:        { flexDirection: "row", gap: 8 },
@@ -224,94 +161,94 @@ const p = StyleSheet.create({
   trustLabel:   { color: GRAY, fontSize: 12, fontWeight: "600", textAlign: "center", lineHeight: 15 },
 });
 
-// ════════════════════════ CUSTOMER LANDING (unchanged) ══════════════════════
-const VIDEO_URL = "https://pub-adf5c223fa884cf6878a12b8f1ef7d2f.r2.dev/hero/hero-mobile.mp4";
-const FEATURES = [
-  { emoji: "🔍", color: "#0EA5E9", title: "Find Verified Pros",  desc: "Browse background-checked handymen near you" },
-  { emoji: "📅", color: "#22C55E", title: "Book in Seconds",      desc: "Schedule same-day or in advance, pay securely" },
-  { emoji: "⭐", color: "#F97316", title: "Quality Guaranteed",   desc: "Live job tracking, reviews, and dispute protection" },
-];
-const TOOLS = [
-  { emoji: "🔍", color: "#3B82F6", title: "Diagnose Issue",  desc: "AI identifies what pro you need",   route: "/diagnose"       },
-  { emoji: "⚡", color: "#F59E0B", title: "Instant Quote",   desc: "Get a price before you book",        route: "/instant-quote"  },
+// ════════════════════════ CUSTOMER LANDING (light) ══════════════════════════
+const FEATURES: { icon: React.ComponentProps<typeof Ionicons>["name"]; color: string; title: string; desc: string; route?: string }[] = [
+  { icon: "shield-checkmark-outline", color: "#2563EB", title: "Verified Professionals",  desc: "Background-checked and reviewed pros." },
+  { icon: "time-outline",             color: "#2563EB", title: "Fast & Easy Booking",     desc: "Book in minutes and get matched quickly." },
+  { icon: "card-outline",             color: "#2563EB", title: "Upfront Pricing",         desc: "Clear, transparent pricing always." },
+  { icon: "sparkles-outline",         color: "#10B981", title: "Diagnose Issue",          desc: "AI identifies what you need.", route: "/diagnose" },
+  { icon: "pricetag-outline",         color: "#7C3AED", title: "Instant Quote",           desc: "Get a price before you book.", route: "/instant-quote" },
+  { icon: "thumbs-up-outline",        color: "#F97316", title: "Satisfaction Guaranteed", desc: "We're not happy until you're happy." },
 ];
 
 function CustomerLanding() {
   const router = useRouter();
-  const player = useVideoPlayer(VIDEO_URL, pl => { pl.loop = true; pl.muted = true; pl.play(); });
   return (
-    <View style={s.root}>
-      <VideoView player={player} style={s.video} contentFit="cover" nativeControls={false} />
-      <View style={s.overlay} />
-      <SafeAreaView style={s.safe}>
-        <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
-          <View style={s.hero}>
-            <Image source={require("../../assets/tarea-logo-white.png")} style={s.logoImg} resizeMode="contain" />
-            <Text style={s.tagline}>Your trusted home service pros</Text>
+    <View style={cs.root}>
+      <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+        <ScrollView contentContainerStyle={cs.scroll} showsVerticalScrollIndicator={false}>
+          {/* Header */}
+          <View style={cs.header}>
+            <View style={cs.brandRow}>
+              <Image source={require("../../assets/tarea-home-mark.png")} style={cs.logo} resizeMode="contain" />
+              <Text style={cs.brand}>Tarea</Text>
+            </View>
+            <View style={cs.pill}>
+              <Ionicons name="shield-checkmark-outline" size={18} color={BLUE} />
+              <Text style={cs.pillText}>Trusted Pros{"\n"}In Your Area</Text>
+            </View>
           </View>
-          <View style={s.features}>
-            {FEATURES.map(f => (
-              <View key={f.title} style={s.featureRow}>
-                <View style={[s.featureIcon, { backgroundColor: `${f.color}25`, borderColor: `${f.color}55` }]}>
-                  <Text style={s.featureEmoji}>{f.emoji}</Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={s.featureTitle}>{f.title}</Text>
-                  <Text style={s.featureDesc}>{f.desc}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-          <View style={s.toolsRow}>
-            {TOOLS.map(t => (
-              <TouchableOpacity key={t.title} style={s.toolCard} onPress={() => router.push(t.route as any)} activeOpacity={0.85}>
-                <View style={{ width: 52, height: 52, borderRadius: 16, backgroundColor: `${t.color}25`, borderWidth: 2, borderColor: `${t.color}55`, alignItems: "center", justifyContent: "center" }}>
-                  <Text style={{ fontSize: 24 }}>{t.emoji}</Text>
-                </View>
-                <Text style={s.toolTitle}>{t.title}</Text>
-                <Text style={s.toolDesc}>{t.desc}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          <View style={s.ctas}>
-            <TouchableOpacity style={s.btnPrimary} onPress={() => router.push("/(auth)/register" as any)}>
-              <Text style={s.btnPrimaryText}>Find a Pro</Text>
-              <Text style={s.btnPrimarySubtext}>I need home services</Text>
+
+          {/* Heading */}
+          <Text style={cs.h1}>Reliable help for every job <Text style={cs.h1Blue}>around your home.</Text></Text>
+          <Text style={cs.sub}>Book trusted handymen for home repairs, installations, cleaning and more in minutes.</Text>
+
+          {/* Illustration */}
+          <Image source={require("../../assets/landing-house.png")} style={cs.house} resizeMode="contain" />
+
+          {/* Features + CTAs */}
+          <View style={cs.card}>
+            <View style={cs.grid}>
+              {FEATURES.map(f => {
+                const inner = (
+                  <>
+                    <View style={[cs.featIcon, { backgroundColor: f.color + "1A" }]}><Ionicons name={f.icon} size={22} color={f.color} /></View>
+                    <Text style={cs.featTitle}>{f.title}</Text>
+                    <Text style={cs.featDesc}>{f.desc}</Text>
+                  </>
+                );
+                return f.route
+                  ? <TouchableOpacity key={f.title} style={cs.feat} activeOpacity={0.8} onPress={() => router.push(f.route as any)}>{inner}</TouchableOpacity>
+                  : <View key={f.title} style={cs.feat}>{inner}</View>;
+              })}
+            </View>
+
+            <TouchableOpacity style={cs.cta} activeOpacity={0.9} onPress={() => router.push("/(auth)/register" as any)}>
+              <Text style={cs.ctaText}>Get Started</Text>
+              <View style={cs.ctaArrow}><Ionicons name="arrow-forward" size={18} color={BLUE} /></View>
+            </TouchableOpacity>
+            <TouchableOpacity style={cs.loginBtn} activeOpacity={0.9} onPress={() => router.push("/(auth)/login" as any)}>
+              <Text style={cs.loginText}>I already have an account</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={s.signIn} onPress={() => router.push("/(auth)/login" as any)}>
-            <Text style={s.signInText}>Already have an account? <Text style={s.signInBold}>Sign in</Text></Text>
-          </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
     </View>
   );
 }
 
-const s = StyleSheet.create({
-  root:               { flex: 1, backgroundColor: "#0F172A" },
-  video:              { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 },
-  overlay:            { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(15,23,42,0.58)" },
-  safe:               { flex: 1 },
-  scroll:             { flexGrow: 1, paddingHorizontal: 24, paddingBottom: 40, minHeight: height },
-  hero:               { alignItems: "center", paddingTop: 60, paddingBottom: 48 },
-  logoImg:            { width: 236, height: 107, marginBottom: 14 },
-  tagline:            { color: "rgba(255,255,255,0.7)", fontSize: 16, marginTop: 8, textAlign: "center" },
-  features:           { gap: 16, marginBottom: 48 },
-  featureRow:         { flexDirection: "row", alignItems: "center", gap: 16, backgroundColor: "rgba(30,41,59,0.75)", borderRadius: 16, padding: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)" },
-  featureIcon:        { width: 52, height: 52, borderRadius: 16, alignItems: "center", justifyContent: "center", borderWidth: 2 },
-  featureEmoji:       { fontSize: 22 },
-  featureTitle:       { color: C.white, fontSize: 15, fontWeight: "700", marginBottom: 3 },
-  featureDesc:        { color: "rgba(255,255,255,0.55)", fontSize: 13, lineHeight: 18 },
-  ctas:               { gap: 12, marginBottom: 28 },
-  btnPrimary:         { backgroundColor: C.sky, borderRadius: 18, paddingVertical: 18, alignItems: "center" },
-  btnPrimaryText:     { color: C.ink, fontSize: 18, fontWeight: "900" },
-  btnPrimarySubtext:  { color: "rgba(15,23,42,0.6)", fontSize: 12, marginTop: 3, fontWeight: "600" },
-  signIn:             { alignItems: "center" },
-  signInText:         { color: "rgba(255,255,255,0.5)", fontSize: 14 },
-  signInBold:         { color: C.sky, fontWeight: "700" },
-  toolsRow:           { flexDirection: "row", gap: 12, marginBottom: 24 },
-  toolCard:           { flex: 1, backgroundColor: "rgba(30,41,59,0.85)", borderRadius: 18, padding: 16, alignItems: "center", gap: 6, borderWidth: 1, borderColor: "rgba(56,189,248,0.2)" },
-  toolTitle:          { color: "#fff", fontSize: 13, fontWeight: "800", textAlign: "center" },
-  toolDesc:           { color: "rgba(255,255,255,0.45)", fontSize: 11, textAlign: "center", lineHeight: 15 },
+const cs = StyleSheet.create({
+  root:       { flex: 1, backgroundColor: "#FFFFFF" },
+  scroll:     { paddingHorizontal: 20, paddingBottom: 32 },
+  header:     { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingTop: 8, marginBottom: 18 },
+  brandRow:   { flexDirection: "row", alignItems: "center", gap: 8 },
+  logo:       { width: 36, height: 36, borderRadius: 9 },
+  brand:      { fontSize: 26, fontWeight: "900", color: "#0F172A", letterSpacing: -1 },
+  pill:       { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#EFF5FF", borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8 },
+  pillText:   { color: "#2563EB", fontSize: 11, fontWeight: "700", lineHeight: 14 },
+  h1:         { fontSize: 34, fontWeight: "900", color: "#0F172A", letterSpacing: -1, lineHeight: 40 },
+  h1Blue:     { color: BLUE },
+  sub:        { fontSize: 14, color: "#64748B", lineHeight: 21, marginTop: 12 },
+  house:      { width: "78%", aspectRatio: 853 / 520, alignSelf: "center", marginTop: 8 },
+  card:       { backgroundColor: "#FFFFFF", borderRadius: 24, borderWidth: 1, borderColor: "#EEF2F7", padding: 16, marginTop: 8, shadowColor: "#0F172A", shadowOpacity: 0.05, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 3 },
+  grid:       { flexDirection: "row", flexWrap: "wrap" },
+  feat:       { width: "33.33%", alignItems: "center", paddingHorizontal: 4, paddingVertical: 12 },
+  featIcon:   { width: 48, height: 48, borderRadius: 24, alignItems: "center", justifyContent: "center", marginBottom: 8 },
+  featTitle:  { color: "#0F172A", fontSize: 12.5, fontWeight: "800", textAlign: "center" },
+  featDesc:   { color: "#94A3B8", fontSize: 11, textAlign: "center", lineHeight: 15, marginTop: 3 },
+  cta:        { backgroundColor: BLUE, borderRadius: 28, height: 58, flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 12 },
+  ctaText:    { color: "#fff", fontSize: 16, fontWeight: "800" },
+  ctaArrow:   { position: "absolute", right: 8, width: 42, height: 42, borderRadius: 21, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" },
+  loginBtn:   { borderWidth: 1.5, borderColor: "#C7D7FF", borderRadius: 28, height: 54, alignItems: "center", justifyContent: "center", marginTop: 12 },
+  loginText:  { color: BLUE, fontSize: 15, fontWeight: "800" },
 });
