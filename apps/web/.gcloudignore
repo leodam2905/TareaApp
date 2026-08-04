@@ -1,0 +1,10 @@
+# Keep the Cloud Build upload lean and deterministic. node_modules is rebuilt
+# in the Dockerfile's deps stage, and .next is volatile build cache (a file
+# vanishing mid-archive previously crashed the upload). Mirrors .dockerignore.
+.next/
+node_modules/
+.git/
+.env
+.env.local
+.env*.local
+README.md
