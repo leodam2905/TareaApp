@@ -27,13 +27,29 @@ export async function sendFcm(
   body: string,
   data?: Record<string, string>
 ): Promise<void> {
+  // Incoming job requests get a dedicated channel + loud custom ringtone so a
+  // pro notices them even from across the room. Everything else uses the
+  // default notification tone. The Android channel ("tarea_jobs") and the iOS
+  // sound file ("job_ring.caf") are pre-created/bundled by the Flutter app.
+  const isJobRequest =
+    data?.type === "booking_request" || data?.screen === "FindJobs";
+
   try {
     await getMessaging(fbApp()).send({
       token,
       notification: { title, body },
       data: data ?? {},
-      android: { priority: "high", notification: { sound: "default" } },
-      apns: { payload: { aps: { sound: "default" } } },
+      android: {
+        priority: "high",
+        notification: isJobRequest
+          ? { sound: "job_ring", channelId: "tarea_jobs" }
+          : { sound: "default" },
+      },
+      apns: {
+        payload: {
+          aps: { sound: isJobRequest ? "job_ring.caf" : "default" },
+        },
+      },
     });
   } catch (e) {
     console.error("[fcm]", e);

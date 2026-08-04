@@ -15,9 +15,27 @@ Future<void> _firebaseBgHandler(RemoteMessage message) async {}
 const _channel = AndroidNotificationChannel(
   'tarea_default',
   'Notifications',
-  description: 'Booking updates, job requests and reminders',
+  description: 'Booking updates and reminders',
   importance: Importance.high,
 );
+
+// Dedicated channel for incoming job requests — plays a loud custom ringtone
+// so pros notice a new job even from across the room. On Android O+ the sound
+// is baked into the channel at creation, so this must exist before any job
+// notification is shown.
+const _jobChannel = AndroidNotificationChannel(
+  'tarea_jobs',
+  'New Job Requests',
+  description: 'A customer has requested you for a job',
+  importance: Importance.max,
+  sound: RawResourceAndroidNotificationSound('job_ring'),
+  playSound: true,
+);
+
+// A job-request push carries this type in its data payload.
+bool _isJobRequest(Map<String, dynamic> data) =>
+    (data['type'] ?? '').toString() == 'booking_request' ||
+    (data['screen'] ?? '').toString() == 'FindJobs';
 
 final _local = FlutterLocalNotificationsPlugin();
 
@@ -37,18 +55,24 @@ class PushService {
       FirebaseMessaging.onMessage.listen((m) {
         final n = m.notification;
         if (n == null) return;
+        final job = _isJobRequest(m.data);
+        final ch = job ? _jobChannel : _channel;
         _local.show(
           n.hashCode,
           n.title,
           n.body,
           NotificationDetails(
             android: AndroidNotificationDetails(
-              _channel.id, _channel.name,
-              channelDescription: _channel.description,
-              importance: Importance.high, priority: Priority.high,
+              ch.id, ch.name,
+              channelDescription: ch.description,
+              importance: job ? Importance.max : Importance.high,
+              priority: Priority.high,
               icon: '@mipmap/ic_launcher',
+              sound: job ? const RawResourceAndroidNotificationSound('job_ring') : null,
             ),
-            iOS: const DarwinNotificationDetails(),
+            iOS: DarwinNotificationDetails(
+              sound: job ? 'job_ring.caf' : null,
+            ),
           ),
           payload: jsonEncode(m.data),
         );
@@ -81,9 +105,10 @@ class PushService {
         }
       },
     );
-    await _local
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(_channel);
+    final android = _local
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+    await android?.createNotificationChannel(_channel);
+    await android?.createNotificationChannel(_jobChannel);
   }
 
   // Route a notification tap to a sensible screen based on its data payload.

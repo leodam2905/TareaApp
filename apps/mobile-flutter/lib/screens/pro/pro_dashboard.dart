@@ -120,24 +120,28 @@ class _ProDashboardState extends State<ProDashboard> {
           children: [
             // Header
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              GestureDetector(onTap: () => context.push('/notifications'), child: const Icon(Icons.notifications_none, size: 26, color: C.ink)),
-              GestureDetector(
-                onTap: () async {
-                  final url = await pickAndUploadAvatar(context);
-                  if (url != null && mounted) setState(() => _avatar = url);
-                },
-                child: Stack(clipBehavior: Clip.none, children: [
-                  roundAvatar(url: _avatar, radius: 20),
-                  Positioned(
-                    right: -2, bottom: -2,
-                    child: Container(
-                      width: 18, height: 18,
-                      decoration: BoxDecoration(color: C.blue, shape: BoxShape.circle, border: Border.all(color: C.bg, width: 2)),
-                      child: const Icon(Icons.camera_alt, size: 9, color: Colors.white),
+              const Text('Tarea Pro', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: C.blue, letterSpacing: -0.5)),
+              Row(children: [
+                GestureDetector(onTap: () => context.push('/notifications'), child: const Icon(Icons.notifications_none, size: 26, color: C.ink)),
+                const SizedBox(width: 16),
+                GestureDetector(
+                  onTap: () async {
+                    final url = await pickAndUploadAvatar(context);
+                    if (url != null && mounted) setState(() => _avatar = url);
+                  },
+                  child: Stack(clipBehavior: Clip.none, children: [
+                    roundAvatar(url: _avatar, radius: 20),
+                    Positioned(
+                      right: -2, bottom: -2,
+                      child: Container(
+                        width: 18, height: 18,
+                        decoration: BoxDecoration(color: C.blue, shape: BoxShape.circle, border: Border.all(color: C.bg, width: 2)),
+                        child: const Icon(Icons.camera_alt, size: 9, color: Colors.white),
+                      ),
                     ),
-                  ),
-                ]),
-              ),
+                  ]),
+                ),
+              ]),
             ]),
             const SizedBox(height: 12),
             Row(crossAxisAlignment: CrossAxisAlignment.center, children: [

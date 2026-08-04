@@ -147,6 +147,15 @@ class _ProPayoutMethodsState extends State<ProPayoutMethods> {
                 label: const Text('Add debit card', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
               const SizedBox(height: 10),
               TextButton(onPressed: _connectStripe, child: const Text('Set up / manage on Stripe →', style: TextStyle(color: C.muted, fontWeight: FontWeight.w700))),
+              const SizedBox(height: 24),
+              Center(
+                child: Image.asset(
+                  'assets/images/payout-illustration.png',
+                  height: 200,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              const SizedBox(height: 8),
             ]),
     );
   }
