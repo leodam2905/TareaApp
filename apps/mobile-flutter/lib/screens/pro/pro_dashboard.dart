@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../theme.dart';
 import '../../api.dart';
 import '../../avatar_util.dart';
+import '../../pro_online.dart';
 import 'pro_shell.dart';
 
 class ProDashboard extends StatefulWidget {
@@ -40,6 +41,7 @@ class _ProDashboardState extends State<ProDashboard> {
         final hp = pj['handymanProfile'] ?? {};
         _rating = ((hp['rating']) as num?)?.toDouble() ?? 0;
         _available = hp['isAvailable'] == true;
+        ProOnline.set(_available);
       }
     } catch (_) {}
     try {
@@ -95,10 +97,17 @@ class _ProDashboardState extends State<ProDashboard> {
   Future<void> _toggleOnline() async {
     final next = !_available;
     setState(() { _available = next; _busy = true; });
+    ProOnline.set(next);
     try {
       final res = await Api.patch('/profile', {'isAvailable': next});
-      if (res.statusCode < 200 || res.statusCode >= 300) setState(() => _available = !next);
-    } catch (_) { setState(() => _available = !next); }
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        setState(() => _available = !next);
+        ProOnline.set(!next);
+      }
+    } catch (_) {
+      setState(() => _available = !next);
+      ProOnline.set(!next);
+    }
     if (mounted) setState(() => _busy = false);
   }
 

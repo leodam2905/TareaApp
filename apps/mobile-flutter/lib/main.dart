@@ -32,6 +32,7 @@ import 'screens/pro/pro_certifications.dart';
 import 'screens/pro/pro_reviews.dart';
 import 'screens/pro/pro_job_detail.dart';
 import 'screens/pro/pro_payout_methods.dart';
+import 'incoming_job.dart';
 import 'push_service.dart';
 
 void main() {
@@ -78,6 +79,10 @@ final appRouter = GoRouter(
     GoRoute(path: '/pro/reviews', builder: (_, __) => const ProReviews()),
     GoRoute(path: '/pro/job-detail', builder: (_, s) => ProJobDetail(booking: (s.extra as Map?)?.cast<String, dynamic>() ?? const {})),
     GoRoute(path: '/pro/payout-methods', builder: (_, __) => const ProPayoutMethods()),
+    GoRoute(
+      path: '/pro/incoming',
+      builder: (_, s) => IncomingJobScreen(data: (s.extra as Map?)?.cast<String, dynamic>() ?? const {}),
+    ),
     GoRoute(
       path: '/booking-detail',
       builder: (_, s) => BookingDetailScreen(booking: (s.extra as Map?)?.cast<String, dynamic>() ?? const {}),

@@ -5,6 +5,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'api.dart';
 import 'flavor.dart';
+import 'pro_online.dart';
+import 'incoming_job.dart';
 import 'main.dart' show appRouter;
 import 'screens/pro/pro_shell.dart';
 
@@ -56,6 +58,18 @@ class PushService {
         final n = m.notification;
         if (n == null) return;
         final job = _isJobRequest(m.data);
+
+        // Pro is Online with the app open → ring like an incoming call
+        // (full-screen + looping sound) instead of a one-shot chime.
+        if (isPro && job && ProOnline.isOnline) {
+          IncomingJobRing.start({
+            ...m.data,
+            'title': n.title ?? 'New Job Request',
+            'body': n.body ?? 'A customer requested you for a job',
+          });
+          return;
+        }
+
         final ch = job ? _jobChannel : _channel;
         _local.show(
           n.hashCode,
