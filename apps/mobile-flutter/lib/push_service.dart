@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -45,6 +46,47 @@ final _local = FlutterLocalNotificationsPlugin();
 
 class PushService {
   static bool _ready = false;
+  static const _fgChannel = MethodChannel('tarea/push');
+
+  // Handle a foreground push (from FlutterFire on Android, or the native
+  // AppDelegate bridge on iOS). Rings full-screen if the pro is Online, else
+  // shows a normal local notification (chime).
+  static void _handleForeground(Map<String, dynamic> data) {
+    final job = _isJobRequest(data);
+    final title = (data['title'] ?? '').toString().isEmpty
+        ? 'New Job Request'
+        : data['title'].toString();
+    final body = (data['body'] ?? '').toString();
+
+    if (isPro && job && ProOnline.isOnline) {
+      IncomingJobRing.start({...data, 'title': title, 'body': body});
+      return;
+    }
+
+    final ch = job ? _jobChannel : _channel;
+    _local.show(
+      title.hashCode,
+      title,
+      body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          ch.id, ch.name,
+          channelDescription: ch.description,
+          importance: job ? Importance.max : Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+          sound: job ? const RawResourceAndroidNotificationSound('job_ring') : null,
+        ),
+        iOS: DarwinNotificationDetails(
+          sound: job ? 'job_ring.caf' : null,
+          presentAlert: true,
+          presentBanner: true,
+          presentSound: true,
+        ),
+      ),
+      payload: jsonEncode(data),
+    );
+  }
 
   /// Initialize Firebase + local notifications. Guarded so a platform without
   /// config doesn't crash the app — push just no-ops.
@@ -55,43 +97,22 @@ class PushService {
       FirebaseMessaging.onBackgroundMessage(_firebaseBgHandler);
       await _initLocal();
 
-      // Foreground messages: show a local banner (FCM won't auto-display these).
+      // Android: FlutterFire delivers foreground messages here.
       FirebaseMessaging.onMessage.listen((m) {
         final n = m.notification;
-        if (n == null) return;
-        final job = _isJobRequest(m.data);
+        _handleForeground({
+          ...m.data,
+          'title': n?.title ?? '',
+          'body': n?.body ?? '',
+        });
+      });
 
-        // Pro is Online with the app open → ring like an incoming call
-        // (full-screen + looping sound) instead of a one-shot chime.
-        if (isPro && job && ProOnline.isOnline) {
-          IncomingJobRing.start({
-            ...m.data,
-            'title': n.title ?? 'New Job Request',
-            'body': n.body ?? 'A customer requested you for a job',
-          });
-          return;
+      // iOS: onMessage does not fire under the UIScene lifecycle, so the native
+      // AppDelegate forwards foreground notifications over this channel instead.
+      _fgChannel.setMethodCallHandler((call) async {
+        if (call.method == 'foregroundPush') {
+          _handleForeground((call.arguments as Map).cast<String, dynamic>());
         }
-
-        final ch = job ? _jobChannel : _channel;
-        _local.show(
-          n.hashCode,
-          n.title,
-          n.body,
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              ch.id, ch.name,
-              channelDescription: ch.description,
-              importance: job ? Importance.max : Importance.high,
-              priority: Priority.high,
-              icon: '@mipmap/ic_launcher',
-              sound: job ? const RawResourceAndroidNotificationSound('job_ring') : null,
-            ),
-            iOS: DarwinNotificationDetails(
-              sound: job ? 'job_ring.caf' : null,
-            ),
-          ),
-          payload: jsonEncode(m.data),
-        );
       });
 
       FirebaseMessaging.onMessageOpenedApp.listen((m) => _handleTap(m.data));
