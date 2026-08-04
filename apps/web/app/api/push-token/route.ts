@@ -11,6 +11,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "token required" }, { status: 400 });
   }
 
-  await prisma.user.update({ where: { id: user.id }, data: { expoPushToken: token } });
+  // Expo tokens go in expoPushToken (RN app); FCM tokens go in fcmToken (Flutter).
+  const isExpo = token.startsWith("ExponentPushToken");
+  await prisma.user.update({
+    where: { id: user.id },
+    data: isExpo ? { expoPushToken: token } : { fcmToken: token },
+  });
   return NextResponse.json({ ok: true });
 }

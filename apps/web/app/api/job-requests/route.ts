@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
       user: { avatarUrl: { not: null } },
       services: { some: { category: category as never, isActive: true } },
     },
-    include: { user: { select: { id: true, city: true, email: true, name: true, expoPushToken: true, latitude: true, longitude: true } } },
+    include: { user: { select: { id: true, city: true, email: true, name: true, expoPushToken: true, fcmToken: true, latitude: true, longitude: true } } },
   });
 
   // Match by distance (catches pros in nearby towns, not just an exact city-name
@@ -161,14 +161,16 @@ export async function POST(req: NextRequest) {
     const categoryLabel = category.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase());
 
     await Promise.allSettled(nearby.map(async h => {
-      // Push notification
-      if (h.user.expoPushToken) {
-        await sendPush(
-          h.user.expoPushToken,
-          "New Job Near You 🔧",
-          `${title} in ${city} — Budget ${budgetStr}`,
-          { screen: "FindJobs", jobId: jobRequest.id }
-        );
+      // Push notification (Expo for RN app, FCM for Flutter app)
+      for (const tok of [h.user.expoPushToken, h.user.fcmToken]) {
+        if (tok) {
+          await sendPush(
+            tok,
+            "New Job Near You 🔧",
+            `${title} in ${city} — Budget ${budgetStr}`,
+            { screen: "FindJobs", jobId: jobRequest.id }
+          );
+        }
       }
 
       // Email notification

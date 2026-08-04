@@ -60,6 +60,7 @@ model User {
   email        String   @unique
   phone           String?
   expoPushToken   String?
+  fcmToken        String?
   passwordHash String
   passwordChangedAt DateTime?
   role         Role     @default(CUSTOMER)

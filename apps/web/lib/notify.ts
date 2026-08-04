@@ -47,7 +47,7 @@ export async function createNotification(data: NotifyInput) {
     prisma.notification.create({ data }),
     prisma.user.findUnique({
       where: { id: data.userId },
-      select: { email: true, phone: true, expoPushToken: true, notifBookingUpdates: true, notifReminders: true, notifMessages: true, notifSms: true },
+      select: { email: true, phone: true, expoPushToken: true, fcmToken: true, notifBookingUpdates: true, notifReminders: true, notifMessages: true, notifSms: true },
     }),
   ]);
 
@@ -69,6 +69,9 @@ export async function createNotification(data: NotifyInput) {
       sendEmail(user.email, data.title, data.title, data.body, cta).catch(() => {});
       if (user.expoPushToken) {
         sendPush(user.expoPushToken, data.title, data.body, { type: data.type, refId: data.refId ?? null }).catch(() => {});
+      }
+      if (user.fcmToken) {
+        sendPush(user.fcmToken, data.title, data.body, { type: data.type, refId: data.refId ?? null }).catch(() => {});
       }
       if (user.notifSms && user.phone && SMS_TYPES.has(data.type)) {
         sendSms(user.phone, `Tarea: ${data.title} — ${data.body}`).catch(() => {});
