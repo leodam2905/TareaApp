@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme.dart';
 import '../../api.dart';
+import '../../avatar_util.dart';
 
 class ProProfile extends StatefulWidget {
   const ProProfile({super.key});
@@ -12,10 +13,17 @@ class ProProfile extends StatefulWidget {
 
 class _ProProfileState extends State<ProProfile> {
   String _name = '';
+  String _avatar = '';
+  String _city = '';
+  String _state = '';
   double _rating = 0;
   int _jobs = 0;
-  num _hourly = 0;
-  String _bio = '';
+  int _reviews = 0;
+  int _pct = 0;
+  bool _verified = false;
+  bool _licensed = false;
+  bool _available = false;
+  bool _busy = false;
   List<dynamic> _services = [];
 
   @override
@@ -27,93 +35,308 @@ class _ProProfileState extends State<ProProfile> {
       if (res.statusCode == 200) {
         final p = jsonDecode(res.body) as Map<String, dynamic>;
         _name = (p['name'] ?? '').toString();
+        _avatar = (p['avatarUrl'] ?? '').toString();
+        _city = (p['city'] ?? '').toString();
+        _state = (p['state'] ?? '').toString();
+        _verified = p['isVerified'] == true;
         final hp = p['handymanProfile'] ?? {};
         _rating = ((hp['rating']) as num?)?.toDouble() ?? 0;
         _jobs = (hp['totalJobs'] ?? 0) as int;
-        _hourly = (hp['hourlyRate'] ?? 0) as num;
-        _bio = (hp['bio'] ?? '').toString();
+        _available = hp['isAvailable'] == true;
+        _licensed = (hp['licenseDocUrl'] != null && hp['insuranceDocUrl'] != null);
         _services = (hp['services'] as List?) ?? [];
+        _city = _city.isEmpty ? (hp['city'] ?? '').toString() : _city;
+        _state = _state.isEmpty ? (hp['state'] ?? '').toString() : _state;
+      }
+    } catch (_) {}
+    try {
+      final r = await Api.get('/reviews/received');
+      if (r.statusCode == 200) {
+        final d = jsonDecode(r.body);
+        _reviews = (d is List ? d : (d['reviews'] ?? [])).length;
+      }
+    } catch (_) {}
+    try {
+      final c = await Api.get('/handyman/checklist');
+      if (c.statusCode == 200) {
+        final cj = jsonDecode(c.body);
+        if (cj is Map && cj.isNotEmpty) {
+          final done = cj.values.where((v) => v == true || (v is String && v.isNotEmpty)).length;
+          _pct = (done / cj.length * 100).round();
+        }
       }
     } catch (_) {}
     if (mounted) setState(() {});
   }
 
-  Future<void> _logout() async {
-    await Api.clearToken();
-    if (mounted) context.go('/');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: C.bg,
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-          children: [
-            const Text('Profile', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink)),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(18)),
-              child: Column(children: [
-                CircleAvatar(radius: 36, backgroundColor: C.surface, child: Text(_name.isNotEmpty ? _name[0].toUpperCase() : '?', style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w900, color: C.blue))),
-                const SizedBox(height: 12),
-                Text(_name.isEmpty ? 'Your account' : _name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
-                const SizedBox(height: 6),
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  const Icon(Icons.star, color: Color(0xFFF59E0B), size: 18),
-                  const SizedBox(width: 4),
-                  Text(_rating > 0 ? '${_rating.toStringAsFixed(1)} · $_jobs jobs' : 'New pro', style: const TextStyle(fontWeight: FontWeight.w700, color: C.ink)),
-                ]),
-              ]),
-            ),
-            const SizedBox(height: 16),
-            Row(children: [
-              _stat(_hourly > 0 ? '\$${_hourly.round()}/hr' : '—', 'Rate'),
-              _stat('$_jobs', 'Jobs'),
-              _stat(_rating > 0 ? _rating.toStringAsFixed(1) : 'New', 'Rating'),
-            ]),
-            if (_bio.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              const Text('About', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
-              const SizedBox(height: 8),
-              Text(_bio, style: const TextStyle(color: C.muted, height: 1.5)),
-            ],
-            if (_services.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              const Text('Services', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
-              const SizedBox(height: 8),
-              Wrap(spacing: 8, runSpacing: 8, children: _services.map<Widget>((sv) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(12)),
-                    child: Text((sv['title'] ?? sv['category'] ?? 'Service').toString(), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w600)),
-                  )).toList()),
-            ],
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFFFECACA)), padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-                onPressed: _logout,
-                child: const Text('Log out', style: TextStyle(color: C.red, fontWeight: FontWeight.w800, fontSize: 16)),
-              ),
-            ),
-          ],
-        ),
+  void _menu() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          ListTile(leading: const Icon(Icons.logout, color: C.red), title: const Text('Log out', style: TextStyle(color: C.red, fontWeight: FontWeight.w700)),
+              onTap: () async { Navigator.pop(context); await Api.clearToken(); if (mounted) context.go('/'); }),
+        ]),
       ),
     );
   }
 
-  Widget _stat(String value, String label) => Expanded(
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 4), padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(14)),
-          child: Column(children: [
-            Text(value, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: C.ink)),
-            const SizedBox(height: 2),
-            Text(label, style: const TextStyle(color: C.muted, fontSize: 12)),
+  Future<void> _signOut() async {
+    await Api.clearToken();
+    if (mounted) context.go('/');
+  }
+
+  Future<void> _deleteAccount() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Delete account?'),
+        content: const Text(
+            'This permanently deletes your Tarea account and removes your personal information. This cannot be undone.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Delete', style: TextStyle(color: C.red, fontWeight: FontWeight.w800))),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    try {
+      final res = await Api.delete('/account');
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        await Api.clearToken();
+        if (mounted) context.go('/');
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not delete account. Please try again.')));
+      }
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not connect. Please try again.')));
+    }
+  }
+
+  Future<void> _toggleAvailable(bool next) async {
+    setState(() { _available = next; _busy = true; });
+    try {
+      final res = await Api.patch('/profile', {'isAvailable': next});
+      if (res.statusCode < 200 || res.statusCode >= 300) setState(() => _available = !next);
+    } catch (_) { setState(() => _available = !next); }
+    if (mounted) setState(() => _busy = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final place = [_city, _state].where((e) => e.isNotEmpty).join(', ');
+    return Scaffold(
+      backgroundColor: C.bg,
+      body: Column(
+        children: [
+          // Blue header
+          Container(
+            color: C.blue,
+            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 12, bottom: 14, left: 20, right: 20),
+            child: Row(children: [
+              const SizedBox(width: 24),
+              const Expanded(child: Text('Pro Profile', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900))),
+              GestureDetector(onTap: _menu, child: const Icon(Icons.settings_outlined, color: Colors.white)),
+            ]),
+          ),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+              children: [
+                // Identity
+                Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                  GestureDetector(
+                    onTap: () async { final u = await pickAndUploadAvatar(context); if (u != null && mounted) setState(() => _avatar = u); },
+                    child: Stack(clipBehavior: Clip.none, children: [
+                      roundAvatar(url: _avatar, radius: 44),
+                      Positioned(right: -2, bottom: -2, child: Container(
+                        width: 28, height: 28,
+                        decoration: BoxDecoration(color: C.blue, shape: BoxShape.circle, border: Border.all(color: C.white, width: 3)),
+                        child: const Icon(Icons.camera_alt, size: 13, color: Colors.white),
+                      )),
+                    ]),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(_name.isEmpty ? 'Your name' : _name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
+                    const SizedBox(height: 4),
+                    Row(children: [
+                      const Icon(Icons.work_outline, size: 16, color: C.muted),
+                      const SizedBox(width: 6),
+                      Text(_licensed ? 'Licensed Handyman' : 'Handyman', style: const TextStyle(color: C.muted, fontWeight: FontWeight.w600)),
+                    ]),
+                    if (place.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Row(children: [
+                        const Icon(Icons.location_on_outlined, size: 16, color: C.muted),
+                        const SizedBox(width: 6),
+                        Flexible(child: Text(place, style: const TextStyle(color: C.muted, fontWeight: FontWeight.w600))),
+                      ]),
+                    ],
+                  ])),
+                ]),
+                const SizedBox(height: 14),
+                // Badges
+                Row(children: [
+                  _badge(Icons.verified, const Color(0xFF16A34A), 'Verified', _verified),
+                  Container(width: 1, height: 20, color: C.line),
+                  _badge(Icons.badge_outlined, C.blue, 'Licensed', _licensed),
+                  Container(width: 1, height: 20, color: C.line),
+                  _badge(Icons.shield_outlined, C.blue, 'Insured', _licensed),
+                ]),
+                const SizedBox(height: 18),
+                // Stats
+                Row(children: [
+                  Expanded(child: Column(children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      const Icon(Icons.star, color: Color(0xFFF59E0B), size: 22),
+                      const SizedBox(width: 6),
+                      Text(_rating > 0 ? _rating.toStringAsFixed(1) : 'New', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
+                    ]),
+                    Text('$_reviews reviews', style: const TextStyle(color: C.muted)),
+                  ])),
+                  Container(width: 1, height: 44, color: C.line),
+                  Expanded(child: Column(children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      const Icon(Icons.work, color: C.blue, size: 20),
+                      const SizedBox(width: 6),
+                      Text('$_jobs', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
+                    ]),
+                    const Text('completed jobs', style: TextStyle(color: C.muted)),
+                  ])),
+                ]),
+                const SizedBox(height: 18),
+                // Edit Profile
+                SizedBox(width: double.infinity, child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(side: const BorderSide(color: C.blue), padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                  onPressed: () => context.push('/pro/edit-profile').then((_) { if (mounted) _load(); }),
+                  icon: const Icon(Icons.edit_outlined, size: 18, color: C.blue),
+                  label: const Text('Edit Profile', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800, fontSize: 16)),
+                )),
+                const SizedBox(height: 16),
+                // Profile completeness
+                _card(Row(children: [
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('Profile $_pct% complete', style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 17)),
+                    const SizedBox(height: 12),
+                    ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: _pct / 100, minHeight: 8, backgroundColor: const Color(0xFFE2E8F0), color: C.blue)),
+                  ])),
+                  const SizedBox(width: 16),
+                  SizedBox(width: 56, height: 56, child: Stack(alignment: Alignment.center, children: [
+                    SizedBox(width: 56, height: 56, child: CircularProgressIndicator(value: _pct / 100, strokeWidth: 5, backgroundColor: const Color(0xFFE2E8F0), color: C.blue)),
+                    Text('$_pct%', style: const TextStyle(fontWeight: FontWeight.w900, color: C.blue, fontSize: 13)),
+                  ])),
+                ])),
+                const SizedBox(height: 14),
+                // Available toggle
+                _card(Row(children: [
+                  Container(width: 44, height: 44, decoration: const BoxDecoration(color: Color(0xFF16A34A), shape: BoxShape.circle), child: const Icon(Icons.check, color: Colors.white)),
+                  const SizedBox(width: 12),
+                  const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('Available for jobs', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+                    Text("You're visible to clients and can receive new job requests.", style: TextStyle(color: C.muted, fontSize: 13, height: 1.3)),
+                  ])),
+                  Switch(value: _available, activeColor: C.blue, onChanged: _busy ? null : _toggleAvailable),
+                ])),
+                const SizedBox(height: 14),
+                // Services
+                _card(Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    const Text('Services', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 17)),
+                    GestureDetector(onTap: () => context.push('/pro/services').then((_) { if (mounted) _load(); }), child: const Text('Edit', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
+                  ]),
+                  const SizedBox(height: 14),
+                  _services.isEmpty
+                      ? const Text('No services added yet.', style: TextStyle(color: C.muted))
+                      : Row(children: _services.take(3).map<Widget>((sv) => Expanded(child: Row(children: [
+                          Icon(_svcIcon((sv['category'] ?? '').toString()), color: C.blue, size: 22),
+                          const SizedBox(width: 6),
+                          Flexible(child: Text(_pretty((sv['category'] ?? sv['title'] ?? '').toString()), maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.ink, fontWeight: FontWeight.w600, fontSize: 13))),
+                        ]))).toList()),
+                ])),
+                const SizedBox(height: 14),
+                // 2x2 grid
+                Row(children: [
+                  _tile(Icons.location_on, 'Service Area', place.isEmpty ? 'Set your area' : '$place & surrounding areas', () => context.push('/pro/service-area').then((_) { if (mounted) _load(); })),
+                  _tile(Icons.photo_library_outlined, 'Portfolio', 'Showcase your work', () => context.push('/pro/portfolio')),
+                ]),
+                const SizedBox(height: 12),
+                Row(children: [
+                  _tile(Icons.verified_user_outlined, 'Certifications', 'Your credentials', () => context.push('/pro/certifications').then((_) { if (mounted) _load(); })),
+                  _tile(Icons.star_outline, 'Reviews', '$_reviews reviews · ${_rating > 0 ? _rating.toStringAsFixed(1) : "New"}', () => context.push('/pro/reviews')),
+                ]),
+                const SizedBox(height: 22),
+                // Account
+                const Text('Account', style: TextStyle(fontWeight: FontWeight.w900, color: C.muted, fontSize: 13, letterSpacing: 0.3)),
+                const SizedBox(height: 10),
+                SizedBox(width: double.infinity, child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(side: const BorderSide(color: C.line), padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                  onPressed: _signOut,
+                  icon: const Icon(Icons.logout, size: 18, color: C.ink),
+                  label: const Text('Sign out', style: TextStyle(color: C.ink, fontWeight: FontWeight.w800, fontSize: 16)),
+                )),
+                const SizedBox(height: 10),
+                SizedBox(width: double.infinity, child: TextButton.icon(
+                  style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 13)),
+                  onPressed: _deleteAccount,
+                  icon: const Icon(Icons.delete_outline, size: 18, color: C.red),
+                  label: const Text('Delete account', style: TextStyle(color: C.red, fontWeight: FontWeight.w800, fontSize: 15)),
+                )),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _badge(IconData icon, Color color, String label, bool active) => Expanded(
+        child: Opacity(
+          opacity: active ? 1 : 0.4,
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Icon(icon, color: color, size: 17),
+            const SizedBox(width: 5),
+            Flexible(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 13))),
           ]),
         ),
       );
+
+  Widget _card(Widget child) => Container(
+        width: double.infinity, padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
+        child: child,
+      );
+
+  Widget _tile(IconData icon, String title, String sub, VoidCallback onTap) => Expanded(
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4), padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
+          child: Row(children: [
+            Container(width: 40, height: 40, decoration: BoxDecoration(color: C.blue.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(20)), child: Icon(icon, color: C.blue, size: 20)),
+            const SizedBox(width: 10),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 14)),
+              Text(sub, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.muted, fontSize: 12, height: 1.2)),
+            ])),
+          ]),
+        ),
+        ),
+      );
+
+  IconData _svcIcon(String c) {
+    switch (c.toUpperCase()) {
+      case 'PLUMBING': return Icons.water_drop_outlined;
+      case 'ELECTRICAL': return Icons.bolt_outlined;
+      case 'PAINTING': return Icons.format_paint_outlined;
+      case 'CARPENTRY': return Icons.handyman_outlined;
+      case 'CLEANING': return Icons.auto_awesome_outlined;
+      default: return Icons.build_outlined;
+    }
+  }
+
+  String _pretty(String c) => c.isEmpty ? 'Service' : c[0].toUpperCase() + c.substring(1).toLowerCase().replaceAll('_', ' ');
 }

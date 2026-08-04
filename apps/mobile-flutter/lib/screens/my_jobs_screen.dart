@@ -84,7 +84,7 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                             ],
                           ),
                         ),
-                        const Icon(Icons.notifications_none, size: 26, color: C.ink),
+                        GestureDetector(onTap: () => context.push('/notifications'), child: const Icon(Icons.notifications_none, size: 26, color: C.ink)),
                       ],
                     ),
                   ),

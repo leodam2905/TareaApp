@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,6 +24,54 @@ class BookingDetailScreen extends StatefulWidget {
 class _BookingDetailScreenState extends State<BookingDetailScreen> {
   Map<String, dynamic> _b = {};
   bool _busy = false;
+  bool _reviewed = false;
+  Timer? _ticker;
+  int _elapsed = 0;
+
+  @override
+  void dispose() { _ticker?.cancel(); super.dispose(); }
+
+  void _syncTimer() {
+    _ticker?.cancel();
+    if ((_b['status'] ?? '') == 'IN_PROGRESS' && _b['jobStartedAt'] != null) {
+      final start = DateTime.tryParse(_b['jobStartedAt'].toString());
+      if (start != null) {
+        _elapsed = DateTime.now().difference(start).inSeconds;
+        _ticker = Timer.periodic(const Duration(seconds: 1), (_) { if (mounted) setState(() => _elapsed++); });
+      }
+    }
+  }
+
+  String _fmtElapsed(int s) {
+    final h = s ~/ 3600, m = (s % 3600) ~/ 60, sec = s % 60;
+    return '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}';
+  }
+
+  Future<void> _confirmPhase(String phaseId) async {
+    try {
+      final res = await Api.patch('/bookings/$_id/phases/$phaseId', {});
+      if (res.statusCode >= 200 && res.statusCode < 300) { _toast('Phase confirmed'); await _load(); }
+      else { _toast('Could not confirm. Try again.'); }
+    } catch (_) { _toast('Could not connect. Try again.'); }
+  }
+
+  Future<void> _respondExtension(String extId, String action) async {
+    try {
+      final res = await Api.post('/bookings/$_id/extension/$extId', {'action': action});
+      final data = jsonDecode(res.body);
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        final url = (data is Map ? data['checkoutUrl'] : null)?.toString();
+        if (action == 'approve' && url != null && url.startsWith('http')) {
+          await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+        } else {
+          _toast(action == 'approve' ? 'Extra work approved' : 'Request declined');
+        }
+        await _load();
+      } else {
+        _toast((data is Map ? data['error'] : null)?.toString() ?? 'Could not respond. Try again.');
+      }
+    } catch (_) { _toast('Could not connect. Try again.'); }
+  }
 
   @override
   void initState() {
@@ -38,9 +87,42 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       final res = await Api.get('/bookings/$_id');
       if (res.statusCode == 200) {
         final full = jsonDecode(res.body);
-        if (full is Map && mounted) setState(() => _b = {..._b, ...Map<String, dynamic>.from(full)});
+        if (full is Map) _b = {..._b, ...Map<String, dynamic>.from(full)};
       }
     } catch (_) {}
+    _syncTimer();
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _leaveTip() async {
+    final amt = await showModalBottomSheet<double>(
+      context: context, isScrollControlled: true, backgroundColor: Colors.transparent,
+      builder: (_) => const _TipSheet(),
+    );
+    if (amt == null || amt <= 0) return;
+    try {
+      final res = await Api.post('/stripe/tip', {'bookingId': _id, 'tipAmount': amt});
+      final data = jsonDecode(res.body);
+      final url = (data is Map ? (data['url'] ?? data['checkoutUrl']) : null)?.toString();
+      if (res.statusCode >= 200 && res.statusCode < 300 && url != null && url.startsWith('http')) {
+        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      } else {
+        _toast((data is Map ? data['error'] : null)?.toString() ?? 'Could not start tip.');
+      }
+    } catch (_) { _toast('Could not connect. Try again.'); }
+  }
+
+  Future<void> _leaveReview() async {
+    final done = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _ReviewSheet(bookingId: _id),
+    );
+    if (done == true && mounted) {
+      setState(() => _reviewed = true);
+      _toast('Thanks for your review!');
+    }
   }
 
   Future<void> _cancel() async {
@@ -137,6 +219,57 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               ],
             ]),
           ),
+          // On the way
+          if (status == 'ACCEPTED' && _b['isOnMyWay'] == true) ...[
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity, padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(color: const Color(0xFFF5F3FF), borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFDDD6FE))),
+              child: const Row(children: [
+                Text('🚗', style: TextStyle(fontSize: 20)), SizedBox(width: 10),
+                Expanded(child: Text('Your pro is on the way!', style: TextStyle(color: Color(0xFF7C3AED), fontWeight: FontWeight.w800))),
+              ]),
+            ),
+          ],
+          // Live timer
+          if (status == 'IN_PROGRESS' && _b['jobStartedAt'] != null) ...[
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity, padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(gradient: const LinearGradient(colors: [C.blue, Color(0xFF7C3AED)], begin: Alignment.topLeft, end: Alignment.bottomRight), borderRadius: BorderRadius.circular(16)),
+              child: Column(children: [
+                const Text('JOB IN PROGRESS', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: 1)),
+                const SizedBox(height: 8),
+                Text(_fmtElapsed(_elapsed), style: const TextStyle(color: Colors.white, fontSize: 38, fontWeight: FontWeight.w900, letterSpacing: 2)),
+              ]),
+            ),
+          ],
+          // Work phases
+          if (((_b['phases'] as List?) ?? []).isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity, padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Text('Work Phases', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+                const SizedBox(height: 12),
+                ...(_b['phases'] as List).map((ph) => _phaseRow(ph, status)),
+              ]),
+            ),
+          ],
+          // Extension requests
+          if (((_b['extensions'] as List?) ?? []).isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity, padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Text('Extra Time / Work Requests', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+                const SizedBox(height: 12),
+                ...(_b['extensions'] as List).map(_extRow),
+              ]),
+            ),
+          ],
           const SizedBox(height: 16),
           // Handyman contact
           Container(
@@ -147,15 +280,23 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                   child: Text(name.isNotEmpty ? name[0].toUpperCase() : '?', style: const TextStyle(fontWeight: FontWeight.w900, color: C.blue, fontSize: 20))),
               const SizedBox(width: 12),
               Expanded(child: Text(name, style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16))),
-              IconButton(icon: const Icon(Icons.chat_bubble_outline, color: C.blue), onPressed: () => context.push('/messages')),
+              IconButton(icon: const Icon(Icons.chat_bubble_outline, color: C.blue), onPressed: () => context.push('/chat', extra: {'bookingId': _id, 'name': name})),
               if (phone.isNotEmpty)
                 IconButton(icon: const Icon(Icons.call_outlined, color: C.blue), onPressed: () => launchUrl(Uri.parse('tel:$phone'))),
             ]),
           ),
           const SizedBox(height: 20),
-          if (canReview)
-            _primaryBtn('Leave a review', () => context.push('/messages')),
-          if (canReview) const SizedBox(height: 10),
+          if (canReview && !_reviewed)
+            _primaryBtn('Leave a review', _leaveReview),
+          if (canReview && !_reviewed) const SizedBox(height: 10),
+          if (status == 'COMPLETED') ...[
+            SizedBox(width: double.infinity, child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFFFDE68A)), padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+              onPressed: _leaveTip,
+              icon: const Icon(Icons.volunteer_activism_outlined, size: 18, color: Color(0xFFB45309)),
+              label: const Text('Add a tip', style: TextStyle(color: Color(0xFFB45309), fontWeight: FontWeight.w800, fontSize: 15)))),
+            const SizedBox(height: 10),
+          ],
           if (canCancel)
             SizedBox(
               width: double.infinity,
@@ -182,6 +323,59 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         ]),
       );
 
+  Widget _phaseRow(dynamic ph, String status) {
+    final confirmed = ph['confirmedAt'] != null;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        Container(width: 26, height: 26,
+          decoration: BoxDecoration(color: confirmed ? const Color(0xFF16A34A) : const Color(0xFFFEF3C7), shape: BoxShape.circle),
+          child: Icon(confirmed ? Icons.check : Icons.circle_outlined, size: 15, color: confirmed ? Colors.white : const Color(0xFFB45309))),
+        const SizedBox(width: 12),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text((ph['title'] ?? '').toString(), style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink)),
+          Text(confirmed ? '✓ Confirmed' : 'Awaiting your confirmation',
+            style: TextStyle(color: confirmed ? const Color(0xFF16A34A) : const Color(0xFFB45309), fontSize: 12, fontWeight: FontWeight.w700)),
+        ])),
+        if (!confirmed && status == 'IN_PROGRESS')
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+            onPressed: () => _confirmPhase((ph['id'] ?? '').toString()),
+            child: const Text('Confirm', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13))),
+      ]),
+    );
+  }
+
+  Widget _extRow(dynamic ext) {
+    final st = (ext['status'] ?? '').toString();
+    final mins = (ext['additionalMinutes'] ?? 0) as int;
+    final amt = (ext['extraAmount'] ?? 0) as num;
+    final reason = (ext['reason'] ?? '').toString();
+    final pending = st == 'PENDING';
+    final color = st == 'APPROVED' ? const Color(0xFF16A34A) : st == 'DECLINED' ? C.red : const Color(0xFFB45309);
+    final mLabel = mins >= 60 ? '${mins ~/ 60}h${mins % 60 > 0 ? ' ${mins % 60}m' : ''}' : '${mins}m';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: C.bg, borderRadius: BorderRadius.circular(12)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text('+$mLabel${amt > 0 ? ' · +\$${amt.toStringAsFixed(2)}' : ''}', style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 15)),
+        if (reason.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 2), child: Text(reason, style: const TextStyle(color: C.muted, fontSize: 13))),
+        if (pending) ...[
+          const SizedBox(height: 4),
+          const Text('Your pro needs more time to finish. Approve to extend the job.', style: TextStyle(color: C.muted, fontSize: 12)),
+          const SizedBox(height: 10),
+          Row(children: [
+            Expanded(child: OutlinedButton(style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFFFECACA))), onPressed: () => _respondExtension((ext['id'] ?? '').toString(), 'decline'), child: const Text('Decline', style: TextStyle(color: C.red, fontWeight: FontWeight.w800)))),
+            const SizedBox(width: 8),
+            Expanded(flex: 2, child: FilledButton(style: FilledButton.styleFrom(backgroundColor: const Color(0xFF16A34A)), onPressed: () => _respondExtension((ext['id'] ?? '').toString(), 'approve'), child: Text(amt > 0 ? 'Approve · \$${amt.toStringAsFixed(2)}' : 'Approve', style: const TextStyle(fontWeight: FontWeight.w800)))),
+          ]),
+        ] else
+          Padding(padding: const EdgeInsets.only(top: 4), child: Text(st == 'APPROVED' ? 'Approved' : 'Declined', style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 13))),
+      ]),
+    );
+  }
+
   Widget _primaryBtn(String label, VoidCallback onTap) => SizedBox(
         width: double.infinity,
         child: FilledButton(
@@ -191,4 +385,138 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           child: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
         ),
       );
+}
+
+class _ReviewSheet extends StatefulWidget {
+  final String bookingId;
+  const _ReviewSheet({required this.bookingId});
+  @override
+  State<_ReviewSheet> createState() => _ReviewSheetState();
+}
+
+class _ReviewSheetState extends State<_ReviewSheet> {
+  int _rating = 0;
+  final _comment = TextEditingController();
+  bool _saving = false;
+
+  void _toast(String m) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
+
+  Future<void> _submit() async {
+    if (_rating == 0) return _toast('Tap a star to rate');
+    setState(() => _saving = true);
+    try {
+      final res = await Api.post('/reviews', {
+        'bookingId': widget.bookingId,
+        'rating': _rating,
+        if (_comment.text.trim().isNotEmpty) 'comment': _comment.text.trim(),
+      });
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        if (mounted) Navigator.pop(context, true);
+      } else {
+        String msg = 'Could not submit review.';
+        try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
+        _toast(msg);
+      }
+    } catch (_) {
+      _toast('Could not connect. Please try again.');
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        decoration: const BoxDecoration(color: C.bg, borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+        padding: const EdgeInsets.all(20),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Center(child: Text('Rate your experience', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 18))),
+          const SizedBox(height: 16),
+          Center(
+            child: Row(mainAxisSize: MainAxisSize.min, children: List.generate(5, (i) => IconButton(
+              onPressed: () => setState(() => _rating = i + 1),
+              icon: Icon(i < _rating ? Icons.star : Icons.star_border, color: const Color(0xFFF59E0B), size: 40),
+            ))),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _comment,
+            maxLines: 3,
+            decoration: InputDecoration(
+              hintText: 'Add a comment (optional)', filled: true, fillColor: C.white,
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: C.line)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: C.blue, width: 1.5)),
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(width: double.infinity, child: FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+            onPressed: _saving ? null : _submit,
+            child: _saving
+                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                : const Text('Submit review', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
+          )),
+          const SizedBox(height: 8),
+        ]),
+      ),
+    );
+  }
+}
+
+class _TipSheet extends StatefulWidget {
+  const _TipSheet();
+  @override
+  State<_TipSheet> createState() => _TipSheetState();
+}
+
+class _TipSheetState extends State<_TipSheet> {
+  double _amount = 0;
+  final _custom = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        decoration: const BoxDecoration(color: C.bg, borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+        padding: const EdgeInsets.all(20),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Center(child: Text('Add a tip', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 18))),
+          const SizedBox(height: 4),
+          const Center(child: Text('100% goes to your pro.', style: TextStyle(color: C.muted, fontSize: 13))),
+          const SizedBox(height: 16),
+          Row(children: [5, 10, 15, 20].map((v) {
+            final on = _amount == v.toDouble() && _custom.text.isEmpty;
+            return Expanded(child: Padding(padding: const EdgeInsets.symmetric(horizontal: 4), child: GestureDetector(
+              onTap: () => setState(() { _amount = v.toDouble(); _custom.clear(); }),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 14), alignment: Alignment.center,
+                decoration: BoxDecoration(color: on ? C.blue : C.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: on ? C.blue : C.line)),
+                child: Text('\$$v', style: TextStyle(color: on ? Colors.white : C.ink, fontWeight: FontWeight.w900)),
+              ),
+            )));
+          }).toList()),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _custom, keyboardType: TextInputType.number,
+            onChanged: (v) => setState(() => _amount = double.tryParse(v) ?? 0),
+            decoration: InputDecoration(
+              hintText: 'Custom amount (\$)', filled: true, fillColor: C.white,
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: C.line)),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: C.blue, width: 1.5)),
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(width: double.infinity, child: FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+            onPressed: _amount > 0 ? () => Navigator.pop(context, _amount) : null,
+            child: Text(_amount > 0 ? 'Tip \$${_amount.toStringAsFixed(2)}' : 'Choose an amount', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
+          )),
+          const SizedBox(height: 8),
+        ]),
+      ),
+    );
+  }
 }

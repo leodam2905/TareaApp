@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../theme.dart';
 import '../api.dart';
+import '../avatar_util.dart';
 
 class _Action {
   final String title, desc, img;
@@ -41,6 +42,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   String _firstName = '';
+  String _avatar = '';
   List<dynamic> _pros = [];
   List<dynamic> _recent = [];
 
@@ -56,7 +58,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body) as Map<String, dynamic>;
         final name = (data['name'] ?? '').toString();
-        if (name.isNotEmpty && mounted) setState(() => _firstName = name.split(' ').first);
+        if (mounted) setState(() {
+          if (name.isNotEmpty) _firstName = name.split(' ').first;
+          _avatar = (data['avatarUrl'] ?? '').toString();
+        });
       }
     } catch (_) {/* greeting stays generic */}
     try {
@@ -67,15 +72,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
         if (mounted) setState(() => _pros = (list as List).take(6).toList());
       }
     } catch (_) {}
+    // Recent activity = most recent jobs of ANY status, incl. just-posted ones:
+    // directed posts come back as bookings, open posts as job-requests.
+    final List<dynamic> activity = [];
     try {
       final res = await Api.get('/bookings?role=customer');
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
-        final list = data is List ? data : (data['bookings'] ?? []);
-        final done = (list as List).where((b) => ['COMPLETED', 'CANCELLED'].contains(b['status'])).take(3).toList();
-        if (mounted) setState(() => _recent = done);
+        activity.addAll((data is List ? data : (data['bookings'] ?? [])) as List);
       }
     } catch (_) {}
+    try {
+      final res = await Api.get('/job-requests');
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        final list = (data is List ? data : (data['requests'] ?? data['jobRequests'] ?? [])) as List;
+        for (final r in list) { if (r is Map) r['_isRequest'] = true; }
+        activity.addAll(list);
+      }
+    } catch (_) {}
+    DateTime _when(dynamic x) => DateTime.tryParse(
+        (x['updatedAt'] ?? x['createdAt'] ?? x['scheduledAt'] ?? '').toString()) ?? DateTime(2000);
+    activity.sort((a, b) => _when(b).compareTo(_when(a)));
+    if (mounted) setState(() => _recent = activity.take(4).toList());
   }
 
   String get _greeting {
@@ -112,9 +131,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ]),
                   Row(children: [
-                    _circleIcon(Icons.notifications_none),
+                    GestureDetector(onTap: () => context.push('/notifications'), child: _circleIcon(Icons.notifications_none)),
                     const SizedBox(width: 10),
-                    const CircleAvatar(radius: 18, backgroundColor: C.surface, child: Icon(Icons.person, color: C.muted, size: 20)),
+                    roundAvatar(url: _avatar, radius: 18),
                   ]),
                 ],
               ),
@@ -183,7 +202,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 24),
                   alignment: Alignment.center,
-                  child: const Text('No past jobs yet.', style: TextStyle(color: C.muted)),
+                  child: const Text('No activity yet. Post a job to get started.', style: TextStyle(color: C.muted)),
                 )
               else
                 ..._recent.map(_activityRow),
@@ -292,23 +311,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _activityRow(dynamic b) {
-    final service = (b['service']?['title'] ?? b['category'] ?? 'Service').toString();
-    final status = (b['status'] ?? '').toString();
+    final isReq = b['_isRequest'] == true;
+    final service = (b['service']?['title'] ?? b['category'] ?? b['title'] ?? 'Service').toString();
+    final rawStatus = (b['status'] ?? '').toString();
+    final label = isReq && rawStatus == 'OPEN'
+        ? 'Posted'
+        : rawStatus.isEmpty ? '' : '${rawStatus[0]}${rawStatus.substring(1).toLowerCase().replaceAll('_', ' ')}';
     return GestureDetector(
-      onTap: () => context.push('/booking-detail', extra: (b as Map).cast<String, dynamic>()).then((_) { if (mounted) _load(); }),
+      onTap: () {
+        if (isReq) {
+          context.push('/requests').then((_) { if (mounted) _load(); });
+        } else {
+          context.push('/booking-detail', extra: (b as Map).cast<String, dynamic>()).then((_) { if (mounted) _load(); });
+        }
+      },
       child: Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: C.line)),
       child: Row(children: [
         Container(width: 40, height: 40, decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.receipt_long_outlined, color: C.blue, size: 20)),
+            child: Icon(isReq ? Icons.campaign_outlined : Icons.receipt_long_outlined, color: C.blue, size: 20)),
         const SizedBox(width: 12),
         Expanded(child: Text(service, maxLines: 1, overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink))),
-        if (status.isNotEmpty)
-          Text('${status[0]}${status.substring(1).toLowerCase()}',
-              style: const TextStyle(color: C.muted, fontSize: 12, fontWeight: FontWeight.w700)),
+        if (label.isNotEmpty)
+          Text(label,
+              style: TextStyle(color: isReq ? C.blue : C.muted, fontSize: 12, fontWeight: FontWeight.w700)),
       ]),
       ),
     );

@@ -21,14 +21,29 @@ import 'screens/refer_earn_screen.dart';
 import 'screens/requests_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/booking_detail_screen.dart';
+import 'screens/chat_screen.dart';
+import 'screens/edit_profile_screen.dart';
 import 'screens/pro/pro_shell.dart';
+import 'screens/pro/pro_edit_profile.dart';
+import 'screens/pro/pro_edit_services.dart';
+import 'screens/pro/pro_service_area.dart';
+import 'screens/pro/pro_portfolio.dart';
+import 'screens/pro/pro_certifications.dart';
+import 'screens/pro/pro_reviews.dart';
+import 'screens/pro/pro_job_detail.dart';
+import 'screens/pro/pro_payout_methods.dart';
+import 'push_service.dart';
 
 void main() {
   appFlavor = Flavor.home;
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const TareaApp());
+  // Init push AFTER the first frame so a slow/failed Firebase init on any
+  // platform can never block the UI from rendering (white screen).
+  PushService.initFirebase().then((_) => PushService.registerToken());
 }
 
-final _router = GoRouter(
+final appRouter = GoRouter(
   initialLocation: '/',
   redirect: (context, state) async {
     final loggedIn = (await Api.token()) != null;
@@ -53,6 +68,16 @@ final _router = GoRouter(
     GoRoute(path: '/refer-earn', builder: (_, __) => const ReferEarnScreen()),
     GoRoute(path: '/requests', builder: (_, __) => const RequestsScreen()),
     GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
+    GoRoute(path: '/chat', builder: (_, s) => ChatScreen(data: (s.extra as Map?)?.cast<String, dynamic>() ?? const {})),
+    GoRoute(path: '/edit-profile', builder: (_, __) => const EditProfileScreen()),
+    GoRoute(path: '/pro/edit-profile', builder: (_, __) => const ProEditProfile()),
+    GoRoute(path: '/pro/services', builder: (_, __) => const ProEditServices()),
+    GoRoute(path: '/pro/service-area', builder: (_, __) => const ProServiceArea()),
+    GoRoute(path: '/pro/portfolio', builder: (_, __) => const ProPortfolio()),
+    GoRoute(path: '/pro/certifications', builder: (_, __) => const ProCertifications()),
+    GoRoute(path: '/pro/reviews', builder: (_, __) => const ProReviews()),
+    GoRoute(path: '/pro/job-detail', builder: (_, s) => ProJobDetail(booking: (s.extra as Map?)?.cast<String, dynamic>() ?? const {})),
+    GoRoute(path: '/pro/payout-methods', builder: (_, __) => const ProPayoutMethods()),
     GoRoute(
       path: '/booking-detail',
       builder: (_, s) => BookingDetailScreen(booking: (s.extra as Map?)?.cast<String, dynamic>() ?? const {}),
@@ -73,7 +98,7 @@ class TareaApp extends StatelessWidget {
       title: 'Tarea',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(),
-      routerConfig: _router,
+      routerConfig: appRouter,
       // Lock text to design size regardless of the phone's Text Size setting —
       // the same fix as the RN app, but native to Flutter (no scaling ever).
       builder: (context, child) => MediaQuery(

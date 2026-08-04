@@ -30,8 +30,20 @@ class _ProFindJobsState extends State<ProFindJobs> {
 
   Future<void> _apply(String id) async {
     setState(() => _applied.add(id));
-    try { await Api.post('/job-requests/$id/apply', {}); } catch (_) {}
-    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Application sent!')));
+    try {
+      final res = await Api.post('/job-requests/$id/apply', {});
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Application sent!')));
+      } else {
+        setState(() => _applied.remove(id));
+        String msg = 'Could not apply. Please try again.';
+        try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+      }
+    } catch (_) {
+      setState(() => _applied.remove(id));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not connect. Please try again.')));
+    }
   }
 
   @override
@@ -65,31 +77,46 @@ class _ProFindJobsState extends State<ProFindJobs> {
   Widget _jobCard(dynamic j) {
     final id = (j['id'] ?? '').toString();
     final title = (j['title'] ?? _pretty((j['category'] ?? 'General').toString())).toString();
-    final category = _pretty((j['category'] ?? '').toString());
+    final rawCat = (j['category'] ?? '').toString();
+    final category = _pretty(rawCat);
     final desc = (j['description'] ?? '').toString();
     final city = (j['city'] ?? '').toString();
     final min = j['budgetMin'], max = j['budgetMax'];
     final km = j['distanceKm'];
     final applied = _applied.contains(id);
+    final cc = _catColor(rawCat);
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+        color: C.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border(left: BorderSide(color: cc, width: 4)),
+        boxShadow: [BoxShadow(color: cc.withValues(alpha: 0.06), blurRadius: 10, offset: const Offset(0, 2))],
+      ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(color: const Color(0xFFEFF5FF), borderRadius: BorderRadius.circular(8)),
-            child: Text(category, style: const TextStyle(color: C.blue, fontSize: 12, fontWeight: FontWeight.w700)),
+            width: 42, height: 42,
+            decoration: BoxDecoration(color: cc.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
+            child: Icon(_catIcon(rawCat), color: cc, size: 22),
           ),
-          const Spacer(),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+              const SizedBox(height: 2),
+              Text(category, style: TextStyle(color: cc, fontSize: 12.5, fontWeight: FontWeight.w800)),
+            ]),
+          ),
           if (min != null || max != null)
-            Text('\$${(min ?? max as num).round()}–\$${(max ?? min as num).round()}', style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+            Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+              Text('\$${(min ?? max as num).round()}–${(max ?? min as num).round()}', style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF16A34A), fontSize: 16)),
+              const Text('budget', style: TextStyle(color: C.muted, fontSize: 11)),
+            ]),
         ]),
-        const SizedBox(height: 10),
-        Text(title, style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
         if (desc.isNotEmpty) ...[
-          const SizedBox(height: 4),
+          const SizedBox(height: 10),
           Text(desc, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.muted, height: 1.3)),
         ],
         const SizedBox(height: 10),
@@ -110,4 +137,38 @@ class _ProFindJobsState extends State<ProFindJobs> {
   }
 
   String _pretty(String c) => c.isEmpty ? '' : c[0].toUpperCase() + c.substring(1).toLowerCase().replaceAll('_', ' ');
+
+  Color _catColor(String c) {
+    switch (c.toUpperCase()) {
+      case 'PLUMBING': return const Color(0xFF2563EB);
+      case 'ELECTRICAL': return const Color(0xFFF59E0B);
+      case 'PAINTING': return const Color(0xFF7C3AED);
+      case 'CARPENTRY': return const Color(0xFFD97706);
+      case 'CLEANING': return const Color(0xFF10B981);
+      case 'HVAC': return const Color(0xFF06B6D4);
+      case 'ROOFING': return const Color(0xFF4F46E5);
+      case 'LANDSCAPING': return const Color(0xFF16A34A);
+      case 'MOVING': return const Color(0xFFFB923C);
+      case 'APPLIANCE_REPAIR': return const Color(0xFF0D9488);
+      case 'LAUNDRY': return const Color(0xFF3B82F6);
+      default: return C.blue;
+    }
+  }
+
+  IconData _catIcon(String c) {
+    switch (c.toUpperCase()) {
+      case 'PLUMBING': return Icons.water_drop_outlined;
+      case 'ELECTRICAL': return Icons.bolt_outlined;
+      case 'PAINTING': return Icons.palette_outlined;
+      case 'CARPENTRY': return Icons.handyman_outlined;
+      case 'CLEANING': return Icons.auto_awesome_outlined;
+      case 'HVAC': return Icons.ac_unit_outlined;
+      case 'ROOFING': return Icons.roofing_outlined;
+      case 'LANDSCAPING': return Icons.eco_outlined;
+      case 'MOVING': return Icons.local_shipping_outlined;
+      case 'APPLIANCE_REPAIR': return Icons.kitchen_outlined;
+      case 'LAUNDRY': return Icons.local_laundry_service_outlined;
+      default: return Icons.work_outline;
+    }
+  }
 }

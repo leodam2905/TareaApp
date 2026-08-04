@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../theme.dart';
 import '../api.dart';
+import '../avatar_util.dart';
 
 const _reqStatus = {
   'OPEN': ['Open', 0xFF2563EB, 0xFFEFF5FF],
@@ -19,6 +20,7 @@ class RequestsScreen extends StatefulWidget {
 class _RequestsScreenState extends State<RequestsScreen> {
   List<dynamic> _reqs = [];
   bool _loading = true;
+  bool _busy = false;
 
   @override
   void initState() { super.initState(); _load(); }
@@ -32,6 +34,35 @@ class _RequestsScreenState extends State<RequestsScreen> {
       }
     } catch (_) {}
     if (mounted) setState(() => _loading = false);
+  }
+
+  void _toast(String m) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
+
+  Future<void> _respond(String reqId, String appId, String action) async {
+    if (action == 'accept') {
+      final ok = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
+        title: const Text('Hire this pro?'),
+        content: const Text('This assigns the job to them and creates the booking.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Hire', style: TextStyle(fontWeight: FontWeight.w800))),
+        ],
+      ));
+      if (ok != true) return;
+    }
+    setState(() => _busy = true);
+    try {
+      final res = await Api.patch('/job-requests/$reqId/applications/$appId', {'action': action});
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        _toast(action == 'accept' ? 'Pro hired — booking created' : 'Applicant declined');
+        await _load();
+      } else {
+        String msg = 'Could not update. Try again.';
+        try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
+        _toast(msg);
+      }
+    } catch (_) { _toast('Could not connect. Try again.'); }
+    finally { if (mounted) setState(() => _busy = false); }
   }
 
   @override
@@ -54,37 +85,88 @@ class _RequestsScreenState extends State<RequestsScreen> {
               : ListView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
                   itemCount: _reqs.length,
-                  itemBuilder: (_, i) {
-                    final r = _reqs[i] as Map;
-                    final meta = _reqStatus[r['status']] ?? ['Request', 0xFF64748B, 0xFFF1F5F9];
-                    final category = (r['category'] ?? 'Job').toString();
-                    final desc = (r['description'] ?? '').toString();
-                    final offers = (r['offers'] as List?)?.length ?? (r['bids'] as List?)?.length ?? 0;
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Row(children: [
-                          Expanded(child: Text(_pretty(category), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16))),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                            decoration: BoxDecoration(color: Color(meta[2] as int), borderRadius: BorderRadius.circular(20)),
-                            child: Text(meta[0] as String, style: TextStyle(color: Color(meta[1] as int), fontWeight: FontWeight.w800, fontSize: 12)),
-                          ),
-                        ]),
-                        if (desc.isNotEmpty) ...[
-                          const SizedBox(height: 6),
-                          Text(desc, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.muted, height: 1.3)),
-                        ],
-                        if (offers > 0) ...[
-                          const SizedBox(height: 10),
-                          Text('$offers pro${offers == 1 ? '' : 's'} responded', style: const TextStyle(color: C.blue, fontWeight: FontWeight.w700, fontSize: 13)),
-                        ],
-                      ]),
-                    );
-                  },
+                  itemBuilder: (_, i) => _requestCard(_reqs[i] as Map),
                 ),
+    );
+  }
+
+  Widget _requestCard(Map r) {
+    final meta = _reqStatus[r['status']] ?? ['Request', 0xFF64748B, 0xFFF1F5F9];
+    final category = (r['category'] ?? 'Job').toString();
+    final desc = (r['description'] ?? '').toString();
+    final apps = (r['applications'] as List?) ?? [];
+    final open = r['status'] == 'OPEN';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Expanded(child: Text(_pretty(category), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16))),
+          Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(color: Color(meta[2] as int), borderRadius: BorderRadius.circular(20)),
+            child: Text(meta[0] as String, style: TextStyle(color: Color(meta[1] as int), fontWeight: FontWeight.w800, fontSize: 12))),
+        ]),
+        if (desc.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Text(desc, maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.muted, height: 1.3)),
+        ],
+        const SizedBox(height: 12),
+        Text(apps.isEmpty ? 'No pros have applied yet.' : '${apps.length} pro${apps.length == 1 ? '' : 's'} applied',
+          style: TextStyle(color: apps.isEmpty ? C.muted : C.blue, fontWeight: FontWeight.w800, fontSize: 13)),
+        ...apps.map((a) => _applicantRow(r['id'].toString(), a as Map, open)),
+      ]),
+    );
+  }
+
+  Widget _applicantRow(String reqId, Map a, bool open) {
+    final u = (a['user'] ?? {}) as Map;
+    final hp = (a['handyman'] ?? {}) as Map;
+    final name = (u['name'] ?? 'Pro').toString();
+    final rating = ((hp['rating']) as num?)?.toDouble() ?? 0;
+    final jobs = (hp['totalJobs'] ?? 0);
+    final st = (a['status'] ?? '').toString();
+    final accepted = st == 'ACCEPTED';
+    final rejected = st == 'REJECTED';
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: C.bg, borderRadius: BorderRadius.circular(12)),
+      child: Column(children: [
+        Row(children: [
+          roundAvatar(url: (u['avatarUrl'] ?? '').toString(), radius: 20),
+          const SizedBox(width: 10),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(name, style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink)),
+            Row(children: [
+              const Icon(Icons.star, size: 14, color: Color(0xFFF59E0B)),
+              const SizedBox(width: 3),
+              Text(rating > 0 ? rating.toStringAsFixed(1) : 'New', style: const TextStyle(color: C.muted, fontSize: 12)),
+              Text('  ·  $jobs jobs', style: const TextStyle(color: C.muted, fontSize: 12)),
+            ]),
+          ])),
+          if (accepted) const Text('Hired ✓', style: TextStyle(color: Color(0xFF16A34A), fontWeight: FontWeight.w800, fontSize: 12)),
+          if (rejected) const Text('Declined', style: TextStyle(color: C.muted, fontWeight: FontWeight.w700, fontSize: 12)),
+        ]),
+        if ((hp['bio'] ?? '') != '') ...[
+          const SizedBox(height: 6),
+          Text((hp['bio']).toString(), maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.muted, fontSize: 12)),
+        ],
+        if (open && st == 'PENDING') ...[
+          const SizedBox(height: 10),
+          Row(children: [
+            Expanded(child: OutlinedButton(
+              style: OutlinedButton.styleFrom(side: const BorderSide(color: C.line)),
+              onPressed: _busy ? null : () => _respond(reqId, a['id'].toString(), 'reject'),
+              child: const Text('Decline', style: TextStyle(color: C.muted, fontWeight: FontWeight.w800)))),
+            const SizedBox(width: 8),
+            Expanded(flex: 2, child: FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: C.blue),
+              onPressed: _busy ? null : () => _respond(reqId, a['id'].toString(), 'accept'),
+              child: const Text('Hire', style: TextStyle(fontWeight: FontWeight.w800)))),
+          ]),
+        ],
+      ]),
     );
   }
 

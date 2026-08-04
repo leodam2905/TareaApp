@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../theme.dart';
 import '../api.dart';
 import '../flavor.dart';
+import '../push_service.dart';
 
 class VerifyOtpScreen extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -28,6 +29,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
       if (res.statusCode < 200 || res.statusCode >= 300) return _toast(data['error']?.toString() ?? 'Invalid code');
       await Api.setToken(data['token'].toString());
       await Api.setRole((data['role'] ?? signupRole).toString());
+      PushService.registerToken();
       if (mounted) context.go(homeRoute);
     } catch (_) {
       _toast('Could not connect. Try again.');
@@ -63,7 +65,12 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
             const SizedBox(height: 20),
             const Text('Verify your phone', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink)),
             const SizedBox(height: 8),
-            const Text('Enter the 6-digit code we sent to your phone number.', style: TextStyle(fontSize: 15, color: C.muted, height: 1.5)),
+            Text(
+              (widget.data['phoneMask'] ?? '').toString().isNotEmpty
+                  ? 'Enter the 6-digit code we sent to ${widget.data['phoneMask']}.'
+                  : 'Enter the 6-digit code we sent to your phone number.',
+              style: const TextStyle(fontSize: 15, color: C.muted, height: 1.5),
+            ),
             const SizedBox(height: 24),
             TextField(
               controller: _code,

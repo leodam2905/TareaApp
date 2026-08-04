@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../theme.dart';
 import '../../api.dart';
 
@@ -39,8 +40,14 @@ class _ProJobsState extends State<ProJobs> {
   Future<void> _setStatus(dynamic b, String status) async {
     try {
       final res = await Api.patch('/bookings/${b['id']}', {'status': status});
-      if (res.statusCode >= 200 && res.statusCode < 300) setState(() => b['status'] = status);
-    } catch (_) {}
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        setState(() => b['status'] = status);
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not update the job. Please try again.')));
+      }
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not connect. Please try again.')));
+    }
   }
 
   @override
@@ -88,7 +95,9 @@ class _ProJobsState extends State<ProJobs> {
     final customer = (b['customer']?['name'] ?? 'Customer').toString();
     final price = (b['totalPrice'] ?? 0) as num;
     final status = b['status'];
-    return Container(
+    return GestureDetector(
+      onTap: () => context.push('/pro/job-detail', extra: (b as Map).cast<String, dynamic>()).then((_) { if (mounted) _load(); }),
+      child: Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
@@ -117,6 +126,7 @@ class _ProJobsState extends State<ProJobs> {
             _smallBtn('Mark complete', C.green, () => _setStatus(b, 'COMPLETED')),
         ]),
       ]),
+      ),
     );
   }
 

@@ -8,12 +8,28 @@ import 'pro_profile.dart';
 
 class ProShell extends StatefulWidget {
   const ProShell({super.key});
+
+  /// Lets child tabs jump to another tab (e.g. dashboard "View all" → My Jobs).
+  static void Function(int)? go;
+
   @override
   State<ProShell> createState() => _ProShellState();
 }
 
 class _ProShellState extends State<ProShell> {
   int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    ProShell.go = (i) { if (mounted) setState(() => _index = i); };
+  }
+
+  @override
+  void dispose() {
+    ProShell.go = null;
+    super.dispose();
+  }
 
   static const _tabs = [
     ProDashboard(),

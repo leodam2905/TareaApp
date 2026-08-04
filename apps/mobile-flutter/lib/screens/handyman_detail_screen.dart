@@ -14,6 +14,7 @@ class HandymanDetailScreen extends StatefulWidget {
 class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
   List<dynamic> _reviews = [];
   Map<String, dynamic> _p = {};
+  bool _fav = false;
 
   @override
   void initState() {
@@ -39,6 +40,24 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
         if (mounted) setState(() => _reviews = data is List ? data : (data['reviews'] ?? []));
       }
     } catch (_) {}
+    try {
+      final res = await Api.get('/favorites');
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        final list = (data is List ? data : (data['favorites'] ?? [])) as List;
+        final fav = list.any((f) => (f['handymanUserId'] ?? f['handyman']?['id'] ?? f['id'] ?? '').toString() == _userId);
+        if (mounted) setState(() => _fav = fav);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _toggleFav() async {
+    final next = !_fav;
+    setState(() => _fav = next);
+    try {
+      final res = next ? await Api.post('/favorites/$_userId', {}) : await Api.delete('/favorites/$_userId');
+      if (res.statusCode < 200 || res.statusCode >= 300) setState(() => _fav = !next);
+    } catch (_) { setState(() => _fav = !next); }
   }
 
   void _book({Map? service}) {
@@ -70,7 +89,12 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
       appBar: AppBar(
         backgroundColor: C.bg, surfaceTintColor: Colors.transparent, elevation: 0,
         leading: IconButton(icon: const Icon(Icons.chevron_left, color: C.ink, size: 30), onPressed: () => context.pop()),
-        actions: const [Icon(Icons.favorite_border, color: C.ink), SizedBox(width: 16)],
+        actions: [
+          IconButton(
+            icon: Icon(_fav ? Icons.favorite : Icons.favorite_border, color: _fav ? C.red : C.ink),
+            onPressed: _toggleFav),
+          const SizedBox(width: 8),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),

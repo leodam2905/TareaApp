@@ -167,7 +167,10 @@ class _PostJobScreenState extends State<PostJobScreen> {
                       ),
                     ),
                   ),
-                  const Text('Save Draft', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+                  GestureDetector(
+                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Draft saved'))),
+                    child: const Text('Save Draft', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+                  ),
                 ],
               ),
             ),

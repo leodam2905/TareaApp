@@ -28,9 +28,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     if (mounted) setState(() => _loading = false);
   }
 
-  Future<void> _remove(String id) async {
-    try { await Api.get('/favorites'); } catch (_) {}
-    setState(() => _favs.removeWhere((f) => (f['id'] ?? f['handymanId']) == id));
+  Future<void> _remove(String userId) async {
+    try {
+      final res = await Api.delete('/favorites/$userId');
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        setState(() => _favs.removeWhere((f) => ((f['handyman'] ?? f)['id'] ?? '').toString() == userId));
+      }
+    } catch (_) {}
   }
 
   @override
@@ -61,7 +65,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                     final name = (h['name'] ?? 'Pro').toString();
                     final hp = h['handymanProfile'] ?? {};
                     final rating = hp['rating'];
-                    return Container(
+                    return GestureDetector(
+                      onTap: () => context.push('/handyman-detail', extra: h.cast<String, dynamic>()).then((_) { if (mounted) _load(); }),
+                      child: Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
@@ -79,6 +85,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         ])),
                         IconButton(icon: const Icon(Icons.favorite, color: C.red), onPressed: () => _remove((h['id'] ?? '').toString())),
                       ]),
+                    ),
                     );
                   },
                 ),

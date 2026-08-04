@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../theme.dart';
 import '../../api.dart';
 
@@ -33,6 +34,7 @@ class _ProEarningsState extends State<ProEarnings> {
     if (mounted) setState(() => _loading = false);
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +62,10 @@ class _ProEarningsState extends State<ProEarnings> {
                     _stat('$_jobs', 'Jobs completed', C.blue),
                   ]),
                   const SizedBox(height: 20),
-                  Container(
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => context.push('/pro/payout-methods').then((_) { if (mounted) _load(); }),
+                    child: Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
                     child: Row(children: [
@@ -72,6 +77,7 @@ class _ProEarningsState extends State<ProEarnings> {
                       ])),
                       const Icon(Icons.chevron_right, color: C.muted),
                     ]),
+                  ),
                   ),
                 ],
               ),

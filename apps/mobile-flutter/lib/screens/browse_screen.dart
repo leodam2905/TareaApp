@@ -36,6 +36,7 @@ class BrowseScreen extends StatefulWidget {
 
 class _BrowseScreenState extends State<BrowseScreen> {
   List<dynamic> _pros = [];
+  final Set<String> _favIds = {};
   bool _loading = true;
   String _cat = '';
   bool _nearMe = true;
@@ -55,7 +56,25 @@ class _BrowseScreenState extends State<BrowseScreen> {
         _pros = data is List ? data : (data['handymen'] ?? data['pros'] ?? []);
       }
     } catch (_) {}
+    try {
+      final res = await Api.get('/favorites');
+      if (res.statusCode == 200) {
+        final list = (jsonDecode(res.body) is List ? jsonDecode(res.body) : (jsonDecode(res.body)['favorites'] ?? [])) as List;
+        _favIds
+          ..clear()
+          ..addAll(list.map((f) => (f['handymanUserId'] ?? f['handyman']?['id'] ?? f['id'] ?? '').toString()));
+      }
+    } catch (_) {}
     if (mounted) setState(() => _loading = false);
+  }
+
+  Future<void> _toggleFav(String userId) async {
+    final next = !_favIds.contains(userId);
+    setState(() => next ? _favIds.add(userId) : _favIds.remove(userId));
+    try {
+      final res = next ? await Api.post('/favorites/$userId', {}) : await Api.delete('/favorites/$userId');
+      if (res.statusCode < 200 || res.statusCode >= 300) setState(() => next ? _favIds.remove(userId) : _favIds.add(userId));
+    } catch (_) { setState(() => next ? _favIds.remove(userId) : _favIds.add(userId)); }
   }
 
   List<dynamic> get _filtered {
@@ -230,7 +249,12 @@ class _BrowseScreenState extends State<BrowseScreen> {
                       Flexible(child: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: C.ink))),
                       if (isVerified) ...[const SizedBox(width: 4), const Icon(Icons.verified, size: 16, color: C.blue)],
                       const Spacer(),
-                      const Icon(Icons.favorite_border, size: 20, color: Color(0xFFCBD5E1)),
+                      GestureDetector(
+                        onTap: () => _toggleFav((h['id'] ?? '').toString()),
+                        child: Icon(
+                          _favIds.contains((h['id'] ?? '').toString()) ? Icons.favorite : Icons.favorite_border,
+                          size: 20, color: _favIds.contains((h['id'] ?? '').toString()) ? C.red : const Color(0xFFCBD5E1)),
+                      ),
                     ]),
                     const SizedBox(height: 2),
                     Text(specialty, style: const TextStyle(color: C.muted, fontWeight: FontWeight.w600)),

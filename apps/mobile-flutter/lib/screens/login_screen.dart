@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../theme.dart';
 import '../api.dart';
 import '../flavor.dart';
+import '../push_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -35,11 +36,22 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
       if (data['requiresOtp'] == true) {
-        _toast('This account needs an OTP — use a review test account for now.');
+        if (data['requiresPhone'] == true) {
+          _toast('No phone number on file. Add one on taptarea.com, then log in.');
+          return;
+        }
+        if (mounted) {
+          context.push('/verify-otp', extra: {
+            'pendingToken': data['pendingToken'],
+            'role': data['role'],
+            'phoneMask': data['phoneMask'],
+          });
+        }
         return;
       }
       await Api.setToken(data['token'].toString());
       await Api.setRole((data['role'] ?? 'CUSTOMER').toString());
+      PushService.registerToken();
       if (mounted) context.go(homeRoute);
     } catch (_) {
       _toast('Could not connect. Check your internet connection.');
@@ -75,35 +87,39 @@ class _LoginScreenState extends State<LoginScreen> {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text('Welcome back!',
+                      children: [
+                        const Text('Welcome back!',
                             style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -1, color: C.ink, height: 1.05)),
-                        SizedBox(height: 12),
-                        Text('Sign in to your Tarea account to book trusted pros for your home.',
-                            style: TextStyle(fontSize: 15, color: C.muted, height: 1.45)),
+                        const SizedBox(height: 12),
+                        Text(
+                            isPro
+                                ? 'Log in to your account and continue finding jobs and growing your business.'
+                                : 'Sign in to your Tarea account to book trusted pros for your home.',
+                            style: const TextStyle(fontSize: 15, color: C.muted, height: 1.45)),
                       ],
                     ),
                   ),
-                  Image.asset('assets/images/signin-woman.png', width: 132, height: 132, fit: BoxFit.contain),
+                  Image.asset(isPro ? 'assets/images/login-illustration.png' : 'assets/images/signin-woman.png', width: 132, height: 132, fit: BoxFit.contain),
                 ],
               ),
               const SizedBox(height: 16),
-              // Trust pill
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE9F9EF),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFBBE9CC)),
+              // Trust pill (customer only)
+              if (!isPro)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE9F9EF),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFBBE9CC)),
+                  ),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: const [
+                    Icon(Icons.shield, size: 18, color: Color(0xFF16A34A)),
+                    SizedBox(width: 8),
+                    Text('Secure • Private • Trusted',
+                        style: TextStyle(color: Color(0xFF16803D), fontWeight: FontWeight.w800)),
+                  ]),
                 ),
-                child: Row(mainAxisSize: MainAxisSize.min, children: const [
-                  Icon(Icons.shield, size: 18, color: Color(0xFF16A34A)),
-                  SizedBox(width: 8),
-                  Text('Secure • Private • Trusted',
-                      style: TextStyle(color: Color(0xFF16803D), fontWeight: FontWeight.w800)),
-                ]),
-              ),
-              const SizedBox(height: 22),
+              if (!isPro) const SizedBox(height: 22),
               const Text('Sign in with email', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
               const SizedBox(height: 14),
               _field(controller: _email, hint: 'Email address', icon: Icons.mail_outline, keyboard: TextInputType.emailAddress),
@@ -153,12 +169,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: _loading ? null : _submit,
                   child: _loading
                       ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : const Text('Sign In', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+                      : Text(isPro ? 'Log in' : 'Sign In', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
                 ),
               ),
-              const SizedBox(height: 20),
-              // Secure & Protected card
-              Container(
+              if (!isPro) const SizedBox(height: 20),
+              // Secure & Protected card (customer only)
+              if (!isPro)
+                Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(16)),
                 child: Row(children: [
@@ -172,12 +189,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ])),
                 ]),
               ),
-              const SizedBox(height: 20),
-              // Trust row
-              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              if (!isPro) const SizedBox(height: 20),
+              // Trust row (customer only)
+              if (!isPro)
+                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 _trust(Icons.workspace_premium_outlined, const Color(0xFF16A34A), 'Verified Pros', 'Background checked', true),
                 _trust(Icons.verified_user_outlined, C.blue, 'Secure Payments', 'Safe and encrypted', true),
-                _trust(Icons.headset_mic_outlined, const Color(0xFF7C3AED), '24/7 Support', "We're here to help", false),
+                _trust(Icons.headset_mic_outlined, const Color(0xFF7C3AED), '8/7 Support', "We're here to help", false),
               ]),
               const SizedBox(height: 24),
             ],
