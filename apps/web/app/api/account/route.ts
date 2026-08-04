@@ -30,10 +30,14 @@ export async function DELETE(_req: NextRequest) {
         isActive: false,
         referralCode: null,
         expoPushToken: null,
+        fcmToken: null,
         latitude: null,
         longitude: null,
       },
     });
+
+    // Stop all push delivery to a deleted account's devices.
+    await tx.deviceToken.deleteMany({ where: { userId: user.id } });
 
     // Clear sensitive Pro documents/profile info if this is a handyman.
     if (user.role === "HANDYMAN") {

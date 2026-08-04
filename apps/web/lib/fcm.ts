@@ -20,13 +20,16 @@ function fbApp(): App {
   return cached;
 }
 
+export type PushResult = "ok" | "invalid" | "error";
+
 // Send an FCM push to a single device token. Best-effort: never throws.
+// Returns "invalid" when the token is dead/unregistered so callers can prune it.
 export async function sendFcm(
   token: string,
   title: string,
   body: string,
   data?: Record<string, string>
-): Promise<void> {
+): Promise<PushResult> {
   // Incoming job requests get a dedicated channel + loud custom ringtone so a
   // pro notices them even from across the room. Everything else uses the
   // default notification tone. The Android channel ("tarea_jobs") and the iOS
@@ -51,7 +54,17 @@ export async function sendFcm(
         },
       },
     });
-  } catch (e) {
+    return "ok";
+  } catch (e: unknown) {
+    const code = (e as { code?: string })?.code ?? "";
+    if (
+      code === "messaging/registration-token-not-registered" ||
+      code === "messaging/invalid-registration-token" ||
+      code === "messaging/invalid-argument"
+    ) {
+      return "invalid";
+    }
     console.error("[fcm]", e);
+    return "error";
   }
 }

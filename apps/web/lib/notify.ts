@@ -1,7 +1,7 @@
 import { prisma } from "./prisma";
 import { notifyUser } from "@/app/api/sse/route";
 import { sendEmail } from "./email";
-import { sendPush } from "./push";
+import { sendPushToUser } from "./push";
 import { sendSms } from "./sms";
 
 interface NotifyInput {
@@ -67,12 +67,11 @@ export async function createNotification(data: NotifyInput) {
     if (wantsIt) {
       const cta = ctaForType(data.type, data.refId ?? undefined);
       sendEmail(user.email, data.title, data.title, data.body, cta).catch(() => {});
-      if (user.expoPushToken) {
-        sendPush(user.expoPushToken, data.title, data.body, { type: data.type, refId: data.refId ?? null }).catch(() => {});
-      }
-      if (user.fcmToken) {
-        sendPush(user.fcmToken, data.title, data.body, { type: data.type, refId: data.refId ?? null }).catch(() => {});
-      }
+      // Push to every device the user has registered (prunes dead tokens).
+      sendPushToUser(data.userId, data.title, data.body, {
+        type: data.type,
+        refId: data.refId ?? null,
+      }).catch(() => {});
       if (user.notifSms && user.phone && SMS_TYPES.has(data.type)) {
         sendSms(user.phone, `Tarea: ${data.title} — ${data.body}`).catch(() => {});
       }

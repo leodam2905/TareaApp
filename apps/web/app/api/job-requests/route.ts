@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
-import { sendPush } from "@/lib/push";
+import { sendPushToUser } from "@/lib/push";
 
 const RADIUS_KM = 50 * 1.60934;
 
@@ -161,17 +161,13 @@ export async function POST(req: NextRequest) {
     const categoryLabel = category.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase());
 
     await Promise.allSettled(nearby.map(async h => {
-      // Push notification (Expo for RN app, FCM for Flutter app)
-      for (const tok of [h.user.expoPushToken, h.user.fcmToken]) {
-        if (tok) {
-          await sendPush(
-            tok,
-            "New Job Near You 🔧",
-            `${title} in ${city} — Budget ${budgetStr}`,
-            { screen: "FindJobs", jobId: jobRequest.id }
-          );
-        }
-      }
+      // Push to every device this handyman has registered (prunes dead tokens).
+      await sendPushToUser(
+        h.user.id,
+        "New Job Near You 🔧",
+        `${title} in ${city} — Budget ${budgetStr}`,
+        { type: "booking_request", screen: "FindJobs", jobId: jobRequest.id }
+      );
 
       // Email notification
       await sendEmail(

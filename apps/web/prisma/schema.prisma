@@ -100,8 +100,26 @@ model User {
   messagesSent       Message[]        @relation("MessagesSent")
   otpCodes           OtpCode[]
   favorites          Favorite[]       @relation("CustomerFavorites")
+  deviceTokens       DeviceToken[]
 
   @@map("users")
+}
+
+// One row per push-registered device. Replaces the single User.fcmToken /
+// expoPushToken columns so a user logged in on multiple devices receives every
+// notification on all of them. Token is unique so re-registering the same
+// device (or moving it to another account) upserts rather than duplicates.
+model DeviceToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  platform  String?  // "ios" | "android" | "expo"
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("device_tokens")
 }
 
 model OtpCode {
