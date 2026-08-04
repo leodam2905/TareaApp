@@ -42,7 +42,7 @@ export async function sendFcm(
       android: {
         priority: "high",
         notification: isJobRequest
-          ? { sound: "job_ring", channelId: "tarea_jobs" }
+          ? { sound: "job_ring", channelId: "tarea_jobs_v2" }
           : { sound: "default" },
       },
       apns: {

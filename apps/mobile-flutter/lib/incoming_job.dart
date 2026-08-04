@@ -209,13 +209,20 @@ class _PulseAvatarState extends State<_PulseAvatar>
           ),
           child: Center(
             child: Container(
-              width: 96,
-              height: 96,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: C.blue,
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(color: C.blue.withOpacity(0.4), blurRadius: 24, spreadRadius: 2),
+                ],
               ),
-              child: const Icon(Icons.handyman, color: Colors.white, size: 44),
+              clipBehavior: Clip.antiAlias,
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Image.asset('assets/images/icon-pro.png', fit: BoxFit.contain),
+              ),
             ),
           ),
         );

@@ -26,7 +26,9 @@ const _channel = AndroidNotificationChannel(
 // is baked into the channel at creation, so this must exist before any job
 // notification is shown.
 const _jobChannel = AndroidNotificationChannel(
-  'tarea_jobs',
+  // Bump the id whenever the sound changes — channels are immutable once
+  // created, so a new id is the only way existing installs pick up a new tone.
+  'tarea_jobs_v2',
   'New Job Requests',
   description: 'A customer has requested you for a job',
   importance: Importance.max,
