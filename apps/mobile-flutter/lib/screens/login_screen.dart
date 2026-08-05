@@ -80,26 +80,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 icon: const Icon(Icons.chevron_left, size: 30, color: C.ink),
                 onPressed: () => context.canPop() ? context.pop() : context.go('/'),
               ),
-              // Hero: heading + woman
+              // Hero: full-width heading, then subtitle + illustration side by side.
+              // (Heading spans the full width so it never breaks mid-word when
+              // the illustration narrows the column — an iOS font-width issue.)
+              const Text('Welcome back!',
+                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -1, color: C.ink, height: 1.1, leadingDistribution: TextLeadingDistribution.even)),
+              const SizedBox(height: 12),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Welcome back!',
-                            style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -1, color: C.ink, height: 1.05)),
-                        const SizedBox(height: 12),
-                        Text(
-                            isPro
-                                ? 'Log in to your account and continue finding jobs and growing your business.'
-                                : 'Sign in to your Tarea account to book trusted pros for your home.',
-                            style: const TextStyle(fontSize: 15, color: C.muted, height: 1.45)),
-                      ],
-                    ),
+                    child: Text(
+                        isPro
+                            ? 'Log in to your account and continue finding jobs and growing your business.'
+                            : 'Sign in to your Tarea account to book trusted pros for your home.',
+                        style: const TextStyle(fontSize: 15, color: C.muted, height: 1.45)),
                   ),
-                  Image.asset(isPro ? 'assets/images/login-illustration.png' : 'assets/images/signin-woman.png', width: 132, height: 132, fit: BoxFit.contain),
+                  const SizedBox(width: 12),
+                  Image.asset(isPro ? 'assets/images/login-illustration.png' : 'assets/images/signin-woman.png', width: 120, height: 120, fit: BoxFit.contain),
                 ],
               ),
               const SizedBox(height: 16),
