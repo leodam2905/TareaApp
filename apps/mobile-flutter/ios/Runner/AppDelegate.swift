@@ -35,8 +35,13 @@ import FirebaseMessaging
     _ application: UIApplication,
     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
   ) {
-    // Dev/ad-hoc builds register with Apple's SANDBOX APNs.
+    // Debug/dev builds use Apple's SANDBOX APNs; TestFlight/App Store use
+    // PRODUCTION. Picking the wrong environment silently drops push delivery.
+    #if DEBUG
     Messaging.messaging().setAPNSToken(deviceToken, type: .sandbox)
+    #else
+    Messaging.messaging().setAPNSToken(deviceToken, type: .prod)
+    #endif
     super.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
   }
 
