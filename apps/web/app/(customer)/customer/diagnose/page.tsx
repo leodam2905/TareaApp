@@ -360,6 +360,11 @@ export default function DiagnosePage() {
                 Start over
               </button>
             </motion.div>
+
+            <p className="text-[11px] text-slate-500 leading-relaxed text-center">
+              AI-generated estimate for guidance only — not a professional inspection.
+              For gas, electrical, or flooding emergencies, call a licensed pro or 911.
+            </p>
           </motion.div>
         )}
       </AnimatePresence>

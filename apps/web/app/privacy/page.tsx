@@ -20,7 +20,7 @@ export default function PrivacyPage() {
             <p className="text-tarea-sky text-xs font-semibold uppercase tracking-widest mb-2">taptarea.com</p>
             <h1 className="text-4xl font-extrabold text-white">Privacy Policy</h1>
           </div>
-          <p className="text-slate-500 text-sm mt-2">Effective Date: May 12, 2026 &nbsp;|&nbsp; Version 2.0</p>
+          <p className="text-slate-500 text-sm mt-2">Effective Date: August 19, 2026 &nbsp;|&nbsp; Version 2.1</p>
           <p className="text-slate-500 text-sm">California Consumer Privacy Act (CCPA) &amp; CPRA Compliant</p>
         </div>
 
@@ -41,6 +41,7 @@ export default function PrivacyPage() {
               <li><strong>Booking and transactions:</strong> service requests, booking details, payment information (processed by Stripe — Tarea does not store card numbers).</li>
               <li><strong>Communications:</strong> messages sent through the Platform between Customers and Pros, support tickets, and feedback.</li>
               <li><strong>Reviews and ratings:</strong> content submitted about Pros or Customers after completed bookings.</li>
+              <li><strong>AI Diagnose submissions:</strong> photos of your home or property and written descriptions of an issue that you submit to the AI Diagnose feature.</li>
             </ul>
             <h3>2.2 — Information Collected Automatically</h3>
             <ul>
@@ -59,7 +60,7 @@ export default function PrivacyPage() {
           </Section>
 
           <Section title="3. Categories of Personal Information — CCPA Disclosure">
-            <p>Tarea collects identifiers (name, email, phone, IP address), commercial information (booking and transaction history), geolocation data, internet activity, and professional information (Pros only). We collect this information to operate the Platform, process bookings and payments, verify Pros, ensure safety, and improve our services.</p>
+            <p>Tarea collects identifiers (name, email, phone, IP address), commercial information (booking and transaction history), geolocation data, internet activity, visual information (profile photos and photos you submit to AI Diagnose), and professional information (Pros only). We collect this information to operate the Platform, process bookings and payments, verify Pros, ensure safety, and improve our services.</p>
             <p><strong>Tarea does not sell personal information to third parties.</strong> Tarea does not share personal information for cross-context behavioral advertising without your explicit consent.</p>
           </Section>
 
@@ -71,6 +72,7 @@ export default function PrivacyPage() {
               <li>Match Customers with Pros based on location, availability, and service category.</li>
               <li>Facilitate communications between Customers and Pros.</li>
               <li>Process refunds, cancellations, and disputes.</li>
+              <li>Analyze photos and descriptions you submit to AI Diagnose in order to suggest a service category and urgency level.</li>
             </ul>
             <h3>4.2 — To Verify and Ensure Safety</h3>
             <ul>
@@ -110,7 +112,9 @@ export default function PrivacyPage() {
               <li>Cloud hosting and infrastructure providers.</li>
               <li>Analytics providers (anonymized/aggregated data only).</li>
               <li>Customer support software providers.</li>
+              <li>Anthropic PBC — AI processing for the AI Diagnose feature.</li>
             </ul>
+            <p>When you use AI Diagnose, the photo and description you submit are transmitted to our AI provider solely to generate your result. Under our agreement with that provider, your submissions are not used to train their models. Tarea does not share your name, contact details, or address with the AI provider as part of this request.</p>
             <h3>5.3 — For Legal Compliance</h3>
             <p>We may disclose information when required by law, legal process, or government request, including to comply with a subpoena, court order, or regulatory investigation. We will notify you of such requests where legally permitted.</p>
             <h3>5.4 — Business Transfers</h3>
@@ -149,6 +153,7 @@ export default function PrivacyPage() {
               <li><strong>Background check data (Pros):</strong> retained for 5 years or as required by applicable law.</li>
               <li><strong>Communications and support records:</strong> retained for 3 years.</li>
               <li><strong>Analytics data:</strong> retained in anonymized form indefinitely; identifiable data retained for 2 years.</li>
+              <li><strong>AI Diagnose photos and descriptions:</strong> processed to generate your result and not stored by Tarea after the request completes.</li>
             </ul>
             <p>Upon a verified deletion request, we will delete or anonymize your personal information within 45 days, subject to applicable legal exceptions.</p>
           </Section>
@@ -201,7 +206,7 @@ export default function PrivacyPage() {
 
         {/* Footer */}
         <div className="mt-16 pt-8 border-t border-white/10 space-y-2">
-          <p className="text-slate-600 text-xs">Document: Privacy Policy v2.0 &nbsp;|&nbsp; Effective: May 12, 2026 &nbsp;|&nbsp; Governed by CCPA, Cal. Civ. Code §§ 1798.100–1798.199 &nbsp;|&nbsp; Also compliant with CPRA, CalOPPA, COPPA</p>
+          <p className="text-slate-600 text-xs">Document: Privacy Policy v2.1 &nbsp;|&nbsp; Effective: August 19, 2026 &nbsp;|&nbsp; Governed by CCPA, Cal. Civ. Code §§ 1798.100–1798.199 &nbsp;|&nbsp; Also compliant with CPRA, CalOPPA, COPPA</p>
           <div className="flex gap-6 text-sm text-slate-500">
             <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
             <Link href="/" className="hover:text-white transition-colors">Back to Tarea</Link>

@@ -253,6 +253,11 @@ export default function DiagnoseScreen() {
               >
                 <Text style={s.bookBtnText}>Post this job  →</Text>
               </TouchableOpacity>
+
+              <Text style={s.aiDisclaimer}>
+                AI-generated estimate for guidance only — not a professional inspection.
+                For gas, electrical, or flooding emergencies, call a licensed pro or 911.
+              </Text>
             </View>
 
           </Animated.View>
@@ -326,6 +331,7 @@ const s = StyleSheet.create({
 
   sectionLabel:    { color: "#64748B", fontSize: 10, fontWeight: "800", textTransform: "uppercase", letterSpacing: 1.4 },
   explanation:     { color: "#334155", fontSize: 14, lineHeight: 23 },
+  aiDisclaimer:    { color: "#94A3B8", fontSize: 11, lineHeight: 16, textAlign: "center", marginTop: 14 },
 
   sep:             { height: 1, backgroundColor: "#E2E8F0" },
 

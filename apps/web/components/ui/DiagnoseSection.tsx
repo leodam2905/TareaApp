@@ -415,6 +415,11 @@ export default function DiagnoseSection() {
                       Try Again
                     </button>
                   </div>
+
+                  <p className="text-[11px] text-gray-400 leading-relaxed text-center pt-1">
+                    AI-generated estimate for guidance only — not a professional inspection.
+                    For gas, electrical, or flooding emergencies, call a licensed pro or 911.
+                  </p>
                 </motion.div>
               )}
 
