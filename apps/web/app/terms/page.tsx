@@ -78,9 +78,9 @@ export default function TermsPage() {
 
           <Section title="5. Bookings and Payments">
             <h3>5.1 — Pricing</h3>
-            <p>Pros independently set their own service rates. Tarea does not set, control, or influence Pro pricing. The service price at checkout reflects the Pro's rate plus a platform service fee.</p>
+            <p>Pros independently set their own service rates. Tarea does not set, control, or influence Pro pricing. The service price at checkout reflects the Pro's rate plus a Service &amp; Protection Fee.</p>
             <h3>5.2 — Platform Fee</h3>
-            <p>Customers pay the Pro's service price plus a <strong>15% platform service fee</strong>. Pros receive 90% of the agreed service price. Payouts are processed via Stripe Connect and subject to Stripe's Terms of Service.</p>
+            <p>Customers pay the Pro's service price plus a <strong>15% Service &amp; Protection Fee</strong>. Pros receive 90% of the agreed service price. Payouts are processed via Stripe Connect and subject to Stripe's Terms of Service.</p>
             <h3>5.3 — Payment Processing</h3>
             <p>All payments are processed by Stripe, Inc. Tarea does not store credit card or bank account information. By using the Platform, you also agree to <a href="https://stripe.com/legal" target="_blank" rel="noopener noreferrer" className="text-tarea-sky hover:underline">Stripe's Terms of Service</a>.</p>
           </Section>

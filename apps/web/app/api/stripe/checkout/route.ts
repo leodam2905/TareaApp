@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       price_data: {
         currency: "usd",
         unit_amount: Math.round(serviceFee * 100),
-        product_data: { name: "Tarea service fee (15% of labor)" },
+        product_data: { name: "Service & Protection Fee (15%)" },
       },
       quantity: 1,
     },
