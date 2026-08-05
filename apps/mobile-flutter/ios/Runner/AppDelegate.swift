@@ -48,7 +48,12 @@ import FirebaseMessaging
     willPresent notification: UNNotification,
     withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
   ) {
-    guard let channel = pushChannel else {
+    // Only intercept REMOTE (APNs/FCM) pushes. Locally-posted notifications —
+    // e.g. the chime Dart shows for a non-ring alert — must present normally,
+    // otherwise they'd be suppressed here and never appear (and re-forwarding
+    // them to Dart would loop).
+    guard notification.request.trigger is UNPushNotificationTrigger,
+          let channel = pushChannel else {
       completionHandler([.banner, .sound, .badge])
       return
     }
