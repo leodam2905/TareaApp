@@ -16,7 +16,7 @@ const _features = [
   _Feature(Icons.credit_card_outlined, C.blue, 'Upfront Pricing', 'Clear, transparent pricing always.'),
   _Feature(Icons.auto_awesome_outlined, C.green, 'Diagnose Issue', 'AI identifies what you need.'),
   _Feature(Icons.sell_outlined, Color(0xFF7C3AED), 'Instant Quote', 'Get a price before you book.'),
-  _Feature(Icons.thumb_up_outlined, Color(0xFFF97316), 'Satisfaction Guaranteed', "We're not happy until you're happy."),
+  _Feature(Icons.workspace_premium_outlined, Color(0xFFF97316), 'Quality Focused', 'Verified pros held to a high standard.'),
 ];
 
 class LandingScreen extends StatelessWidget {
