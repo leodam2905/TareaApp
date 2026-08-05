@@ -198,7 +198,9 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
               SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Informational only — this is an AI estimate, not a professional diagnosis. A licensed pro should confirm the issue before any work is done.',
+                  'Informational only — this is an AI estimate, not a professional diagnosis. '
+                  'A licensed pro should confirm the issue before any work is done. '
+                  'For a suspected gas leak, electrical hazard, or flooding, call 911 or a licensed pro now.',
                   style: TextStyle(fontSize: 12.5, color: Color(0xFF9A3412), height: 1.35, fontWeight: FontWeight.w600),
                 ),
               ),
@@ -228,13 +230,6 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
               onPressed: () => context.push('/post-job'),
               child: const Text('Post this job', style: TextStyle(fontWeight: FontWeight.w800, color: Colors.white, fontSize: 16)),
             ),
-          ),
-          const SizedBox(height: 12),
-          const Text(
-            'AI-generated estimate for guidance only — not a professional inspection. '
-            'For gas, electrical, or flooding emergencies, call a licensed pro or 911.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 11, color: C.muted, height: 1.4),
           ),
         ],
       ),
