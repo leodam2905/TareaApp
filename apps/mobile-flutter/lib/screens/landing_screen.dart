@@ -11,12 +11,12 @@ class _Feature {
 }
 
 const _features = [
-  _Feature(Icons.verified_user_outlined, C.blue, 'Verified Professionals', 'Background-checked and reviewed pros.'),
+  _Feature(Icons.verified_user_outlined, C.blue, 'Verified Pros', 'Background-checked and reviewed pros.'),
   _Feature(Icons.bolt_outlined, C.blue, 'Fast & Easy Booking', 'Book in minutes and get matched quickly.'),
   _Feature(Icons.credit_card_outlined, C.blue, 'Upfront Pricing', 'Clear, transparent pricing always.'),
   _Feature(Icons.auto_awesome_outlined, C.green, 'Diagnose Issue', 'AI identifies what you need.'),
   _Feature(Icons.sell_outlined, Color(0xFF7C3AED), 'Instant Quote', 'Get a price before you book.'),
-  _Feature(Icons.workspace_premium_outlined, Color(0xFFF97316), 'Quality Focused', 'Verified pros held to a high standard.'),
+  _Feature(Icons.workspace_premium_outlined, Color(0xFFF97316), 'Quality Focused', 'Skilled pros who take pride in their work.'),
 ];
 
 class LandingScreen extends StatelessWidget {
