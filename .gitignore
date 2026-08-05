@@ -59,3 +59,8 @@ apps/mobile/google-service-account.json
 *.p8
 apps/mobile/builds/
 apps/mobile/ios.stale-bundleid-bak/
+apps/mobile-flutter/android/keystores/
+apps/mobile-flutter/android/key.properties
+apps/mobile/credentials.json
+apps/mobile/credentials/
+apps/mobile-flutter/ios/certs/

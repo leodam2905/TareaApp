@@ -1,8 +1,21 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+// Release signing: per-flavor upload keystores (customer / handyman), loaded
+// from android/key.properties (gitignored). Falls back to debug signing when
+// the file isn't present (e.g. CI without secrets, or a fresh checkout).
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+val hasKeystores = keystorePropertiesFile.exists()
+if (hasKeystores) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
@@ -17,35 +30,54 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.taptarea.tarea"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        // Overridden per flavor below.
+        applicationId = "com.taptarea.handyman"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (hasKeystores) {
+            create("customer") {
+                storeFile = rootProject.file(keystoreProperties["customerStoreFile"] as String)
+                storePassword = keystoreProperties["customerStorePassword"] as String
+                keyAlias = keystoreProperties["customerKeyAlias"] as String
+                keyPassword = keystoreProperties["customerKeyPassword"] as String
+            }
+            create("handyman") {
+                storeFile = rootProject.file(keystoreProperties["handymanStoreFile"] as String)
+                storePassword = keystoreProperties["handymanStorePassword"] as String
+                keyAlias = keystoreProperties["handymanKeyAlias"] as String
+                keyPassword = keystoreProperties["handymanKeyPassword"] as String
+            }
+        }
+    }
+
     flavorDimensions += "app"
     productFlavors {
         create("home") {
             dimension = "app"
-            applicationId = "com.taptarea.tareahome"
+            applicationId = "com.taptarea.customer"
             manifestPlaceholders["appName"] = "Tarea"
+            if (hasKeystores) signingConfig = signingConfigs.getByName("customer")
         }
         create("pro") {
             dimension = "app"
-            applicationId = "com.taptarea.tarea"
+            applicationId = "com.taptarea.handyman"
             manifestPlaceholders["appName"] = "Tarea Pro"
+            if (hasKeystores) signingConfig = signingConfigs.getByName("handyman")
         }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Release signing comes from the per-flavor upload keystores above.
+            // Only fall back to debug keys when no keystore is configured.
+            if (!hasKeystores) {
+                signingConfig = signingConfigs.getByName("debug")
+            }
         }
     }
 }
