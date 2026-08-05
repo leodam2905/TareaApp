@@ -70,13 +70,28 @@ class LandingScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Center(child: Image.asset('assets/images/landing-house.png', height: 230, fit: BoxFit.contain)),
               const SizedBox(height: 16),
-              // Feature grid
-              GridView.count(
-                crossAxisCount: 3,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                childAspectRatio: 0.62,
-                children: _features.map(_featureCard).toList(),
+              // Feature grid — rows sized to their tallest card, so a longer
+              // description (e.g. 3 lines on iOS) can't overflow into the next
+              // row. A fixed childAspectRatio grid caused exactly that overlap.
+              Column(
+                children: [
+                  for (int i = 0; i < _features.length; i += 3) ...[
+                    if (i > 0) const SizedBox(height: 20),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (int j = i; j < i + 3; j++) ...[
+                          if (j > i) const SizedBox(width: 8),
+                          Expanded(
+                            child: j < _features.length
+                                ? _featureCard(_features[j])
+                                : const SizedBox.shrink(),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ],
               ),
               const SizedBox(height: 12),
               // CTAs
