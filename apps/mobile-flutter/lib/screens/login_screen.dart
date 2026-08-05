@@ -19,6 +19,17 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _showPw = false;
   bool _loading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    // Prefill the email if the user chose "Remember me" last time.
+    Api.rememberedEmail().then((saved) {
+      if (saved != null && saved.isNotEmpty && mounted) {
+        setState(() => _email.text = saved);
+      }
+    });
+  }
+
   Future<void> _submit() async {
     if (_email.text.trim().isEmpty || _password.text.isEmpty) {
       _toast('Please enter your email and password');
@@ -35,6 +46,9 @@ class _LoginScreenState extends State<LoginScreen> {
         _toast(data['error']?.toString() ?? 'Invalid credentials');
         return;
       }
+      // Remember me: persist/clear the email once credentials are accepted
+      // (works whether or not OTP follows).
+      await Api.setRememberedEmail(_remember ? _email.text.trim().toLowerCase() : null);
       if (data['requiresOtp'] == true) {
         if (data['requiresPhone'] == true) {
           _toast('No phone number on file. Add one on taptarea.com, then log in.');
@@ -136,23 +150,28 @@ class _LoginScreenState extends State<LoginScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(
-                    onTap: () => setState(() => _remember = !_remember),
-                    child: Row(children: [
-                      Container(
-                        width: 22, height: 22,
-                        decoration: BoxDecoration(
-                          color: _remember ? C.blue : Colors.transparent,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: _remember ? C.blue : const Color(0xFFCBD5E1), width: 1.5),
+                  Flexible(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _remember = !_remember),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        Container(
+                          width: 22, height: 22,
+                          decoration: BoxDecoration(
+                            color: _remember ? C.blue : Colors.transparent,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: _remember ? C.blue : const Color(0xFFCBD5E1), width: 1.5),
+                          ),
+                          child: _remember ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
                         ),
-                        child: _remember ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
-                      ),
-                      const SizedBox(width: 8),
-                      const Text('Remember me', style: TextStyle(color: Color(0xFF475569), fontWeight: FontWeight.w600)),
-                    ]),
+                        const SizedBox(width: 8),
+                        const Flexible(
+                          child: Text('Remember me', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, color: Color(0xFF475569), fontWeight: FontWeight.w600)),
+                        ),
+                      ]),
+                    ),
                   ),
-                  const Text('Forgot password?', style: TextStyle(color: C.blue, fontWeight: FontWeight.w700)),
+                  const SizedBox(width: 16),
+                  const Text('Forgot password?', style: TextStyle(fontSize: 14, color: C.blue, fontWeight: FontWeight.w700)),
                 ],
               ),
               const SizedBox(height: 22),

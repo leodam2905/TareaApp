@@ -18,6 +18,13 @@ class Api {
     await _storage.delete(key: 'tarea_role');
   }
 
+  // "Remember me" — the email to prefill on the login screen. Cleared when the
+  // user unchecks the box.
+  static Future<String?> rememberedEmail() => _storage.read(key: 'tarea_remember_email');
+  static Future<void> setRememberedEmail(String? email) => (email == null || email.isEmpty)
+      ? _storage.delete(key: 'tarea_remember_email')
+      : _storage.write(key: 'tarea_remember_email', value: email);
+
   static Future<Map<String, String>> _headers() async {
     final t = await token();
     return {

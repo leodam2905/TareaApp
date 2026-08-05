@@ -142,15 +142,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Text(_firstName.isEmpty ? 'there' : _firstName,
                   style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: C.ink)),
               const SizedBox(height: 16),
-              // Action cards
-              GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 14,
-                crossAxisSpacing: 14,
-                childAspectRatio: 0.86,
-                children: _actions.map(_actionCard).toList(),
+              // Action cards — content-sized rows (IntrinsicHeight keeps the two
+              // cards in a row equal height) so titles/descriptions can't
+              // overflow the cell and spill into the section below on iOS.
+              Column(
+                children: [
+                  for (int i = 0; i < _actions.length; i += 2) ...[
+                    if (i > 0) const SizedBox(height: 14),
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (int j = i; j < i + 2; j++) ...[
+                            if (j > i) const SizedBox(width: 14),
+                            Expanded(
+                              child: j < _actions.length
+                                  ? _actionCard(_actions[j])
+                                  : const SizedBox.shrink(),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
               ),
               const SizedBox(height: 20),
               const Text('Categories', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: C.ink)),
@@ -238,9 +253,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Center(child: Image.asset('assets/images/${a.img}', height: 88, fit: BoxFit.contain)),
-          const Spacer(),
-          Text(a.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+          Center(child: Image.asset('assets/images/${a.img}', height: 84, fit: BoxFit.contain)),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(a.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+            ),
+          ),
           const SizedBox(height: 2),
           Text(a.desc, style: const TextStyle(fontSize: 13, color: C.muted, height: 1.25)),
         ],
@@ -281,9 +302,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
-            if (onSeeAll != null)
+            Flexible(child: Text(title, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink))),
+            if (onSeeAll != null) ...[
+              const SizedBox(width: 12),
               GestureDetector(onTap: onSeeAll, child: const Text('See all', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
+            ],
           ],
         ),
       );
