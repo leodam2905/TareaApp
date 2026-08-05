@@ -30,6 +30,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Tarea uses your camera so you can take a photo of the issue for AI diagnosis.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Tarea shares your live location with the customer while you are on the way to a job.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Tarea shares your live location with the customer while you're on the way to a job.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
