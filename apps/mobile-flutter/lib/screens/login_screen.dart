@@ -77,6 +77,51 @@ class _LoginScreenState extends State<LoginScreen> {
   void _toast(String m) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
 
+  // Emails a password-reset link (the reset itself happens on the web via the
+  // link). The backend always returns ok, so we show one neutral confirmation.
+  Future<void> _forgotPassword() async {
+    final ctrl = TextEditingController(text: _email.text.trim());
+    final email = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: C.white,
+        title: const Text('Reset password', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink)),
+        content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text("Enter your email and we'll send you a link to reset your password.",
+              style: TextStyle(color: C.muted, fontSize: 14, height: 1.4)),
+          const SizedBox(height: 14),
+          TextField(
+            controller: ctrl,
+            keyboardType: TextInputType.emailAddress,
+            autocorrect: false,
+            enableSuggestions: false,
+            autofocus: true,
+            decoration: InputDecoration(
+              hintText: 'Email address',
+              filled: true, fillColor: C.surface,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            ),
+          ),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: C.blue),
+            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
+            child: const Text('Send link', style: TextStyle(fontWeight: FontWeight.w800)),
+          ),
+        ],
+      ),
+    );
+    if (email == null || email.isEmpty) return;
+    try {
+      await Api.post('/auth/forgot-password', {'email': email.toLowerCase()});
+      if (mounted) _toast('If an account exists for that email, a reset link is on its way.');
+    } catch (_) {
+      if (mounted) _toast('Could not connect. Check your internet connection.');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -171,7 +216,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Text('Forgot password?', style: TextStyle(fontSize: 14, color: C.blue, fontWeight: FontWeight.w700)),
+                  GestureDetector(
+                    onTap: _loading ? null : _forgotPassword,
+                    child: const Text('Forgot password?', style: TextStyle(fontSize: 14, color: C.blue, fontWeight: FontWeight.w700)),
+                  ),
                 ],
               ),
               const SizedBox(height: 22),
