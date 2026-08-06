@@ -3,6 +3,11 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   disable: true,
 });
 
+// Next's dev server compiles with eval() for HMR and source maps. Without
+// 'unsafe-eval' the CSP kills hydration locally and every page renders as
+// static HTML with no interactivity. Dev only — production stays strict.
+const isDev = process.env.NODE_ENV === "development";
+
 const securityHeaders = [
   { key: "X-Frame-Options",        value: "SAMEORIGIN" },
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -17,7 +22,7 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://js.stripe.com https://js.stripe.com/v3/",
+      `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://js.stripe.com https://js.stripe.com/v3/`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://pub-adf5c223fa884cf6878a12b8f1ef7d2f.r2.dev https://res.cloudinary.com https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://images.pexels.com https://images.unsplash.com https://openmoji.org",
       "font-src 'self' data:",
