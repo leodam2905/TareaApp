@@ -60,7 +60,11 @@
     "haveAccount": "J'ai déjà un compte",
     "getStarted": "Commencer",
     "enterEmailPassword": "Veuillez saisir votre e-mail et mot de passe",
-    "invalidCredentials": "Identifiants invalides"
+    "invalidCredentials": "Identifiants invalides",
+    "resetTitle": "Réinitialiser le mot de passe",
+    "resetBody": "Saisissez votre e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+    "resetSend": "Envoyer le lien",
+    "resetSent": "Si un compte existe pour cet e-mail, un lien de réinitialisation est en route."
   },
   "landing": {
     "badge": "Pros de confiance\nprès de chez vous",

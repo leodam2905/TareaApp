@@ -60,7 +60,11 @@
     "haveAccount": "I already have an account",
     "getStarted": "Get Started",
     "enterEmailPassword": "Please enter your email and password",
-    "invalidCredentials": "Invalid credentials"
+    "invalidCredentials": "Invalid credentials",
+    "resetTitle": "Reset password",
+    "resetBody": "Enter your email and we'll send you a link to reset your password.",
+    "resetSend": "Send link",
+    "resetSent": "If an account exists for that email, a reset link is on its way."
   },
   "landing": {
     "badge": "Trusted Pros\nIn Your Area",

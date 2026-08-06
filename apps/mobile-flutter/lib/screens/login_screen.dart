@@ -78,6 +78,50 @@ class _LoginScreenState extends State<LoginScreen> {
   void _toast(String m) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
 
+  // Emails a password-reset link (the reset itself happens on the web via the
+  // link). The backend always returns ok, so we show one neutral confirmation.
+  Future<void> _forgotPassword() async {
+    final ctrl = TextEditingController(text: _email.text.trim());
+    final email = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: C.white,
+        title: Text('auth.resetTitle'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink)),
+        content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text('auth.resetBody'.tr(), style: const TextStyle(color: C.muted, fontSize: 14, height: 1.4)),
+          const SizedBox(height: 14),
+          TextField(
+            controller: ctrl,
+            keyboardType: TextInputType.emailAddress,
+            autocorrect: false,
+            enableSuggestions: false,
+            autofocus: true,
+            decoration: InputDecoration(
+              hintText: 'auth.email'.tr(),
+              filled: true, fillColor: C.surface,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            ),
+          ),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('common.cancel'.tr())),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: C.blue),
+            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
+            child: Text('auth.resetSend'.tr(), style: const TextStyle(fontWeight: FontWeight.w800)),
+          ),
+        ],
+      ),
+    );
+    if (email == null || email.isEmpty) return;
+    try {
+      await Api.post('/auth/forgot-password', {'email': email.toLowerCase()});
+      if (mounted) _toast('auth.resetSent'.tr());
+    } catch (_) {
+      if (mounted) _toast('common.connectionError'.tr());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,7 +218,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Flexible(child: Text('auth.forgotPassword'.tr(), overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14, color: C.blue, fontWeight: FontWeight.w700))),
+                  Flexible(child: GestureDetector(
+                    onTap: _loading ? null : _forgotPassword,
+                    child: Text('auth.forgotPassword'.tr(), overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14, color: C.blue, fontWeight: FontWeight.w700)),
+                  )),
                 ],
               ),
               const SizedBox(height: 22),

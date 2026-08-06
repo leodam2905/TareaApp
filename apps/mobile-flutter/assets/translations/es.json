@@ -60,7 +60,11 @@
     "haveAccount": "Ya tengo una cuenta",
     "getStarted": "Empezar",
     "enterEmailPassword": "Ingresa tu correo y contraseña",
-    "invalidCredentials": "Credenciales inválidas"
+    "invalidCredentials": "Credenciales inválidas",
+    "resetTitle": "Restablecer contraseña",
+    "resetBody": "Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.",
+    "resetSend": "Enviar enlace",
+    "resetSent": "Si existe una cuenta con ese correo, el enlace de restablecimiento está en camino."
   },
   "landing": {
     "badge": "Pros de confianza\ncerca de ti",
