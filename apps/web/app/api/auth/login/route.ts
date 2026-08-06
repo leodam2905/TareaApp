@@ -42,9 +42,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Your account has been suspended. Contact support at support@taptarea.com." }, { status: 403 });
     }
 
-    // Bypass OTP for test accounts used in app review + admin accounts
-    const TEST_EMAILS = ["reviewer@taptarea.com", "test@taptarea.com", "monsegueadah@gmail.com", "ahissezirignon@gmail.com", "admin1@taptarea.com", "admin4@taptarea.com"];
-    if (TEST_EMAILS.includes(user.email)) {
+    // Bypass OTP ONLY for the dedicated App Store / Play review accounts (so
+    // reviewers can sign in without a phone). Admin and personal accounts are
+    // intentionally NOT here — they must complete OTP (2FA). Set
+    // DISABLE_REVIEW_OTP_BYPASS=true to turn this off entirely (no redeploy).
+    const REVIEW_ACCOUNTS = ["reviewer@taptarea.com", "test@taptarea.com", "ahissezirignon@gmail.com"];
+    if (process.env.DISABLE_REVIEW_OTP_BYPASS !== "true" && REVIEW_ACCOUNTS.includes(user.email)) {
       const token = signToken({ userId: user.id, email: user.email, role: user.role });
       setAuthCookie(token);
       return NextResponse.json({ success: true, id: user.id, name: user.name, email: user.email, role: user.role, token });
