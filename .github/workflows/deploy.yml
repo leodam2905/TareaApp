@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  # Manual trigger, so a deploy can be run from the Actions tab or
+  # `gh workflow run deploy.yml` when the push event does not fire.
+  workflow_dispatch:
 
 jobs:
   deploy:
