@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
 import 'pro_widgets.dart';
@@ -36,17 +37,17 @@ class _ProPortfolioState extends State<ProPortfolio> {
     setState(() => _uploading = true);
     try {
       final up = await Api.uploadImage(picked.path);
-      if (up.statusCode < 200 || up.statusCode >= 300) { _toast('Upload failed. Try again.'); return; }
+      if (up.statusCode < 200 || up.statusCode >= 300) { _toast('proEdit.uploadFailed'.tr()); return; }
       final url = (jsonDecode(up.body)['url'] ?? '').toString();
       final res = await Api.post('/portfolio', {'url': url, 'caption': ''});
       if (res.statusCode >= 200 && res.statusCode < 300) {
-        _toast('Photo added');
+        _toast('proEdit.photoAdded'.tr());
         await _load();
       } else {
-        _toast('Could not save photo.');
+        _toast('proEdit.savePhotoFailed'.tr());
       }
     } catch (_) {
-      _toast('Could not connect. Please try again.');
+      _toast('common.connectionRetry'.tr());
     } finally {
       if (mounted) setState(() => _uploading = false);
     }
@@ -58,21 +59,21 @@ class _ProPortfolioState extends State<ProPortfolio> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Delete photo?'),
-        content: const Text('Remove this photo from your portfolio?'),
+        title: Text('proEdit.deletePhotoTitle'.tr()),
+        content: Text('proEdit.deletePhotoBody'.tr()),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete', style: TextStyle(color: C.red, fontWeight: FontWeight.w800))),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('common.cancel'.tr())),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('common.delete'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w800))),
         ],
       ),
     );
     if (ok != true) return;
     try {
       final res = await Api.delete('/portfolio/$id');
-      if (res.statusCode >= 200 && res.statusCode < 300) { _toast('Photo removed'); _load(); }
-      else { _toast('Could not delete photo.'); }
+      if (res.statusCode >= 200 && res.statusCode < 300) { _toast('proEdit.photoRemoved'.tr()); _load(); }
+      else { _toast('proEdit.deletePhotoFailed'.tr()); }
     } catch (_) {
-      _toast('Could not connect. Please try again.');
+      _toast('common.connectionRetry'.tr());
     }
   }
 
@@ -82,19 +83,19 @@ class _ProPortfolioState extends State<ProPortfolio> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: C.bg,
-      appBar: proBar(context, 'Portfolio'),
+      appBar: proBar(context, 'proProfile.portfolio'.tr()),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: C.blue,
         onPressed: _uploading ? null : _add,
         icon: _uploading
             ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
             : const Icon(Icons.add_a_photo_outlined, color: Colors.white),
-        label: const Text('Add photo', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+        label: Text('proEdit.addPhoto'.tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _photos.isEmpty
-              ? const Center(child: Padding(padding: EdgeInsets.all(32), child: Text('No portfolio photos yet.\nTap "Add photo" to showcase your work.', textAlign: TextAlign.center, style: TextStyle(color: C.muted))))
+              ? Center(child: Padding(padding: const EdgeInsets.all(32), child: Text('proEdit.noPortfolio'.tr(), textAlign: TextAlign.center, style: const TextStyle(color: C.muted))))
               : GridView.builder(
                   padding: const EdgeInsets.all(16),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: 12, crossAxisSpacing: 12),

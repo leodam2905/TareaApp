@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import 'pro_dashboard.dart';
 import 'pro_find_jobs.dart';
@@ -51,11 +52,11 @@ class _ProShellState extends State<ProShell> {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Row(children: [
-              _item(Icons.home_outlined, 'Home', 0),
-              _item(Icons.search, 'Find Jobs', 1),
-              _item(Icons.assignment_outlined, 'My Jobs', 2),
-              _item(Icons.account_balance_wallet_outlined, 'Earnings', 3),
-              _item(Icons.person_outline, 'Profile', 4),
+              _item(Icons.home_outlined, 'nav.home'.tr(), 0),
+              _item(Icons.search, 'nav.findJobs'.tr(), 1),
+              _item(Icons.assignment_outlined, 'nav.myJobs'.tr(), 2),
+              _item(Icons.account_balance_wallet_outlined, 'nav.earnings'.tr(), 3),
+              _item(Icons.person_outline, 'nav.profile'.tr(), 4),
             ]),
           ),
         ),

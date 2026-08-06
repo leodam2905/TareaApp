@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 
@@ -38,7 +39,7 @@ class _SpendingScreenState extends State<SpendingScreen> {
       appBar: AppBar(
         backgroundColor: C.bg, surfaceTintColor: Colors.transparent, elevation: 0,
         leading: IconButton(icon: const Icon(Icons.chevron_left, color: C.ink, size: 30), onPressed: () => context.pop()),
-        title: const Text('Spending Report', style: TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 20)),
+        title: Text('spending.title'.tr(), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 20)),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -50,18 +51,18 @@ class _SpendingScreenState extends State<SpendingScreen> {
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(color: C.blue, borderRadius: BorderRadius.circular(20)),
                   child: Column(children: [
-                    const Text('Total spent', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w700)),
+                    Text('spending.totalSpent'.tr(), style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w700)),
                     const SizedBox(height: 6),
                     Text('\$${_total.round()}', style: const TextStyle(color: Colors.white, fontSize: 44, fontWeight: FontWeight.w900)),
                     const SizedBox(height: 4),
-                    Text('${_done.length} completed job${_done.length == 1 ? '' : 's'}', style: const TextStyle(color: Colors.white70)),
+                    Text((_done.length == 1 ? 'spending.completedJobsOne' : 'spending.completedJobsMany').tr(args: ['${_done.length}']), style: const TextStyle(color: Colors.white70)),
                   ]),
                 ),
                 const SizedBox(height: 20),
                 if (_done.isEmpty)
-                  const Padding(padding: EdgeInsets.symmetric(vertical: 24), child: Center(child: Text('No completed jobs yet.', style: TextStyle(color: C.muted))))
+                  Padding(padding: const EdgeInsets.symmetric(vertical: 24), child: Center(child: Text('spending.noCompleted'.tr(), style: const TextStyle(color: C.muted))))
                 else ...[
-                  const Text('History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+                  Text('spending.history'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
                   const SizedBox(height: 10),
                   ..._done.map((b) {
                     final service = (b['service']?['title'] ?? b['category'] ?? 'Service').toString();

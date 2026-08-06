@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
 import '../../avatar_util.dart';
@@ -74,7 +75,7 @@ class _ProProfileState extends State<ProProfile> {
       context: context,
       builder: (_) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          ListTile(leading: const Icon(Icons.logout, color: C.red), title: const Text('Log out', style: TextStyle(color: C.red, fontWeight: FontWeight.w700)),
+          ListTile(leading: const Icon(Icons.logout, color: C.red), title: Text('settings.logout'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w700)),
               onTap: () async { Navigator.pop(context); await Api.clearToken(); if (mounted) context.go('/'); }),
         ]),
       ),
@@ -90,14 +91,13 @@ class _ProProfileState extends State<ProProfile> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Delete account?'),
-        content: const Text(
-            'This permanently deletes your Tarea account and removes your personal information. This cannot be undone.'),
+        title: Text('profile.deleteTitle'.tr()),
+        content: Text('profile.deleteBody'.tr()),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('common.cancel'.tr())),
           TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Delete', style: TextStyle(color: C.red, fontWeight: FontWeight.w800))),
+              child: Text('common.delete'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w800))),
         ],
       ),
     );
@@ -108,10 +108,10 @@ class _ProProfileState extends State<ProProfile> {
         await Api.clearToken();
         if (mounted) context.go('/');
       } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not delete account. Please try again.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('profile.deleteFailed'.tr())));
       }
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not connect. Please try again.')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('common.connectionRetry'.tr())));
     }
   }
 
@@ -137,7 +137,7 @@ class _ProProfileState extends State<ProProfile> {
             padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 12, bottom: 14, left: 20, right: 20),
             child: Row(children: [
               const SizedBox(width: 24),
-              const Expanded(child: Text('Pro Profile', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900))),
+              Expanded(child: Text('proProfile.title'.tr(), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900))),
               GestureDetector(onTap: _menu, child: const Icon(Icons.settings_outlined, color: Colors.white)),
             ]),
           ),
@@ -160,12 +160,12 @@ class _ProProfileState extends State<ProProfile> {
                   ),
                   const SizedBox(width: 16),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(_name.isEmpty ? 'Your name' : _name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
+                    Text(_name.isEmpty ? 'proProfile.yourName'.tr() : _name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
                     const SizedBox(height: 4),
                     Row(children: [
                       const Icon(Icons.work_outline, size: 16, color: C.muted),
                       const SizedBox(width: 6),
-                      Text(_licensed ? 'Licensed Handyman' : 'Handyman', style: const TextStyle(color: C.muted, fontWeight: FontWeight.w600)),
+                      Text(_licensed ? 'proProfile.licensedHandyman'.tr() : 'dashboard.handyman'.tr(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w600)),
                     ]),
                     if (place.isNotEmpty) ...[
                       const SizedBox(height: 2),
@@ -180,11 +180,11 @@ class _ProProfileState extends State<ProProfile> {
                 const SizedBox(height: 14),
                 // Badges
                 Row(children: [
-                  _badge(Icons.verified, const Color(0xFF16A34A), 'Verified', _verified),
+                  _badge(Icons.verified, const Color(0xFF16A34A), 'proProfile.verified'.tr(), _verified),
                   Container(width: 1, height: 20, color: C.line),
-                  _badge(Icons.badge_outlined, C.blue, 'Licensed', _licensed),
+                  _badge(Icons.badge_outlined, C.blue, 'proProfile.licensed'.tr(), _licensed),
                   Container(width: 1, height: 20, color: C.line),
-                  _badge(Icons.shield_outlined, C.blue, 'Insured', _licensed),
+                  _badge(Icons.shield_outlined, C.blue, 'proProfile.insured'.tr(), _licensed),
                 ]),
                 const SizedBox(height: 18),
                 // Stats
@@ -193,9 +193,9 @@ class _ProProfileState extends State<ProProfile> {
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       const Icon(Icons.star, color: Color(0xFFF59E0B), size: 22),
                       const SizedBox(width: 6),
-                      Text(_rating > 0 ? _rating.toStringAsFixed(1) : 'New', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
+                      Text(_rating > 0 ? _rating.toStringAsFixed(1) : 'browse.newRating'.tr(), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
                     ]),
-                    Text('$_reviews reviews', style: const TextStyle(color: C.muted)),
+                    Text('proProfile.reviews'.tr(args: ['$_reviews']), style: const TextStyle(color: C.muted)),
                   ])),
                   Container(width: 1, height: 44, color: C.line),
                   Expanded(child: Column(children: [
@@ -204,7 +204,7 @@ class _ProProfileState extends State<ProProfile> {
                       const SizedBox(width: 6),
                       Text('$_jobs', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
                     ]),
-                    const Text('completed jobs', style: TextStyle(color: C.muted)),
+                    Text('proProfile.completedJobs'.tr(), style: const TextStyle(color: C.muted)),
                   ])),
                 ]),
                 const SizedBox(height: 18),
@@ -213,13 +213,13 @@ class _ProProfileState extends State<ProProfile> {
                   style: OutlinedButton.styleFrom(side: const BorderSide(color: C.blue), padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                   onPressed: () => context.push('/pro/edit-profile').then((_) { if (mounted) _load(); }),
                   icon: const Icon(Icons.edit_outlined, size: 18, color: C.blue),
-                  label: const Text('Edit Profile', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800, fontSize: 16)),
+                  label: Text('editProfile.title'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800, fontSize: 16)),
                 )),
                 const SizedBox(height: 16),
                 // Profile completeness
                 _card(Row(children: [
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('Profile $_pct% complete', style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 17)),
+                    Text('proProfile.percentComplete'.tr(args: ['$_pct']), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 17)),
                     const SizedBox(height: 12),
                     ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: _pct / 100, minHeight: 8, backgroundColor: const Color(0xFFE2E8F0), color: C.blue)),
                   ])),
@@ -234,9 +234,9 @@ class _ProProfileState extends State<ProProfile> {
                 _card(Row(children: [
                   Container(width: 44, height: 44, decoration: const BoxDecoration(color: Color(0xFF16A34A), shape: BoxShape.circle), child: const Icon(Icons.check, color: Colors.white)),
                   const SizedBox(width: 12),
-                  const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('Available for jobs', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
-                    Text("You're visible to clients and can receive new job requests.", style: TextStyle(color: C.muted, fontSize: 13, height: 1.3)),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('proProfile.availableForJobs'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+                    Text('proProfile.availableDesc'.tr(), style: const TextStyle(color: C.muted, fontSize: 13, height: 1.3)),
                   ])),
                   Switch(value: _available, activeColor: C.blue, onChanged: _busy ? null : _toggleAvailable),
                 ])),
@@ -244,12 +244,12 @@ class _ProProfileState extends State<ProProfile> {
                 // Services
                 _card(Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    const Text('Services', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 17)),
-                    GestureDetector(onTap: () => context.push('/pro/services').then((_) { if (mounted) _load(); }), child: const Text('Edit', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
+                    Text('proProfile.services'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 17)),
+                    GestureDetector(onTap: () => context.push('/pro/services').then((_) { if (mounted) _load(); }), child: Text('common.edit'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
                   ]),
                   const SizedBox(height: 14),
                   _services.isEmpty
-                      ? const Text('No services added yet.', style: TextStyle(color: C.muted))
+                      ? Text('proProfile.noServices'.tr(), style: const TextStyle(color: C.muted))
                       : Row(children: _services.take(3).map<Widget>((sv) => Expanded(child: Row(children: [
                           Icon(_svcIcon((sv['category'] ?? '').toString()), color: C.blue, size: 22),
                           const SizedBox(width: 6),
@@ -259,30 +259,30 @@ class _ProProfileState extends State<ProProfile> {
                 const SizedBox(height: 14),
                 // 2x2 grid
                 Row(children: [
-                  _tile(Icons.location_on, 'Service Area', place.isEmpty ? 'Set your area' : '$place & surrounding areas', () => context.push('/pro/service-area').then((_) { if (mounted) _load(); })),
-                  _tile(Icons.photo_library_outlined, 'Portfolio', 'Showcase your work', () => context.push('/pro/portfolio')),
+                  _tile(Icons.location_on, 'proProfile.serviceArea'.tr(), place.isEmpty ? 'proProfile.setYourArea'.tr() : 'proProfile.areaSurrounding'.tr(args: [place]), () => context.push('/pro/service-area').then((_) { if (mounted) _load(); })),
+                  _tile(Icons.photo_library_outlined, 'proProfile.portfolio'.tr(), 'proProfile.portfolioSub'.tr(), () => context.push('/pro/portfolio')),
                 ]),
                 const SizedBox(height: 12),
                 Row(children: [
-                  _tile(Icons.verified_user_outlined, 'Certifications', 'Your credentials', () => context.push('/pro/certifications').then((_) { if (mounted) _load(); })),
-                  _tile(Icons.star_outline, 'Reviews', '$_reviews reviews · ${_rating > 0 ? _rating.toStringAsFixed(1) : "New"}', () => context.push('/pro/reviews')),
+                  _tile(Icons.verified_user_outlined, 'proProfile.certifications'.tr(), 'proProfile.certificationsSub'.tr(), () => context.push('/pro/certifications').then((_) { if (mounted) _load(); })),
+                  _tile(Icons.star_outline, 'proProfile.reviewsTile'.tr(), 'proProfile.reviewsSub'.tr(args: ['$_reviews', _rating > 0 ? _rating.toStringAsFixed(1) : 'browse.newRating'.tr()]), () => context.push('/pro/reviews')),
                 ]),
                 const SizedBox(height: 22),
                 // Account
-                const Text('Account', style: TextStyle(fontWeight: FontWeight.w900, color: C.muted, fontSize: 13, letterSpacing: 0.3)),
+                Text('proProfile.account'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.muted, fontSize: 13, letterSpacing: 0.3)),
                 const SizedBox(height: 10),
                 SizedBox(width: double.infinity, child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(side: const BorderSide(color: C.line), padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                   onPressed: _signOut,
                   icon: const Icon(Icons.logout, size: 18, color: C.ink),
-                  label: const Text('Sign out', style: TextStyle(color: C.ink, fontWeight: FontWeight.w800, fontSize: 16)),
+                  label: Text('proProfile.signOut'.tr(), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w800, fontSize: 16)),
                 )),
                 const SizedBox(height: 10),
                 SizedBox(width: double.infinity, child: TextButton.icon(
                   style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 13)),
                   onPressed: _deleteAccount,
                   icon: const Icon(Icons.delete_outline, size: 18, color: C.red),
-                  label: const Text('Delete account', style: TextStyle(color: C.red, fontWeight: FontWeight.w800, fontSize: 15)),
+                  label: Text('settings.deleteAccount'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w800, fontSize: 15)),
                 )),
               ],
             ),
@@ -338,5 +338,5 @@ class _ProProfileState extends State<ProProfile> {
     }
   }
 
-  String _pretty(String c) => c.isEmpty ? 'Service' : c[0].toUpperCase() + c.substring(1).toLowerCase().replaceAll('_', ' ');
+  String _pretty(String c) => c.isEmpty ? 'proProfile.serviceFallback'.tr() : c[0].toUpperCase() + c.substring(1).toLowerCase().replaceAll('_', ' ');
 }

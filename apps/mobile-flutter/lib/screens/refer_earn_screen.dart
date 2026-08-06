@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 
@@ -39,7 +40,7 @@ class _ReferEarnScreenState extends State<ReferEarnScreen> {
       appBar: AppBar(
         backgroundColor: C.bg, surfaceTintColor: Colors.transparent, elevation: 0,
         leading: IconButton(icon: const Icon(Icons.chevron_left, color: C.ink, size: 30), onPressed: () => context.pop()),
-        title: const Text('Refer & Earn', style: TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 20)),
+        title: Text('profile.referEarn'.tr(), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 20)),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -53,17 +54,17 @@ class _ReferEarnScreenState extends State<ReferEarnScreen> {
                     gradient: const LinearGradient(colors: [C.blue, Color(0xFF7C3AED)]),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Column(children: const [
-                    Icon(Icons.card_giftcard, color: Colors.white, size: 40),
-                    SizedBox(height: 12),
-                    Text('Give \$20, get \$20', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
-                    SizedBox(height: 6),
-                    Text('Share your code. Your friend gets \$20 off their first job, and you earn \$20 when they book.',
-                        textAlign: TextAlign.center, style: TextStyle(color: Colors.white70, height: 1.4)),
+                  child: Column(children: [
+                    const Icon(Icons.card_giftcard, color: Colors.white, size: 40),
+                    const SizedBox(height: 12),
+                    Text('referEarn.give'.tr(), style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900)),
+                    const SizedBox(height: 6),
+                    Text('referEarn.shareDesc'.tr(),
+                        textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70, height: 1.4)),
                   ]),
                 ),
                 const SizedBox(height: 20),
-                const Text('Your code', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+                Text('referEarn.yourCode'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -76,7 +77,7 @@ class _ReferEarnScreenState extends State<ReferEarnScreen> {
                         setState(() => _copied = true);
                       },
                       icon: Icon(_copied ? Icons.check : Icons.copy, size: 18, color: C.blue),
-                      label: Text(_copied ? 'Copied' : 'Copy', style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+                      label: Text(_copied ? 'referEarn.copied'.tr() : 'referEarn.copy'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
                     ),
                   ]),
                 ),
@@ -87,7 +88,7 @@ class _ReferEarnScreenState extends State<ReferEarnScreen> {
                   child: Row(children: [
                     const Icon(Icons.people_outline, color: C.blue),
                     const SizedBox(width: 12),
-                    const Expanded(child: Text('Friends referred', style: TextStyle(fontWeight: FontWeight.w700, color: C.ink))),
+                    Expanded(child: Text('referEarn.friendsReferred'.tr(), style: const TextStyle(fontWeight: FontWeight.w700, color: C.ink))),
                     Text('$_referred', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
                   ]),
                 ),

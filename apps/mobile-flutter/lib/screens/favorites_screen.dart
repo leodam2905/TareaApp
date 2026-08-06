@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 
@@ -44,17 +45,17 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       appBar: AppBar(
         backgroundColor: C.bg, surfaceTintColor: Colors.transparent, elevation: 0,
         leading: IconButton(icon: const Icon(Icons.chevron_left, color: C.ink, size: 30), onPressed: () => context.pop()),
-        title: const Text('Saved Pros', style: TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 20)),
+        title: Text('profile.savedPros'.tr(), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 20)),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _favs.isEmpty
-              ? const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(Icons.favorite_border, size: 56, color: C.muted),
-                  SizedBox(height: 12),
-                  Text('No saved pros yet', style: TextStyle(color: C.muted, fontWeight: FontWeight.w700)),
-                  SizedBox(height: 4),
-                  Text('Tap the heart on a pro to save them here.', style: TextStyle(color: C.muted)),
+              ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  const Icon(Icons.favorite_border, size: 56, color: C.muted),
+                  const SizedBox(height: 12),
+                  Text('favorites.noneTitle'.tr(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 4),
+                  Text('favorites.noneDesc'.tr(), style: const TextStyle(color: C.muted)),
                 ]))
               : ListView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -80,7 +81,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                           Row(children: [
                             const Icon(Icons.star, size: 14, color: Color(0xFFF59E0B)),
                             const SizedBox(width: 3),
-                            Text(rating != null ? (rating as num).toStringAsFixed(1) : 'New', style: const TextStyle(color: C.muted)),
+                            Text(rating != null ? (rating as num).toStringAsFixed(1) : 'browse.newRating'.tr(), style: const TextStyle(color: C.muted)),
                           ]),
                         ])),
                         IconButton(icon: const Icon(Icons.favorite, color: C.red), onPressed: () => _remove((h['id'] ?? '').toString())),

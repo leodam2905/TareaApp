@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
 import 'pro_widgets.dart';
@@ -36,11 +37,11 @@ class _ProEditServicesState extends State<ProEditServices> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Delete service?'),
-        content: Text('Remove "${(s['title'] ?? 'this service')}" from your services?'),
+        title: Text('proEdit.deleteServiceTitle'.tr()),
+        content: Text('proEdit.deleteServiceBody'.tr(args: [(s['title'] ?? 'proEdit.thisService'.tr()).toString()])),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete', style: TextStyle(color: C.red, fontWeight: FontWeight.w800))),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('common.cancel'.tr())),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('common.delete'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w800))),
         ],
       ),
     );
@@ -48,15 +49,15 @@ class _ProEditServicesState extends State<ProEditServices> {
     try {
       final res = await Api.delete('/services/$id');
       if (res.statusCode >= 200 && res.statusCode < 300) {
-        _toast('Service deleted');
+        _toast('proEdit.serviceDeleted'.tr());
         _load();
       } else {
-        String msg = 'Could not delete service.';
+        String msg = 'proEdit.deleteServiceFailed'.tr();
         try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
         _toast(msg);
       }
     } catch (_) {
-      _toast('Could not connect. Please try again.');
+      _toast('common.connectionRetry'.tr());
     }
   }
 
@@ -67,30 +68,30 @@ class _ProEditServicesState extends State<ProEditServices> {
       backgroundColor: Colors.transparent,
       builder: (_) => const _AddServiceSheet(),
     );
-    if (added == true) { _toast('Service added'); _load(); }
+    if (added == true) { _toast('proEdit.serviceAdded'.tr()); _load(); }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: C.bg,
-      appBar: proBar(context, 'My Services'),
+      appBar: proBar(context, 'proEdit.myServices'.tr()),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: C.blue,
         onPressed: _addSheet,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Add service', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+        label: Text('proEdit.addService'.tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _services.isEmpty
-              ? const Center(child: Padding(padding: EdgeInsets.all(32), child: Text('No services yet.\nTap "Add service" to list what you offer.', textAlign: TextAlign.center, style: TextStyle(color: C.muted))))
+              ? Center(child: Padding(padding: const EdgeInsets.all(32), child: Text('proEdit.noServices'.tr(), textAlign: TextAlign.center, style: const TextStyle(color: C.muted))))
               : ListView(padding: const EdgeInsets.fromLTRB(16, 12, 16, 90), children: _services.map(_card).toList()),
     );
   }
 
   Widget _card(dynamic s) {
-    final title = (s['title'] ?? 'Service').toString();
+    final title = (s['title'] ?? 'proProfile.serviceFallback'.tr()).toString();
     final cat = prettyCategory((s['category'] ?? '').toString());
     final min = (s['minPrice'] ?? 0) as num;
     final max = (s['maxPrice'] ?? 0) as num;
@@ -134,10 +135,10 @@ class _AddServiceSheetState extends State<_AddServiceSheet> {
     final min = double.tryParse(_min.text.trim());
     final max = double.tryParse(_max.text.trim());
     final dur = int.tryParse(_duration.text.trim());
-    if (title.length < 3) return _toast('Title must be at least 3 characters');
-    if (desc.length < 10) return _toast('Description must be at least 10 characters');
-    if (min == null || max == null || min <= 0 || max <= 0) return _toast('Enter valid prices');
-    if (dur == null || dur <= 0) return _toast('Enter a valid duration');
+    if (title.length < 3) return _toast('proEdit.titleMin'.tr());
+    if (desc.length < 10) return _toast('proEdit.descMin'.tr());
+    if (min == null || max == null || min <= 0 || max <= 0) return _toast('proEdit.validPrices'.tr());
+    if (dur == null || dur <= 0) return _toast('proEdit.validDuration'.tr());
     setState(() => _saving = true);
     try {
       final res = await Api.post('/services', {
@@ -147,12 +148,12 @@ class _AddServiceSheetState extends State<_AddServiceSheet> {
       if (res.statusCode >= 200 && res.statusCode < 300) {
         if (mounted) Navigator.pop(context, true);
       } else {
-        String msg = 'Could not add service.';
+        String msg = 'proEdit.addServiceFailed'.tr();
         try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
         _toast(msg);
       }
     } catch (_) {
-      _toast('Could not connect. Please try again.');
+      _toast('common.connectionRetry'.tr());
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -167,10 +168,10 @@ class _AddServiceSheetState extends State<_AddServiceSheet> {
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Center(child: Text('Add a service', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 18))),
+            Center(child: Text('proEdit.addServiceTitle'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 18))),
             const SizedBox(height: 16),
-            proField('Title', _title, hint: 'e.g. Faucet & sink repair'),
-            const Text('Category', style: TextStyle(fontWeight: FontWeight.w800, color: C.ink, fontSize: 14)),
+            proField('proEdit.fldTitle'.tr(), _title, hint: 'proEdit.titleHint'.tr()),
+            Text('proEdit.category'.tr(), style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink, fontSize: 14)),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -184,15 +185,15 @@ class _AddServiceSheetState extends State<_AddServiceSheet> {
               ),
             ),
             const SizedBox(height: 16),
-            proField('Description', _desc, maxLines: 3, hint: 'What this service includes'),
+            proField('proEdit.fldDescription'.tr(), _desc, maxLines: 3, hint: 'proEdit.descHint'.tr()),
             Row(children: [
-              Expanded(child: proField('Min price (\$)', _min, keyboard: TextInputType.number)),
+              Expanded(child: proField('proEdit.minPrice'.tr(), _min, keyboard: TextInputType.number)),
               const SizedBox(width: 12),
-              Expanded(child: proField('Max price (\$)', _max, keyboard: TextInputType.number)),
+              Expanded(child: proField('proEdit.maxPrice'.tr(), _max, keyboard: TextInputType.number)),
             ]),
-            proField('Duration (minutes)', _duration, keyboard: TextInputType.number),
+            proField('proEdit.duration'.tr(), _duration, keyboard: TextInputType.number),
             const SizedBox(height: 4),
-            proSaveButton(_saving, _submit, label: 'Add service'),
+            proSaveButton(_saving, _submit, label: 'proEdit.addService'.tr()),
             const SizedBox(height: 8),
           ]),
         ),

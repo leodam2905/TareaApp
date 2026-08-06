@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 
@@ -64,7 +65,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
     final hp = _p['handymanProfile'] ?? {};
     context.push('/post-job', extra: {
       'handymanId': _userId,
-      'proName': (_p['name'] ?? 'Pro').toString(),
+      'proName': (_p['name'] ?? 'handymanDetail.proFallback'.tr()).toString(),
       if (service != null) 'serviceId': service['id'],
       if (service != null) 'category': (service['category'] ?? '').toString(),
       if (service != null) 'serviceMin': service['minPrice'] ?? hp['hourlyRate'],
@@ -74,7 +75,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final name = (_p['name'] ?? 'Pro').toString();
+    final name = (_p['name'] ?? 'handymanDetail.proFallback'.tr()).toString();
     final hp = _p['handymanProfile'] ?? {};
     final rating = hp['rating'];
     final totalJobs = hp['totalJobs'] ?? 0;
@@ -114,7 +115,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   const Icon(Icons.star, color: Color(0xFFF59E0B), size: 18),
                   const SizedBox(width: 4),
-                  Text('${(rating as num).toStringAsFixed(1)} ($totalJobs jobs)', style: const TextStyle(fontWeight: FontWeight.w700, color: C.ink)),
+                  Text('handymanDetail.ratingJobs'.tr(args: [(rating as num).toStringAsFixed(1), '$totalJobs']), style: const TextStyle(fontWeight: FontWeight.w700, color: C.ink)),
                 ]),
               ],
             ]),
@@ -122,25 +123,25 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
           const SizedBox(height: 20),
           // Stats
           Row(children: [
-            if (hourly != null) _stat('\$${(hourly as num).round()}/hr', 'Rate'),
-            _stat('$totalJobs', 'Jobs'),
-            if (years != null) _stat('$years yr', 'Experience'),
+            if (hourly != null) _stat('\$${(hourly as num).round()}/hr', 'handymanDetail.rate'.tr()),
+            _stat('$totalJobs', 'handymanDetail.jobs'.tr()),
+            if (years != null) _stat('handymanDetail.yearShort'.tr(args: ['$years']), 'handymanDetail.experience'.tr()),
           ]),
           if (bio.isNotEmpty) ...[
             const SizedBox(height: 20),
-            const Text('About', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+            Text('handymanDetail.about'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
             const SizedBox(height: 8),
             Text(bio, style: const TextStyle(color: C.muted, height: 1.5)),
           ],
           if (services.isNotEmpty) ...[
             const SizedBox(height: 20),
-            const Text('Services', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+            Text('proProfile.services'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
             const SizedBox(height: 8),
             ...services.map<Widget>((sv) => _serviceRow(sv)),
           ],
           if (_reviews.isNotEmpty) ...[
             const SizedBox(height: 20),
-            Text('Reviews (${_reviews.length})', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+            Text('handymanDetail.reviewsTitle'.tr(args: ['${_reviews.length}']), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
             const SizedBox(height: 8),
             ..._reviews.take(5).map<Widget>((r) => _reviewRow(r)),
           ],
@@ -153,7 +154,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
             style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))),
             onPressed: () => _book(),
-            child: Text('Request ${name.split(' ').first}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+            child: Text('handymanDetail.request'.tr(args: [name.split(' ').first]), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
           ),
         ),
       ),
@@ -191,14 +192,14 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
         ),
         GestureDetector(
           onTap: () => _book(service: sv is Map ? sv : null),
-          child: const Text('Book →', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+          child: Text('handymanDetail.book'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
         ),
       ]),
     );
   }
 
   Widget _reviewRow(dynamic r) {
-    final author = (r['author']?['name'] ?? 'Customer').toString();
+    final author = (r['author']?['name'] ?? 'proJobs.customerFallback'.tr()).toString();
     final rating = (r['rating'] ?? 0) as num;
     final comment = (r['comment'] ?? '').toString();
     return Container(
@@ -220,7 +221,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
   }
 
   String _pretty(String c) {
-    if (c.isEmpty) return 'Service';
+    if (c.isEmpty) return 'proProfile.serviceFallback'.tr();
     return c[0].toUpperCase() + c.substring(1).toLowerCase().replaceAll('_', ' ');
   }
 }

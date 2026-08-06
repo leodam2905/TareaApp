@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
 import 'pro_widgets.dart';
@@ -45,12 +46,12 @@ class _ProServiceAreaState extends State<ProServiceArea> {
         'serviceRadius': _radius.round().toString(),
       });
       if (res.statusCode >= 200 && res.statusCode < 300) {
-        if (mounted) { _toast('Service area updated'); context.pop(true); }
+        if (mounted) { _toast('proEdit.areaUpdated'.tr()); context.pop(true); }
       } else {
-        _toast('Could not save. Please try again.');
+        _toast('editProfile.saveFailed'.tr());
       }
     } catch (_) {
-      _toast('Could not connect. Please try again.');
+      _toast('common.connectionRetry'.tr());
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -62,18 +63,18 @@ class _ProServiceAreaState extends State<ProServiceArea> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: C.bg,
-      appBar: proBar(context, 'Service Area'),
+      appBar: proBar(context, 'proProfile.serviceArea'.tr()),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(padding: const EdgeInsets.all(20), children: [
-              proField('City', _city),
-              proField('State', _state),
-              Text('Travel radius: ${_radius.round()} miles', style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink, fontSize: 14)),
+              proField('postjob.city'.tr(), _city),
+              proField('proEdit.state'.tr(), _state),
+              Text('proEdit.travelRadius'.tr(args: ['${_radius.round()}']), style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink, fontSize: 14)),
               const SizedBox(height: 4),
-              const Text('How far you\'ll travel for jobs.', style: TextStyle(color: C.muted, fontSize: 13)),
+              Text('proEdit.travelDesc'.tr(), style: const TextStyle(color: C.muted, fontSize: 13)),
               Slider(
                 value: _radius, min: 5, max: 100, divisions: 19,
-                activeColor: C.blue, label: '${_radius.round()} mi',
+                activeColor: C.blue, label: 'proEdit.radiusMi'.tr(args: ['${_radius.round()}']),
                 onChanged: (v) => setState(() => _radius = v),
               ),
               const SizedBox(height: 16),

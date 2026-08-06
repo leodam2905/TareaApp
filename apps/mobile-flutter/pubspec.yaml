@@ -47,6 +47,8 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   geolocator: ^13.0.2
   audioplayers: ^6.1.0
+  easy_localization: ^3.0.7
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +76,7 @@ flutter:
   assets:
     - assets/images/
     - assets/sounds/
+    - assets/translations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

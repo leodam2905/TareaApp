@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'theme.dart';
 import 'api.dart';
 import 'flavor.dart';
@@ -35,14 +36,27 @@ import 'screens/pro/pro_payout_methods.dart';
 import 'incoming_job.dart';
 import 'push_service.dart';
 
-void main() {
-  appFlavor = Flavor.home;
+// Shared entry point for both flavors. Sets up localization (EasyLocalization
+// must wrap MaterialApp) then boots the app; push init stays non-blocking.
+Future<void> bootstrap(Flavor flavor) async {
+  appFlavor = flavor;
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const TareaApp());
+  await EasyLocalization.ensureInitialized();
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('fr'), Locale('es'), Locale('ar')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      useOnlyLangCode: true,
+      child: const TareaApp(),
+    ),
+  );
   // Init push AFTER the first frame so a slow/failed Firebase init on any
   // platform can never block the UI from rendering (white screen).
   PushService.initFirebase().then((_) => PushService.registerToken());
 }
+
+void main() => bootstrap(Flavor.home);
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -104,6 +118,9 @@ class TareaApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: buildTheme(),
       routerConfig: appRouter,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       // Lock text to design size regardless of the phone's Text Size setting —
       // the same fix as the RN app, but native to Flutter (no scaling ever).
       builder: (context, child) => MediaQuery(

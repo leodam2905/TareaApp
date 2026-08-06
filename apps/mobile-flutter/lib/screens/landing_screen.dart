@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 
 class _Feature {
   final IconData icon;
   final Color color;
-  final String title;
-  final String desc;
-  const _Feature(this.icon, this.color, this.title, this.desc);
+  // Translation key stems under landing.* — resolved with .tr() at build time
+  // (a const list can't call .tr(), so store the keys, not the text).
+  final String titleKey;
+  final String descKey;
+  const _Feature(this.icon, this.color, this.titleKey, this.descKey);
 }
 
 const _features = [
-  _Feature(Icons.verified_user_outlined, C.blue, 'Verified Pros', 'Background-checked and reviewed pros.'),
-  _Feature(Icons.bolt_outlined, C.blue, 'Fast & Easy Booking', 'Book in minutes and get matched quickly.'),
-  _Feature(Icons.credit_card_outlined, C.blue, 'Upfront Pricing', 'Clear, transparent pricing always.'),
-  _Feature(Icons.auto_awesome_outlined, C.green, 'Diagnose Issue', 'AI identifies what you need.'),
-  _Feature(Icons.sell_outlined, Color(0xFF7C3AED), 'Instant Quote', 'Get a price before you book.'),
-  _Feature(Icons.workspace_premium_outlined, Color(0xFFF97316), 'Quality Focused', 'Skilled pros who take pride in their work.'),
+  _Feature(Icons.verified_user_outlined, C.blue, 'landing.verifiedPros', 'landing.verifiedProsDesc'),
+  _Feature(Icons.bolt_outlined, C.blue, 'landing.fastBooking', 'landing.fastBookingDesc'),
+  _Feature(Icons.credit_card_outlined, C.blue, 'landing.upfrontPricing', 'landing.upfrontPricingDesc'),
+  _Feature(Icons.auto_awesome_outlined, C.green, 'landing.diagnose', 'landing.diagnoseDesc'),
+  _Feature(Icons.sell_outlined, Color(0xFF7C3AED), 'landing.instantQuote', 'landing.instantQuoteDesc'),
+  _Feature(Icons.workspace_premium_outlined, Color(0xFFF97316), 'landing.qualityFocused', 'landing.qualityFocusedDesc'),
 ];
 
 class LandingScreen extends StatelessWidget {
@@ -45,10 +48,10 @@ class LandingScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(color: const Color(0xFFEFF5FF), borderRadius: BorderRadius.circular(14)),
-                    child: Row(children: const [
-                      Icon(Icons.shield_outlined, size: 16, color: C.blue),
-                      SizedBox(width: 6),
-                      Text('Trusted Pros\nIn Your Area', style: TextStyle(fontSize: 12, color: C.blue, fontWeight: FontWeight.w700)),
+                    child: Row(children: [
+                      const Icon(Icons.shield_outlined, size: 16, color: C.blue),
+                      const SizedBox(width: 6),
+                      Text('landing.badge'.tr(), style: const TextStyle(fontSize: 12, color: C.blue, fontWeight: FontWeight.w700)),
                     ]),
                   ),
                 ],
@@ -56,17 +59,17 @@ class LandingScreen extends StatelessWidget {
               const SizedBox(height: 20),
               // Heading
               RichText(
-                text: const TextSpan(
-                  style: TextStyle(fontSize: 34, fontWeight: FontWeight.w900, height: 1.1, letterSpacing: -1, color: C.ink),
+                text: TextSpan(
+                  style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900, height: 1.1, letterSpacing: -1, color: C.ink),
                   children: [
-                    TextSpan(text: 'Reliable help for every job '),
-                    TextSpan(text: 'around your home.', style: TextStyle(color: C.blue)),
+                    TextSpan(text: 'landing.headline1'.tr()),
+                    TextSpan(text: 'landing.headline2'.tr(), style: const TextStyle(color: C.blue)),
                   ],
                 ),
               ),
               const SizedBox(height: 12),
-              const Text('Book trusted handymen for home repairs, installations, cleaning and more in minutes.',
-                  style: TextStyle(fontSize: 15, color: C.muted, height: 1.4)),
+              Text('landing.subtitle'.tr(),
+                  style: const TextStyle(fontSize: 15, color: C.muted, height: 1.4)),
               const SizedBox(height: 16),
               Center(child: Image.asset('assets/images/landing-house.png', height: 230, fit: BoxFit.contain)),
               const SizedBox(height: 16),
@@ -104,7 +107,7 @@ class LandingScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                   onPressed: () => context.go('/register'),
-                  child: const Text('Get Started', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+                  child: Text('auth.getStarted'.tr(), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -117,7 +120,7 @@ class LandingScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
                   onPressed: () => context.go('/login'),
-                  child: const Text('I already have an account', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: C.blue)),
+                  child: Text('auth.haveAccount'.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: C.blue)),
                 ),
               ),
               const SizedBox(height: 24),
@@ -137,9 +140,9 @@ class LandingScreen extends StatelessWidget {
           child: Icon(f.icon, color: f.color, size: 26),
         ),
         const SizedBox(height: 8),
-        Text(f.title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: C.ink)),
+        Text(f.titleKey.tr(), textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: C.ink)),
         const SizedBox(height: 4),
-        Text(f.desc, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: C.muted, height: 1.3)),
+        Text(f.descKey.tr(), textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: C.muted, height: 1.3)),
       ],
     );
   }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 
@@ -40,19 +41,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       appBar: AppBar(
         backgroundColor: C.bg, surfaceTintColor: Colors.transparent, elevation: 0,
         leading: IconButton(icon: const Icon(Icons.chevron_left, color: C.ink, size: 30), onPressed: () => context.pop()),
-        title: const Text('Notifications', style: TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 20)),
+        title: Text('settings.notifications'.tr(), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 20)),
         actions: [
           if (_items.isNotEmpty)
-            TextButton(onPressed: _markAll, child: const Text('Mark all read', style: TextStyle(color: C.blue, fontWeight: FontWeight.w700))),
+            TextButton(onPressed: _markAll, child: Text('notifications.markAllRead'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w700))),
         ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
-              ? const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(Icons.notifications_none, size: 56, color: C.muted),
-                  SizedBox(height: 12),
-                  Text("You're all caught up", style: TextStyle(color: C.muted, fontWeight: FontWeight.w700)),
+              ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  const Icon(Icons.notifications_none, size: 56, color: C.muted),
+                  const SizedBox(height: 12),
+                  Text('notifications.allCaughtUp'.tr(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w700)),
                 ]))
               : ListView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -68,7 +69,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         Container(width: 8, height: 8, margin: const EdgeInsets.only(top: 6, right: 12),
                             decoration: BoxDecoration(color: read ? Colors.transparent : C.blue, shape: BoxShape.circle)),
                         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text((n['title'] ?? 'Notification').toString(), style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink)),
+                          Text((n['title'] ?? 'notifications.fallbackTitle'.tr()).toString(), style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink)),
                           if ((n['body'] ?? n['message'] ?? '').toString().isNotEmpty) ...[
                             const SizedBox(height: 2),
                             Text((n['body'] ?? n['message']).toString(), style: const TextStyle(color: C.muted, height: 1.3)),

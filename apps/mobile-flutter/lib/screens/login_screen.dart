@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 import '../flavor.dart';
@@ -32,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _submit() async {
     if (_email.text.trim().isEmpty || _password.text.isEmpty) {
-      _toast('Please enter your email and password');
+      _toast('auth.enterEmailPassword'.tr());
       return;
     }
     setState(() => _loading = true);
@@ -43,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       final data = jsonDecode(res.body) as Map<String, dynamic>;
       if (res.statusCode != 200) {
-        _toast(data['error']?.toString() ?? 'Invalid credentials');
+        _toast(data['error']?.toString() ?? 'auth.invalidCredentials'.tr());
         return;
       }
       // Remember me: persist/clear the email once credentials are accepted
@@ -51,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await Api.setRememberedEmail(_remember ? _email.text.trim().toLowerCase() : null);
       if (data['requiresOtp'] == true) {
         if (data['requiresPhone'] == true) {
-          _toast('No phone number on file. Add one on taptarea.com, then log in.');
+          _toast('login.noPhone'.tr());
           return;
         }
         if (mounted) {
@@ -68,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
       PushService.registerToken();
       if (mounted) context.go(homeRoute);
     } catch (_) {
-      _toast('Could not connect. Check your internet connection.');
+      _toast('common.connectionError'.tr());
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -97,8 +98,8 @@ class _LoginScreenState extends State<LoginScreen> {
               // Hero: full-width heading, then subtitle + illustration side by side.
               // (Heading spans the full width so it never breaks mid-word when
               // the illustration narrows the column — an iOS font-width issue.)
-              const Text('Welcome back!',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -1, color: C.ink, height: 1.1, leadingDistribution: TextLeadingDistribution.even)),
+              Text('auth.welcomeBack'.tr(),
+                  style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -1, color: C.ink, height: 1.1, leadingDistribution: TextLeadingDistribution.even)),
               const SizedBox(height: 12),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -106,8 +107,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   Expanded(
                     child: Text(
                         isPro
-                            ? 'Log in to your account and continue finding jobs and growing your business.'
-                            : 'Sign in to your Tarea account to book trusted pros for your home.',
+                            ? 'login.subtitlePro'.tr()
+                            : 'login.subtitleCustomer'.tr(),
                         style: const TextStyle(fontSize: 15, color: C.muted, height: 1.45)),
                   ),
                   const SizedBox(width: 12),
@@ -124,21 +125,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: const Color(0xFFBBE9CC)),
                   ),
-                  child: Row(mainAxisSize: MainAxisSize.min, children: const [
-                    Icon(Icons.shield, size: 18, color: Color(0xFF16A34A)),
-                    SizedBox(width: 8),
-                    Text('Secure • Private • Trusted',
-                        style: TextStyle(color: Color(0xFF16803D), fontWeight: FontWeight.w800)),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    const Icon(Icons.shield, size: 18, color: Color(0xFF16A34A)),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text('login.securePill'.tr(), overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(color: Color(0xFF16803D), fontWeight: FontWeight.w800)),
+                    ),
                   ]),
                 ),
               if (!isPro) const SizedBox(height: 22),
-              const Text('Sign in with email', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
+              Text('auth.signInWithEmail'.tr(), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
               const SizedBox(height: 14),
-              _field(controller: _email, hint: 'Email address', icon: Icons.mail_outline, keyboard: TextInputType.emailAddress),
+              _field(controller: _email, hint: 'auth.email'.tr(), icon: Icons.mail_outline, keyboard: TextInputType.emailAddress),
               const SizedBox(height: 14),
               _field(
                 controller: _password,
-                hint: 'Password',
+                hint: 'auth.password'.tr(),
                 icon: Icons.lock_outline,
                 obscure: !_showPw,
                 trailing: IconButton(
@@ -164,14 +167,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: _remember ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
                         ),
                         const SizedBox(width: 8),
-                        const Flexible(
-                          child: Text('Remember me', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, color: Color(0xFF475569), fontWeight: FontWeight.w600)),
+                        Flexible(
+                          child: Text('auth.rememberMe'.tr(), overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14, color: Color(0xFF475569), fontWeight: FontWeight.w600)),
                         ),
                       ]),
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Text('Forgot password?', style: TextStyle(fontSize: 14, color: C.blue, fontWeight: FontWeight.w700)),
+                  Flexible(child: Text('auth.forgotPassword'.tr(), overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14, color: C.blue, fontWeight: FontWeight.w700))),
                 ],
               ),
               const SizedBox(height: 22),
@@ -186,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: _loading ? null : _submit,
                   child: _loading
                       ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : Text(isPro ? 'Log in' : 'Sign In', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+                      : Text(isPro ? 'auth.login'.tr() : 'auth.signIn'.tr(), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
                 ),
               ),
               if (!isPro) const SizedBox(height: 20),
@@ -199,10 +202,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(width: 44, height: 44, decoration: const BoxDecoration(color: Color(0xFFEFF5FF), shape: BoxShape.circle),
                       child: const Icon(Icons.verified_user, color: C.blue, size: 22)),
                   const SizedBox(width: 12),
-                  const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('Secure & Protected', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 15)),
-                    SizedBox(height: 2),
-                    Text('Your information is encrypted and never shared with third parties.', style: TextStyle(color: C.muted, fontSize: 12.5, height: 1.35)),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('login.secureTitle'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 15)),
+                    const SizedBox(height: 2),
+                    Text('login.secureDesc'.tr(), style: const TextStyle(color: C.muted, fontSize: 12.5, height: 1.35)),
                   ])),
                 ]),
               ),
@@ -210,9 +213,9 @@ class _LoginScreenState extends State<LoginScreen> {
               // Trust row (customer only)
               if (!isPro)
                 Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                _trust(Icons.workspace_premium_outlined, const Color(0xFF16A34A), 'Verified Pros', 'Background checked', true),
-                _trust(Icons.verified_user_outlined, C.blue, 'Secure Payments', 'Safe and encrypted', true),
-                _trust(Icons.headset_mic_outlined, const Color(0xFF7C3AED), '8/7 Support', "We're here to help", false),
+                _trust(Icons.workspace_premium_outlined, const Color(0xFF16A34A), 'login.trustVerifiedPros'.tr(), 'login.trustVerifiedProsSub'.tr(), true),
+                _trust(Icons.verified_user_outlined, C.blue, 'login.trustSecurePayments'.tr(), 'login.trustSecurePaymentsSub'.tr(), true),
+                _trust(Icons.headset_mic_outlined, const Color(0xFF7C3AED), 'login.trustSupport'.tr(), 'login.trustSupportSub'.tr(), false),
               ]),
               const SizedBox(height: 24),
             ],

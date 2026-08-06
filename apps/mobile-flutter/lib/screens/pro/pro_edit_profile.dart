@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
 import 'pro_widgets.dart';
@@ -43,7 +44,7 @@ class _ProEditProfileState extends State<ProEditProfile> {
   }
 
   Future<void> _save() async {
-    if (_name.text.trim().isEmpty) return _toast('Name is required');
+    if (_name.text.trim().isEmpty) return _toast('editProfile.nameRequired'.tr());
     setState(() => _saving = true);
     try {
       final body = {
@@ -56,12 +57,12 @@ class _ProEditProfileState extends State<ProEditProfile> {
       };
       final res = await Api.patch('/profile', body);
       if (res.statusCode >= 200 && res.statusCode < 300) {
-        if (mounted) { _toast('Profile updated'); context.pop(true); }
+        if (mounted) { _toast('editProfile.updated'.tr()); context.pop(true); }
       } else {
-        _toast('Could not save. Please try again.');
+        _toast('editProfile.saveFailed'.tr());
       }
     } catch (_) {
-      _toast('Could not connect. Please try again.');
+      _toast('common.connectionRetry'.tr());
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -73,16 +74,16 @@ class _ProEditProfileState extends State<ProEditProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: C.bg,
-      appBar: proBar(context, 'Edit Profile'),
+      appBar: proBar(context, 'editProfile.title'.tr()),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(padding: const EdgeInsets.all(20), children: [
-              proField('Full name', _name),
-              proField('Phone', _phone, keyboard: TextInputType.phone),
-              proField('Bio', _bio, maxLines: 4, hint: 'Tell customers about your experience'),
-              proField('Hourly rate (\$)', _rate, keyboard: TextInputType.number),
-              proField('Company name (optional)', _company),
-              proField('Website (optional)', _website, keyboard: TextInputType.url),
+              proField('register.fullName'.tr(), _name),
+              proField('editProfile.phone'.tr(), _phone, keyboard: TextInputType.phone),
+              proField('proEdit.bio'.tr(), _bio, maxLines: 4, hint: 'proEdit.bioHint'.tr()),
+              proField('proEdit.hourlyRate'.tr(), _rate, keyboard: TextInputType.number),
+              proField('proEdit.companyName'.tr(), _company),
+              proField('proEdit.website'.tr(), _website, keyboard: TextInputType.url),
               const SizedBox(height: 10),
               proSaveButton(_saving, _save),
             ]),

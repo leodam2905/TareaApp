@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 import '../flavor.dart';
@@ -23,11 +24,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _submit() async {
     if (_name.text.trim().isEmpty || _email.text.trim().isEmpty || _phone.text.trim().isEmpty || _password.text.isEmpty) {
-      return _toast('All fields are required');
+      return _toast('register.allRequired'.tr());
     }
-    if (_password.text.length < 8) return _toast('Password must be at least 8 characters');
-    if (_password.text != _confirm.text) return _toast("Passwords don't match");
-    if (!_agreed) return _toast('Please accept the Terms & Privacy Policy');
+    if (_password.text.length < 8) return _toast('register.passwordMin'.tr());
+    if (_password.text != _confirm.text) return _toast('register.passwordsMismatch'.tr());
+    if (!_agreed) return _toast('register.acceptTerms'.tr());
     setState(() => _loading = true);
     try {
       final res = await Api.post('/auth/register', {
@@ -40,7 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
       final data = jsonDecode(res.body) as Map<String, dynamic>;
       if (res.statusCode < 200 || res.statusCode >= 300) {
-        return _toast(data['error']?.toString() ?? 'Could not create account');
+        return _toast(data['error']?.toString() ?? 'register.createFailed'.tr());
       }
       if (data['token'] != null) {
         await Api.setToken(data['token'].toString());
@@ -50,7 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (mounted) context.push('/verify-otp', extra: {'pendingToken': data['pendingToken'], 'role': data['role'] ?? 'CUSTOMER'});
       }
     } catch (_) {
-      _toast('Could not connect. Try again.');
+      _toast('common.connectionRetry'.tr());
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -87,9 +88,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         Expanded(
                           child: RichText(
-                            text: const TextSpan(
-                              style: TextStyle(fontSize: 34, fontWeight: FontWeight.w900, height: 1.05, letterSpacing: -1, color: C.ink),
-                              children: [TextSpan(text: "Let's get\n"), TextSpan(text: 'started!', style: TextStyle(color: C.blue))],
+                            text: TextSpan(
+                              style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900, height: 1.05, letterSpacing: -1, color: C.ink),
+                              children: [TextSpan(text: 'register.heroLine1'.tr()), TextSpan(text: 'register.heroLine2'.tr(), style: const TextStyle(color: C.blue))],
                             ),
                           ),
                         ),
@@ -97,7 +98,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    const Text("Create your account and we'll take care of the rest.", style: TextStyle(fontSize: 14, color: Color(0xFF5B6472), height: 1.4)),
+                    Text('register.subtitle'.tr(), style: const TextStyle(fontSize: 14, color: Color(0xFF5B6472), height: 1.4)),
                   ],
                 ),
               ),
@@ -109,20 +110,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Create your account', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: C.ink)),
+                    Text('register.title'.tr(), style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: C.ink)),
                     const SizedBox(height: 12),
                     ClipRRect(borderRadius: BorderRadius.circular(4), child: const LinearProgressIndicator(value: 0.33, minHeight: 6, backgroundColor: Color(0xFFE2E8F0), color: C.blue)),
                     const SizedBox(height: 20),
-                    _field(_name, 'Full name', Icons.person_outline, cap: TextCapitalization.words),
+                    _field(_name, 'register.fullName'.tr(), Icons.person_outline, cap: TextCapitalization.words),
                     const SizedBox(height: 12),
-                    _field(_email, 'Email address', Icons.mail_outline, keyboard: TextInputType.emailAddress),
+                    _field(_email, 'auth.email'.tr(), Icons.mail_outline, keyboard: TextInputType.emailAddress),
                     const SizedBox(height: 12),
-                    _field(_phone, 'Phone number', Icons.call_outlined, keyboard: TextInputType.phone),
+                    _field(_phone, 'register.phone'.tr(), Icons.call_outlined, keyboard: TextInputType.phone),
                     const SizedBox(height: 12),
-                    _field(_password, 'Create password', Icons.lock_outline, obscure: !_showPw,
+                    _field(_password, 'register.createPassword'.tr(), Icons.lock_outline, obscure: !_showPw,
                         trailing: IconButton(icon: Icon(_showPw ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: C.muted), onPressed: () => setState(() => _showPw = !_showPw))),
                     const SizedBox(height: 12),
-                    _field(_confirm, 'Confirm password', Icons.lock_outline, obscure: !_showPw),
+                    _field(_confirm, 'register.confirmPassword'.tr(), Icons.lock_outline, obscure: !_showPw),
                     const SizedBox(height: 16),
                     GestureDetector(
                       onTap: () => setState(() => _agreed = !_agreed),
@@ -134,11 +135,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: _agreed ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
                         ),
                         const SizedBox(width: 10),
-                        const Expanded(child: Text.rich(TextSpan(style: TextStyle(color: C.muted, height: 1.4), children: [
-                          TextSpan(text: 'I agree to the '),
-                          TextSpan(text: 'Terms of Service', style: TextStyle(color: C.blue, fontWeight: FontWeight.w700)),
-                          TextSpan(text: ' and '),
-                          TextSpan(text: 'Privacy Policy', style: TextStyle(color: C.blue, fontWeight: FontWeight.w700)),
+                        Expanded(child: Text.rich(TextSpan(style: const TextStyle(color: C.muted, height: 1.4), children: [
+                          TextSpan(text: 'register.agreePrefix'.tr()),
+                          TextSpan(text: 'common.termsOfService'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w700)),
+                          TextSpan(text: 'register.agreeMiddle'.tr()),
+                          TextSpan(text: 'common.privacyPolicy'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w700)),
                         ]))),
                       ]),
                     ),
@@ -151,16 +152,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onPressed: _loading ? null : _submit,
                         child: _loading
                             ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                            : const Text('Sign up', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+                            : Text('auth.signUp'.tr(), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
                       ),
                     ),
                     const SizedBox(height: 14),
                     Center(
                       child: GestureDetector(
                         onTap: () => context.go('/login'),
-                        child: const Text.rich(TextSpan(style: TextStyle(color: C.muted), children: [
-                          TextSpan(text: 'Already have an account? '),
-                          TextSpan(text: 'Log in', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+                        child: Text.rich(TextSpan(style: const TextStyle(color: C.muted), children: [
+                          TextSpan(text: 'register.alreadyPrefix'.tr()),
+                          TextSpan(text: 'auth.login'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
                         ])),
                       ),
                     ),

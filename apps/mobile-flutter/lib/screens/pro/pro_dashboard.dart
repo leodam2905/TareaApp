@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
 import '../../avatar_util.dart';
@@ -154,11 +155,11 @@ class _ProDashboardState extends State<ProDashboard> {
             ]),
             const SizedBox(height: 12),
             Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-              Flexible(child: Text('Welcome back${_name.isEmpty ? '' : ', ${_name.split(' ').first}'}!', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink))),
+              Flexible(child: Text(_name.isEmpty ? 'pro.welcomeBackPlain'.tr() : 'pro.welcomeBackNamed'.tr(args: [_name.split(' ').first]), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink))),
               const SizedBox(width: 6),
               const WavingHand(),
             ]),
-            const Text("Here's what's happening with your business today.", style: TextStyle(color: C.muted)),
+            Text('pro.todaySummary'.tr(), style: const TextStyle(color: C.muted)),
             const SizedBox(height: 14),
             // Online + Licensed badge
             Row(children: [
@@ -174,7 +175,7 @@ class _ProDashboardState extends State<ProDashboard> {
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
                     Container(width: 10, height: 10, decoration: BoxDecoration(color: _available ? const Color(0xFF16A34A) : const Color(0xFF94A3B8), shape: BoxShape.circle)),
                     const SizedBox(width: 8),
-                    Text(_available ? 'Online' : 'Offline', style: TextStyle(fontWeight: FontWeight.w800, color: _available ? const Color(0xFF16A34A) : C.muted)),
+                    Text(_available ? 'pro.online'.tr() : 'pro.offline'.tr(), style: TextStyle(fontWeight: FontWeight.w800, color: _available ? const Color(0xFF16A34A) : C.muted)),
                   ]),
                 ),
               ),
@@ -182,29 +183,29 @@ class _ProDashboardState extends State<ProDashboard> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(color: const Color(0xFFEFF5FF), borderRadius: BorderRadius.circular(12)),
-                child: Row(mainAxisSize: MainAxisSize.min, children: const [
-                  Icon(Icons.shield_outlined, size: 14, color: C.blue),
-                  SizedBox(width: 5),
-                  Text('Licensed & Insured', style: TextStyle(color: C.blue, fontWeight: FontWeight.w700, fontSize: 12)),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  const Icon(Icons.shield_outlined, size: 14, color: C.blue),
+                  const SizedBox(width: 5),
+                  Text('pro.licensedInsured'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w700, fontSize: 12)),
                 ]),
               ),
             ]),
             const SizedBox(height: 16),
             // Stat cards 2x2
             Row(children: [
-              _stat(Icons.work_outline, const Color(0xFFEFF5FF), C.blue, 'Total Earned', '\$${_totalEarnings.round()}', 'All time', onTap: () => ProShell.go?.call(3)),
-              _stat(Icons.task_alt, const Color(0xFFECFDF3), const Color(0xFF16A34A), 'Completed', '$_completed', 'Jobs done', onTap: () => ProShell.go?.call(2)),
+              _stat(Icons.work_outline, const Color(0xFFEFF5FF), C.blue, 'pro.totalEarned'.tr(), '\$${_totalEarnings.round()}', 'pro.allTime'.tr(), onTap: () => ProShell.go?.call(3)),
+              _stat(Icons.task_alt, const Color(0xFFECFDF3), const Color(0xFF16A34A), 'pro.completed'.tr(), '$_completed', 'pro.jobsDone'.tr(), onTap: () => ProShell.go?.call(2)),
             ]),
             const SizedBox(height: 10),
             Row(children: [
-              _stat(Icons.schedule, const Color(0xFFFFF7ED), const Color(0xFFF59E0B), 'Upcoming', '$_upcoming7', 'Next 7 days', onTap: () => ProShell.go?.call(2)),
-              _stat(Icons.star, const Color(0xFFF5F3FF), const Color(0xFF7C3AED), 'Rating', _rating > 0 ? _rating.toStringAsFixed(1) : '—', '($_reviews)', onTap: () => context.push('/pro/reviews')),
+              _stat(Icons.schedule, const Color(0xFFFFF7ED), const Color(0xFFF59E0B), 'pro.upcoming'.tr(), '$_upcoming7', 'pro.next7days'.tr(), onTap: () => ProShell.go?.call(2)),
+              _stat(Icons.star, const Color(0xFFF5F3FF), const Color(0xFF7C3AED), 'pro.rating'.tr(), _rating > 0 ? _rating.toStringAsFixed(1) : '—', '($_reviews)', onTap: () => context.push('/pro/reviews')),
             ]),
             const SizedBox(height: 24),
-            _sectionHead('Upcoming Jobs', () => ProShell.go?.call(2)),
+            _sectionHead('pro.upcomingJobs'.tr(), () => ProShell.go?.call(2)),
             const SizedBox(height: 10),
             if (_upcoming.isEmpty)
-              _emptyCard('No upcoming jobs yet.')
+              _emptyCard('pro.noUpcomingJobs'.tr())
             else
               ..._upcoming.map(_jobRow),
             const SizedBox(height: 20),
@@ -219,20 +220,20 @@ class _ProDashboardState extends State<ProDashboard> {
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Row(children: const [
-                  Icon(Icons.trending_up, color: Colors.white, size: 18),
-                  SizedBox(width: 6),
-                  Text('Earnings Overview', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white)),
+                Row(children: [
+                  const Icon(Icons.trending_up, color: Colors.white, size: 18),
+                  const SizedBox(width: 6),
+                  Text('pro.earningsOverview'.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white)),
                 ]),
                 const SizedBox(height: 10),
                 Text('\$${_totalEarnings.round()}', style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w900, color: Colors.white)),
-                Text('\$${_pendingEarnings.round()} pending payout', style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600)),
+                Text('pro.pendingPayout'.tr(args: ['\$${_pendingEarnings.round()}']), style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 Container(
                   width: double.infinity, padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 12),
                   decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
                   alignment: Alignment.center,
-                  child: const Text('Your earnings trend appears here as you complete jobs.', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 12.5)),
+                  child: Text('pro.earningsTrend'.tr(), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 12.5)),
                 ),
               ]),
             ),
@@ -255,19 +256,19 @@ class _ProDashboardState extends State<ProDashboard> {
                   child: Center(child: Text('$_pct%', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: _pct >= 100 ? const Color(0xFF16A34A) : C.blue))),
                 ),
                 const SizedBox(width: 14),
-                const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('Profile Completeness', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 15)),
-                  Text('Complete your profile to get more job opportunities.', style: TextStyle(color: C.muted, fontSize: 13)),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('pro.profileCompleteness'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 15)),
+                  Text('pro.completenessDesc'.tr(), style: const TextStyle(color: C.muted, fontSize: 13)),
                 ])),
-                Icon(Icons.chevron_right, color: C.muted),
+                const Icon(Icons.chevron_right, color: C.muted),
               ]),
             ),
             ),
             const SizedBox(height: 24),
-            _sectionHead('New Job Requests', () => ProShell.go?.call(1)),
+            _sectionHead('pro.newJobRequests'.tr(), () => ProShell.go?.call(1)),
             const SizedBox(height: 10),
             if (_requests.isEmpty)
-              _emptyCard('No new requests right now.')
+              _emptyCard('pro.noNewRequests'.tr())
             else
               ..._requests.map(_reqRow),
           ],
@@ -296,7 +297,7 @@ class _ProDashboardState extends State<ProDashboard> {
 
   Widget _sectionHead(String title, VoidCallback onTap) => Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
-        GestureDetector(onTap: onTap, child: const Text('View all', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
+        GestureDetector(onTap: onTap, child: Text('pro.viewAll'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
       ]);
 
   Widget _emptyCard(String text) => Container(
@@ -307,7 +308,7 @@ class _ProDashboardState extends State<ProDashboard> {
 
   Widget _jobRow(dynamic b) {
     final d = DateTime.tryParse((b['scheduledAt'] ?? '').toString())?.toLocal();
-    final service = (b['service']?['title'] ?? b['category'] ?? 'Job').toString();
+    final service = (b['service']?['title'] ?? b['category'] ?? 'pro.jobFallback'.tr()).toString();
     final place = (b['city'] ?? b['address'] ?? '').toString();
     return GestureDetector(
       onTap: () => context.push('/pro/job-detail', extra: (b as Map).cast<String, dynamic>()),
@@ -334,7 +335,7 @@ class _ProDashboardState extends State<ProDashboard> {
   }
 
   Widget _reqRow(dynamic r) {
-    final title = (r['title'] ?? (r['category'] ?? 'Job').toString().replaceAll('_', ' ')).toString();
+    final title = (r['title'] ?? (r['category'] ?? 'pro.jobFallback'.tr()).toString().replaceAll('_', ' ')).toString();
     final category = (r['category'] ?? '').toString().replaceAll('_', ' ');
     final min = r['budgetMin'], max = r['budgetMax'];
     return GestureDetector(
@@ -362,7 +363,7 @@ class _ProDashboardState extends State<ProDashboard> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(6)),
-                child: const Text('NEW', style: TextStyle(color: Color(0xFF16A34A), fontSize: 9, fontWeight: FontWeight.w900)),
+                child: Text('pro.new'.tr(), style: const TextStyle(color: Color(0xFF16A34A), fontSize: 9, fontWeight: FontWeight.w900)),
               ),
             ]),
             const SizedBox(height: 2),

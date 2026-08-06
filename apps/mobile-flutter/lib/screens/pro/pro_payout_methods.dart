@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
 import '../../stripe.dart';
@@ -39,28 +40,28 @@ class _ProPayoutMethodsState extends State<ProPayoutMethods> {
     setState(() => _busy = true);
     try {
       final res = await Api.patch('/handyman/payout-methods/$id', {});
-      if (res.statusCode >= 200 && res.statusCode < 300) { _toast('Default payout method updated'); await _load(); }
-      else { _toast('Could not update. Try again.'); }
-    } catch (_) { _toast('Could not connect. Try again.'); }
+      if (res.statusCode >= 200 && res.statusCode < 300) { _toast('payout.defaultUpdated'.tr()); await _load(); }
+      else { _toast('requests.updateFailed'.tr()); }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
     finally { if (mounted) setState(() => _busy = false); }
   }
 
   Future<void> _delete(String id, String label) async {
     final ok = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
-      title: const Text('Remove payout method?'),
-      content: Text('Remove $label?'),
+      title: Text('payout.removeTitle'.tr()),
+      content: Text('payout.removeConfirm'.tr(args: [label])),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-        TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Remove', style: TextStyle(color: C.red, fontWeight: FontWeight.w800))),
+        TextButton(onPressed: () => Navigator.pop(context, false), child: Text('common.cancel'.tr())),
+        TextButton(onPressed: () => Navigator.pop(context, true), child: Text('payout.remove'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w800))),
       ],
     ));
     if (ok != true) return;
     setState(() => _busy = true);
     try {
       final res = await Api.delete('/handyman/payout-methods/$id');
-      if (res.statusCode >= 200 && res.statusCode < 300) { _toast('Removed'); await _load(); }
-      else { _toast('Could not remove. Try again.'); }
-    } catch (_) { _toast('Could not connect. Try again.'); }
+      if (res.statusCode >= 200 && res.statusCode < 300) { _toast('payout.removed'.tr()); await _load(); }
+      else { _toast('payout.removeFailed'.tr()); }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
     finally { if (mounted) setState(() => _busy = false); }
   }
 
@@ -69,9 +70,9 @@ class _ProPayoutMethodsState extends State<ProPayoutMethods> {
     try {
       final res = await Api.post('/handyman/payout-methods', {'token': token, 'type': type});
       final data = jsonDecode(res.body);
-      if (res.statusCode >= 200 && res.statusCode < 300) { _toast('Payout method added'); await _load(); }
-      else { _toast((data is Map ? data['error'] : null)?.toString() ?? 'Could not add. Connect Stripe first.'); }
-    } catch (_) { _toast('Could not connect. Try again.'); }
+      if (res.statusCode >= 200 && res.statusCode < 300) { _toast('payout.added'.tr()); await _load(); }
+      else { _toast((data is Map ? data['error'] : null)?.toString() ?? 'payout.addFailedStripe'.tr()); }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
     finally { if (mounted) setState(() => _busy = false); }
   }
 
@@ -96,8 +97,8 @@ class _ProPayoutMethodsState extends State<ProPayoutMethods> {
       final res = await Api.post('/stripe/connect', {});
       final url = (jsonDecode(res.body)['url'] ?? '').toString();
       if (url.startsWith('http')) await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-      else _toast('Could not open Stripe.');
-    } catch (_) { _toast('Could not connect. Try again.'); }
+      else _toast('payout.openStripeFailed'.tr());
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
   }
 
   @override
@@ -108,7 +109,7 @@ class _ProPayoutMethodsState extends State<ProPayoutMethods> {
       appBar: AppBar(
         backgroundColor: C.white, surfaceTintColor: Colors.transparent, elevation: 0.5,
         leading: IconButton(icon: const Icon(Icons.arrow_back, color: C.ink), onPressed: () => context.pop()),
-        title: const Text('Payout Methods', style: TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 18)),
+        title: Text('payout.title'.tr(), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 18)),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -117,20 +118,20 @@ class _ProPayoutMethodsState extends State<ProPayoutMethods> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(color: const Color(0xFFEFF5FF), borderRadius: BorderRadius.circular(14)),
-                  child: const Text('Add a bank account or debit card to receive your payouts. You may need to finish Stripe setup first.', style: TextStyle(color: C.blue, fontWeight: FontWeight.w600)),
+                  child: Text('payout.emptyDesc'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w600)),
                 ),
               ..._banks.map((b) => _row(
                     id: (b['id'] ?? '').toString(),
                     icon: Icons.account_balance_outlined,
-                    title: '${(b['bankName'] ?? 'Bank')} •••• ${b['last4'] ?? ''}',
-                    sub: 'Bank account',
+                    title: '${(b['bankName'] ?? 'payout.bankFallback'.tr())} •••• ${b['last4'] ?? ''}',
+                    sub: 'payout.bankAccount'.tr(),
                     isDefault: b['isDefault'] == true,
                   )),
               ..._cards.map((c) => _row(
                     id: (c['id'] ?? '').toString(),
                     icon: Icons.credit_card,
-                    title: '${_titleCase((c['brand'] ?? 'Card').toString())} •••• ${c['last4'] ?? ''}',
-                    sub: 'Debit card · instant payout',
+                    title: '${_titleCase((c['brand'] ?? 'payout.cardFallback'.tr()).toString())} •••• ${c['last4'] ?? ''}',
+                    sub: 'payout.debitCardInstant'.tr(),
                     isDefault: c['isDefault'] == true,
                   )),
               const SizedBox(height: 12),
@@ -138,15 +139,15 @@ class _ProPayoutMethodsState extends State<ProPayoutMethods> {
                 style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50), side: const BorderSide(color: C.blue)),
                 onPressed: _busy ? null : _addBank,
                 icon: const Icon(Icons.account_balance_outlined, size: 18, color: C.blue),
-                label: const Text('Add bank account', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
+                label: Text('payout.addBank'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
               const SizedBox(height: 10),
               OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50), side: const BorderSide(color: C.blue)),
                 onPressed: _busy ? null : _addCard,
                 icon: const Icon(Icons.credit_card, size: 18, color: C.blue),
-                label: const Text('Add debit card', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
+                label: Text('payout.addCard'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
               const SizedBox(height: 10),
-              TextButton(onPressed: _connectStripe, child: const Text('Set up / manage on Stripe →', style: TextStyle(color: C.muted, fontWeight: FontWeight.w700))),
+              TextButton(onPressed: _connectStripe, child: Text('payout.manageStripe'.tr(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w700))),
               const SizedBox(height: 24),
               Center(
                 child: Image.asset(
@@ -173,9 +174,9 @@ class _ProPayoutMethodsState extends State<ProPayoutMethods> {
           ])),
           if (isDefault)
             Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(20)),
-                child: const Text('Default', style: TextStyle(color: Color(0xFF15803D), fontWeight: FontWeight.w800, fontSize: 12)))
+                child: Text('payout.default'.tr(), style: const TextStyle(color: Color(0xFF15803D), fontWeight: FontWeight.w800, fontSize: 12)))
           else
-            TextButton(onPressed: _busy ? null : () => _setDefault(id), child: const Text('Set default', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800, fontSize: 13))),
+            TextButton(onPressed: _busy ? null : () => _setDefault(id), child: Text('payout.setDefault'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800, fontSize: 13))),
           IconButton(icon: const Icon(Icons.delete_outline, color: C.red, size: 20), onPressed: _busy ? null : () => _delete(id, title)),
         ]),
       );
@@ -199,7 +200,7 @@ class _BankSheetState extends State<_BankSheet> {
 
   Future<void> _submit() async {
     if (_routing.text.trim().length < 9 || _account.text.trim().isEmpty || _holder.text.trim().isEmpty) {
-      return _toast('Enter routing number, account number and name');
+      return _toast('payout.enterBank'.tr());
     }
     setState(() => _saving = true);
     final r = await StripeTokens.bankAccount(
@@ -208,11 +209,11 @@ class _BankSheetState extends State<_BankSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => _sheet(context, 'Add bank account', _saving, _submit, [
-        _f('Account holder name', _holder),
-        _f('Routing number', _routing, keyboard: TextInputType.number),
-        _f('Account number', _account, keyboard: TextInputType.number),
-        const Text('Your details go directly to Stripe and never touch Tarea.', style: TextStyle(color: C.muted, fontSize: 12)),
+  Widget build(BuildContext context) => _sheet(context, 'payout.addBank'.tr(), _saving, _submit, [
+        _f('payout.accountHolder'.tr(), _holder),
+        _f('payout.routing'.tr(), _routing, keyboard: TextInputType.number),
+        _f('payout.account'.tr(), _account, keyboard: TextInputType.number),
+        Text('payout.bankPrivacy'.tr(), style: const TextStyle(color: C.muted, fontSize: 12)),
       ]);
 }
 
@@ -234,7 +235,7 @@ class _CardSheetState extends State<_CardSheet> {
 
   Future<void> _submit() async {
     if (_number.text.trim().length < 12 || _month.text.trim().isEmpty || _year.text.trim().isEmpty || _cvc.text.trim().isEmpty) {
-      return _toast('Enter the card number, expiry and CVC');
+      return _toast('payout.enterCard'.tr());
     }
     setState(() => _saving = true);
     final r = await StripeTokens.card(
@@ -244,9 +245,9 @@ class _CardSheetState extends State<_CardSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => _sheet(context, 'Add debit card', _saving, _submit, [
-        _f('Name on card (optional)', _name),
-        _f('Card number', _number, keyboard: TextInputType.number),
+  Widget build(BuildContext context) => _sheet(context, 'payout.addCard'.tr(), _saving, _submit, [
+        _f('payout.nameOnCard'.tr(), _name),
+        _f('payout.cardNumber'.tr(), _number, keyboard: TextInputType.number),
         Row(children: [
           Expanded(child: _f('MM', _month, keyboard: TextInputType.number)),
           const SizedBox(width: 10),
@@ -254,7 +255,7 @@ class _CardSheetState extends State<_CardSheet> {
           const SizedBox(width: 10),
           Expanded(child: _f('CVC', _cvc, keyboard: TextInputType.number)),
         ]),
-        const Text('Debit cards enable instant payouts. Details go directly to Stripe.', style: TextStyle(color: C.muted, fontSize: 12)),
+        Text('payout.cardPrivacy'.tr(), style: const TextStyle(color: C.muted, fontSize: 12)),
       ]);
 }
 
@@ -275,7 +276,7 @@ Widget _sheet(BuildContext context, String title, bool saving, VoidCallback onSu
               onPressed: saving ? null : onSubmit,
               child: saving
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Text('Add', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
+                  : Text('payout.add'.tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
             )),
             const SizedBox(height: 8),
           ]),

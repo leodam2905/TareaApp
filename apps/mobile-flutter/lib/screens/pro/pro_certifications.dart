@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
 import 'pro_widgets.dart';
@@ -46,13 +47,13 @@ class _ProCertificationsState extends State<ProCertifications> {
     try {
       final res = await Api.uploadDoc(path);
       if (res.statusCode >= 200 && res.statusCode < 300) {
-        _toast('Document submitted for review');
+        _toast('proEdit.docSubmitted'.tr());
         await _load();
       } else {
-        _toast('Upload failed. Please try again.');
+        _toast('proEdit.uploadDocFailed'.tr());
       }
     } catch (_) {
-      _toast('Could not connect. Please try again.');
+      _toast('common.connectionRetry'.tr());
     } finally {
       if (mounted) setState(() => _uploading = false);
     }
@@ -62,10 +63,10 @@ class _ProCertificationsState extends State<ProCertifications> {
 
   (Color, Color, String) get _statusStyle {
     switch (_status.toLowerCase()) {
-      case 'approved': return (const Color(0xFF16A34A), const Color(0xFFECFDF3), 'Verified');
-      case 'pending': return (const Color(0xFFB45309), const Color(0xFFFEF3C7), 'Under review');
-      case 'rejected': return (const Color(0xFFB91C1C), const Color(0xFFFEE2E2), 'Rejected — re-upload');
-      default: return (C.muted, C.surface, 'Not submitted');
+      case 'approved': return (const Color(0xFF16A34A), const Color(0xFFECFDF3), 'proEdit.statusVerified'.tr());
+      case 'pending': return (const Color(0xFFB45309), const Color(0xFFFEF3C7), 'proEdit.statusReview'.tr());
+      case 'rejected': return (const Color(0xFFB91C1C), const Color(0xFFFEE2E2), 'proEdit.statusRejected'.tr());
+      default: return (C.muted, C.surface, 'proEdit.statusNotSubmitted'.tr());
     }
   }
 
@@ -74,7 +75,7 @@ class _ProCertificationsState extends State<ProCertifications> {
     final (fg, bg, label) = _statusStyle;
     return Scaffold(
       backgroundColor: C.bg,
-      appBar: proBar(context, 'Certifications'),
+      appBar: proBar(context, 'proProfile.certifications'.tr()),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(padding: const EdgeInsets.all(20), children: [
@@ -82,7 +83,7 @@ class _ProCertificationsState extends State<ProCertifications> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
                 child: Row(children: [
-                  const Expanded(child: Text('Verification status', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16))),
+                  Expanded(child: Text('proEdit.verifStatus'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16))),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
@@ -91,13 +92,13 @@ class _ProCertificationsState extends State<ProCertifications> {
                 ]),
               ),
               const SizedBox(height: 14),
-              _docRow(Icons.badge_outlined, 'License', _hasLicense),
-              _docRow(Icons.shield_outlined, 'Insurance', _hasInsurance),
+              _docRow(Icons.badge_outlined, 'proEdit.license'.tr(), _hasLicense),
+              _docRow(Icons.shield_outlined, 'proEdit.insurance'.tr(), _hasInsurance),
               const SizedBox(height: 8),
-              const Text('Upload a photo or PDF of your license, insurance, or ID. Our team reviews documents to verify your account.',
-                  style: TextStyle(color: C.muted, fontSize: 13, height: 1.4)),
+              Text('proEdit.certDesc'.tr(),
+                  style: const TextStyle(color: C.muted, fontSize: 13, height: 1.4)),
               const SizedBox(height: 16),
-              proSaveButton(_uploading, _upload, label: 'Upload document'),
+              proSaveButton(_uploading, _upload, label: 'proEdit.uploadDocument'.tr()),
             ]),
     );
   }

@@ -1,24 +1,25 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 import '../avatar_util.dart';
 
 class _MenuItem {
   final IconData icon;
-  final String label;
+  final String labelKey;
   final String route;
-  const _MenuItem(this.icon, this.label, this.route);
+  const _MenuItem(this.icon, this.labelKey, this.route);
 }
 
 const _menu = [
-  _MenuItem(Icons.favorite_border, 'Saved Pros', '/favorites'),
-  _MenuItem(Icons.card_giftcard, 'Refer & Earn', '/refer-earn'),
-  _MenuItem(Icons.account_balance_wallet_outlined, 'Spending', '/spending'),
-  _MenuItem(Icons.notifications_outlined, 'Notifications', '/notifications'),
-  _MenuItem(Icons.description_outlined, 'My Requests', '/requests'),
-  _MenuItem(Icons.settings_outlined, 'Settings', '/settings'),
+  _MenuItem(Icons.favorite_border, 'profile.savedPros', '/favorites'),
+  _MenuItem(Icons.card_giftcard, 'profile.referEarn', '/refer-earn'),
+  _MenuItem(Icons.account_balance_wallet_outlined, 'profile.spending', '/spending'),
+  _MenuItem(Icons.notifications_outlined, 'settings.notifications', '/notifications'),
+  _MenuItem(Icons.description_outlined, 'profile.myRequests', '/requests'),
+  _MenuItem(Icons.settings_outlined, 'settings.title', '/settings'),
 ];
 
 class ProfileScreen extends StatefulWidget {
@@ -61,14 +62,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Delete account?'),
-        content: const Text(
-            'This permanently deletes your Tarea account and removes your personal information. This cannot be undone.'),
+        title: Text('profile.deleteTitle'.tr()),
+        content: Text('profile.deleteBody'.tr()),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('common.cancel'.tr())),
           TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Delete', style: TextStyle(color: C.red, fontWeight: FontWeight.w800))),
+              child: Text('common.delete'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w800))),
         ],
       ),
     );
@@ -79,10 +79,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         await Api.clearToken();
         if (mounted) context.go('/');
       } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not delete account. Please try again.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('profile.deleteFailed'.tr())));
       }
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not connect. Please try again.')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('common.connectionRetry'.tr())));
     }
   }
 
@@ -94,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            const Text('Profile', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink)),
+            Text('nav.profile'.tr(), style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink)),
             const SizedBox(height: 16),
             // Identity card
             GestureDetector(
@@ -124,7 +124,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(_name.isEmpty ? 'Your account' : _name,
+                    Text(_name.isEmpty ? 'profile.yourAccount'.tr() : _name,
                         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
                     if (_phone.isNotEmpty) Text(_phone, style: const TextStyle(color: C.muted)),
                   ]),
@@ -155,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
                 onPressed: _logout,
-                child: const Text('Log out', style: TextStyle(color: C.red, fontWeight: FontWeight.w800, fontSize: 16)),
+                child: Text('settings.logout'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w800, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 10),
@@ -165,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 13)),
                 onPressed: _deleteAccount,
                 icon: const Icon(Icons.delete_outline, size: 18, color: C.red),
-                label: const Text('Delete account', style: TextStyle(color: C.red, fontWeight: FontWeight.w800, fontSize: 15)),
+                label: Text('settings.deleteAccount'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w800, fontSize: 15)),
               ),
             ),
           ],
@@ -183,7 +183,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (exists) {
             context.push(m.route);
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${m.label} — coming soon')));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('profile.comingSoon'.tr(args: [m.labelKey.tr()]))));
           }
         },
         child: Padding(
@@ -191,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Row(children: [
             Icon(m.icon, color: C.ink, size: 22),
             const SizedBox(width: 14),
-            Expanded(child: Text(m.label, style: const TextStyle(fontWeight: FontWeight.w700, color: C.ink, fontSize: 15))),
+            Expanded(child: Text(m.labelKey.tr(), style: const TextStyle(fontWeight: FontWeight.w700, color: C.ink, fontSize: 15))),
             const Icon(Icons.chevron_right, color: C.muted),
           ]),
         ),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
 import '../../avatar_util.dart';
@@ -37,11 +38,11 @@ class _ProReviewsState extends State<ProReviews> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: C.bg,
-      appBar: proBar(context, 'Reviews'),
+      appBar: proBar(context, 'proProfile.reviewsTile'.tr()),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _reviews.isEmpty
-              ? const Center(child: Text('No reviews yet.', style: TextStyle(color: C.muted)))
+              ? Center(child: Text('proEdit.noReviews'.tr(), style: const TextStyle(color: C.muted)))
               : ListView(padding: const EdgeInsets.all(20), children: [
                   Row(children: [
                     Text(_avg.toStringAsFixed(1), style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w900, color: C.ink)),
@@ -49,7 +50,7 @@ class _ProReviewsState extends State<ProReviews> {
                     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       _stars(_avg.round()),
                       const SizedBox(height: 4),
-                      Text('${_reviews.length} review${_reviews.length == 1 ? '' : 's'}', style: const TextStyle(color: C.muted)),
+                      Text((_reviews.length == 1 ? 'proEdit.reviewsCountOne' : 'proEdit.reviewsCountMany').tr(args: ['${_reviews.length}']), style: const TextStyle(color: C.muted)),
                     ]),
                   ]),
                   const SizedBox(height: 20),
@@ -63,7 +64,7 @@ class _ProReviewsState extends State<ProReviews> {
 
   Widget _reviewCard(dynamic r) {
     final author = r['author'] ?? {};
-    final name = (author['name'] ?? 'Customer').toString();
+    final name = (author['name'] ?? 'proJobs.customerFallback'.tr()).toString();
     final comment = (r['comment'] ?? '').toString();
     final reply = (r['handymanReply'] ?? '').toString();
     return Container(
@@ -87,7 +88,7 @@ class _ProReviewsState extends State<ProReviews> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(12)),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Your reply', style: TextStyle(fontWeight: FontWeight.w800, color: C.muted, fontSize: 12)),
+              Text('proEdit.yourReply'.tr(), style: const TextStyle(fontWeight: FontWeight.w800, color: C.muted, fontSize: 12)),
               const SizedBox(height: 4),
               Text(reply, style: const TextStyle(color: C.ink, height: 1.4)),
             ]),

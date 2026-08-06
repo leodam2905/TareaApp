@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 
@@ -20,7 +21,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final _scroll = ScrollController();
 
   String get _bookingId => (widget.data['bookingId'] ?? '').toString();
-  String get _title => (widget.data['name'] ?? 'Chat').toString();
+  String get _title => (widget.data['name'] ?? 'chat.titleFallback'.tr()).toString();
 
   @override
   void initState() {
@@ -63,11 +64,11 @@ class _ChatScreenState extends State<ChatScreen> {
         await _load();
       } else {
         _input.text = text;
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not send. Try again.')));
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('chat.sendFailed'.tr())));
       }
     } catch (_) {
       _input.text = text;
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not connect. Try again.')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('common.connectionRetry'.tr())));
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -87,7 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: _loading
               ? const Center(child: CircularProgressIndicator())
               : _messages.isEmpty
-                  ? const Center(child: Text('No messages yet. Say hello 👋', style: TextStyle(color: C.muted)))
+                  ? Center(child: Text('chat.noMessages'.tr(), style: const TextStyle(color: C.muted)))
                   : ListView.builder(
                       controller: _scroll,
                       padding: const EdgeInsets.all(16),
@@ -134,7 +135,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => _send(),
                 decoration: InputDecoration(
-                  hintText: 'Message…', filled: true, fillColor: C.bg,
+                  hintText: 'chat.messageHint'.tr(), filled: true, fillColor: C.bg,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
                 ),

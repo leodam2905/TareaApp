@@ -1,37 +1,40 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 import '../avatar_util.dart';
 
 class _Action {
-  final String title, desc, img;
-  const _Action(this.title, this.desc, this.img);
+  // titleKey/descKey are translation keys; route is the navigation target
+  // (kept separate so display text can be localized without breaking routing).
+  final String titleKey, descKey, img, route;
+  const _Action(this.titleKey, this.descKey, this.img, this.route);
 }
 
 const _actions = [
-  _Action('Post a Job', 'Tell us what you need done', 'action-postjob.png'),
-  _Action('Find Pros', 'Discover trusted pros & reviews', 'action-findpros.png'),
-  _Action('AI Diagnose', 'Upload a photo, get AI insights', 'action-diagnose.png'),
-  _Action('Instant Quote', 'Get an estimated price fast', 'action-quote.png'),
+  _Action('nav.postJob', 'dashboard.postJobDesc', 'action-postjob.png', '/post-job'),
+  _Action('dashboard.findPros', 'dashboard.findProsDesc', 'action-findpros.png', '/browse'),
+  _Action('dashboard.aiDiagnose', 'dashboard.aiDiagnoseDesc', 'action-diagnose.png', '/diagnose'),
+  _Action('landing.instantQuote', 'dashboard.instantQuoteDesc', 'action-quote.png', '/instant-quote'),
 ];
 
 class _Cat {
   final IconData icon;
-  final String label;
-  const _Cat(this.icon, this.label);
+  final String labelKey;
+  const _Cat(this.icon, this.labelKey);
 }
 
 const _cats = [
-  _Cat(Icons.water_drop_outlined, 'Plumbing'),
-  _Cat(Icons.bolt_outlined, 'Electrical'),
-  _Cat(Icons.auto_awesome_outlined, 'Cleaning'),
-  _Cat(Icons.palette_outlined, 'Painting'),
-  _Cat(Icons.handyman_outlined, 'Carpentry'),
-  _Cat(Icons.ac_unit_outlined, 'HVAC'),
-  _Cat(Icons.eco_outlined, 'Landscaping'),
-  _Cat(Icons.local_laundry_service_outlined, 'Laundry'),
+  _Cat(Icons.water_drop_outlined, 'categories.plumbing'),
+  _Cat(Icons.bolt_outlined, 'categories.electrical'),
+  _Cat(Icons.auto_awesome_outlined, 'categories.cleaning'),
+  _Cat(Icons.palette_outlined, 'categories.painting'),
+  _Cat(Icons.handyman_outlined, 'categories.carpentry'),
+  _Cat(Icons.ac_unit_outlined, 'categories.hvac'),
+  _Cat(Icons.eco_outlined, 'categories.landscaping'),
+  _Cat(Icons.local_laundry_service_outlined, 'categories.laundry'),
 ];
 
 class DashboardScreen extends StatefulWidget {
@@ -99,9 +102,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   String get _greeting {
     final h = DateTime.now().hour;
-    if (h < 12) return 'Good morning';
-    if (h < 18) return 'Good afternoon';
-    return 'Good evening';
+    if (h < 12) return 'dashboard.greetingMorning'.tr();
+    if (h < 18) return 'dashboard.greetingAfternoon'.tr();
+    return 'dashboard.greetingEvening'.tr();
   }
 
   @override
@@ -139,7 +142,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(height: 16),
               Text(_greeting, style: const TextStyle(fontSize: 14, color: C.muted)),
-              Text(_firstName.isEmpty ? 'there' : _firstName,
+              Text(_firstName.isEmpty ? 'dashboard.there'.tr() : _firstName,
                   style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: C.ink)),
               const SizedBox(height: 16),
               // Action cards — content-sized rows (IntrinsicHeight keeps the two
@@ -168,7 +171,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
               const SizedBox(height: 20),
-              const Text('Categories', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: C.ink)),
+              Text('dashboard.categories'.tr(), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: C.ink)),
               const SizedBox(height: 12),
               SizedBox(
                 height: 96,
@@ -187,17 +190,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 decoration: BoxDecoration(color: const Color(0xFFFFF3E0), borderRadius: BorderRadius.circular(18)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('20% off', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900, color: Color(0xFFB45309))),
-                    Text('your first job', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFFB45309))),
-                    SizedBox(height: 4),
-                    Text('Use code TAREA20 on any first order', style: TextStyle(fontSize: 14, color: Color(0xFFC2610C))),
+                  children: [
+                    Text('dashboard.promoOff'.tr(), style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w900, color: Color(0xFFB45309))),
+                    Text('dashboard.promoFirstJob'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFFB45309))),
+                    const SizedBox(height: 4),
+                    Text('dashboard.promoCode'.tr(), style: const TextStyle(fontSize: 14, color: Color(0xFFC2610C))),
                   ],
                 ),
               ),
               // Recommended near you
               if (_pros.isNotEmpty) ...[
-                _sectionHead('Recommended near you', onSeeAll: () => context.push('/browse')),
+                _sectionHead('dashboard.recommendedNearYou'.tr(), onSeeAll: () => context.push('/browse')),
                 const SizedBox(height: 12),
                 SizedBox(
                   height: 150,
@@ -210,14 +213,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ],
               // Recent activity
-              _sectionHead('Recent activity', onSeeAll: _recent.isEmpty ? null : () {}),
+              _sectionHead('dashboard.recentActivity'.tr(), onSeeAll: _recent.isEmpty ? null : () {}),
               const SizedBox(height: 12),
               if (_recent.isEmpty)
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 24),
                   alignment: Alignment.center,
-                  child: const Text('No activity yet. Post a job to get started.', style: TextStyle(color: C.muted)),
+                  child: Text('dashboard.noActivity'.tr(), style: const TextStyle(color: C.muted)),
                 )
               else
                 ..._recent.map(_activityRow),
@@ -237,12 +240,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _actionCard(_Action a) {
     return GestureDetector(
-      onTap: () {
-        if (a.title == 'Post a Job') context.push('/post-job');
-        if (a.title == 'Find Pros') context.push('/browse');
-        if (a.title == 'AI Diagnose') context.push('/diagnose');
-        if (a.title == 'Instant Quote') context.push('/instant-quote');
-      },
+      onTap: () => context.push(a.route),
       child: Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -259,11 +257,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             alignment: Alignment.centerLeft,
             child: FittedBox(
               fit: BoxFit.scaleDown,
-              child: Text(a.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+              child: Text(a.titleKey.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
             ),
           ),
           const SizedBox(height: 2),
-          Text(a.desc, style: const TextStyle(fontSize: 13, color: C.muted, height: 1.25)),
+          Text(a.descKey.tr(), style: const TextStyle(fontSize: 13, color: C.muted, height: 1.25)),
         ],
       ),
       ),
@@ -287,7 +285,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             width: 72,
             child: FittedBox(
               fit: BoxFit.scaleDown,
-              child: Text(c.label, maxLines: 1,
+              child: Text(c.labelKey.tr(), maxLines: 1,
                   style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: C.ink)),
             ),
           ),
@@ -305,7 +303,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Flexible(child: Text(title, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink))),
             if (onSeeAll != null) ...[
               const SizedBox(width: 12),
-              GestureDetector(onTap: onSeeAll, child: const Text('See all', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
+              GestureDetector(onTap: onSeeAll, child: Text('common.seeAll'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
             ],
           ],
         ),
@@ -314,7 +312,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _proMini(dynamic p) {
     final name = (p['name'] ?? 'Pro').toString();
     final services = (p['services'] as List?) ?? const [];
-    final trade = services.isNotEmpty ? '${_prettyCat((services[0]['category'] ?? '').toString())} Pro' : 'Handyman';
+    final trade = services.isNotEmpty
+        ? 'dashboard.proSuffix'.tr(args: [_prettyCat((services[0]['category'] ?? '').toString())])
+        : 'dashboard.handyman'.tr();
     return GestureDetector(
       onTap: () => context.push('/browse'),
       child: Container(
@@ -338,7 +338,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final service = (b['service']?['title'] ?? b['category'] ?? b['title'] ?? 'Service').toString();
     final rawStatus = (b['status'] ?? '').toString();
     final label = isReq && rawStatus == 'OPEN'
-        ? 'Posted'
+        ? 'dashboard.posted'.tr()
         : rawStatus.isEmpty ? '' : '${rawStatus[0]}${rawStatus.substring(1).toLowerCase().replaceAll('_', ' ')}';
     return GestureDetector(
       onTap: () {

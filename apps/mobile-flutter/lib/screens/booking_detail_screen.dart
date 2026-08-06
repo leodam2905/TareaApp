@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 
@@ -12,6 +13,15 @@ const _statusColor = {
   'IN_PROGRESS': 0xFFC2410C,
   'COMPLETED': 0xFF15803D,
   'CANCELLED': 0xFFB91C1C,
+};
+
+// Maps a booking status enum to its status.* translation key.
+const _statusKeys = {
+  'PENDING': 'status.pending',
+  'ACCEPTED': 'status.confirmed',
+  'IN_PROGRESS': 'status.inProgress',
+  'COMPLETED': 'status.completed',
+  'CANCELLED': 'status.cancelled',
 };
 
 class BookingDetailScreen extends StatefulWidget {
@@ -50,9 +60,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   Future<void> _confirmPhase(String phaseId) async {
     try {
       final res = await Api.patch('/bookings/$_id/phases/$phaseId', {});
-      if (res.statusCode >= 200 && res.statusCode < 300) { _toast('Phase confirmed'); await _load(); }
-      else { _toast('Could not confirm. Try again.'); }
-    } catch (_) { _toast('Could not connect. Try again.'); }
+      if (res.statusCode >= 200 && res.statusCode < 300) { _toast('booking.phaseConfirmedToast'.tr()); await _load(); }
+      else { _toast('booking.confirmFailed'.tr()); }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
   }
 
   Future<void> _respondExtension(String extId, String action) async {
@@ -64,13 +74,13 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         if (action == 'approve' && url != null && url.startsWith('http')) {
           await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
         } else {
-          _toast(action == 'approve' ? 'Extra work approved' : 'Request declined');
+          _toast(action == 'approve' ? 'booking.extraApproved'.tr() : 'booking.requestDeclined'.tr());
         }
         await _load();
       } else {
-        _toast((data is Map ? data['error'] : null)?.toString() ?? 'Could not respond. Try again.');
+        _toast((data is Map ? data['error'] : null)?.toString() ?? 'booking.respondFailed'.tr());
       }
-    } catch (_) { _toast('Could not connect. Try again.'); }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
   }
 
   @override
@@ -107,9 +117,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       if (res.statusCode >= 200 && res.statusCode < 300 && url != null && url.startsWith('http')) {
         await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
       } else {
-        _toast((data is Map ? data['error'] : null)?.toString() ?? 'Could not start tip.');
+        _toast((data is Map ? data['error'] : null)?.toString() ?? 'booking.tipStartFailed'.tr());
       }
-    } catch (_) { _toast('Could not connect. Try again.'); }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
   }
 
   Future<void> _leaveReview() async {
@@ -121,7 +131,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     );
     if (done == true && mounted) {
       setState(() => _reviewed = true);
-      _toast('Thanks for your review!');
+      _toast('booking.thanksReview'.tr());
     }
   }
 
@@ -129,11 +139,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Cancel booking?'),
-        content: const Text('Cancellations within 24h of the appointment may incur a 50% fee.'),
+        title: Text('booking.cancelTitle'.tr()),
+        content: Text('booking.cancelBody'.tr()),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Keep')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Cancel booking', style: TextStyle(color: C.red))),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('booking.keep'.tr())),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('booking.cancelBooking'.tr(), style: const TextStyle(color: C.red))),
         ],
       ),
     );
@@ -143,14 +153,14 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       final res = await Api.patch('/bookings/$_id', {'status': 'CANCELLED'});
       if (res.statusCode >= 200 && res.statusCode < 300) {
         if (mounted) setState(() => _b['status'] = 'CANCELLED');
-        _toast('Booking cancelled');
+        _toast('booking.bookingCancelled'.tr());
       } else {
-        String msg = 'Could not cancel booking';
+        String msg = 'booking.cancelFailed'.tr();
         try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
         _toast(msg);
       }
     } catch (_) {
-      _toast('Could not connect. Try again.');
+      _toast('common.connectionRetry'.tr());
     }
     if (mounted) setState(() => _busy = false);
   }
@@ -172,9 +182,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     final status = (_b['status'] ?? 'PENDING').toString();
     final color = Color(_statusColor[status] ?? 0xFF64748B);
     final handyman = (_b['handyman'] ?? {}) as Map;
-    final name = (handyman['name'] ?? 'Pro').toString();
+    final name = (handyman['name'] ?? 'handymanDetail.proFallback'.tr()).toString();
     final phone = (handyman['phone'] ?? '').toString();
-    final service = (_b['service']?['title'] ?? _b['category'] ?? 'Service').toString();
+    final service = (_b['service']?['title'] ?? _b['category'] ?? 'proProfile.serviceFallback'.tr()).toString();
     final category = (_b['service']?['category'] ?? '').toString();
     final price = (_b['totalPrice'] ?? 0) as num;
     final isPaid = _b['isPaid'] == true;
@@ -186,7 +196,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
       appBar: AppBar(
         backgroundColor: C.bg, surfaceTintColor: Colors.transparent, elevation: 0,
         leading: IconButton(icon: const Icon(Icons.chevron_left, color: C.ink, size: 30), onPressed: () => context.pop()),
-        title: const Text('Booking', style: TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 20)),
+        title: Text('booking.title'.tr(), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 20)),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -196,7 +206,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(color: color.withValues(alpha: 0.13), borderRadius: BorderRadius.circular(20)),
-              child: Text(status.replaceAll('_', ' '), style: TextStyle(color: color, fontWeight: FontWeight.w800)),
+              child: Text((_statusKeys[status] ?? 'status.booking').tr(), style: TextStyle(color: color, fontWeight: FontWeight.w800)),
             ),
           ),
           const SizedBox(height: 16),
@@ -209,13 +219,13 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               if (category.isNotEmpty) Text(category.replaceAll('_', ' '), style: const TextStyle(color: C.muted)),
               const SizedBox(height: 14),
               const Divider(color: C.line, height: 1),
-              _row('Handyman', name),
-              _row('Date', _fmtDate((_b['scheduledAt'] ?? '').toString())),
-              _row('Location', '${_b['address'] ?? ''}${_b['city'] != null ? ', ${_b['city']}' : ''}'),
-              _row('Total', '\$${price.toStringAsFixed(2)}', highlight: true),
+              _row('booking.handyman'.tr(), name),
+              _row('booking.date'.tr(), _fmtDate((_b['scheduledAt'] ?? '').toString())),
+              _row('booking.location'.tr(), '${_b['address'] ?? ''}${_b['city'] != null ? ', ${_b['city']}' : ''}'),
+              _row('booking.total'.tr(), '\$${price.toStringAsFixed(2)}', highlight: true),
               if (!isPaid) ...[
                 const SizedBox(height: 6),
-                const Text('💳  Payment pending after acceptance', style: TextStyle(color: C.amber, fontSize: 13, fontWeight: FontWeight.w600)),
+                Text('booking.paymentPending'.tr(), style: const TextStyle(color: C.amber, fontSize: 13, fontWeight: FontWeight.w600)),
               ],
             ]),
           ),
@@ -225,9 +235,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             Container(
               width: double.infinity, padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(color: const Color(0xFFF5F3FF), borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFDDD6FE))),
-              child: const Row(children: [
-                Text('🚗', style: TextStyle(fontSize: 20)), SizedBox(width: 10),
-                Expanded(child: Text('Your pro is on the way!', style: TextStyle(color: Color(0xFF7C3AED), fontWeight: FontWeight.w800))),
+              child: Row(children: [
+                const Text('🚗', style: TextStyle(fontSize: 20)), const SizedBox(width: 10),
+                Expanded(child: Text('booking.onTheWay'.tr(), style: const TextStyle(color: Color(0xFF7C3AED), fontWeight: FontWeight.w800))),
               ]),
             ),
           ],
@@ -238,7 +248,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               width: double.infinity, padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(gradient: const LinearGradient(colors: [C.blue, Color(0xFF7C3AED)], begin: Alignment.topLeft, end: Alignment.bottomRight), borderRadius: BorderRadius.circular(16)),
               child: Column(children: [
-                const Text('JOB IN PROGRESS', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: 1)),
+                Text('booking.jobInProgress'.tr(), style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: 1)),
                 const SizedBox(height: 8),
                 Text(_fmtElapsed(_elapsed), style: const TextStyle(color: Colors.white, fontSize: 38, fontWeight: FontWeight.w900, letterSpacing: 2)),
               ]),
@@ -251,7 +261,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               width: double.infinity, padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text('Work Phases', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+                Text('jobDetail.workPhases'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
                 const SizedBox(height: 12),
                 ...(_b['phases'] as List).map((ph) => _phaseRow(ph, status)),
               ]),
@@ -264,7 +274,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               width: double.infinity, padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text('Extra Time / Work Requests', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+                Text('booking.extraRequests'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
                 const SizedBox(height: 12),
                 ...(_b['extensions'] as List).map(_extRow),
               ]),
@@ -287,14 +297,14 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           ),
           const SizedBox(height: 20),
           if (canReview && !_reviewed)
-            _primaryBtn('Leave a review', _leaveReview),
+            _primaryBtn('booking.leaveReview'.tr(), _leaveReview),
           if (canReview && !_reviewed) const SizedBox(height: 10),
           if (status == 'COMPLETED') ...[
             SizedBox(width: double.infinity, child: OutlinedButton.icon(
               style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFFFDE68A)), padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
               onPressed: _leaveTip,
               icon: const Icon(Icons.volunteer_activism_outlined, size: 18, color: Color(0xFFB45309)),
-              label: const Text('Add a tip', style: TextStyle(color: Color(0xFFB45309), fontWeight: FontWeight.w800, fontSize: 15)))),
+              label: Text('booking.addTip'.tr(), style: const TextStyle(color: Color(0xFFB45309), fontWeight: FontWeight.w800, fontSize: 15)))),
             const SizedBox(height: 10),
           ],
           if (canCancel)
@@ -306,7 +316,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                 onPressed: _busy ? null : _cancel,
                 child: _busy
                     ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: C.red))
-                    : const Text('Cancel booking', style: TextStyle(color: C.red, fontWeight: FontWeight.w800, fontSize: 16)),
+                    : Text('booking.cancelBooking'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w800, fontSize: 16)),
               ),
             ),
         ],
@@ -334,14 +344,14 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text((ph['title'] ?? '').toString(), style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink)),
-          Text(confirmed ? '✓ Confirmed' : 'Awaiting your confirmation',
+          Text(confirmed ? 'booking.phaseConfirmedShort'.tr() : 'booking.phaseAwaitingYou'.tr(),
             style: TextStyle(color: confirmed ? const Color(0xFF16A34A) : const Color(0xFFB45309), fontSize: 12, fontWeight: FontWeight.w700)),
         ])),
         if (!confirmed && status == 'IN_PROGRESS')
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6), minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
             onPressed: () => _confirmPhase((ph['id'] ?? '').toString()),
-            child: const Text('Confirm', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13))),
+            child: Text('common.confirm'.tr(), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13))),
       ]),
     );
   }
@@ -363,15 +373,15 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         if (reason.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 2), child: Text(reason, style: const TextStyle(color: C.muted, fontSize: 13))),
         if (pending) ...[
           const SizedBox(height: 4),
-          const Text('Your pro needs more time to finish. Approve to extend the job.', style: TextStyle(color: C.muted, fontSize: 12)),
+          Text('booking.extPending'.tr(), style: const TextStyle(color: C.muted, fontSize: 12)),
           const SizedBox(height: 10),
           Row(children: [
-            Expanded(child: OutlinedButton(style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFFFECACA))), onPressed: () => _respondExtension((ext['id'] ?? '').toString(), 'decline'), child: const Text('Decline', style: TextStyle(color: C.red, fontWeight: FontWeight.w800)))),
+            Expanded(child: OutlinedButton(style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFFFECACA))), onPressed: () => _respondExtension((ext['id'] ?? '').toString(), 'decline'), child: Text('requests.decline'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w800)))),
             const SizedBox(width: 8),
-            Expanded(flex: 2, child: FilledButton(style: FilledButton.styleFrom(backgroundColor: const Color(0xFF16A34A)), onPressed: () => _respondExtension((ext['id'] ?? '').toString(), 'approve'), child: Text(amt > 0 ? 'Approve · \$${amt.toStringAsFixed(2)}' : 'Approve', style: const TextStyle(fontWeight: FontWeight.w800)))),
+            Expanded(flex: 2, child: FilledButton(style: FilledButton.styleFrom(backgroundColor: const Color(0xFF16A34A)), onPressed: () => _respondExtension((ext['id'] ?? '').toString(), 'approve'), child: Text(amt > 0 ? 'booking.approveAmount'.tr(args: ['\$${amt.toStringAsFixed(2)}']) : 'booking.approve'.tr(), style: const TextStyle(fontWeight: FontWeight.w800)))),
           ]),
         ] else
-          Padding(padding: const EdgeInsets.only(top: 4), child: Text(st == 'APPROVED' ? 'Approved' : 'Declined', style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 13))),
+          Padding(padding: const EdgeInsets.only(top: 4), child: Text(st == 'APPROVED' ? 'jobDetail.extApproved'.tr() : 'jobDetail.extDeclined'.tr(), style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 13))),
       ]),
     );
   }
@@ -402,7 +412,7 @@ class _ReviewSheetState extends State<_ReviewSheet> {
   void _toast(String m) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
 
   Future<void> _submit() async {
-    if (_rating == 0) return _toast('Tap a star to rate');
+    if (_rating == 0) return _toast('booking.tapStar'.tr());
     setState(() => _saving = true);
     try {
       final res = await Api.post('/reviews', {
@@ -413,12 +423,12 @@ class _ReviewSheetState extends State<_ReviewSheet> {
       if (res.statusCode >= 200 && res.statusCode < 300) {
         if (mounted) Navigator.pop(context, true);
       } else {
-        String msg = 'Could not submit review.';
+        String msg = 'booking.submitReviewFailed'.tr();
         try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
         _toast(msg);
       }
     } catch (_) {
-      _toast('Could not connect. Please try again.');
+      _toast('common.connectionRetry'.tr());
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -432,7 +442,7 @@ class _ReviewSheetState extends State<_ReviewSheet> {
         decoration: const BoxDecoration(color: C.bg, borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
         padding: const EdgeInsets.all(20),
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Center(child: Text('Rate your experience', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 18))),
+          Center(child: Text('booking.rateExperience'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 18))),
           const SizedBox(height: 16),
           Center(
             child: Row(mainAxisSize: MainAxisSize.min, children: List.generate(5, (i) => IconButton(
@@ -445,7 +455,7 @@ class _ReviewSheetState extends State<_ReviewSheet> {
             controller: _comment,
             maxLines: 3,
             decoration: InputDecoration(
-              hintText: 'Add a comment (optional)', filled: true, fillColor: C.white,
+              hintText: 'booking.commentHint'.tr(), filled: true, fillColor: C.white,
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: C.line)),
               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: C.blue, width: 1.5)),
             ),
@@ -456,7 +466,7 @@ class _ReviewSheetState extends State<_ReviewSheet> {
             onPressed: _saving ? null : _submit,
             child: _saving
                 ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Submit review', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
+                : Text('booking.submitReview'.tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
           )),
           const SizedBox(height: 8),
         ]),
@@ -483,9 +493,9 @@ class _TipSheetState extends State<_TipSheet> {
         decoration: const BoxDecoration(color: C.bg, borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
         padding: const EdgeInsets.all(20),
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Center(child: Text('Add a tip', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 18))),
+          Center(child: Text('booking.addTip'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 18))),
           const SizedBox(height: 4),
-          const Center(child: Text('100% goes to your pro.', style: TextStyle(color: C.muted, fontSize: 13))),
+          Center(child: Text('booking.tipGoesToPro'.tr(), style: const TextStyle(color: C.muted, fontSize: 13))),
           const SizedBox(height: 16),
           Row(children: [5, 10, 15, 20].map((v) {
             final on = _amount == v.toDouble() && _custom.text.isEmpty;
@@ -503,7 +513,7 @@ class _TipSheetState extends State<_TipSheet> {
             controller: _custom, keyboardType: TextInputType.number,
             onChanged: (v) => setState(() => _amount = double.tryParse(v) ?? 0),
             decoration: InputDecoration(
-              hintText: 'Custom amount (\$)', filled: true, fillColor: C.white,
+              hintText: 'booking.customAmount'.tr(), filled: true, fillColor: C.white,
               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: C.line)),
               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: C.blue, width: 1.5)),
             ),
@@ -512,7 +522,7 @@ class _TipSheetState extends State<_TipSheet> {
           SizedBox(width: double.infinity, child: FilledButton(
             style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
             onPressed: _amount > 0 ? () => Navigator.pop(context, _amount) : null,
-            child: Text(_amount > 0 ? 'Tip \$${_amount.toStringAsFixed(2)}' : 'Choose an amount', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
+            child: Text(_amount > 0 ? 'booking.tipAmount'.tr(args: ['\$${_amount.toStringAsFixed(2)}']) : 'booking.chooseAmount'.tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
           )),
           const SizedBox(height: 8),
         ]),

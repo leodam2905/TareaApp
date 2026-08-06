@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 import '../avatar_util.dart';
@@ -39,21 +40,21 @@ class _MessagesScreenState extends State<MessagesScreen> {
       backgroundColor: C.bg,
       body: SafeArea(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 8, 20, 12),
-            child: Text('Messages', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+            child: Text('messages.title'.tr(), style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink)),
           ),
           Expanded(
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _bookings.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Column(mainAxisSize: MainAxisSize.min, children: [
-                          Icon(Icons.chat_bubble_outline, size: 56, color: C.muted),
-                          SizedBox(height: 12),
-                          Text('No conversations yet', style: TextStyle(color: C.muted, fontSize: 16, fontWeight: FontWeight.w700)),
-                          SizedBox(height: 4),
-                          Text('Book a pro to start a chat.', style: TextStyle(color: C.muted)),
+                          const Icon(Icons.chat_bubble_outline, size: 56, color: C.muted),
+                          const SizedBox(height: 12),
+                          Text('messages.noConversations'.tr(), style: const TextStyle(color: C.muted, fontSize: 16, fontWeight: FontWeight.w700)),
+                          const SizedBox(height: 4),
+                          Text('messages.bookToChat'.tr(), style: const TextStyle(color: C.muted)),
                         ]),
                       )
                     : ListView.separated(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import 'dashboard_screen.dart';
 import 'my_jobs_screen.dart';
@@ -58,8 +59,8 @@ class _MainShellState extends State<MainShell> {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
             children: [
-              _navItem(Icons.home_filled, 'Home', 0),
-              _navItem(Icons.work_outline, 'My Jobs', 1),
+              _navItem(Icons.home_filled, 'nav.home'.tr(), 0),
+              _navItem(Icons.work_outline, 'nav.myJobs'.tr(), 1),
               // center Post a Job
               Expanded(
                 child: GestureDetector(
@@ -72,12 +73,12 @@ class _MainShellState extends State<MainShell> {
                       child: const Icon(Icons.add, color: Colors.white, size: 30),
                     ),
                     const SizedBox(height: 2),
-                    const Text('Post a Job', style: TextStyle(fontSize: 11, color: C.blue, fontWeight: FontWeight.w700)),
+                    Text('nav.postJob'.tr(), style: const TextStyle(fontSize: 11, color: C.blue, fontWeight: FontWeight.w700)),
                   ]),
                 ),
               ),
-              _navItem(Icons.chat_bubble_outline, 'Messages', 2),
-              _navItem(Icons.person_outline, 'Profile', 3),
+              _navItem(Icons.chat_bubble_outline, 'nav.messages'.tr(), 2),
+              _navItem(Icons.person_outline, 'nav.profile'.tr(), 3),
             ],
           ),
         ),

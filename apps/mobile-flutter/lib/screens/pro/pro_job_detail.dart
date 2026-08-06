@@ -4,15 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
 
+// [translation key, textColor, bgColor]
 const _statusMeta = {
-  'PENDING': ['Pending', 0xFFB45309, 0xFFFEF3C7],
-  'ACCEPTED': ['Confirmed', 0xFF15803D, 0xFFDCFCE7],
-  'IN_PROGRESS': ['In progress', 0xFFC2410C, 0xFFFFEDD5],
-  'COMPLETED': ['Completed', 0xFF15803D, 0xFFDCFCE7],
-  'CANCELLED': ['Cancelled', 0xFFB91C1C, 0xFFFEE2E2],
+  'PENDING': ['status.pending', 0xFFB45309, 0xFFFEF3C7],
+  'ACCEPTED': ['status.confirmed', 0xFF15803D, 0xFFDCFCE7],
+  'IN_PROGRESS': ['status.inProgress', 0xFFC2410C, 0xFFFFEDD5],
+  'COMPLETED': ['status.completed', 0xFF15803D, 0xFFDCFCE7],
+  'CANCELLED': ['status.cancelled', 0xFFB91C1C, 0xFFFEE2E2],
 };
 
 class ProJobDetail extends StatefulWidget {
@@ -97,9 +99,9 @@ class _ProJobDetailState extends State<ProJobDetail> {
       if (res.statusCode >= 200 && res.statusCode < 300) {
         await _load();
       } else {
-        _toast('Could not update the job. Please try again.');
+        _toast('proJobs.updateFailed'.tr());
       }
-    } catch (_) { _toast('Could not connect. Please try again.'); }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
     finally { if (mounted) setState(() => _busy = false); }
   }
 
@@ -107,8 +109,8 @@ class _ProJobDetailState extends State<ProJobDetail> {
     final ok = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
       title: Text(title), content: Text(msg),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-        TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Confirm', style: TextStyle(fontWeight: FontWeight.w800))),
+        TextButton(onPressed: () => Navigator.pop(context, false), child: Text('common.cancel'.tr())),
+        TextButton(onPressed: () => Navigator.pop(context, true), child: Text('common.confirm'.tr(), style: const TextStyle(fontWeight: FontWeight.w800))),
       ],
     ));
     if (ok == true) _patchStatus(status);
@@ -148,32 +150,32 @@ class _ProJobDetailState extends State<ProJobDetail> {
       if (res.statusCode >= 200 && res.statusCode < 300) {
         _startLocationSharing();
         await _load();
-        if (pos == null) _toast('On the way — turn on location to share your live position.');
-      } else { _toast('Could not update. Try again.'); }
-    } catch (_) { _toast('Could not connect. Try again.'); }
+        if (pos == null) _toast('jobDetail.onWayNoLoc'.tr());
+      } else { _toast('requests.updateFailed'.tr()); }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
     finally { if (mounted) setState(() => _busy = false); }
   }
 
   Future<void> _addPhase() async {
     final t = _phaseTitle.text.trim();
-    if (t.isEmpty) return _toast('Enter a phase title');
+    if (t.isEmpty) return _toast('jobDetail.enterPhaseTitle'.tr());
     setState(() => _busy = true);
     try {
       final res = await Api.post('/bookings/$_id/phases', {'title': t});
       if (res.statusCode >= 200 && res.statusCode < 300) {
         _phaseTitle.clear(); _showPhase = false; await _load();
       } else {
-        String msg = 'Could not add phase.';
+        String msg = 'jobDetail.addPhaseFailed'.tr();
         try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
         _toast(msg);
       }
-    } catch (_) { _toast('Could not connect. Try again.'); }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
     finally { if (mounted) setState(() => _busy = false); }
   }
 
   Future<void> _requestExtension() async {
     final min = int.tryParse(_extMin.trim());
-    if (min == null || min <= 0) return _toast('Choose or enter extra minutes');
+    if (min == null || min <= 0) return _toast('jobDetail.chooseMinutes'.tr());
     setState(() => _busy = true);
     try {
       final res = await Api.post('/bookings/$_id/extension', {
@@ -183,13 +185,13 @@ class _ProJobDetailState extends State<ProJobDetail> {
       });
       if (res.statusCode >= 200 && res.statusCode < 300) {
         _showExt = false; _extMin = ''; _extAmount.clear(); _extReason.clear();
-        _toast('Request sent to customer'); await _load();
+        _toast('jobDetail.requestSentCustomer'.tr()); await _load();
       } else {
-        String msg = 'Could not send request.';
+        String msg = 'jobDetail.sendRequestFailed'.tr();
         try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
         _toast(msg);
       }
-    } catch (_) { _toast('Could not connect. Try again.'); }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
     finally { if (mounted) setState(() => _busy = false); }
   }
 
@@ -197,11 +199,11 @@ class _ProJobDetailState extends State<ProJobDetail> {
 
   @override
   Widget build(BuildContext context) {
-    final meta = _statusMeta[_status] ?? ['Job', 0xFF64748B, 0xFFF1F5F9];
+    final meta = _statusMeta[_status] ?? ['pro.jobFallback', 0xFF64748B, 0xFFF1F5F9];
     final customer = _b['customer'] ?? {};
-    final name = (customer['name'] ?? 'Customer').toString();
+    final name = (customer['name'] ?? 'proJobs.customerFallback'.tr()).toString();
     final phone = (customer['phone'] ?? '').toString();
-    final service = (_b['service']?['title'] ?? _b['category'] ?? 'Service').toString();
+    final service = (_b['service']?['title'] ?? _b['category'] ?? 'proProfile.serviceFallback'.tr()).toString();
     final price = (_b['totalPrice'] ?? 0) as num;
     final phases = (_b['phases'] as List?) ?? [];
     final extensions = (_b['extensions'] as List?) ?? [];
@@ -212,7 +214,7 @@ class _ProJobDetailState extends State<ProJobDetail> {
       appBar: AppBar(
         backgroundColor: C.white, surfaceTintColor: Colors.transparent, elevation: 0.5,
         leading: IconButton(icon: const Icon(Icons.arrow_back, color: C.ink), onPressed: () => context.pop()),
-        title: const Text('Job Detail', style: TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 18)),
+        title: Text('jobDetail.title'.tr(), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 18)),
       ),
       body: ListView(padding: const EdgeInsets.all(16), children: [
         // Header
@@ -221,13 +223,13 @@ class _ProJobDetailState extends State<ProJobDetail> {
             Expanded(child: Text(service, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink))),
             Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(color: Color(meta[2] as int), borderRadius: BorderRadius.circular(20)),
-              child: Text(meta[0] as String, style: TextStyle(color: Color(meta[1] as int), fontWeight: FontWeight.w800, fontSize: 12))),
+              child: Text((meta[0] as String).tr(), style: TextStyle(color: Color(meta[1] as int), fontWeight: FontWeight.w800, fontSize: 12))),
           ]),
           const SizedBox(height: 12),
-          _infoRow(Icons.person_outline, 'Customer', name),
-          if ((_b['scheduledAt'] ?? '') != '') _infoRow(Icons.event_outlined, 'Date', _clock(_b['scheduledAt'])),
-          if ((_b['address'] ?? '') != '') _infoRow(Icons.location_on_outlined, 'Location', (_b['address']).toString()),
-          _infoRow(Icons.payments_outlined, 'Total', '\$${price.round()}'),
+          _infoRow(Icons.person_outline, 'jobDetail.infoCustomer'.tr(), name),
+          if ((_b['scheduledAt'] ?? '') != '') _infoRow(Icons.event_outlined, 'jobDetail.infoDate'.tr(), _clock(_b['scheduledAt'])),
+          if ((_b['address'] ?? '') != '') _infoRow(Icons.location_on_outlined, 'jobDetail.infoLocation'.tr(), (_b['address']).toString()),
+          _infoRow(Icons.payments_outlined, 'jobDetail.infoTotal'.tr(), '\$${price.round()}'),
         ])),
 
         // Timer
@@ -239,11 +241,11 @@ class _ProJobDetailState extends State<ProJobDetail> {
               gradient: const LinearGradient(colors: [C.blue, Color(0xFF7C3AED)], begin: Alignment.topLeft, end: Alignment.bottomRight),
               borderRadius: BorderRadius.circular(16)),
             child: Column(children: [
-              const Text('⏱ JOB TIMER', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: 1)),
+              Text('jobDetail.timerLabel'.tr(), style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: 1)),
               const SizedBox(height: 8),
               Text(_fmtTime(_elapsed), style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w900, letterSpacing: 2)),
               const SizedBox(height: 4),
-              Text('Started ${_clock(_b['jobStartedAt'])}', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              Text('jobDetail.startedAt'.tr(args: [_clock(_b['jobStartedAt'])]), style: const TextStyle(color: Colors.white70, fontSize: 12)),
             ]),
           ),
         ],
@@ -252,28 +254,28 @@ class _ProJobDetailState extends State<ProJobDetail> {
         if (_active || phases.isNotEmpty) ...[
           const SizedBox(height: 12),
           _card(Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('Work Phases', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+            Text('jobDetail.workPhases'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
             const SizedBox(height: 4),
-            const Text('Log each stage so the customer can confirm progress.', style: TextStyle(color: C.muted, fontSize: 13)),
+            Text('jobDetail.phasesDesc'.tr(), style: const TextStyle(color: C.muted, fontSize: 13)),
             const SizedBox(height: 12),
-            if (phases.isEmpty && !_showPhase) const Text('No phases yet.', style: TextStyle(color: C.muted)),
+            if (phases.isEmpty && !_showPhase) Text('jobDetail.noPhases'.tr(), style: const TextStyle(color: C.muted)),
             ...phases.map(_phaseRow),
             const SizedBox(height: 8),
             if (_active)
               _showPhase
                   ? Column(children: [
-                      TextField(controller: _phaseTitle, decoration: _inputDec('Phase title (e.g. Removed old faucet)')),
+                      TextField(controller: _phaseTitle, decoration: _inputDec('jobDetail.phaseHint'.tr())),
                       const SizedBox(height: 10),
                       Row(children: [
-                        Expanded(child: OutlinedButton(onPressed: () => setState(() { _showPhase = false; _phaseTitle.clear(); }), child: const Text('Cancel'))),
+                        Expanded(child: OutlinedButton(onPressed: () => setState(() { _showPhase = false; _phaseTitle.clear(); }), child: Text('common.cancel'.tr()))),
                         const SizedBox(width: 10),
-                        Expanded(child: FilledButton(style: FilledButton.styleFrom(backgroundColor: C.blue), onPressed: _busy ? null : _addPhase, child: const Text('Add Phase'))),
+                        Expanded(child: FilledButton(style: FilledButton.styleFrom(backgroundColor: C.blue), onPressed: _busy ? null : _addPhase, child: Text('jobDetail.addPhase'.tr()))),
                       ]),
                     ])
                   : OutlinedButton(
                       style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(46), side: const BorderSide(color: C.blue)),
                       onPressed: () => setState(() => _showPhase = true),
-                      child: const Text('+ Add Work Phase', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
+                      child: Text('jobDetail.addWorkPhase'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
           ])),
         ],
 
@@ -281,17 +283,17 @@ class _ProJobDetailState extends State<ProJobDetail> {
         if (_active || extensions.isNotEmpty) ...[
           const SizedBox(height: 12),
           _card(Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('More Time / Extra Work', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+            Text('jobDetail.moreTime'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
             const SizedBox(height: 10),
             ...extensions.map(_extRow),
             if (_active && pendingExt)
-              const Padding(padding: EdgeInsets.only(top: 8), child: Text('⏳ A request is pending. You can send another once the customer responds.', style: TextStyle(color: C.muted, fontSize: 13))),
+              Padding(padding: const EdgeInsets.only(top: 8), child: Text('jobDetail.requestPending'.tr(), style: const TextStyle(color: C.muted, fontSize: 13))),
             if (_active && !pendingExt) ...[
               const SizedBox(height: 8),
               _showExt ? _extForm() : OutlinedButton(
                 style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(46), side: const BorderSide(color: C.blue)),
                 onPressed: () => setState(() => _showExt = true),
-                child: const Text('+ Request More Time / Extra Work', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
+                child: Text('jobDetail.requestMoreTime'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
             ],
           ])),
         ],
@@ -301,42 +303,42 @@ class _ProJobDetailState extends State<ProJobDetail> {
         if (_status == 'PENDING')
           Row(children: [
             Expanded(child: OutlinedButton(style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50), side: const BorderSide(color: C.line)),
-              onPressed: _busy ? null : () => _patchStatus('CANCELLED'), child: const Text('Decline', style: TextStyle(color: C.muted, fontWeight: FontWeight.w800)))),
+              onPressed: _busy ? null : () => _patchStatus('CANCELLED'), child: Text('requests.decline'.tr(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w800)))),
             const SizedBox(width: 12),
             Expanded(child: FilledButton(style: FilledButton.styleFrom(backgroundColor: C.blue, minimumSize: const Size.fromHeight(50)),
-              onPressed: _busy ? null : () => _patchStatus('ACCEPTED'), child: const Text('Accept Job', style: TextStyle(fontWeight: FontWeight.w800)))),
+              onPressed: _busy ? null : () => _patchStatus('ACCEPTED'), child: Text('jobDetail.acceptJob'.tr(), style: const TextStyle(fontWeight: FontWeight.w800)))),
           ]),
         if (_status == 'ACCEPTED') ...[
           if (_b['isOnMyWay'] != true)
             FilledButton(style: FilledButton.styleFrom(backgroundColor: const Color(0xFF7C3AED), minimumSize: const Size.fromHeight(50)),
-              onPressed: _busy ? null : _onMyWay, child: const Text('🚗  I\'m On My Way', style: TextStyle(fontWeight: FontWeight.w800)))
+              onPressed: _busy ? null : _onMyWay, child: Text('jobDetail.onMyWay'.tr(), style: const TextStyle(fontWeight: FontWeight.w800)))
           else
             Container(width: double.infinity, padding: const EdgeInsets.all(14), alignment: Alignment.center,
               decoration: BoxDecoration(color: const Color(0xFFF5F3FF), borderRadius: BorderRadius.circular(12)),
-              child: const Text('📍 Sharing your live location with the customer', textAlign: TextAlign.center, style: TextStyle(color: Color(0xFF7C3AED), fontWeight: FontWeight.w700))),
+              child: Text('jobDetail.sharingLocation'.tr(), textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF7C3AED), fontWeight: FontWeight.w700))),
           const SizedBox(height: 10),
           FilledButton(style: FilledButton.styleFrom(backgroundColor: C.blue, minimumSize: const Size.fromHeight(50)),
-            onPressed: _busy ? null : () => _confirmStatus('Start Job', 'Mark this job as started? The timer will begin.', 'IN_PROGRESS'),
-            child: const Text('▶  Start Job', style: TextStyle(fontWeight: FontWeight.w800))),
+            onPressed: _busy ? null : () => _confirmStatus('jobDetail.startJobTitle'.tr(), 'jobDetail.startJobMsg'.tr(), 'IN_PROGRESS'),
+            child: Text('jobDetail.startJobBtn'.tr(), style: const TextStyle(fontWeight: FontWeight.w800))),
         ],
         if (_status == 'IN_PROGRESS')
           FilledButton(style: FilledButton.styleFrom(backgroundColor: const Color(0xFF16A34A), minimumSize: const Size.fromHeight(50)),
-            onPressed: _busy ? null : () => _confirmStatus('Complete Job', 'Mark this job as completed?', 'COMPLETED'),
-            child: const Text('✓  Mark as Complete', style: TextStyle(fontWeight: FontWeight.w800))),
+            onPressed: _busy ? null : () => _confirmStatus('jobDetail.completeJobTitle'.tr(), 'jobDetail.completeJobMsg'.tr(), 'COMPLETED'),
+            child: Text('jobDetail.markComplete'.tr(), style: const TextStyle(fontWeight: FontWeight.w800))),
         if (_status != 'COMPLETED' && _status != 'CANCELLED') ...[
           const SizedBox(height: 10),
           OutlinedButton.icon(
             style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50), side: const BorderSide(color: C.line)),
             onPressed: () => context.push('/chat', extra: {'bookingId': _id, 'name': name}),
             icon: const Icon(Icons.chat_bubble_outline, size: 18, color: C.ink),
-            label: Text('Message $name', style: const TextStyle(color: C.ink, fontWeight: FontWeight.w800))),
+            label: Text('jobDetail.messageCustomer'.tr(args: [name]), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w800))),
           if (phone.isNotEmpty) ...[
             const SizedBox(height: 10),
             OutlinedButton.icon(
               style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50), side: const BorderSide(color: C.line)),
               onPressed: () => launchUrl(Uri.parse('tel:$phone')),
               icon: const Icon(Icons.call_outlined, size: 18, color: C.ink),
-              label: const Text('Call customer', style: TextStyle(color: C.ink, fontWeight: FontWeight.w800))),
+              label: Text('jobDetail.callCustomer'.tr(), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w800))),
           ],
         ],
         if (_status == 'COMPLETED')
@@ -344,12 +346,12 @@ class _ProJobDetailState extends State<ProJobDetail> {
             width: double.infinity, padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(color: const Color(0xFFECFDF3), borderRadius: BorderRadius.circular(16)),
             child: Column(children: [
-              const Text('Job Completed', style: TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF16A34A), fontSize: 16)),
-              if (_b['completedAt'] != null) Text('Finished at ${_clock(_b['completedAt'])}', style: const TextStyle(color: C.muted, fontSize: 13)),
+              Text('jobDetail.jobCompleted'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF16A34A), fontSize: 16)),
+              if (_b['completedAt'] != null) Text('jobDetail.finishedAt'.tr(args: [_clock(_b['completedAt'])]), style: const TextStyle(color: C.muted, fontSize: 13)),
               const SizedBox(height: 6),
-              Text('Earnings: \$${(price * 0.9).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+              Text('jobDetail.earnings'.tr(args: ['\$${(price * 0.9).toStringAsFixed(2)}']), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
               if (_b['review'] != null)
-                Padding(padding: const EdgeInsets.only(top: 6), child: Text('Customer rated: ${'★' * ((_b['review']['rating'] ?? 0) as int)}', style: const TextStyle(color: Color(0xFFF59E0B)))),
+                Padding(padding: const EdgeInsets.only(top: 6), child: Text('jobDetail.customerRated'.tr(args: ['★' * ((_b['review']['rating'] ?? 0) as int)]), style: const TextStyle(color: Color(0xFFF59E0B)))),
             ]),
           ),
         const SizedBox(height: 20),
@@ -381,8 +383,8 @@ class _ProJobDetailState extends State<ProJobDetail> {
         const SizedBox(width: 12),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text((ph['title'] ?? '').toString(), style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink)),
-          Text('Started ${_clock(ph['startedAt'])}', style: const TextStyle(color: C.muted, fontSize: 12)),
-          Text(confirmed ? '✓ Customer confirmed' : 'Awaiting customer confirmation',
+          Text('jobDetail.startedAt'.tr(args: [_clock(ph['startedAt'])]), style: const TextStyle(color: C.muted, fontSize: 12)),
+          Text(confirmed ? 'jobDetail.phaseConfirmed'.tr() : 'jobDetail.phaseAwaiting'.tr(),
             style: TextStyle(color: confirmed ? const Color(0xFF16A34A) : const Color(0xFFB45309), fontSize: 12, fontWeight: FontWeight.w700)),
         ])),
       ]),
@@ -392,7 +394,7 @@ class _ProJobDetailState extends State<ProJobDetail> {
   Widget _extRow(dynamic ext) {
     final st = (ext['status'] ?? '').toString();
     final color = st == 'APPROVED' ? const Color(0xFF16A34A) : st == 'DECLINED' ? C.red : const Color(0xFFB45309);
-    final label = st == 'APPROVED' ? 'Approved' : st == 'DECLINED' ? 'Declined' : 'Waiting';
+    final label = st == 'APPROVED' ? 'jobDetail.extApproved'.tr() : st == 'DECLINED' ? 'jobDetail.extDeclined'.tr() : 'jobDetail.extWaiting'.tr();
     final mins = (ext['additionalMinutes'] ?? 0) as int;
     final amt = (ext['extraAmount'] ?? 0) as num;
     return Padding(
@@ -408,7 +410,7 @@ class _ProJobDetailState extends State<ProJobDetail> {
   }
 
   Widget _extForm() => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('Extra time needed', style: TextStyle(fontWeight: FontWeight.w700, color: C.ink, fontSize: 13)),
+        Text('jobDetail.extraTimeNeeded'.tr(), style: const TextStyle(fontWeight: FontWeight.w700, color: C.ink, fontSize: 13)),
         const SizedBox(height: 8),
         Row(children: ['30', '60', '90', '120'].map((m) {
           final on = _extMin == m;
@@ -420,14 +422,14 @@ class _ProJobDetailState extends State<ProJobDetail> {
           ));
         }).toList()),
         const SizedBox(height: 12),
-        TextField(controller: _extAmount, keyboardType: TextInputType.number, decoration: _inputDec('Extra charge (optional, \$)')),
+        TextField(controller: _extAmount, keyboardType: TextInputType.number, decoration: _inputDec('jobDetail.extraChargeHint'.tr())),
         const SizedBox(height: 10),
-        TextField(controller: _extReason, maxLines: 2, decoration: _inputDec('Reason (optional)')),
+        TextField(controller: _extReason, maxLines: 2, decoration: _inputDec('jobDetail.reasonHint'.tr())),
         const SizedBox(height: 10),
         Row(children: [
-          Expanded(child: OutlinedButton(onPressed: () => setState(() { _showExt = false; _extMin = ''; _extAmount.clear(); _extReason.clear(); }), child: const Text('Cancel'))),
+          Expanded(child: OutlinedButton(onPressed: () => setState(() { _showExt = false; _extMin = ''; _extAmount.clear(); _extReason.clear(); }), child: Text('common.cancel'.tr()))),
           const SizedBox(width: 10),
-          Expanded(child: FilledButton(style: FilledButton.styleFrom(backgroundColor: C.blue), onPressed: _busy ? null : _requestExtension, child: const Text('Send Request'))),
+          Expanded(child: FilledButton(style: FilledButton.styleFrom(backgroundColor: C.blue), onPressed: _busy ? null : _requestExtension, child: Text('jobDetail.sendRequest'.tr()))),
         ]),
       ]);
 

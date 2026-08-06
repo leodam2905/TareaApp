@@ -1,15 +1,17 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
 
+// [translation key, textColor, bgColor]
 const _statusPill = {
-  'PENDING': ['Pending', 0xFFB45309, 0xFFFEF3C7],
-  'ACCEPTED': ['Confirmed', 0xFF15803D, 0xFFDCFCE7],
-  'IN_PROGRESS': ['In progress', 0xFFC2410C, 0xFFFFEDD5],
-  'COMPLETED': ['Completed', 0xFF15803D, 0xFFDCFCE7],
-  'CANCELLED': ['Cancelled', 0xFFB91C1C, 0xFFFEE2E2],
+  'PENDING': ['status.pending', 0xFFB45309, 0xFFFEF3C7],
+  'ACCEPTED': ['status.confirmed', 0xFF15803D, 0xFFDCFCE7],
+  'IN_PROGRESS': ['status.inProgress', 0xFFC2410C, 0xFFFFEDD5],
+  'COMPLETED': ['status.completed', 0xFF15803D, 0xFFDCFCE7],
+  'CANCELLED': ['status.cancelled', 0xFFB91C1C, 0xFFFEE2E2],
 };
 
 class ProJobs extends StatefulWidget {
@@ -43,10 +45,10 @@ class _ProJobsState extends State<ProJobs> {
       if (res.statusCode >= 200 && res.statusCode < 300) {
         setState(() => b['status'] = status);
       } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not update the job. Please try again.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('proJobs.updateFailed'.tr())));
       }
     } catch (_) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not connect. Please try again.')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('common.connectionRetry'.tr())));
     }
   }
 
@@ -57,16 +59,16 @@ class _ProJobsState extends State<ProJobs> {
       backgroundColor: C.bg,
       body: SafeArea(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Padding(padding: EdgeInsets.fromLTRB(20, 8, 20, 12), child: Text('My Jobs', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink))),
+          Padding(padding: const EdgeInsets.fromLTRB(20, 8, 20, 12), child: Text('nav.myJobs'.tr(), style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink))),
           SizedBox(height: 40, child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 16), children: [
-            _chip('ALL', 'All'), _chip('PENDING', 'Pending'), _chip('ACCEPTED', 'Confirmed'), _chip('IN_PROGRESS', 'In Progress'), _chip('COMPLETED', 'Completed'),
+            _chip('ALL', 'bookings.all'.tr()), _chip('PENDING', 'status.pending'.tr()), _chip('ACCEPTED', 'status.confirmed'.tr()), _chip('IN_PROGRESS', 'bookings.inProgress'.tr()), _chip('COMPLETED', 'bookings.completed'.tr()),
           ])),
           const SizedBox(height: 12),
           Expanded(
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : filtered.isEmpty
-                    ? const Center(child: Text('No jobs here yet.', style: TextStyle(color: C.muted)))
+                    ? Center(child: Text('proJobs.noJobs'.tr(), style: const TextStyle(color: C.muted)))
                     : ListView.builder(padding: const EdgeInsets.fromLTRB(16, 0, 16, 24), itemCount: filtered.length, itemBuilder: (_, i) => _card(filtered[i])),
           ),
         ]),
@@ -90,9 +92,9 @@ class _ProJobsState extends State<ProJobs> {
   }
 
   Widget _card(dynamic b) {
-    final meta = _statusPill[b['status']] ?? ['Job', 0xFF64748B, 0xFFF1F5F9];
-    final service = (b['service']?['title'] ?? b['category'] ?? 'Job').toString();
-    final customer = (b['customer']?['name'] ?? 'Customer').toString();
+    final meta = _statusPill[b['status']] ?? ['pro.jobFallback', 0xFF64748B, 0xFFF1F5F9];
+    final service = (b['service']?['title'] ?? b['category'] ?? 'pro.jobFallback'.tr()).toString();
+    final customer = (b['customer']?['name'] ?? 'proJobs.customerFallback'.tr()).toString();
     final price = (b['totalPrice'] ?? 0) as num;
     final status = b['status'];
     return GestureDetector(
@@ -108,7 +110,7 @@ class _ProJobsState extends State<ProJobs> {
             Text(customer, style: const TextStyle(color: C.muted)),
           ])),
           Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), decoration: BoxDecoration(color: Color(meta[2] as int), borderRadius: BorderRadius.circular(20)),
-              child: Text(meta[0] as String, style: TextStyle(color: Color(meta[1] as int), fontWeight: FontWeight.w800, fontSize: 12))),
+              child: Text((meta[0] as String).tr(), style: TextStyle(color: Color(meta[1] as int), fontWeight: FontWeight.w800, fontSize: 12))),
         ]),
         const SizedBox(height: 10),
         const Divider(color: C.line, height: 1),
@@ -117,13 +119,13 @@ class _ProJobsState extends State<ProJobs> {
           Text('\$${price.round()}', style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
           const Spacer(),
           if (status == 'PENDING') ...[
-            _smallBtn('Decline', C.muted, () => _setStatus(b, 'CANCELLED'), outlined: true),
+            _smallBtn('requests.decline'.tr(), C.muted, () => _setStatus(b, 'CANCELLED'), outlined: true),
             const SizedBox(width: 8),
-            _smallBtn('Accept', C.blue, () => _setStatus(b, 'ACCEPTED')),
+            _smallBtn('proJobs.accept'.tr(), C.blue, () => _setStatus(b, 'ACCEPTED')),
           ] else if (status == 'ACCEPTED')
-            _smallBtn('Start job', C.blue, () => _setStatus(b, 'IN_PROGRESS'))
+            _smallBtn('proJobs.startJob'.tr(), C.blue, () => _setStatus(b, 'IN_PROGRESS'))
           else if (status == 'IN_PROGRESS')
-            _smallBtn('Mark complete', C.green, () => _setStatus(b, 'COMPLETED')),
+            _smallBtn('proJobs.markComplete'.tr(), C.green, () => _setStatus(b, 'COMPLETED')),
         ]),
       ]),
       ),

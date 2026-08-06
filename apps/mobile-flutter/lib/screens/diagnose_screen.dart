@@ -3,13 +3,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 
+// [translation key, textColor, bgColor]
 const _urgencyMeta = {
-  'urgent': ['Urgent', 0xFFEF4444, 0xFFFEE2E2],
-  'soon': ['Soon', 0xFFF59E0B, 0xFFFEF3C7],
-  'routine': ['Routine', 0xFF10B981, 0xFFDCFCE7],
+  'urgent': ['diagnose.urgent', 0xFFEF4444, 0xFFFEE2E2],
+  'soon': ['diagnose.soon', 0xFFF59E0B, 0xFFFEF3C7],
+  'routine': ['diagnose.routine', 0xFF10B981, 0xFFDCFCE7],
 };
 
 class DiagnoseScreen extends StatefulWidget {
@@ -43,9 +45,9 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
       context: context,
       builder: (_) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          ListTile(leading: const Icon(Icons.camera_alt_outlined), title: const Text('Take Photo'),
+          ListTile(leading: const Icon(Icons.camera_alt_outlined), title: Text('diagnose.takePhoto'.tr()),
               onTap: () { Navigator.pop(context); _pick(ImageSource.camera); }),
-          ListTile(leading: const Icon(Icons.photo_library_outlined), title: const Text('Choose from Library'),
+          ListTile(leading: const Icon(Icons.photo_library_outlined), title: Text('diagnose.chooseLibrary'.tr()),
               onTap: () { Navigator.pop(context); _pick(ImageSource.gallery); }),
         ]),
       ),
@@ -63,10 +65,10 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
       if (res.statusCode == 200) {
         setState(() => _result = jsonDecode(res.body) as Map<String, dynamic>);
       } else {
-        _toast('Could not analyze. Try again.');
+        _toast('diagnose.analyzeFailed'.tr());
       }
     } catch (_) {
-      _toast('Could not connect.');
+      _toast('diagnose.connectFailed'.tr());
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -81,7 +83,7 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
       appBar: AppBar(
         backgroundColor: C.white, surfaceTintColor: Colors.transparent, elevation: 0,
         leading: IconButton(icon: const Icon(Icons.chevron_left, color: C.ink, size: 30), onPressed: () => context.pop()),
-        title: const Text('AI Diagnose', style: TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 20)),
+        title: Text('diagnose.title'.tr(), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 20)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -89,11 +91,11 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 8),
-            const Text("What's the problem?", textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: C.ink)),
+            Text('diagnose.whatsTheProblem'.tr(), textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: C.ink)),
             const SizedBox(height: 10),
-            const Text("Show us a photo or describe the issue — we'll tell you exactly which pro you need.",
-                textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: C.muted, height: 1.5)),
+            Text('diagnose.subtitle'.tr(),
+                textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, color: C.muted, height: 1.5)),
             const SizedBox(height: 20),
             // Photo box
             GestureDetector(
@@ -117,23 +119,23 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
                           child: const Icon(Icons.camera_alt_outlined, color: C.blue, size: 30),
                         ),
                         const SizedBox(height: 10),
-                        const Text('Add a photo', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
-                        const Text('Take a photo or choose from your library', style: TextStyle(color: C.muted, fontSize: 13)),
+                        Text('diagnose.addPhoto'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+                        Text('diagnose.addPhotoSub'.tr(), textAlign: TextAlign.center, style: const TextStyle(color: C.muted, fontSize: 13)),
                       ]),
               ),
             ),
             const SizedBox(height: 18),
-            Row(children: const [
-              Expanded(child: Divider(color: C.line)),
-              Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('or describe the issue', style: TextStyle(color: C.muted))),
-              Expanded(child: Divider(color: C.line)),
+            Row(children: [
+              const Expanded(child: Divider(color: C.line)),
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Text('diagnose.orDescribe'.tr(), style: const TextStyle(color: C.muted))),
+              const Expanded(child: Divider(color: C.line)),
             ]),
             const SizedBox(height: 18),
             TextField(
               controller: _desc,
               maxLines: 4,
               decoration: InputDecoration(
-                hintText: 'e.g. Water stain on ceiling after heavy rain…',
+                hintText: 'diagnose.descHint'.tr(),
                 filled: true, fillColor: C.surface,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
               ),
@@ -147,7 +149,7 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
               onPressed: _loading ? null : _analyze,
               child: _loading
                   ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Text('Diagnose', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+                  : Text('diagnose.diagnose'.tr(), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
             ),
             if (_result != null) ...[
               const SizedBox(height: 20),
@@ -180,7 +182,7 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(color: Color(urg[2] as int), borderRadius: BorderRadius.circular(20)),
-              child: Text(urg[0] as String, style: TextStyle(color: Color(urg[1] as int), fontWeight: FontWeight.w800)),
+              child: Text((urg[0] as String).tr(), style: TextStyle(color: Color(urg[1] as int), fontWeight: FontWeight.w800)),
             ),
           ]),
           const SizedBox(height: 14),
@@ -193,15 +195,13 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: const Color(0xFFFED7AA)),
             ),
-            child: const Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Icon(Icons.info_outline, size: 18, color: Color(0xFFEA580C)),
-              SizedBox(width: 8),
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Icon(Icons.info_outline, size: 18, color: Color(0xFFEA580C)),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Informational only — this is an AI estimate, not a professional diagnosis. '
-                  'A licensed pro should confirm the issue before any work is done. '
-                  'For a suspected gas leak, electrical hazard, or flooding, call 911 or a licensed pro now.',
-                  style: TextStyle(fontSize: 12.5, color: Color(0xFF9A3412), height: 1.35, fontWeight: FontWeight.w600),
+                  'diagnose.disclaimer'.tr(),
+                  style: const TextStyle(fontSize: 12.5, color: Color(0xFF9A3412), height: 1.35, fontWeight: FontWeight.w600),
                 ),
               ),
             ]),
@@ -210,7 +210,7 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
           Text((r['explanation'] ?? '').toString(), style: const TextStyle(color: C.ink, height: 1.5, fontSize: 15)),
           if (tips.isNotEmpty) ...[
             const SizedBox(height: 16),
-            const Text('Tips', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink)),
+            Text('diagnose.tips'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink)),
             const SizedBox(height: 8),
             ...tips.map((t) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),
@@ -228,7 +228,7 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
               style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
               onPressed: () => context.push('/post-job'),
-              child: const Text('Post this job', style: TextStyle(fontWeight: FontWeight.w800, color: Colors.white, fontSize: 16)),
+              child: Text('diagnose.postThisJob'.tr(), style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.white, fontSize: 16)),
             ),
           ),
         ],
@@ -237,7 +237,7 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
   }
 
   String _pretty(String c) {
-    if (c.isEmpty) return 'Service';
+    if (c.isEmpty) return 'proProfile.serviceFallback'.tr();
     return c[0].toUpperCase() + c.substring(1).toLowerCase().replaceAll('_', ' ');
   }
 }

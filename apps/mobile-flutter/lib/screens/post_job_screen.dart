@@ -1,28 +1,41 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 
 class _Urgency {
-  final String value, label, desc;
+  final String value, labelKey, descKey;
   final IconData icon;
   final Color color;
-  const _Urgency(this.value, this.label, this.desc, this.icon, this.color);
+  const _Urgency(this.value, this.labelKey, this.descKey, this.icon, this.color);
 }
 
 const _urgencies = [
-  _Urgency('STANDARD', 'Standard', 'Within a few days', Icons.schedule, C.blue),
-  _Urgency('SOON', 'Soon', 'Within 24–48 hours', Icons.schedule, C.amber),
-  _Urgency('URGENT', 'Urgent', 'As soon as possible', Icons.bolt, C.red),
+  _Urgency('STANDARD', 'postjob.urgencyStandard', 'postjob.urgencyStandardDesc', Icons.schedule, C.blue),
+  _Urgency('SOON', 'postjob.urgencySoon', 'postjob.urgencySoonDesc', Icons.schedule, C.amber),
+  _Urgency('URGENT', 'postjob.urgencyUrgent', 'postjob.urgencyUrgentDesc', Icons.bolt, C.red),
 ];
 
-const _categories = [
-  'Plumbing', 'Electrical', 'Painting', 'Assembly', 'Cleaning', 'HVAC',
-  'Roofing', 'Landscaping', 'Moving', 'Appliance', 'Laundry', 'General',
+// (canonical enum value, translation key) — the value is sent to the API, the
+// key is only for display, so translating labels never changes what's submitted.
+const _categories = <(String, String)>[
+  ('PLUMBING', 'categories.plumbing'),
+  ('ELECTRICAL', 'categories.electrical'),
+  ('PAINTING', 'categories.painting'),
+  ('ASSEMBLY', 'categories.assembly'),
+  ('CLEANING', 'categories.cleaning'),
+  ('HVAC', 'categories.hvac'),
+  ('ROOFING', 'categories.roofing'),
+  ('LANDSCAPING', 'categories.landscaping'),
+  ('MOVING', 'categories.moving'),
+  ('APPLIANCE', 'categories.appliance'),
+  ('LAUNDRY', 'categories.laundry'),
+  ('GENERAL', 'categories.general'),
 ];
 
-const _steps = ['Details', 'Schedule', 'Location', 'Review'];
+const _steps = ['postjob.stepDetails', 'postjob.stepSchedule', 'postjob.stepLocation', 'postjob.stepReview'];
 
 class PostJobScreen extends StatefulWidget {
   final Map<String, dynamic>? directed;
@@ -44,8 +57,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
     super.initState();
     final d = widget.directed;
     if (d != null && (d['category'] ?? '').toString().isNotEmpty) {
-      final cat = d['category'].toString();
-      _category = cat.isNotEmpty ? cat[0].toUpperCase() + cat.substring(1).toLowerCase() : '';
+      _category = d['category'].toString().toUpperCase();
     }
   }
   final _desc = TextEditingController();
@@ -122,12 +134,12 @@ class _PostJobScreenState extends State<PostJobScreen> {
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(_isDirected ? 'Request sent to $_proName!' : 'Job posted!')));
+            SnackBar(content: Text(_isDirected ? 'postjob.requestSent'.tr(args: [_proName]) : 'postjob.jobPosted'.tr())));
         context.go('/home');
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not post job.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('postjob.postFailed'.tr())));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -162,23 +174,23 @@ class _PostJobScreenState extends State<PostJobScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
-                        child: Text(_isDirected ? 'Request $_proName' : 'Post a Job',
+                        child: Text(_isDirected ? 'postjob.requestPro'.tr(args: [_proName]) : 'nav.postJob'.tr(),
                             maxLines: 1, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
                       ),
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Draft saved'))),
-                    child: const Text('Save Draft', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('postjob.draftSaved'.tr()))),
+                    child: Text('postjob.saveDraft'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 8),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Text('Tell us what you need and get matched with trusted pros.',
-                  textAlign: TextAlign.center, style: TextStyle(color: C.muted, fontSize: 15)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text('postjob.subtitle'.tr(),
+                  textAlign: TextAlign.center, style: const TextStyle(color: C.muted, fontSize: 15)),
             ),
             const SizedBox(height: 16),
             _stepper(),
@@ -208,8 +220,8 @@ class _PostJobScreenState extends State<PostJobScreen> {
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(_step < 3 ? 'Continue' : (_isDirected ? 'Send request to $_proName' : 'Accept estimate & post job'),
-                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
+                                Flexible(child: Text(_step < 3 ? 'common.continue'.tr() : (_isDirected ? 'postjob.sendRequestTo'.tr(args: [_proName]) : 'postjob.acceptEstimate'.tr()),
+                                    textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white))),
                                 const SizedBox(width: 10),
                                 Container(
                                   width: 30, height: 30,
@@ -227,9 +239,9 @@ class _PostJobScreenState extends State<PostJobScreen> {
                       children: [
                         GestureDetector(
                           onTap: () => setState(() => _step = 0),
-                          child: const Text('Edit details', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+                          child: Text('postjob.editDetails'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
                         ),
-                        const Text('Request an in-person quote', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+                        Flexible(child: Text('postjob.inPersonQuote'.tr(), overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
                       ],
                     ),
                   ],
@@ -281,7 +293,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
                   ],
                 ),
                 const SizedBox(height: 6),
-                Text(_steps[i], style: TextStyle(fontSize: 13, color: active ? C.blue : C.muted, fontWeight: FontWeight.w800)),
+                Text(_steps[i].tr(), style: TextStyle(fontSize: 13, color: active ? C.blue : C.muted, fontWeight: FontWeight.w800)),
               ],
             ),
           );
@@ -315,7 +327,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
     return Column(
       children: [
         _card([
-          const Text('How urgent is this?', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
+          Text('postjob.urgencyTitle'.tr(), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
           const SizedBox(height: 14),
           Row(
             children: _urgencies.map((u) {
@@ -339,10 +351,10 @@ class _PostJobScreenState extends State<PostJobScreen> {
                         FittedBox(
                           fit: BoxFit.scaleDown,
                           alignment: Alignment.centerLeft,
-                          child: Text(u.label, maxLines: 1, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: C.ink)),
+                          child: Text(u.labelKey.tr(), maxLines: 1, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: C.ink)),
                         ),
                         const SizedBox(height: 4),
-                        Text(u.desc, style: const TextStyle(fontSize: 12, color: C.muted, height: 1.2)),
+                        Text(u.descKey.tr(), style: const TextStyle(fontSize: 12, color: C.muted, height: 1.2)),
                       ],
                     ),
                   ),
@@ -352,21 +364,21 @@ class _PostJobScreenState extends State<PostJobScreen> {
           ),
         ]),
         _card([
-          const Text('What do you need?', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+          Text('postjob.needTitle'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8, runSpacing: 8,
             children: _categories.map((c) {
-              final sel = _category == c;
+              final sel = _category == c.$1;
               return GestureDetector(
-                onTap: () => setState(() => _category = c),
+                onTap: () => setState(() => _category = c.$1),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
                   decoration: BoxDecoration(
                     color: sel ? C.blue : C.surface,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(c, style: TextStyle(color: sel ? Colors.white : C.ink, fontWeight: FontWeight.w700)),
+                  child: Text(c.$2.tr(), style: TextStyle(color: sel ? Colors.white : C.ink, fontWeight: FontWeight.w700)),
                 ),
               );
             }).toList(),
@@ -376,7 +388,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
             controller: _desc,
             maxLines: 4,
             decoration: InputDecoration(
-              hintText: 'Describe the job…',
+              hintText: 'postjob.describeHint'.tr(),
               filled: true, fillColor: C.surface,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
             ),
@@ -388,17 +400,17 @@ class _PostJobScreenState extends State<PostJobScreen> {
 
   Widget _schedule() {
     return _card([
-      const Text('When do you need it?', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
+      Text('postjob.scheduleTitle'.tr(), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
       const SizedBox(height: 6),
-      const Text('Pick a preferred date and time — you can adjust with your pro later.',
-          style: TextStyle(color: C.muted, height: 1.4)),
+      Text('postjob.scheduleDesc'.tr(),
+          style: const TextStyle(color: C.muted, height: 1.4)),
       const SizedBox(height: 16),
       Row(children: [
         Expanded(child: _pickerPill(Icons.calendar_today_outlined,
-            _date == null ? 'Date' : '${_date!.month}/${_date!.day}/${_date!.year}', _pickDate)),
+            _date == null ? 'postjob.dateLabel'.tr() : '${_date!.month}/${_date!.day}/${_date!.year}', _pickDate)),
         const SizedBox(width: 12),
         Expanded(child: _pickerPill(Icons.access_time,
-            _time == null ? 'Time' : _time!.format(context), _pickTime)),
+            _time == null ? 'postjob.timeLabel'.tr() : _time!.format(context), _pickTime)),
       ]),
     ]);
   }
@@ -418,11 +430,11 @@ class _PostJobScreenState extends State<PostJobScreen> {
 
   Widget _location() {
     return _card([
-      const Text('Where is the job?', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
+      Text('postjob.locationTitle'.tr(), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
       const SizedBox(height: 16),
-      _input(_address, 'Street address', Icons.location_on_outlined),
+      _input(_address, 'postjob.streetAddress'.tr(), Icons.location_on_outlined),
       const SizedBox(height: 12),
-      _input(_city, 'City', Icons.location_city_outlined),
+      _input(_city, 'postjob.city'.tr(), Icons.location_city_outlined),
     ]);
   }
 
@@ -462,13 +474,13 @@ class _PostJobScreenState extends State<PostJobScreen> {
   Widget _review() {
     if (_aiLoading) {
       return _card([
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 40),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 40),
           child: Center(
             child: Column(children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 14),
-              Text('Calculating a fair price…', style: TextStyle(color: C.muted)),
+              const CircularProgressIndicator(),
+              const SizedBox(height: 14),
+              Text('postjob.calculating'.tr(), style: const TextStyle(color: C.muted)),
             ]),
           ),
         ),
@@ -477,8 +489,8 @@ class _PostJobScreenState extends State<PostJobScreen> {
     final e = _estimate;
     if (e == null) {
       return _card([
-        const Text('Add a description on the Details step so Tarea can estimate your price.',
-            style: TextStyle(color: C.muted, height: 1.4)),
+        Text('postjob.addDescription'.tr(),
+            style: const TextStyle(color: C.muted, height: 1.4)),
       ]);
     }
     final fixed = e['isFixed'] == true && e['price'] != null;
@@ -491,7 +503,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
     return _card([
       Center(child: Text(priceText, style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w900, color: C.blue))),
       Center(
-        child: Text(fixed ? 'Fixed price' : 'Estimated range',
+        child: Text(fixed ? 'postjob.fixedPrice'.tr() : 'postjob.estimatedRange'.tr(),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: C.muted)),
       ),
       const SizedBox(height: 16),
@@ -499,26 +511,26 @@ class _PostJobScreenState extends State<PostJobScreen> {
         decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(14)),
         padding: const EdgeInsets.symmetric(vertical: 14),
         child: Row(children: [
-          Expanded(child: _splitCell('Labor & service', '\$${_n(bd['labor'])}')),
+          Expanded(child: _splitCell('postjob.laborService'.tr(), '\$${_n(bd['labor'])}')),
           Container(width: 1, height: 40, color: C.line),
-          Expanded(child: _splitCell('Materials & furniture', '\$${_n(bd['materials'])}')),
+          Expanded(child: _splitCell('postjob.materialsFurniture'.tr(), '\$${_n(bd['materials'])}')),
         ]),
       ),
       const SizedBox(height: 16),
       const Divider(color: C.line, height: 1),
       const SizedBox(height: 14),
       Row(children: [
-        Expanded(child: _statCell('Estimated work time', (e['workTime'] ?? '—').toString())),
-        Expanded(child: _statCell('Minimum appointment', '${_n(e['minWindow'])} hours')),
+        Expanded(child: _statCell('postjob.workTime'.tr(), (e['workTime'] ?? '—').toString())),
+        Expanded(child: _statCell('postjob.minAppointment'.tr(), 'postjob.hours'.tr(args: ['${_n(e['minWindow'])}']))),
       ]),
       const SizedBox(height: 16),
       Row(children: [
-        Expanded(child: _statCell('Earliest availability', _date != null ? _weekday(_date!) : 'Flexible')),
-        Expanded(child: _statCell('Confidence', '$confLabel — $confPct%', color: _confColor(confLabel))),
+        Expanded(child: _statCell('postjob.earliestAvail'.tr(), _date != null ? _weekday(_date!) : 'postjob.flexible'.tr())),
+        Expanded(child: _statCell('postjob.confidence'.tr(), '$confLabel — $confPct%', color: _confColor(confLabel))),
       ]),
       if (included.isNotEmpty) ...[
         const SizedBox(height: 18),
-        const Text('Included', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 15)),
+        Text('postjob.included'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 15)),
         const SizedBox(height: 10),
         ...included.map((it) => Padding(
               padding: const EdgeInsets.only(bottom: 10),

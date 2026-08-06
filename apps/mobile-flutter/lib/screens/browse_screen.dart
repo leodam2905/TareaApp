@@ -1,31 +1,33 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 
 class _Cat {
   final String value;
-  final String label;
+  final String labelKey;
   final IconData icon;
-  const _Cat(this.value, this.label, this.icon);
+  const _Cat(this.value, this.labelKey, this.icon);
 }
 
 const _cats = [
-  _Cat('', 'All', Icons.grid_view_rounded),
-  _Cat('PLUMBING', 'Plumbing', Icons.water_drop_outlined),
-  _Cat('ELECTRICAL', 'Electrical', Icons.bolt_outlined),
-  _Cat('CLEANING', 'Cleaning', Icons.auto_awesome_outlined),
-  _Cat('PAINTING', 'Painting', Icons.palette_outlined),
-  _Cat('CARPENTRY', 'Carpentry', Icons.handyman_outlined),
-  _Cat('HVAC', 'HVAC', Icons.ac_unit_outlined),
-  _Cat('LANDSCAPING', 'Landscaping', Icons.eco_outlined),
+  _Cat('', 'categories.all', Icons.grid_view_rounded),
+  _Cat('PLUMBING', 'categories.plumbing', Icons.water_drop_outlined),
+  _Cat('ELECTRICAL', 'categories.electrical', Icons.bolt_outlined),
+  _Cat('CLEANING', 'categories.cleaning', Icons.auto_awesome_outlined),
+  _Cat('PAINTING', 'categories.painting', Icons.palette_outlined),
+  _Cat('CARPENTRY', 'categories.carpentry', Icons.handyman_outlined),
+  _Cat('HVAC', 'categories.hvac', Icons.ac_unit_outlined),
+  _Cat('LANDSCAPING', 'categories.landscaping', Icons.eco_outlined),
 ];
 
+// [trust flag key, translation key, color]
 const _trustDefs = {
-  'licensed': ['Licensed', 0xFF2563EB],
-  'insured': ['Insured', 0xFF10B981],
-  'backgroundCheck': ['Background checked', 0xFF7C3AED],
+  'licensed': ['browse.licensed', 0xFF2563EB],
+  'insured': ['browse.insured', 0xFF10B981],
+  'backgroundCheck': ['browse.backgroundChecked', 0xFF7C3AED],
 };
 
 class BrowseScreen extends StatefulWidget {
@@ -103,11 +105,11 @@ class _BrowseScreenState extends State<BrowseScreen> {
               padding: const EdgeInsets.fromLTRB(12, 8, 20, 8),
               child: Row(children: [
                 IconButton(icon: const Icon(Icons.chevron_left, color: C.ink, size: 28), onPressed: () => context.pop()),
-                const Text('Browse Pros', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: C.ink)),
+                Text('browse.title'.tr(), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: C.ink)),
                 const Spacer(),
                 const Icon(Icons.location_on_outlined, size: 15, color: C.muted),
                 const SizedBox(width: 2),
-                const Text('Near you', style: TextStyle(color: C.muted)),
+                Text('browse.nearYou'.tr(), style: const TextStyle(color: C.muted)),
               ]),
             ),
             // Category chips
@@ -129,10 +131,10 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
-                  _pill('Within 60 mi', on: _nearMe, icon: Icons.navigation_outlined, onTap: () => setState(() => _nearMe = !_nearMe)),
-                  _pill('Available now', on: true, dot: true),
-                  _pill('Top rated', on: _sort == 'rating', onTap: () => setState(() => _sort = _sort == 'rating' ? 'best' : 'rating')),
-                  _pill('Price', on: _sort == 'price', trailing: Icons.keyboard_arrow_down, onTap: () => setState(() => _sort = _sort == 'price' ? 'best' : 'price')),
+                  _pill('browse.within60'.tr(), on: _nearMe, icon: Icons.navigation_outlined, onTap: () => setState(() => _nearMe = !_nearMe)),
+                  _pill('browse.availableNow'.tr(), on: true, dot: true),
+                  _pill('browse.topRated'.tr(), on: _sort == 'rating', onTap: () => setState(() => _sort = _sort == 'rating' ? 'best' : 'rating')),
+                  _pill('browse.price'.tr(), on: _sort == 'price', trailing: Icons.keyboard_arrow_down, onTap: () => setState(() => _sort = _sort == 'price' ? 'best' : 'price')),
                 ],
               ),
             ),
@@ -142,7 +144,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
               child: _loading
                   ? const Center(child: CircularProgressIndicator())
                   : _filtered.isEmpty
-                      ? const Center(child: Text('No pros match your filters.', style: TextStyle(color: C.muted)))
+                      ? Center(child: Text('browse.noMatch'.tr(), style: const TextStyle(color: C.muted)))
                       : ListView.builder(
                           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                           itemCount: _filtered.length,
@@ -172,7 +174,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
             child: Icon(c.icon, color: sel ? C.blue : const Color(0xFF475569), size: 22),
           ),
           const SizedBox(height: 6),
-          FittedBox(fit: BoxFit.scaleDown, child: Text(c.label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: sel ? C.blue : C.muted))),
+          FittedBox(fit: BoxFit.scaleDown, child: Text(c.labelKey.tr(), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: sel ? C.blue : C.muted))),
         ]),
       ),
     );
@@ -211,7 +213,9 @@ class _BrowseScreenState extends State<BrowseScreen> {
     final hourly = hp['hourlyRate'];
     final bio = (hp['bio'] ?? '').toString();
     final services = (h['services'] as List?) ?? const [];
-    final specialty = services.isNotEmpty ? '${_pretty((services[0]['category'] ?? '').toString())} Pro' : 'Handyman';
+    final specialty = services.isNotEmpty
+        ? 'dashboard.proSuffix'.tr(args: [_pretty((services[0]['category'] ?? '').toString())])
+        : 'dashboard.handyman'.tr();
     final isVerified = h['isVerified'] == true;
     final trust = (h['trust'] as Map?) ?? const {};
     final badges = _trustDefs.entries.where((e) => trust[e.key] == true).take(3).toList();
@@ -236,7 +240,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 2),
                     decoration: BoxDecoration(color: C.green, borderRadius: BorderRadius.circular(8), border: Border.all(color: C.white, width: 1.5)),
-                    child: const Text('Available', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w800)),
+                    child: Text('browse.available'.tr(), style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w800)),
                   ),
                 ),
               ]),
@@ -262,16 +266,16 @@ class _BrowseScreenState extends State<BrowseScreen> {
                     Row(children: [
                       const Icon(Icons.star, size: 14, color: Color(0xFFF59E0B)),
                       const SizedBox(width: 3),
-                      Text(rating != null ? (rating as num).toStringAsFixed(1) : 'New', style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink)),
+                      Text(rating != null ? (rating as num).toStringAsFixed(1) : 'browse.newRating'.tr(), style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink)),
                       const SizedBox(width: 4),
-                      Text('($totalJobs reviews)', style: const TextStyle(color: C.muted, fontSize: 12)),
+                      Text('browse.reviewsCount'.tr(args: ['$totalJobs']), style: const TextStyle(color: C.muted, fontSize: 12)),
                     ]),
                     if (years != null) ...[
                       const SizedBox(height: 4),
                       Row(children: [
                         const Icon(Icons.shield_outlined, size: 13, color: C.blue),
                         const SizedBox(width: 4),
-                        Text('$years+ years experience', style: const TextStyle(color: C.muted, fontSize: 12)),
+                        Text('browse.yearsExp'.tr(args: ['$years']), style: const TextStyle(color: C.muted, fontSize: 12)),
                       ]),
                     ],
                   ],
@@ -286,7 +290,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(color: color.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(8)),
-                child: Text(b.value[0] as String, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w700)),
+                child: Text((b.value[0] as String).tr(), style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w700)),
               );
             }).toList()),
           ],
@@ -308,16 +312,16 @@ class _BrowseScreenState extends State<BrowseScreen> {
           Row(children: [
             if (hourly != null) ...[
               Text('\$${(hourly as num).round()}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
-              const Text('/hr', style: TextStyle(color: C.muted)),
+              Text('browse.perHour'.tr(), style: const TextStyle(color: C.muted)),
               const SizedBox(width: 8),
-              const Text('• Min. 1 hour', style: TextStyle(color: C.muted, fontSize: 12)),
+              Text('browse.minHour'.tr(), style: const TextStyle(color: C.muted, fontSize: 12)),
             ],
             const Spacer(),
             FilledButton(
               style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
               onPressed: () => context.push('/handyman-detail', extra: (h as Map).cast<String, dynamic>()),
-              child: const Text('View Profile', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+              child: Text('browse.viewProfile'.tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
             ),
           ]),
         ],

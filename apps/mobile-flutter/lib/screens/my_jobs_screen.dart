@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 
@@ -11,13 +12,13 @@ class MyJobsScreen extends StatefulWidget {
   State<MyJobsScreen> createState() => _MyJobsScreenState();
 }
 
-// status pill colors, mirroring the RN STATUS map
+// status pill: [translation key, textColor, bgColor] — mirrors the RN STATUS map
 const _statusPill = {
-  'PENDING': ['Pending', 0xFFB45309, 0xFFFEF3C7],
-  'ACCEPTED': ['Confirmed', 0xFF15803D, 0xFFDCFCE7],
-  'IN_PROGRESS': ['In progress', 0xFFC2410C, 0xFFFFEDD5],
-  'COMPLETED': ['Completed', 0xFF15803D, 0xFFDCFCE7],
-  'CANCELLED': ['Cancelled', 0xFFB91C1C, 0xFFFEE2E2],
+  'PENDING': ['status.pending', 0xFFB45309, 0xFFFEF3C7],
+  'ACCEPTED': ['status.confirmed', 0xFF15803D, 0xFFDCFCE7],
+  'IN_PROGRESS': ['status.inProgress', 0xFFC2410C, 0xFFFFEDD5],
+  'COMPLETED': ['status.completed', 0xFF15803D, 0xFFDCFCE7],
+  'CANCELLED': ['status.cancelled', 0xFFB91C1C, 0xFFFEE2E2],
 };
 
 class _MyJobsScreenState extends State<MyJobsScreen> {
@@ -79,8 +80,8 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Bookings', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900, color: C.ink, letterSpacing: -0.5)),
-                              Text('${upcoming.length} upcoming • ${_bookings.length} total', style: const TextStyle(color: C.muted, fontSize: 14)),
+                              Text('bookings.title'.tr(), style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w900, color: C.ink, letterSpacing: -0.5)),
+                              Text('bookings.summary'.tr(args: ['${upcoming.length}', '${_bookings.length}']), style: const TextStyle(color: C.muted, fontSize: 14)),
                             ],
                           ),
                         ),
@@ -95,11 +96,11 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       children: [
-                        _chip('ALL', 'All'),
-                        _chip('UPCOMING', 'Upcoming'),
-                        _chip('IN_PROGRESS', 'In Progress'),
-                        _chip('COMPLETED', 'Completed'),
-                        _chip('CANCELLED', 'Cancelled'),
+                        _chip('ALL', 'bookings.all'.tr()),
+                        _chip('UPCOMING', 'bookings.upcoming'.tr()),
+                        _chip('IN_PROGRESS', 'bookings.inProgress'.tr()),
+                        _chip('COMPLETED', 'bookings.completed'.tr()),
+                        _chip('CANCELLED', 'bookings.cancelled'.tr()),
                       ],
                     ),
                   ),
@@ -108,10 +109,10 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(children: [
-                      _stat(upcoming.length, 'Upcoming', Icons.calendar_today, C.blue),
-                      _stat(inProgress.length, 'In Progress', Icons.circle_outlined, C.green),
-                      _stat(completed.length, 'Completed', Icons.check_circle, const Color(0xFF7C3AED)),
-                      _stat(cancelled.length, 'Cancelled', Icons.cancel, C.red),
+                      _stat(upcoming.length, 'bookings.upcoming'.tr(), Icons.calendar_today, C.blue),
+                      _stat(inProgress.length, 'bookings.inProgress'.tr(), Icons.circle_outlined, C.green),
+                      _stat(completed.length, 'bookings.completed'.tr(), Icons.check_circle, const Color(0xFF7C3AED)),
+                      _stat(cancelled.length, 'bookings.cancelled'.tr(), Icons.cancel, C.red),
                     ]),
                   ),
                   const SizedBox(height: 16),
@@ -186,17 +187,17 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
             child: const Icon(Icons.headset_mic_outlined, color: C.blue),
           ),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Need help?', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
-              Text('Our support team is here for you.', style: TextStyle(color: C.muted, fontSize: 13)),
+              Text('bookings.needHelp'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+              Text('bookings.supportDesc'.tr(), style: const TextStyle(color: C.muted, fontSize: 13)),
             ]),
           ),
           OutlinedButton.icon(
             style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFFBFD4FF))),
             onPressed: () => launchUrl(Uri.parse('mailto:support@taptarea.com?subject=Tarea%20Support')),
             icon: const Icon(Icons.chat_bubble_outline, size: 15, color: C.blue),
-            label: const Text('Contact', style: TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+            label: Text('bookings.contact'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
           ),
         ]),
       );
@@ -206,14 +207,14 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
         child: Column(children: [
-          const Text('Nothing here yet', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+          Text('bookings.nothingHere'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
           const SizedBox(height: 4),
-          Text('No ${_filter.replaceAll('_', ' ').toLowerCase()} bookings.', style: const TextStyle(color: C.muted)),
+          Text('bookings.noBookings'.tr(), style: const TextStyle(color: C.muted)),
         ]),
       );
 
   Widget _bookingCard(dynamic b) {
-    final meta = _statusPill[b['status']] ?? ['Booking', 0xFF64748B, 0xFFF1F5F9];
+    final meta = _statusPill[b['status']] ?? ['status.booking', 0xFF64748B, 0xFFF1F5F9];
     final color = Color(meta[1] as int);
     final bg = Color(meta[2] as int);
     final handyman = b['handyman'] ?? {};
@@ -242,7 +243,7 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-              child: Text(meta[0] as String, style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 12)),
+              child: Text((meta[0] as String).tr(), style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 12)),
             ),
           ]),
           if (price != null) ...[
@@ -250,7 +251,7 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
             const Divider(color: C.line, height: 1),
             const SizedBox(height: 10),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              const Text('Total', style: TextStyle(color: C.muted)),
+              Text('bookings.total'.tr(), style: const TextStyle(color: C.muted)),
               Text('\$${(price as num).round()}', style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
             ]),
           ],

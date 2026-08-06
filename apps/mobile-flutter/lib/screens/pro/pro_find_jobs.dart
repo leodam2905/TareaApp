@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
 
@@ -33,16 +34,16 @@ class _ProFindJobsState extends State<ProFindJobs> {
     try {
       final res = await Api.post('/job-requests/$id/apply', {});
       if (res.statusCode >= 200 && res.statusCode < 300) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Application sent!')));
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('proFind.applicationSent'.tr())));
       } else {
         setState(() => _applied.remove(id));
-        String msg = 'Could not apply. Please try again.';
+        String msg = 'proFind.applyFailed'.tr();
         try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
       }
     } catch (_) {
       setState(() => _applied.remove(id));
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not connect. Please try again.')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('common.connectionRetry'.tr())));
     }
   }
 
@@ -52,17 +53,17 @@ class _ProFindJobsState extends State<ProFindJobs> {
       backgroundColor: C.bg,
       body: SafeArea(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 8, 20, 4),
-            child: Text('Find Jobs', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+            child: Text('nav.findJobs'.tr(), style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink)),
           ),
-          const Padding(padding: EdgeInsets.symmetric(horizontal: 20), child: Text('Open jobs near you — apply to get hired.', style: TextStyle(color: C.muted))),
+          Padding(padding: const EdgeInsets.symmetric(horizontal: 20), child: Text('proFind.subtitle'.tr(), style: const TextStyle(color: C.muted))),
           const SizedBox(height: 12),
           Expanded(
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
                 : _jobs.isEmpty
-                    ? const Center(child: Text('No open jobs right now.', style: TextStyle(color: C.muted)))
+                    ? Center(child: Text('proFind.noOpen'.tr(), style: const TextStyle(color: C.muted)))
                     : ListView.builder(
                         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                         itemCount: _jobs.length,
@@ -76,7 +77,7 @@ class _ProFindJobsState extends State<ProFindJobs> {
 
   Widget _jobCard(dynamic j) {
     final id = (j['id'] ?? '').toString();
-    final title = (j['title'] ?? _pretty((j['category'] ?? 'General').toString())).toString();
+    final title = (j['title'] ?? _pretty((j['category'] ?? 'categories.general'.tr()).toString())).toString();
     final rawCat = (j['category'] ?? '').toString();
     final category = _pretty(rawCat);
     final desc = (j['description'] ?? '').toString();
@@ -112,7 +113,7 @@ class _ProFindJobsState extends State<ProFindJobs> {
           if (min != null || max != null)
             Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
               Text('\$${(min ?? max as num).round()}–${(max ?? min as num).round()}', style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF16A34A), fontSize: 16)),
-              const Text('budget', style: TextStyle(color: C.muted, fontSize: 11)),
+              Text('proFind.budget'.tr(), style: const TextStyle(color: C.muted, fontSize: 11)),
             ]),
         ]),
         if (desc.isNotEmpty) ...[
@@ -129,7 +130,7 @@ class _ProFindJobsState extends State<ProFindJobs> {
             style: FilledButton.styleFrom(backgroundColor: applied ? C.muted : C.blue, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
             onPressed: applied ? null : () => _apply(id),
-            child: Text(applied ? 'Applied' : 'Apply', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+            child: Text(applied ? 'proFind.applied'.tr() : 'proFind.apply'.tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
           ),
         ]),
       ]),

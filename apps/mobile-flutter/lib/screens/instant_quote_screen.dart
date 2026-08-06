@@ -1,23 +1,26 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 
 class _Cat {
-  final String name, emoji, api;
+  // `name` stays English: it's the key into _tasks and part of the AI request.
+  // `nameKey` is the categories.* key used only for the displayed chip label.
+  final String name, emoji, api, nameKey;
   final Color color;
-  const _Cat(this.name, this.emoji, this.api, this.color);
+  const _Cat(this.name, this.emoji, this.api, this.color, this.nameKey);
 }
 
 const _cats = [
-  _Cat('Plumbing', '🔧', 'PLUMBING', Color(0xFF38BDF8)),
-  _Cat('Electrical', '⚡', 'ELECTRICAL', Color(0xFFF59E0B)),
-  _Cat('Carpentry', '🪵', 'CARPENTRY', Color(0xFFD97706)),
-  _Cat('Painting', '🎨', 'PAINTING', Color(0xFFA78BFA)),
-  _Cat('Cleaning', '✨', 'CLEANING', Color(0xFF34D399)),
-  _Cat('Moving', '📦', 'MOVING', Color(0xFFFB923C)),
-  _Cat('General', '🛠️', 'GENERAL', Color(0xFF94A3B8)),
+  _Cat('Plumbing', '🔧', 'PLUMBING', Color(0xFF38BDF8), 'categories.plumbing'),
+  _Cat('Electrical', '⚡', 'ELECTRICAL', Color(0xFFF59E0B), 'categories.electrical'),
+  _Cat('Carpentry', '🪵', 'CARPENTRY', Color(0xFFD97706), 'categories.carpentry'),
+  _Cat('Painting', '🎨', 'PAINTING', Color(0xFFA78BFA), 'categories.painting'),
+  _Cat('Cleaning', '✨', 'CLEANING', Color(0xFF34D399), 'categories.cleaning'),
+  _Cat('Moving', '📦', 'MOVING', Color(0xFFFB923C), 'categories.moving'),
+  _Cat('General', '🛠️', 'GENERAL', Color(0xFF94A3B8), 'categories.general'),
 ];
 
 // task label -> list of details {key, label, options}
@@ -155,10 +158,10 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
       if (res.statusCode == 200) {
         setState(() => _quote = jsonDecode(res.body) as Map<String, dynamic>);
       } else {
-        _toast('Could not generate quote. Try again.');
+        _toast('instantQuote.quoteFailed'.tr());
       }
     } catch (_) {
-      _toast('Could not connect.');
+      _toast('diagnose.connectFailed'.tr());
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -179,9 +182,9 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Instant Quote', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink)),
+            Text('instantQuote.title'.tr(), style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink)),
             const SizedBox(height: 4),
-            const Text('Get a real price before you book — no surprises.', style: TextStyle(color: C.muted, fontSize: 15)),
+            Text('instantQuote.subtitle'.tr(), style: const TextStyle(color: C.muted, fontSize: 15)),
             const SizedBox(height: 20),
             _stepDots(),
             const SizedBox(height: 20),
@@ -201,16 +204,16 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
         );
     Widget seg(String label, Widget d) => Expanded(child: Column(children: [d, const SizedBox(height: 4), Text(label, style: const TextStyle(fontSize: 12, color: C.muted, fontWeight: FontWeight.w700))]));
     return Row(children: [
-      seg('Service', dot(1, !s1, s1)),
-      seg('Task', dot(2, s1 && !s2, s2)),
-      seg('Details', dot(3, s2 && !s3, s3)),
+      seg('instantQuote.stepService'.tr(), dot(1, !s1, s1)),
+      seg('instantQuote.stepTask'.tr(), dot(2, s1 && !s2, s2)),
+      seg('instantQuote.stepDetails'.tr(), dot(3, s2 && !s3, s3)),
     ]);
   }
 
   List<Widget> _form() {
     return [
       // Step 1 — Service
-      const Text('Choose a service', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+      Text('instantQuote.chooseService'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
       const SizedBox(height: 12),
       Wrap(spacing: 10, runSpacing: 10, children: _cats.map((c) {
         final sel = _cat?.name == c.name;
@@ -227,7 +230,7 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
             child: Column(children: [
               Text(c.emoji, style: const TextStyle(fontSize: 26)),
               const SizedBox(height: 6),
-              Text(c.name, style: TextStyle(color: sel ? Colors.white : C.ink, fontWeight: FontWeight.w700)),
+              Text(c.nameKey.tr(), textAlign: TextAlign.center, style: TextStyle(color: sel ? Colors.white : C.ink, fontWeight: FontWeight.w700)),
             ]),
           ),
         );
@@ -235,7 +238,7 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
       // Step 2 — Task
       if (_cat != null) ...[
         const SizedBox(height: 22),
-        const Text('What do you need?', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+        Text('postjob.needTitle'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
         const SizedBox(height: 12),
         Wrap(spacing: 8, runSpacing: 8, children: (_tasks[_cat!.name] ?? []).map((t) {
           final sel = _task?['label'] == t['label'];
@@ -245,7 +248,7 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
       // Step 3 — Details
       if (_task != null) ...[
         const SizedBox(height: 22),
-        const Text('A few details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+        Text('instantQuote.aFewDetails'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
         const SizedBox(height: 4),
         ..._taskDetails.map((d) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,16 +263,16 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
               ],
             )),
         const SizedBox(height: 20),
-        const Text('Want to add more details?', style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+        Text('instantQuote.addMoreTitle'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
         const SizedBox(height: 2),
-        const Text('Optional — anything else the pro should know for a sharper price.', style: TextStyle(color: C.muted, fontSize: 13, height: 1.4)),
+        Text('instantQuote.addMoreDesc'.tr(), style: const TextStyle(color: C.muted, fontSize: 13, height: 1.4)),
         const SizedBox(height: 10),
         TextField(
           controller: _notes,
           maxLines: 3,
           onChanged: (_) => setState(() {}),
           decoration: InputDecoration(
-            hintText: 'e.g. 2nd floor, older pipes, need it done this weekend…',
+            hintText: 'instantQuote.notesHint'.tr(),
             filled: true, fillColor: C.white,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: C.line)),
             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: C.line)),
@@ -287,7 +290,7 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
             onPressed: (_allFilled && !_loading) ? _calculate : null,
             child: _loading
                 ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Calculate my price', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+                : Text('instantQuote.calculatePrice'.tr(), style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
           ),
         ),
     ];
@@ -319,7 +322,7 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(color: (guaranteed ? C.green : C.amber).withValues(alpha: 0.14), borderRadius: BorderRadius.circular(20)),
-          child: Text(guaranteed ? '✓ Guaranteed' : '~ Estimate', style: TextStyle(color: guaranteed ? C.green : C.amber, fontWeight: FontWeight.w800)),
+          child: Text(guaranteed ? 'instantQuote.guaranteed'.tr() : 'instantQuote.estimate'.tr(), style: TextStyle(color: guaranteed ? C.green : C.amber, fontWeight: FontWeight.w800)),
         ),
         const SizedBox(height: 14),
         Text('\$${(q['minPrice'] as num?)?.round()}–${(q['maxPrice'] as num?)?.round()}',
@@ -330,7 +333,7 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
         ],
         if (includes.isNotEmpty) ...[
           const SizedBox(height: 20),
-          Align(alignment: Alignment.centerLeft, child: const Text("What's included", style: TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16))),
+          Align(alignment: Alignment.centerLeft, child: Text('instantQuote.whatsIncluded'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16))),
           const SizedBox(height: 8),
           ...includes.map((it) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -357,11 +360,11 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
             style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
             onPressed: () => context.push('/post-job'),
-            child: const Text('Post this job  →', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+            child: Text('instantQuote.postThisJobArrow'.tr(), textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
           ),
         ),
         const SizedBox(height: 8),
-        TextButton(onPressed: () => setState(() => _quote = null), child: const Text('Edit answers', style: TextStyle(color: C.muted, fontWeight: FontWeight.w700))),
+        TextButton(onPressed: () => setState(() => _quote = null), child: Text('instantQuote.editAnswers'.tr(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w700))),
       ]),
     );
   }
