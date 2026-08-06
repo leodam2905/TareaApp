@@ -19,6 +19,8 @@ const DEFAULTS = {
     "We've rebuilt Tarea from the ground up for a faster, more reliable experience. " +
     "Please update to the latest version in the App Store or Google Play. " +
     "Note: after updating, you may need to sign in again. Thanks for being with us!",
+  ctaLabel: "Update Tarea",
+  ctaUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://taptarea.com",
 };
 
 export async function POST(req: NextRequest) {
@@ -37,16 +39,22 @@ export async function POST(req: NextRequest) {
     emailBody: (b.emailBody as string) ?? DEFAULTS.emailBody,
   };
 
+  // Overridable so a broadcast can point somewhere other than the app-update
+  // prompt — a Terms change notice should link to the Terms, not the store.
+  const cta = {
+    label: (b.ctaLabel as string) ?? DEFAULTS.ctaLabel,
+    url: (b.ctaUrl as string) ?? DEFAULTS.ctaUrl,
+  };
+
   const users = await prisma.user.findMany({
     where: { isActive: true },
     select: { id: true, name: true, email: true },
   });
 
   if (dryRun) {
-    return NextResponse.json({ dryRun: true, recipients: users.length, channels, message: msg });
+    return NextResponse.json({ dryRun: true, recipients: users.length, channels, message: msg, cta });
   }
 
-  const cta = { label: "Update Tarea", url: process.env.NEXT_PUBLIC_APP_URL ?? "https://taptarea.com" };
   let pushAttempts = 0;
   let emailAttempts = 0;
   const CONCURRENCY = 20;
