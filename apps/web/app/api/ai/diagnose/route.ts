@@ -57,6 +57,8 @@ Diagnose the home issue and return ONLY a valid JSON object:
 - "urgency": "urgent" (safety risk — fix today), "soon" (fix within a week), or "routine" (can be scheduled)
 - "tips": array of exactly 2 short, practical tips the homeowner can do right now while waiting for the pro
 
+If the issue involves gas, exposed or damaged wiring, structural damage, or active flooding, set "urgency" to "urgent" and make the first tip an instruction to stop and call a licensed pro or emergency services.
+
 Return nothing but the JSON. No markdown fences, no explanation.`,
   });
 

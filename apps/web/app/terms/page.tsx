@@ -20,7 +20,7 @@ export default function TermsPage() {
             <p className="text-tarea-sky text-xs font-semibold uppercase tracking-widest mb-2">taptarea.com</p>
             <h1 className="text-4xl font-extrabold text-white">Terms of Service</h1>
           </div>
-          <p className="text-slate-500 text-sm mt-2">Effective Date: May 12, 2026 &nbsp;|&nbsp; Version 2.0</p>
+          <p className="text-slate-500 text-sm mt-2">Effective Date: August 19, 2026 &nbsp;|&nbsp; Version 2.1</p>
           <p className="text-slate-500 text-sm">Governing Law: State of California</p>
           <div className="mt-4 p-4 bg-amber-400/10 border border-amber-400/20 rounded-xl">
             <p className="text-amber-300 text-xs font-semibold leading-relaxed">IMPORTANT: PLEASE READ THESE TERMS CAREFULLY BEFORE USING THE TAREA PLATFORM. BY CREATING AN ACCOUNT OR USING ANY PART OF THE PLATFORM, YOU AGREE TO BE BOUND BY THESE TERMS. IF YOU DO NOT AGREE, DO NOT USE THE PLATFORM.</p>
@@ -150,42 +150,48 @@ export default function TermsPage() {
           </Section>
 
           <Section title="14. California Privacy Rights — CCPA Disclosure">
-            <p>Tarea collects identifiers, commercial information, professional information (Pros only), internet activity, and geolocation data to operate the Platform. <strong>Tarea does not sell personal information.</strong> California residents have the right to know, delete, correct, and limit use of their personal information. To exercise these rights, email <a href="mailto:support@taptarea.com" className="text-tarea-sky hover:underline">support@taptarea.com</a> with subject line <strong>"California Privacy Rights Request."</strong> See our full <Link href="/privacy" className="text-tarea-sky hover:underline">Privacy Policy</Link> for complete details.</p>
+            <p>Tarea collects identifiers, commercial information, professional information (Pros only), internet activity, visual information (profile photos and photos submitted to AI Diagnose), and geolocation data to operate the Platform. <strong>Tarea does not sell personal information.</strong> California residents have the right to know, delete, correct, and limit use of their personal information. To exercise these rights, email <a href="mailto:support@taptarea.com" className="text-tarea-sky hover:underline">support@taptarea.com</a> with subject line <strong>"California Privacy Rights Request."</strong> See our full <Link href="/privacy" className="text-tarea-sky hover:underline">Privacy Policy</Link> for complete details.</p>
           </Section>
 
-          <Section title="15. Disclaimers and Limitations of Liability">
+          <Section title="15. AI Diagnose Feature">
+            <p>Tarea's "AI Diagnose" feature uses automated machine-learning models to suggest a likely service category, urgency level, and general guidance based on a photo or description you submit. <strong>These results are informational only and do not constitute a professional inspection, diagnosis, or safety assessment.</strong> No licensed plumber, electrician, or other professional reviews your submission before results are shown.</p>
+            <p>AI output may be inaccurate, incomplete, or misclassify the severity of an issue. You should not rely on it to determine whether a condition is safe, urgent, or hazardous. For any suspected gas leak, electrical hazard, structural damage, flooding, or other emergency, contact emergency services or a licensed professional immediately — do not wait for or rely on Tarea.</p>
+            <p>Tarea disclaims all liability arising from reliance on AI Diagnose results, including any delay in seeking professional help. Photos and descriptions you submit are processed by a third-party AI provider; see our <Link href="/privacy" className="text-tarea-sky hover:underline">Privacy Policy</Link>.</p>
+          </Section>
+
+          <Section title="16. Disclaimers and Limitations of Liability">
             <p className="uppercase text-xs text-slate-400 leading-relaxed">THE PLATFORM IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. TAREA DOES NOT WARRANT THAT THE PLATFORM WILL BE UNINTERRUPTED, ERROR-FREE, OR THAT PROS WILL MEET YOUR EXPECTATIONS.</p>
             <p className="uppercase text-xs text-slate-400 leading-relaxed mt-3">TO THE MAXIMUM EXTENT PERMITTED BY CALIFORNIA LAW, TAREA'S TOTAL LIABILITY TO YOU FOR ANY CLAIM SHALL NOT EXCEED THE GREATER OF: (A) THE TOTAL FEES PAID BY YOU TO TAREA IN THE THREE (3) MONTHS PRECEDING THE CLAIM, OR (B) $100.00. TAREA SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES.</p>
           </Section>
 
-          <Section title="16. Dispute Resolution, Arbitration, and PAGA Waiver">
-            <h3>16.1 — Informal Resolution</h3>
+          <Section title="17. Dispute Resolution, Arbitration, and PAGA Waiver">
+            <h3>17.1 — Informal Resolution</h3>
             <p>Before initiating any formal dispute, you agree to contact Tarea at <a href="mailto:support@taptarea.com" className="text-tarea-sky hover:underline">support@taptarea.com</a> and attempt to resolve the dispute informally for at least thirty (30) days.</p>
-            <h3>16.2 — Binding Arbitration</h3>
+            <h3>17.2 — Binding Arbitration</h3>
             <p>If informal resolution fails, any dispute arising out of or relating to these Terms shall be resolved by final and binding individual arbitration administered by JAMS under its Streamlined Arbitration Rules, or by the AAA under its Consumer Arbitration Rules. Arbitration shall take place in Los Angeles County, California, applying California law.</p>
-            <h3>16.3 — Class Action Waiver</h3>
+            <h3>17.3 — Class Action Waiver</h3>
             <p className="uppercase text-xs text-slate-400 leading-relaxed">YOU AND TAREA EACH WAIVE THE RIGHT TO A JURY TRIAL AND TO PARTICIPATE IN A CLASS ACTION, CLASS ARBITRATION, OR REPRESENTATIVE PROCEEDING. ALL DISPUTES MUST BE BROUGHT IN YOUR INDIVIDUAL CAPACITY ONLY.</p>
-            <h3>16.4 — PAGA Waiver (California)</h3>
+            <h3>17.4 — PAGA Waiver (California)</h3>
             <p>To the fullest extent permitted by California law, you waive any right to bring a representative action under the California Private Attorneys General Act (Labor Code § 2698 et seq.) on behalf of other individuals. If any court determines this waiver is unenforceable, any PAGA claim shall be severed from arbitration and litigated in a California court, with all other claims remaining in arbitration.</p>
-            <h3>16.5 — Injunctive Relief</h3>
+            <h3>17.5 — Injunctive Relief</h3>
             <p>Either party may seek injunctive or other equitable relief in any California court of competent jurisdiction to prevent irreparable harm or protect intellectual property rights.</p>
           </Section>
 
-          <Section title="17. Governing Law and Jurisdiction">
+          <Section title="18. Governing Law and Jurisdiction">
             <p>These Terms are governed by and construed in accordance with the laws of the <strong>State of California</strong>, without regard to its conflict of law principles. Any dispute not subject to arbitration shall be submitted to the exclusive jurisdiction of the state and federal courts located in Los Angeles County, California.</p>
             <p>Your rights as a California consumer or worker under California law (including the CCPA, CPRA, California Labor Code, and California Business and Professions Code) shall not be diminished by these Terms.</p>
           </Section>
 
-          <Section title="18. Changes to These Terms">
+          <Section title="19. Changes to These Terms">
             <p>Tarea reserves the right to update or modify these Terms at any time. We will notify users of material changes by email at least fourteen (14) days before the changes take effect. Your continued use of the Platform after the effective date constitutes acceptance of the revised Terms. We maintain a version history at taptarea.com/terms.</p>
           </Section>
 
-          <Section title="19. Termination">
+          <Section title="20. Termination">
             <p>Tarea may suspend or terminate your access to the Platform at any time, with or without cause or notice, including for violation of these Terms. You may terminate your account at any time by contacting <a href="mailto:support@taptarea.com" className="text-tarea-sky hover:underline">support@taptarea.com</a>. Termination of a Pro's account does not create any employment-related claims against Tarea, including claims for wrongful termination.</p>
-            <p>Sections 2, 3, 13, 14, 15, 16, and 17 shall survive any termination of these Terms.</p>
+            <p>Sections 2, 3, 13, 14, 15, 16, 17, and 18 shall survive any termination of these Terms.</p>
           </Section>
 
-          <Section title="20. Miscellaneous">
+          <Section title="21. Miscellaneous">
             <ul>
               <li><strong>Entire Agreement:</strong> These Terms, together with the Privacy Policy and any additional terms, constitute the entire agreement between you and Tarea regarding the Platform.</li>
               <li><strong>Severability:</strong> If any provision is found invalid or unenforceable, the remaining provisions continue in full force and effect.</li>
@@ -199,7 +205,7 @@ export default function TermsPage() {
 
         {/* Footer */}
         <div className="mt-16 pt-8 border-t border-white/10 space-y-2">
-          <p className="text-slate-600 text-xs">Company: Tarea US LLC &nbsp;|&nbsp; Principal Office: 400 N Oakland Avenue, Apt 209, Pasadena, CA 91101 &nbsp;|&nbsp; Version 2.0 — Effective May 12, 2026</p>
+          <p className="text-slate-600 text-xs">Company: Tarea US LLC &nbsp;|&nbsp; Principal Office: 400 N Oakland Avenue, Apt 209, Pasadena, CA 91101 &nbsp;|&nbsp; Version 2.1 — Effective August 19, 2026</p>
           <div className="flex gap-6 text-sm text-slate-500">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/" className="hover:text-white transition-colors">Back to Tarea</Link>
