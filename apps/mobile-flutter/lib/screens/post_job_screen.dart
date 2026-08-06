@@ -95,46 +95,68 @@ class _PostJobScreenState extends State<PostJobScreen> {
     if (t != null) setState(() => _time = t);
   }
 
+  void _toast(String m) =>
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
+
+  // Backend title (required): first line of the description (<=60 chars), else
+  // "<Category> service".
+  String _jobTitle() {
+    final first = _desc.text.trim().split('\n').first.trim();
+    if (first.isNotEmpty) return first.length > 60 ? first.substring(0, 60) : first;
+    return '${_category.isEmpty ? 'Service' : _category} service';
+  }
+
   Future<void> _submit() async {
     setState(() => _submitting = true);
     try {
-      if (_isDirected) {
-        // Directed booking — request goes to one specific pro.
-        final price = _estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceMin'];
-        await Api.post('/bookings', {
-          'handymanUserId': widget.directed?['handymanId'],
-          if (widget.directed?['serviceId'] != null) 'serviceId': widget.directed?['serviceId'],
-          'scheduledAt': (_date ?? DateTime.now().add(const Duration(days: 1))).toIso8601String(),
-          'address': _address.text.trim(),
-          'city': _city.text.trim(),
-          if (price != null) 'totalPrice': price,
-          'description': _desc.text.trim(),
-        });
-      } else {
-        await Api.post('/job-requests', {
-          'category': _category.toUpperCase(),
-          'description': _desc.text.trim(),
-          'urgency': _urgency,
-          'scheduledAt': _date?.toIso8601String(),
-          'address': _address.text.trim(),
-          'city': _city.text.trim(),
-        });
+      final res = _isDirected
+          // Directed booking — request goes to one specific pro.
+          ? await Api.post('/bookings', {
+              'handymanUserId': widget.directed?['handymanId'],
+              if (widget.directed?['serviceId'] != null) 'serviceId': widget.directed?['serviceId'],
+              'scheduledAt': (_date ?? DateTime.now().add(const Duration(days: 1))).toIso8601String(),
+              'address': _address.text.trim(),
+              'city': _city.text.trim(),
+              if ((_estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceMin']) != null)
+                'totalPrice': _estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceMin'],
+              'description': _desc.text.trim(),
+            })
+          // Open job request — the backend requires title + a non-null scheduledAt.
+          : await Api.post('/job-requests', {
+              'category': _category.toUpperCase(),
+              'title': _jobTitle(),
+              'description': _desc.text.trim(),
+              'urgency': _urgency,
+              'scheduledAt': (_date ?? DateTime.now().add(const Duration(days: 1))).toIso8601String(),
+              'address': _address.text.trim(),
+              'city': _city.text.trim(),
+            });
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        String msg = 'Could not post job.';
+        try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
+        if (mounted) _toast(msg);
+        return;
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(_isDirected ? 'Request sent to $_proName!' : 'Job posted!')));
+        _toast(_isDirected ? 'Request sent to $_proName!' : 'Job posted!');
         context.go('/home');
       }
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Could not post job.')));
-      }
+      if (mounted) _toast('Could not post job.');
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
   }
 
   void _next() {
+    // Validate required fields before advancing (the backend rejects any missing).
+    if (!_isDirected && _step == 0) {
+      if (_category.isEmpty) return _toast('Choose a service first');
+      if (_desc.text.trim().isEmpty) return _toast('Add a short description');
+    }
+    if (_step == 2 && (_address.text.trim().isEmpty || _city.text.trim().isEmpty)) {
+      return _toast('Add the job address and city');
+    }
     if (_step < 3) {
       setState(() => _step++);
       if (_step == 3) _fetchAiPrice();
