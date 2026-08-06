@@ -1,4 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
+
+// Next loads .env.local for the dev server it starts, but the setup project
+// runs in Playwright's own process and needs the credentials too.
+dotenv.config({ path: ".env.local" });
 
 /**
  * E2E config for the Tarea web app.
