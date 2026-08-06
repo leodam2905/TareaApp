@@ -1,0 +1,20 @@
+# Native splash for both flavors (Tarea Home + Tarea Pro). A single config
+# writes to Android `main` res + iOS Runner, which both flavors inherit.
+# The Tarea mark (640x640, transparent) is centered on white; white is kept
+# in dark mode too so the colored logo stays visible.
+flutter_native_splash:
+  color: "#FFFFFF"
+  color_dark: "#FFFFFF"
+  image: assets/images/splash-logo.png
+  image_dark: assets/images/splash-logo.png
+
+  # Android 12+ uses the system splash API (centered icon + background color).
+  android_12:
+    image: assets/images/splash-logo.png
+    image_dark: assets/images/splash-logo.png
+    icon_background_color: "#FFFFFF"
+    icon_background_color_dark: "#FFFFFF"
+
+  android: true
+  ios: true
+  web: false
