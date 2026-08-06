@@ -1,11 +1,11 @@
-# iOS splash for the single shared Runner (Android is handled per-flavor by
-# flutter_native_splash-home.yaml / -pro.yaml). Default = Home (customer); the
-# Pro build swaps LaunchImage via tool/swap_ios_splash.sh pro (see that script).
-# Both flavor sources are the same 1200x1200 canvas so one storyboard fits both
-# and only the PNG bytes change on swap.
+# iOS splash for the single shared Runner (Android is per-flavor via
+# flutter_native_splash-home.yaml / -pro.yaml). Default = Home (customer):
+# white logo on the icon's dark charcoal. The Pro build swaps LaunchImage +
+# LaunchBackground via tool/swap_ios_splash.sh pro. Both flavor sources are the
+# same 1200x1200 canvas so one storyboard fits both and only PNGs change.
 flutter_native_splash:
-  color: "#FFFFFF"
-  color_dark: "#FFFFFF"
+  color: "#263238"
+  color_dark: "#263238"
   image: ios/launch_src/splash-home-ios.png
   image_dark: ios/launch_src/splash-home-ios.png
   android: false

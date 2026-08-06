@@ -1,18 +1,18 @@
-# Customer (Tarea Home) splash — logo + "Your trusted home service pros".
-# Android-only here; iOS is a single shared Runner handled by the base config.
+# Customer (Tarea Home) splash — white logo on the icon's dark charcoal, to
+# match the Home app icon (white house on dark). Android-only here; iOS is the
+# single shared Runner handled by the base config + swap script.
 flutter_native_splash:
-  color: "#FFFFFF"
-  color_dark: "#FFFFFF"
-  image: assets/images/splash-home-logo.png
-  image_dark: assets/images/splash-home-logo.png
+  color: "#263238"
+  color_dark: "#263238"
+  image: assets/images/splash-home-white-logo.png
+  image_dark: assets/images/splash-home-white-logo.png
 
-  # Android 12+ clips the icon to a circle, so the wordmark/tagline can't fit —
-  # show just the Tarea house mark there.
+  # Android 12+ clips to a circle — use the app-icon art (white house on dark).
   android_12:
-    image: assets/images/splash-logo.png
-    image_dark: assets/images/splash-logo.png
-    icon_background_color: "#FFFFFF"
-    icon_background_color_dark: "#FFFFFF"
+    image: assets/images/adaptive-icon-home.png
+    image_dark: assets/images/adaptive-icon-home.png
+    icon_background_color: "#263238"
+    icon_background_color_dark: "#263238"
 
   android: true
   ios: false

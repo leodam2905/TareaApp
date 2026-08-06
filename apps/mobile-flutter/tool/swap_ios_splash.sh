@@ -20,12 +20,16 @@ fi
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SRC="$ROOT/ios/launch-images/$FLAVOR"
-DEST="$ROOT/ios/Runner/Assets.xcassets/LaunchImage.imageset"
+ASSETS="$ROOT/ios/Runner/Assets.xcassets"
 
 if [[ ! -d "$SRC" ]]; then
   echo "error: launch images for '$FLAVOR' not found at $SRC" >&2
   exit 1
 fi
 
-cp "$SRC"/LaunchImage*.png "$DEST"/
-echo "iOS LaunchImage set to '$FLAVOR'."
+# Home is white logo on dark charcoal, Pro is dark logo on white — so both the
+# centered logo (LaunchImage) and the full-screen background (LaunchBackground)
+# differ and must be swapped.
+cp "$SRC"/LaunchImage*.png       "$ASSETS/LaunchImage.imageset/"
+cp "$SRC"/background.png "$SRC"/darkbackground.png "$ASSETS/LaunchBackground.imageset/"
+echo "iOS launch screen set to '$FLAVOR'."
