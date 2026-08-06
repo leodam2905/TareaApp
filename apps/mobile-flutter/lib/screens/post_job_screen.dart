@@ -107,46 +107,69 @@ class _PostJobScreenState extends State<PostJobScreen> {
     if (t != null) setState(() => _time = t);
   }
 
+  void _toast(String m) =>
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
+
+  // Backend title (English, stored + shown to pros): first line of the
+  // description, else "<Category> service" — mirrors the RN app.
+  String _jobTitle() {
+    final first = _desc.text.trim().split('\n').first.trim();
+    if (first.isNotEmpty) return first.length > 60 ? first.substring(0, 60) : first;
+    final cat = _category.isEmpty ? 'Service' : _category[0] + _category.substring(1).toLowerCase();
+    return '$cat service';
+  }
+
   Future<void> _submit() async {
     setState(() => _submitting = true);
     try {
-      if (_isDirected) {
-        // Directed booking — request goes to one specific pro.
-        final price = _estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceMin'];
-        await Api.post('/bookings', {
-          'handymanUserId': widget.directed?['handymanId'],
-          if (widget.directed?['serviceId'] != null) 'serviceId': widget.directed?['serviceId'],
-          'scheduledAt': (_date ?? DateTime.now().add(const Duration(days: 1))).toIso8601String(),
-          'address': _address.text.trim(),
-          'city': _city.text.trim(),
-          if (price != null) 'totalPrice': price,
-          'description': _desc.text.trim(),
-        });
-      } else {
-        await Api.post('/job-requests', {
-          'category': _category.toUpperCase(),
-          'description': _desc.text.trim(),
-          'urgency': _urgency,
-          'scheduledAt': _date?.toIso8601String(),
-          'address': _address.text.trim(),
-          'city': _city.text.trim(),
-        });
+      final res = _isDirected
+          // Directed booking — request goes to one specific pro.
+          ? await Api.post('/bookings', {
+              'handymanUserId': widget.directed?['handymanId'],
+              if (widget.directed?['serviceId'] != null) 'serviceId': widget.directed?['serviceId'],
+              'scheduledAt': (_date ?? DateTime.now().add(const Duration(days: 1))).toIso8601String(),
+              'address': _address.text.trim(),
+              'city': _city.text.trim(),
+              if ((_estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceMin']) != null)
+                'totalPrice': _estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceMin'],
+              'description': _desc.text.trim(),
+            })
+          // Open job request — the backend requires title + a non-null scheduledAt.
+          : await Api.post('/job-requests', {
+              'category': _category.toUpperCase(),
+              'title': _jobTitle(),
+              'description': _desc.text.trim(),
+              'urgency': _urgency,
+              'scheduledAt': (_date ?? DateTime.now().add(const Duration(days: 1))).toIso8601String(),
+              'address': _address.text.trim(),
+              'city': _city.text.trim(),
+            });
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        String msg = 'postjob.postFailed'.tr();
+        try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
+        if (mounted) _toast(msg);
+        return;
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(_isDirected ? 'postjob.requestSent'.tr(args: [_proName]) : 'postjob.jobPosted'.tr())));
+        _toast(_isDirected ? 'postjob.requestSent'.tr(args: [_proName]) : 'postjob.jobPosted'.tr());
         context.go('/home');
       }
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('postjob.postFailed'.tr())));
-      }
+      if (mounted) _toast('postjob.postFailed'.tr());
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
   }
 
   void _next() {
+    // Validate required fields before advancing (the backend rejects any missing).
+    if (!_isDirected && _step == 0) {
+      if (_category.isEmpty) return _toast('postjob.pickService'.tr());
+      if (_desc.text.trim().isEmpty) return _toast('postjob.describeJob'.tr());
+    }
+    if (_step == 2 && (_address.text.trim().isEmpty || _city.text.trim().isEmpty)) {
+      return _toast('postjob.addLocation'.tr());
+    }
     if (_step < 3) {
       setState(() => _step++);
       if (_step == 3) _fetchAiPrice();

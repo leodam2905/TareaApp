@@ -288,7 +288,10 @@
     "earliestAvail": "Disponibilidad más próxima",
     "flexible": "Flexible",
     "confidence": "Confianza",
-    "included": "Incluido"
+    "included": "Incluido",
+    "pickService": "Elige primero un servicio",
+    "describeJob": "Añade una breve descripción",
+    "addLocation": "Añade la dirección y la ciudad"
   },
   "browse": {
     "title": "Buscar pros",

@@ -288,7 +288,10 @@
     "earliestAvail": "Earliest availability",
     "flexible": "Flexible",
     "confidence": "Confidence",
-    "included": "Included"
+    "included": "Included",
+    "pickService": "Choose a service first",
+    "describeJob": "Add a short description",
+    "addLocation": "Add the job address and city"
   },
   "browse": {
     "title": "Browse Pros",

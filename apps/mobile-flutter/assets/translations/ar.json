@@ -288,7 +288,10 @@
     "earliestAvail": "أقرب توفر",
     "flexible": "مرن",
     "confidence": "الثقة",
-    "included": "مشمول"
+    "included": "مشمول",
+    "pickService": "اختر خدمة أولاً",
+    "describeJob": "أضف وصفاً قصيراً",
+    "addLocation": "أضف عنوان المهمة والمدينة"
   },
   "browse": {
     "title": "تصفّح المحترفين",
