@@ -115,9 +115,14 @@ class _ProFindJobsState extends State<ProFindJobs> {
               ]),
             ]),
           ),
-          if (min != null || max != null)
+          if ((min != null || max != null) && (((min ?? max) as num).round() > 0))
             Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-              Text('\$${(min ?? max as num).round()}–${(max ?? min as num).round()}', style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF16A34A), fontSize: 16)),
+              Builder(builder: (_) {
+                final lo = ((min ?? max) as num).round();
+                final hi = ((max ?? min) as num).round();
+                return Text(lo == hi ? '\$$lo' : '\$$lo–\$$hi',
+                    style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF16A34A), fontSize: 16));
+              }),
               Text('proFind.budget'.tr(), style: const TextStyle(color: C.muted, fontSize: 11)),
             ]),
         ]),

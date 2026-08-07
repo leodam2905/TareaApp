@@ -270,7 +270,7 @@ export default function FindJobsPage() {
                           <p className="text-gray-400 text-xs">{SERVICE_CATEGORY_LABELS[job.category]}</p>
                         </div>
                         <div className="text-right flex-shrink-0">
-                          <p className="text-orange-600 font-bold">{formatCurrency(job.budgetMin)}–{formatCurrency(job.budgetMax)}</p>
+                          <p className="text-orange-600 font-bold">{job.budgetMin === job.budgetMax ? formatCurrency(job.budgetMin) : `${formatCurrency(job.budgetMin)}–${formatCurrency(job.budgetMax)}`}</p>
                           <p className="text-gray-400 text-xs">{timeAgo(job.createdAt)}</p>
                         </div>
                       </div>
@@ -288,7 +288,7 @@ export default function FindJobsPage() {
                         </span>
                         <span className="flex items-center gap-1">
                           <DollarSign className="w-3 h-3 text-emerald-500" />
-                          {formatCurrency(job.budgetMin)}–{formatCurrency(job.budgetMax)}
+                          {job.budgetMin === job.budgetMax ? formatCurrency(job.budgetMin) : `${formatCurrency(job.budgetMin)}–${formatCurrency(job.budgetMax)}`}
                         </span>
                         {job.applications.length > 0 && (
                           <span className="flex items-center gap-1">

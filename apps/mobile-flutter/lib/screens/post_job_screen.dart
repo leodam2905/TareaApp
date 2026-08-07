@@ -176,6 +176,12 @@ class _PostJobScreenState extends State<PostJobScreen> {
               'scheduledAt': _scheduledAt().toIso8601String(),
               'address': _addressLine(),
               'city': _city.text.trim(),
+              // Persist the AI's exact price as the budget so pros see it (was
+              // dropped before → jobs showed $0).
+              if (_estimate?['price'] != null || _estimate?['min'] != null) ...{
+                'budgetMin': _estimate?['price'] ?? _estimate?['min'],
+                'budgetMax': _estimate?['price'] ?? _estimate?['max'] ?? _estimate?['min'],
+              },
             });
       if (res.statusCode < 200 || res.statusCode >= 300) {
         String msg = 'postjob.postFailed'.tr();

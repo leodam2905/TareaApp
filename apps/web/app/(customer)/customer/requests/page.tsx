@@ -143,7 +143,7 @@ export default function CustomerRequestsPage() {
                     <div className="flex flex-wrap gap-3 mt-2 text-xs text-slate-400">
                       <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{r.city}</span>
                       <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDate(new Date(r.scheduledAt))}</span>
-                      <span className="text-tarea-sky font-semibold">{formatCurrency(r.budgetMin)}–{formatCurrency(r.budgetMax)}</span>
+                      <span className="text-tarea-sky font-semibold">{r.budgetMin === r.budgetMax ? formatCurrency(r.budgetMin) : `${formatCurrency(r.budgetMin)}–${formatCurrency(r.budgetMax)}`}</span>
                       <span className="text-slate-600">{timeAgo(r.createdAt)}</span>
                     </div>
                   </div>
