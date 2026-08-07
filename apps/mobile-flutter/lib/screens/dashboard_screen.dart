@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
 import '../avatar_util.dart';
+import '../widgets/urgent_badge.dart';
 
 class _Action {
   // titleKey/descKey are translation keys; route is the navigation target
@@ -364,7 +365,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Expanded(child: Text(service, maxLines: 1, overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink))),
         if (isReq && (b['urgency'] ?? '').toString() == 'URGENT') ...[
-          const _UrgentBadge(),
+          const UrgentBadge(),
           const SizedBox(width: 8),
         ],
         if (label.isNotEmpty)
@@ -378,37 +379,5 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String _prettyCat(String c) {
     if (c.isEmpty) return '';
     return c[0].toUpperCase() + c.substring(1).toLowerCase().replaceAll('_', ' ');
-  }
-}
-
-// Blinking "URGENT" pill for urgent posted jobs in the activity list.
-class _UrgentBadge extends StatefulWidget {
-  const _UrgentBadge();
-  @override
-  State<_UrgentBadge> createState() => _UrgentBadgeState();
-}
-
-class _UrgentBadgeState extends State<_UrgentBadge> with SingleTickerProviderStateMixin {
-  late final AnimationController _c =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 650))..repeat(reverse: true);
-
-  @override
-  void dispose() { _c.dispose(); super.dispose(); }
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: Tween<double>(begin: 1, end: 0.25).animate(CurvedAnimation(parent: _c, curve: Curves.easeInOut)),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(color: C.red, borderRadius: BorderRadius.circular(8)),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          const Icon(Icons.bolt, size: 12, color: Colors.white),
-          const SizedBox(width: 3),
-          Text('postjob.urgencyUrgent'.tr().toUpperCase(),
-              style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.3)),
-        ]),
-      ),
-    );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
+import '../../widgets/urgent_badge.dart';
 
 class ProFindJobs extends StatefulWidget {
   const ProFindJobs({super.key});
@@ -85,6 +86,7 @@ class _ProFindJobsState extends State<ProFindJobs> {
     final min = j['budgetMin'], max = j['budgetMax'];
     final km = j['distanceKm'];
     final applied = _applied.contains(id);
+    final urgent = (j['urgency'] ?? '').toString() == 'URGENT';
     final cc = _catColor(rawCat);
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -107,7 +109,10 @@ class _ProFindJobsState extends State<ProFindJobs> {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
               const SizedBox(height: 2),
-              Text(category, style: TextStyle(color: cc, fontSize: 12.5, fontWeight: FontWeight.w800)),
+              Row(children: [
+                Flexible(child: Text(category, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: cc, fontSize: 12.5, fontWeight: FontWeight.w800))),
+                if (urgent) ...[const SizedBox(width: 8), const UrgentBadge()],
+              ]),
             ]),
           ),
           if (min != null || max != null)
