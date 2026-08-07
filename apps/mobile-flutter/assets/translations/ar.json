@@ -380,7 +380,13 @@
     "jobsCount": "· {} عمل",
     "hired": "تم التوظيف ✓",
     "declined": "مرفوض",
-    "decline": "رفض"
+    "decline": "رفض",
+    "detailTitle": "تفاصيل الطلب",
+    "description": "الوصف",
+    "schedule": "الوقت المفضل",
+    "location": "الموقع",
+    "budget": "الميزانية",
+    "photos": "الصور"
   },
   "proProfile": {
     "title": "ملف المحترف",

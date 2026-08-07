@@ -98,13 +98,19 @@ class _RequestsScreenState extends State<RequestsScreen> {
     final desc = (r['description'] ?? '').toString();
     final apps = (r['applications'] as List?) ?? [];
     final open = r['status'] == 'OPEN';
-    return Container(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => context
+          .push('/request-detail', extra: r.cast<String, dynamic>())
+          .then((changed) { if (changed == true && mounted) _load(); }),
+      child: Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Expanded(child: Text(_pretty(category), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16))),
+          const Icon(Icons.chevron_right, color: C.muted, size: 20),
           Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(color: Color(meta[2] as int), borderRadius: BorderRadius.circular(20)),
             child: Text((meta[0] as String).tr(), style: TextStyle(color: Color(meta[1] as int), fontWeight: FontWeight.w800, fontSize: 12))),
@@ -118,6 +124,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
           style: TextStyle(color: apps.isEmpty ? C.muted : C.blue, fontWeight: FontWeight.w800, fontSize: 13)),
         ...apps.map((a) => _applicantRow(r['id'].toString(), a as Map, open)),
       ]),
+      ),
     );
   }
 

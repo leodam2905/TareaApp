@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:geolocator/geolocator.dart';
 import '../theme.dart';
 
 // Supported languages: label shown natively so users find their own language
@@ -37,8 +38,10 @@ class SettingsScreen extends StatelessWidget {
             _row(Icons.language, 'settings.language'.tr(), trailing: currentLabel, onTap: () => _pickLanguage(context)),
           ]),
           _section('Privacy & Permissions', [
-            _row(Icons.location_on_outlined, 'Location', onTap: () => launchUrl(Uri.parse('app-settings:'))),
-            _row(Icons.notifications_outlined, 'settings.notifications'.tr(), onTap: () => launchUrl(Uri.parse('app-settings:'))),
+            // Opens the app's OS settings page (location + notification perms).
+            // `app-settings:` only works on iOS; Geolocator handles both platforms.
+            _row(Icons.location_on_outlined, 'Location', onTap: () => Geolocator.openAppSettings()),
+            _row(Icons.notifications_outlined, 'settings.notifications'.tr(), onTap: () => Geolocator.openAppSettings()),
           ]),
           _section('Support & Legal', [
             _row(Icons.headset_mic_outlined, 'settings.help'.tr(), onTap: () => launchUrl(Uri.parse('mailto:support@taptarea.com?subject=Tarea%20Support'))),

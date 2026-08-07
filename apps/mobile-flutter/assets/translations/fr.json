@@ -380,7 +380,13 @@
     "jobsCount": "· {} missions",
     "hired": "Engagé ✓",
     "declined": "Refusé",
-    "decline": "Refuser"
+    "decline": "Refuser",
+    "detailTitle": "Détails de la demande",
+    "description": "Description",
+    "schedule": "Créneau souhaité",
+    "location": "Lieu",
+    "budget": "Budget",
+    "photos": "Photos"
   },
   "proProfile": {
     "title": "Profil Pro",

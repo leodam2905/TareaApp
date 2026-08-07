@@ -20,6 +20,7 @@ import 'screens/favorites_screen.dart';
 import 'screens/spending_screen.dart';
 import 'screens/refer_earn_screen.dart';
 import 'screens/requests_screen.dart';
+import 'screens/request_detail_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/booking_detail_screen.dart';
 import 'screens/chat_screen.dart';
@@ -82,6 +83,7 @@ final appRouter = GoRouter(
     GoRoute(path: '/spending', builder: (_, __) => const SpendingScreen()),
     GoRoute(path: '/refer-earn', builder: (_, __) => const ReferEarnScreen()),
     GoRoute(path: '/requests', builder: (_, __) => const RequestsScreen()),
+    GoRoute(path: '/request-detail', builder: (_, s) => RequestDetailScreen(request: (s.extra as Map?)?.cast<String, dynamic>() ?? const {})),
     GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
     GoRoute(path: '/chat', builder: (_, s) => ChatScreen(data: (s.extra as Map?)?.cast<String, dynamic>() ?? const {})),
     GoRoute(path: '/edit-profile', builder: (_, __) => const EditProfileScreen()),
@@ -114,6 +116,10 @@ class TareaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      // Re-key on locale so a language change fully rebuilds the routed pages
+      // and flips text direction for Arabic — go_router otherwise caches pages
+      // and the new language wouldn't show until you navigated.
+      key: ValueKey(context.locale.toString()),
       title: 'Tarea',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(),

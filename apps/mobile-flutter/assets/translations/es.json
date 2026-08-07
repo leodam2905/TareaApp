@@ -380,7 +380,13 @@
     "jobsCount": "· {} trabajos",
     "hired": "Contratado ✓",
     "declined": "Rechazado",
-    "decline": "Rechazar"
+    "decline": "Rechazar",
+    "detailTitle": "Detalles de la solicitud",
+    "description": "Descripción",
+    "schedule": "Horario preferido",
+    "location": "Ubicación",
+    "budget": "Presupuesto",
+    "photos": "Fotos"
   },
   "proProfile": {
     "title": "Perfil Pro",

@@ -380,7 +380,13 @@
     "jobsCount": "· {} jobs",
     "hired": "Hired ✓",
     "declined": "Declined",
-    "decline": "Decline"
+    "decline": "Decline",
+    "detailTitle": "Request details",
+    "description": "Description",
+    "schedule": "Preferred time",
+    "location": "Location",
+    "budget": "Budget",
+    "photos": "Photos"
   },
   "proProfile": {
     "title": "Pro Profile",
