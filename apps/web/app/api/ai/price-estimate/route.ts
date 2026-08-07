@@ -86,9 +86,10 @@ No markdown, just the JSON.`,
     const labor = hourlyRate * hMid;
     const urgency = urgent ? labor * URGENCY_RATE : 0;
 
-    // Service & Protection Fee (15%) on top of the service price = what the
-    // customer actually pays. Same rate + label as checkout/invoice.
-    const serviceFee = Math.round(price * CUSTOMER_FEE_RATE);
+    // Service & Protection Fee (15%) applies to everything EXCEPT materials
+    // (parts are passed through at cost). total = service price + fee.
+    const feeBase = labor + TRAVEL_ADJUSTMENT + urgency;
+    const serviceFee = Math.round(feeBase * CUSTOMER_FEE_RATE);
     const total = price + serviceFee;
 
     return NextResponse.json({
