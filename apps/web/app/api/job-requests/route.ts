@@ -142,12 +142,15 @@ export async function POST(req: NextRequest) {
   });
 
   if (nearby.length > 0) {
+    const isUrgent = jobRequest.urgency === "URGENT";
+    const pushTitle = isUrgent ? "🚨 Urgent Job Near You" : "New Job Near You 🔧";
+
     // In-app notifications (bulk)
     await prisma.notification.createMany({
       data: nearby.map(h => ({
         userId: h.user.id,
-        title: "New Job Near You",
-        body: `"${title}" posted in ${city}. Apply before it's taken!`,
+        title: isUrgent ? "🚨 Urgent Job Near You" : "New Job Near You",
+        body: `${isUrgent ? "URGENT — " : ""}"${title}" posted in ${city}. Apply before it's taken!`,
         type: "booking_request",
         refId: jobRequest.id,
       })),
@@ -165,9 +168,9 @@ export async function POST(req: NextRequest) {
       // Push to every device this handyman has registered (prunes dead tokens).
       await sendPushToUser(
         h.user.id,
-        "New Job Near You 🔧",
-        `${title} in ${city} — Budget ${budgetStr}`,
-        { type: "booking_request", screen: "FindJobs", jobId: jobRequest.id }
+        pushTitle,
+        `${isUrgent ? "URGENT · " : ""}${title} in ${city} — Budget ${budgetStr}`,
+        { type: "booking_request", screen: "FindJobs", jobId: jobRequest.id, urgent: isUrgent }
       );
 
       // Email notification
