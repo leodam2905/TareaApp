@@ -346,11 +346,11 @@ export default function DiagnosePage() {
               className="flex gap-3"
             >
               <Link
-                href={`/customer/browse?category=${result.category}`}
+                href={`/customer/post-job?category=${result.category}`}
                 className="flex-1 flex items-center justify-center gap-2 font-bold py-3.5 rounded-xl transition-colors text-sm"
                 style={{ background: accent, color: "#0F172A" }}
               >
-                Book a {SERVICE_CATEGORY_LABELS[result.category] || "Pro"}
+                Post this job
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <button

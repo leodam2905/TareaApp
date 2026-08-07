@@ -1,18 +1,32 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, Suspense } from "react";
 import { cld } from "@/lib/cld";
-import { useRouter } from "next/navigation";
-import { Loader2, MapPin, LocateFixed, Camera, X, Sparkles, DollarSign } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Loader2, MapPin, LocateFixed, Camera, X, Sparkles, DollarSign, Zap, Clock } from "lucide-react";
 import toast from "react-hot-toast";
 import { SERVICE_CATEGORY_LABELS } from "@/lib/utils";
 import { useT } from "@/contexts/LanguageContext";
 
 const CATEGORIES = Object.keys(SERVICE_CATEGORY_LABELS);
 
-export default function PostJobPage() {
+const URGENCIES = [
+  { value: "STANDARD", label: "Standard", desc: "Flexible timing" },
+  { value: "SOON", label: "Soon", desc: "Within a few days" },
+  { value: "URGENT", label: "Urgent", desc: "ASAP · within ~3h" },
+];
+
+// Local datetime for <input type="datetime-local"> (YYYY-MM-DDTHH:mm).
+const nowLocal = () => {
+  const d = new Date(Date.now() - new Date().getTimezoneOffset() * 60000);
+  return d.toISOString().slice(0, 16);
+};
+
+function PostJobForm() {
   const router = useRouter();
   const { t } = useT();
+  const presetCat = (useSearchParams().get("category") || "").toUpperCase();
+  const [estimate, setEstimate] = useState<{ price: number; urgency: number; isFixed: boolean } | null>(null);
   const [saving, setSaving] = useState(false);
   const [locating, setLocating] = useState(false);
   const [aiAssisting, setAiAssisting] = useState(false);
@@ -22,12 +36,14 @@ export default function PostJobPage() {
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
-    category: "PLUMBING",
+    category: CATEGORIES.includes(presetCat) ? presetCat : "PLUMBING",
     title: "",
     description: "",
     address: "",
     city: "",
+    zip: "",
     scheduledAt: "",
+    urgency: "STANDARD",
     budgetMin: "",
     budgetMax: "",
     latitude: "",
@@ -35,6 +51,13 @@ export default function PostJobPage() {
   });
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+
+  // Urgent = ASAP: preselect now so the job lands in a ~3h window. Changing
+  // urgency invalidates any prior estimate (price depends on it).
+  const pickUrgency = (u: string) => {
+    setForm(f => ({ ...f, urgency: u, ...(u === "URGENT" && !f.scheduledAt ? { scheduledAt: nowLocal() } : {}) }));
+    setEstimate(null);
+  };
 
   const uploadPhoto = async (file: File) => {
     if (imageUrls.length >= 4) { toast.error("Max 4 photos"); return; }
@@ -96,13 +119,15 @@ export default function PostJobPage() {
     const res = await fetch("/api/ai/price-estimate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ category: form.category, description: form.description, city: form.city }),
+      body: JSON.stringify({ category: form.category, description: form.description, city: `${form.city} ${form.zip}`.trim(), urgent: form.urgency === "URGENT" }),
     });
     if (res.ok) {
-      const { min, max, note } = await res.json();
-      set("budgetMin", String(min));
-      set("budgetMax", String(max));
-      setPriceNote(note);
+      const d = await res.json();
+      // Exact single price (AI fixed price, else range midpoint).
+      const price = d.price ?? (d.min != null && d.max != null ? Math.round((d.min + d.max) / 2) : null);
+      if (price != null) { set("budgetMin", String(price)); set("budgetMax", String(price)); }
+      setEstimate({ price: price ?? 0, urgency: d.breakdown?.urgency ?? 0, isFixed: !!d.isFixed });
+      setPriceNote(d.note || "");
     } else {
       toast.error("Could not estimate price");
     }
@@ -110,14 +135,14 @@ export default function PostJobPage() {
   };
 
   const submit = async () => {
-    if (!form.title || !form.description || !form.address || !form.city || !form.scheduledAt || !form.budgetMin || !form.budgetMax) {
+    if (!form.title || !form.description || !form.address || !form.city || !form.zip || !form.scheduledAt || !form.budgetMin || !form.budgetMax) {
       toast.error("Please fill in all required fields"); return;
     }
     setSaving(true);
     const res = await fetch("/api/job-requests", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, scheduledAt: new Date(form.scheduledAt).toISOString(), imageUrls }),
+      body: JSON.stringify({ ...form, address: form.zip ? `${form.address}, ${form.zip}` : form.address, scheduledAt: new Date(form.scheduledAt).toISOString(), imageUrls }),
     });
     if (res.ok) {
       toast.success("Job posted! Handymen near you will be notified.");
@@ -145,6 +170,31 @@ export default function PostJobPage() {
               <option key={c} value={c}>{SERVICE_CATEGORY_LABELS[c]}</option>
             ))}
           </select>
+        </div>
+
+        {/* Urgency */}
+        <div>
+          <label className="label">How soon? <span className="text-red-400">*</span></label>
+          <div className="grid grid-cols-3 gap-2">
+            {URGENCIES.map(u => {
+              const sel = form.urgency === u.value;
+              return (
+                <button key={u.value} type="button" onClick={() => pickUrgency(u.value)}
+                  className={`rounded-xl border p-3 text-left transition-colors ${sel ? "border-orange-500 bg-orange-50" : "border-gray-200 hover:border-orange-300"}`}>
+                  <div className="flex items-center gap-1.5 font-bold text-gray-900 text-sm">
+                    {u.value === "URGENT" ? <Zap className="w-4 h-4 text-red-500" /> : <Clock className="w-4 h-4 text-orange-500" />}
+                    {u.label}
+                  </div>
+                  <div className="text-[11px] text-gray-500 mt-0.5">{u.desc}</div>
+                </button>
+              );
+            })}
+          </div>
+          {form.urgency === "URGENT" && (
+            <p className="text-xs font-semibold text-red-600 mt-2 flex items-center gap-1">
+              <Zap className="w-3 h-3 flex-shrink-0" /> A pro aims to arrive within ~3 hours. We set the earliest time — you can adjust it.
+            </p>
+          )}
         </div>
 
         {/* Title */}
@@ -222,7 +272,10 @@ export default function PostJobPage() {
             </button>
           </div>
           <input value={form.address} onChange={e => set("address", e.target.value)} placeholder="Street address" className="input" />
-          <input value={form.city} onChange={e => set("city", e.target.value)} placeholder="City" className="input" />
+          <div className="grid grid-cols-2 gap-3">
+            <input value={form.city} onChange={e => set("city", e.target.value)} placeholder="City" className="input" />
+            <input value={form.zip} onChange={e => set("zip", e.target.value)} placeholder="ZIP code" inputMode="numeric" className="input" />
+          </div>
         </div>
 
         {/* Date */}
@@ -245,6 +298,16 @@ export default function PostJobPage() {
             <input type="number" min="0" value={form.budgetMin} onChange={e => set("budgetMin", e.target.value)} placeholder="Min (e.g. 50)" className="input" />
             <input type="number" min="0" value={form.budgetMax} onChange={e => set("budgetMax", e.target.value)} placeholder="Max (e.g. 200)" className="input" />
           </div>
+          {estimate && (
+            <p className="text-sm font-bold text-gray-900 mt-2">
+              {estimate.isFixed ? "Fixed price" : "Estimated price"}: ${estimate.price}
+            </p>
+          )}
+          {estimate && estimate.urgency > 0 && (
+            <p className="text-xs font-semibold text-red-600 mt-1 flex items-center gap-1">
+              <Zap className="w-3 h-3 flex-shrink-0" /> Includes urgent rush fee +${estimate.urgency}
+            </p>
+          )}
           {priceNote && (
             <p className="text-xs text-orange-500 mt-1.5 flex items-center gap-1">
               <Sparkles className="w-3 h-3 flex-shrink-0" /> {priceNote}
@@ -278,5 +341,13 @@ export default function PostJobPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function PostJobPage() {
+  return (
+    <Suspense fallback={null}>
+      <PostJobForm />
+    </Suspense>
   );
 }

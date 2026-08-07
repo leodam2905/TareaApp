@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { cld } from "@/lib/cld";
-import { Star, MapPin, Clock, CheckCircle2, XCircle, Loader2, Plus } from "lucide-react";
+import { Star, MapPin, Clock, CheckCircle2, XCircle, Loader2, Plus, Zap, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { formatCurrency, formatDate, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
@@ -29,6 +29,7 @@ type JobRequest = {
   budgetMin: number;
   budgetMax: number;
   status: string;
+  urgency: string;
   imageUrls: string[];
   createdAt: string;
   applications: Application[];
@@ -84,6 +85,20 @@ export default function CustomerRequestsPage() {
     setActing(null);
   };
 
+  const cancelReq = async (jobId: string) => {
+    if (!confirm("Cancel this request? This removes your posted job and can't be undone.")) return;
+    setActing(jobId);
+    const res = await fetch(`/api/job-requests/${jobId}`, { method: "DELETE" });
+    if (res.ok) {
+      toast.success("Request cancelled");
+      setRequests(prev => prev.filter(r => r.id !== jobId));
+    } else {
+      const b = await res.json().catch(() => ({}));
+      toast.error(b.error || "Could not cancel");
+    }
+    setActing(null);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -118,6 +133,11 @@ export default function CustomerRequestsPage() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-gray-900 font-bold">{r.title}</p>
                       <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLE[r.status]}`}>{r.status}</span>
+                      {r.urgency === "URGENT" && (
+                        <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-red-600 text-white animate-pulse flex items-center gap-1">
+                          <Zap className="w-3 h-3" /> URGENT
+                        </span>
+                      )}
                     </div>
                     <p className="text-gray-500 text-xs mt-0.5">{SERVICE_CATEGORY_LABELS[r.category]}</p>
                     <div className="flex flex-wrap gap-3 mt-2 text-xs text-slate-400">
@@ -131,6 +151,12 @@ export default function CustomerRequestsPage() {
                 <div className="flex-shrink-0 text-right">
                   <p className="text-gray-900 font-bold text-lg">{r.applications.length}</p>
                   <p className="text-gray-400 text-xs">{r.applications.length === 1 ? t("label_applicants", { n: r.applications.length }) : t("label_applicants_plural", { n: r.applications.length })}</p>
+                  {r.status === "OPEN" && (
+                    <button onClick={() => cancelReq(r.id)} disabled={acting === r.id}
+                      className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-600 disabled:opacity-50">
+                      {acting === r.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />} Cancel
+                    </button>
+                  )}
                 </div>
               </div>
 
