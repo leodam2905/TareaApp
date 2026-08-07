@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'theme.dart';
 import 'api.dart';
 import 'flavor.dart';
+import 'route_observer.dart';
 import 'screens/landing_screen.dart';
 import 'screens/pro/pro_landing.dart';
 import 'screens/login_screen.dart';
@@ -61,6 +62,7 @@ void main() => bootstrap(Flavor.home);
 
 final appRouter = GoRouter(
   initialLocation: '/',
+  observers: [routeObserver],
   redirect: (context, state) async {
     final loggedIn = (await Api.token()) != null;
     final loc = state.matchedLocation;

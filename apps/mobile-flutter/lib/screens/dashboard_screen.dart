@@ -6,6 +6,7 @@ import '../theme.dart';
 import '../api.dart';
 import '../avatar_util.dart';
 import '../widgets/urgent_badge.dart';
+import '../route_observer.dart';
 
 class _Action {
   // titleKey/descKey are translation keys; route is the navigation target
@@ -49,7 +50,7 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
   String _firstName = '';
   String _avatar = '';
   List<dynamic> _pros = [];
@@ -60,6 +61,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     _load();
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) routeObserver.subscribe(this, route);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  // Refresh when returning to the shell from a pushed screen (e.g. after
+  // posting a job) so recent activity reflects the new job.
+  @override
+  void didPopNext() => _load();
 
   Future<void> _load() async {
     try {
@@ -118,7 +137,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       backgroundColor: C.white,
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: RefreshIndicator(
+          onRefresh: _load,
+          child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,6 +255,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 24),
             ],
           ),
+        ),
         ),
       ),
     );
