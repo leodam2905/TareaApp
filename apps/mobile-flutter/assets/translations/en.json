@@ -500,7 +500,11 @@
     "enterPhaseTitle": "Enter a phase title",
     "chooseMinutes": "Choose or enter extra minutes",
     "requestSentCustomer": "Request sent to customer",
-    "sendRequestFailed": "Could not send request."
+    "sendRequestFailed": "Could not send request.",
+    "markWorkDone": "Mark work done",
+    "workDoneTitle": "Mark work done?",
+    "workDoneMsg": "The customer will be asked to confirm and release payment. It auto-confirms in 3 days.",
+    "awaitingConfirm": "Waiting for the customer to confirm"
   },
   "payout": {
     "title": "Payout Methods",
@@ -663,7 +667,15 @@
     "tipGoesToPro": "100% goes to your pro.",
     "customAmount": "Custom amount ($)",
     "tipAmount": "Tip {}",
-    "chooseAmount": "Choose an amount"
+    "chooseAmount": "Choose an amount",
+    "confirmCompletionTitle": "Job finished?",
+    "confirmCompletionBody": "Your pro marked the work done. Confirm to release payment — it auto-confirms in 3 days.",
+    "addReceipt": "Add materials receipt (optional)",
+    "receiptAdded": "Receipt added",
+    "confirmRelease": "Confirm & release payment",
+    "takePhoto": "Take photo",
+    "chooseGallery": "Choose from gallery",
+    "uploadFailed": "Upload failed"
   },
   "instantQuote": {
     "title": "Instant Quote",

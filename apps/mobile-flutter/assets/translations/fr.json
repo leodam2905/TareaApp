@@ -500,7 +500,11 @@
     "enterPhaseTitle": "Saisissez un titre d'étape",
     "chooseMinutes": "Choisissez ou saisissez des minutes",
     "requestSentCustomer": "Demande envoyée au client",
-    "sendRequestFailed": "Impossible d'envoyer la demande."
+    "sendRequestFailed": "Impossible d'envoyer la demande.",
+    "markWorkDone": "Marquer comme terminé",
+    "workDoneTitle": "Marquer comme terminé ?",
+    "workDoneMsg": "Le client devra confirmer et libérer le paiement. Confirmation automatique sous 3 jours.",
+    "awaitingConfirm": "En attente de confirmation du client"
   },
   "payout": {
     "title": "Modes de paiement",
@@ -663,7 +667,15 @@
     "tipGoesToPro": "100 % va à votre pro.",
     "customAmount": "Montant libre ($)",
     "tipAmount": "Pourboire {}",
-    "chooseAmount": "Choisissez un montant"
+    "chooseAmount": "Choisissez un montant",
+    "confirmCompletionTitle": "Travail terminé ?",
+    "confirmCompletionBody": "Votre pro a indiqué le travail terminé. Confirmez pour libérer le paiement — confirmation automatique sous 3 jours.",
+    "addReceipt": "Ajouter le reçu des matériaux (facultatif)",
+    "receiptAdded": "Reçu ajouté",
+    "confirmRelease": "Confirmer et libérer le paiement",
+    "takePhoto": "Prendre une photo",
+    "chooseGallery": "Choisir dans la galerie",
+    "uploadFailed": "Échec du téléversement"
   },
   "instantQuote": {
     "title": "Devis instantané",

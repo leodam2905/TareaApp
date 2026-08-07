@@ -500,7 +500,11 @@
     "enterPhaseTitle": "أدخل عنوان المرحلة",
     "chooseMinutes": "اختر أو أدخل دقائق إضافية",
     "requestSentCustomer": "تم إرسال الطلب إلى العميل",
-    "sendRequestFailed": "تعذّر إرسال الطلب."
+    "sendRequestFailed": "تعذّر إرسال الطلب.",
+    "markWorkDone": "وضع علامة تم الإنجاز",
+    "workDoneTitle": "تأكيد إنجاز العمل؟",
+    "workDoneMsg": "سيُطلب من العميل التأكيد وتحرير الدفع. يتم التأكيد تلقائياً خلال 3 أيام.",
+    "awaitingConfirm": "بانتظار تأكيد العميل"
   },
   "payout": {
     "title": "طرق الدفع",
@@ -663,7 +667,15 @@
     "tipGoesToPro": "100% تذهب لمحترفك.",
     "customAmount": "مبلغ مخصّص ($)",
     "tipAmount": "إكرامية {}",
-    "chooseAmount": "اختر مبلغاً"
+    "chooseAmount": "اختر مبلغاً",
+    "confirmCompletionTitle": "هل انتهى العمل؟",
+    "confirmCompletionBody": "أشار الفني إلى إنجاز العمل. أكّد لتحرير الدفع — يتم التأكيد تلقائياً خلال 3 أيام.",
+    "addReceipt": "أضف إيصال المواد (اختياري)",
+    "receiptAdded": "تمت إضافة الإيصال",
+    "confirmRelease": "تأكيد وتحرير الدفع",
+    "takePhoto": "التقاط صورة",
+    "chooseGallery": "اختيار من المعرض",
+    "uploadFailed": "فشل الرفع"
   },
   "instantQuote": {
     "title": "عرض سعر فوري",

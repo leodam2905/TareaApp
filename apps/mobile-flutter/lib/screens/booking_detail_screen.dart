@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:image_picker/image_picker.dart';
 import '../theme.dart';
 import '../api.dart';
 
@@ -35,8 +36,49 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   Map<String, dynamic> _b = {};
   bool _busy = false;
   bool _reviewed = false;
+  String? _receiptUrl;
+  bool _uploadingReceipt = false;
   Timer? _ticker;
   int _elapsed = 0;
+
+  Future<void> _pickReceipt() async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (_) => SafeArea(child: Column(mainAxisSize: MainAxisSize.min, children: [
+        ListTile(leading: const Icon(Icons.camera_alt_outlined, color: C.blue), title: Text('booking.takePhoto'.tr()), onTap: () => Navigator.pop(context, ImageSource.camera)),
+        ListTile(leading: const Icon(Icons.photo_library_outlined, color: C.blue), title: Text('booking.chooseGallery'.tr()), onTap: () => Navigator.pop(context, ImageSource.gallery)),
+      ])),
+    );
+    if (source == null) return;
+    final x = await ImagePicker().pickImage(source: source, imageQuality: 80, maxWidth: 1600);
+    if (x == null) return;
+    setState(() => _uploadingReceipt = true);
+    try {
+      final res = await Api.uploadImage(x.path, folder: 'tarea/receipts');
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        setState(() => _receiptUrl = (jsonDecode(res.body)['url'] ?? '').toString());
+      } else { _toast('booking.uploadFailed'.tr()); }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
+    finally { if (mounted) setState(() => _uploadingReceipt = false); }
+  }
+
+  Future<void> _confirmCompletion() async {
+    setState(() => _busy = true);
+    try {
+      final res = await Api.patch('/bookings/$_id', {
+        'status': 'COMPLETED',
+        if (_receiptUrl != null && _receiptUrl!.isNotEmpty) 'receiptUrl': _receiptUrl,
+      });
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        await _load();
+      } else {
+        String msg = 'proJobs.updateFailed'.tr();
+        try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
+        _toast(msg);
+      }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
+    finally { if (mounted) setState(() => _busy = false); }
+  }
 
   @override
   void dispose() { _ticker?.cancel(); super.dispose(); }
@@ -296,6 +338,43 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             ]),
           ),
           const SizedBox(height: 20),
+          if (status == 'IN_PROGRESS' && _b['workDoneAt'] != null) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(color: const Color(0xFFF0FDF4), borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFBBF7D0))),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('booking.confirmCompletionTitle'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+                const SizedBox(height: 4),
+                Text('booking.confirmCompletionBody'.tr(), style: const TextStyle(color: C.muted, height: 1.35, fontSize: 13)),
+                const SizedBox(height: 12),
+                GestureDetector(
+                  onTap: _uploadingReceipt ? null : _pickReceipt,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: C.line)),
+                    child: Row(children: [
+                      Icon(_receiptUrl != null ? Icons.check_circle : Icons.receipt_long_outlined,
+                          color: _receiptUrl != null ? const Color(0xFF16A34A) : C.muted, size: 20),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(_receiptUrl != null ? 'booking.receiptAdded'.tr() : 'booking.addReceipt'.tr(),
+                          style: const TextStyle(fontWeight: FontWeight.w700, color: C.ink))),
+                      if (_uploadingReceipt) const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+                    ]),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(width: double.infinity, child: FilledButton(
+                  style: FilledButton.styleFrom(backgroundColor: const Color(0xFF16A34A), padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                  onPressed: _busy ? null : _confirmCompletion,
+                  child: _busy
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : Text('booking.confirmRelease'.tr(), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: Colors.white)),
+                )),
+              ]),
+            ),
+            const SizedBox(height: 12),
+          ],
           if (canReview && !_reviewed)
             _primaryBtn('booking.leaveReview'.tr(), _leaveReview),
           if (canReview && !_reviewed) const SizedBox(height: 10),

@@ -105,6 +105,25 @@ class _ProJobDetailState extends State<ProJobDetail> {
     finally { if (mounted) setState(() => _busy = false); }
   }
 
+  Future<void> _markWorkDone() async {
+    final ok = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
+      title: Text('jobDetail.workDoneTitle'.tr()),
+      content: Text('jobDetail.workDoneMsg'.tr()),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context, false), child: Text('common.cancel'.tr())),
+        TextButton(onPressed: () => Navigator.pop(context, true), child: Text('common.confirm'.tr(), style: const TextStyle(fontWeight: FontWeight.w800))),
+      ],
+    ));
+    if (ok != true) return;
+    setState(() => _busy = true);
+    try {
+      final res = await Api.patch('/bookings/$_id', {'workDone': true});
+      if (res.statusCode >= 200 && res.statusCode < 300) { await _load(); }
+      else { _toast('proJobs.updateFailed'.tr()); }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
+    finally { if (mounted) setState(() => _busy = false); }
+  }
+
   Future<void> _confirmStatus(String title, String msg, String status) async {
     final ok = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
       title: Text(title), content: Text(msg),
@@ -322,9 +341,13 @@ class _ProJobDetailState extends State<ProJobDetail> {
             child: Text('jobDetail.startJobBtn'.tr(), style: const TextStyle(fontWeight: FontWeight.w800))),
         ],
         if (_status == 'IN_PROGRESS')
-          FilledButton(style: FilledButton.styleFrom(backgroundColor: const Color(0xFF16A34A), minimumSize: const Size.fromHeight(50)),
-            onPressed: _busy ? null : () => _confirmStatus('jobDetail.completeJobTitle'.tr(), 'jobDetail.completeJobMsg'.tr(), 'COMPLETED'),
-            child: Text('jobDetail.markComplete'.tr(), style: const TextStyle(fontWeight: FontWeight.w800))),
+          _b['workDoneAt'] != null
+              ? Container(width: double.infinity, padding: const EdgeInsets.all(14), alignment: Alignment.center,
+                  decoration: BoxDecoration(color: const Color(0xFFF0FDF4), borderRadius: BorderRadius.circular(12)),
+                  child: Text('jobDetail.awaitingConfirm'.tr(), textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF15803D), fontWeight: FontWeight.w700)))
+              : FilledButton(style: FilledButton.styleFrom(backgroundColor: const Color(0xFF16A34A), minimumSize: const Size.fromHeight(50)),
+                  onPressed: _busy ? null : _markWorkDone,
+                  child: Text('jobDetail.markWorkDone'.tr(), style: const TextStyle(fontWeight: FontWeight.w800))),
         if (_status != 'COMPLETED' && _status != 'CANCELLED') ...[
           const SizedBox(height: 10),
           OutlinedButton.icon(

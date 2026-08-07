@@ -500,7 +500,11 @@
     "enterPhaseTitle": "Escribe un título de fase",
     "chooseMinutes": "Elige o escribe minutos extra",
     "requestSentCustomer": "Solicitud enviada al cliente",
-    "sendRequestFailed": "No se pudo enviar la solicitud."
+    "sendRequestFailed": "No se pudo enviar la solicitud.",
+    "markWorkDone": "Marcar como hecho",
+    "workDoneTitle": "¿Marcar como hecho?",
+    "workDoneMsg": "Se pedirá al cliente que confirme y libere el pago. Se confirma automáticamente en 3 días.",
+    "awaitingConfirm": "Esperando la confirmación del cliente"
   },
   "payout": {
     "title": "Métodos de pago",
@@ -663,7 +667,15 @@
     "tipGoesToPro": "El 100% es para tu pro.",
     "customAmount": "Monto personalizado ($)",
     "tipAmount": "Propina {}",
-    "chooseAmount": "Elige un monto"
+    "chooseAmount": "Elige un monto",
+    "confirmCompletionTitle": "¿Trabajo terminado?",
+    "confirmCompletionBody": "Tu profesional marcó el trabajo como hecho. Confirma para liberar el pago — se confirma automáticamente en 3 días.",
+    "addReceipt": "Añadir recibo de materiales (opcional)",
+    "receiptAdded": "Recibo añadido",
+    "confirmRelease": "Confirmar y liberar el pago",
+    "takePhoto": "Tomar foto",
+    "chooseGallery": "Elegir de la galería",
+    "uploadFailed": "Error al subir"
   },
   "instantQuote": {
     "title": "Cotización al instante",
