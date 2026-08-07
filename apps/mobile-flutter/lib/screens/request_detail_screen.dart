@@ -141,10 +141,51 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
             Text(apps.isEmpty ? 'requests.noApplied'.tr() : (apps.length == 1 ? 'requests.prosAppliedOne' : 'requests.prosAppliedMany').tr(args: ['${apps.length}']),
                 style: TextStyle(color: apps.isEmpty ? C.muted : C.blue, fontWeight: FontWeight.w800, fontSize: 15)),
             ...apps.map((a) => _applicantRow(a as Map, open)),
+            if (open) ...[
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFFFECACA)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: _busy ? null : _cancelRequest,
+                  icon: const Icon(Icons.close, size: 18, color: C.red),
+                  label: Text('requests.cancelRequest'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w800)),
+                ),
+              ),
+            ],
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _cancelRequest() async {
+    final ok = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
+      title: Text('requests.cancelTitle'.tr()),
+      content: Text('requests.cancelBody'.tr()),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context, false), child: Text('common.cancel'.tr())),
+        TextButton(onPressed: () => Navigator.pop(context, true),
+            child: Text('requests.cancelRequest'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w800))),
+      ],
+    ));
+    if (ok != true) return;
+    setState(() => _busy = true);
+    try {
+      final res = await Api.delete('/job-requests/${_req['id']}');
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        if (mounted) { _toast('requests.cancelled'.tr()); Navigator.of(context).pop(true); }
+      } else {
+        String msg = 'requests.updateFailed'.tr();
+        try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
+        _toast(msg);
+      }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
+    finally { if (mounted) setState(() => _busy = false); }
   }
 
   Widget _infoCard(String label, String value) => Container(

@@ -388,7 +388,11 @@
     "schedule": "Horario preferido",
     "location": "Ubicación",
     "budget": "Presupuesto",
-    "photos": "Fotos"
+    "photos": "Fotos",
+    "cancelRequest": "Cancelar solicitud",
+    "cancelTitle": "¿Cancelar esta solicitud?",
+    "cancelBody": "Esto elimina tu trabajo publicado. No se puede deshacer.",
+    "cancelled": "Solicitud cancelada"
   },
   "proProfile": {
     "title": "Perfil Pro",

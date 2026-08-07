@@ -388,7 +388,11 @@
     "schedule": "Créneau souhaité",
     "location": "Lieu",
     "budget": "Budget",
-    "photos": "Photos"
+    "photos": "Photos",
+    "cancelRequest": "Annuler la demande",
+    "cancelTitle": "Annuler cette demande ?",
+    "cancelBody": "Cela supprime votre annonce. Action irréversible.",
+    "cancelled": "Demande annulée"
   },
   "proProfile": {
     "title": "Profil Pro",

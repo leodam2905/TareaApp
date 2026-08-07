@@ -440,7 +440,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
         _card([
           Text('postjob.needTitle'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
           const SizedBox(height: 12),
-          // Step 1 — service category (emoji tiles, shared with Instant Quote)
+          // Step 1 — service category (same tile style as Instant Quote)
           Wrap(
             spacing: 10, runSpacing: 10,
             children: kServiceCats.map((c) {
@@ -448,18 +448,18 @@ class _PostJobScreenState extends State<PostJobScreen> {
               return GestureDetector(
                 onTap: () => setState(() { _cat = c; _task = null; _detailAnswers.clear(); _estimate = null; }),
                 child: Container(
-                  width: 96,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  width: 100,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   decoration: BoxDecoration(
-                    color: sel ? C.blue : C.surface,
+                    color: sel ? C.blue : C.white,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: sel ? C.blue : C.line),
                   ),
                   child: Column(children: [
-                    Icon(c.icon, size: 26, color: sel ? Colors.white : C.blue),
+                    Icon(c.icon, size: 28, color: sel ? Colors.white : C.blue),
                     const SizedBox(height: 6),
                     Text(c.nameKey.tr(), textAlign: TextAlign.center,
-                        style: TextStyle(color: sel ? Colors.white : C.ink, fontWeight: FontWeight.w700, fontSize: 13)),
+                        style: TextStyle(color: sel ? Colors.white : C.ink, fontWeight: FontWeight.w700)),
                   ]),
                 ),
               );

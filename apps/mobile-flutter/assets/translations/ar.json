@@ -388,7 +388,11 @@
     "schedule": "الوقت المفضل",
     "location": "الموقع",
     "budget": "الميزانية",
-    "photos": "الصور"
+    "photos": "الصور",
+    "cancelRequest": "إلغاء الطلب",
+    "cancelTitle": "إلغاء هذا الطلب؟",
+    "cancelBody": "سيؤدي هذا إلى حذف طلبك المنشور. لا يمكن التراجع.",
+    "cancelled": "تم إلغاء الطلب"
   },
   "proProfile": {
     "title": "ملف المحترف",

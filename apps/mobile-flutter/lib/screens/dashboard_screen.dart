@@ -365,7 +365,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink))),
         if (label.isNotEmpty)
           Text(label,
-              style: TextStyle(color: isReq ? C.blue : C.muted, fontSize: 12, fontWeight: FontWeight.w700)),
+              style: TextStyle(color: isReq ? C.red : C.muted, fontSize: 12, fontWeight: FontWeight.w700)),
       ]),
       ),
     );

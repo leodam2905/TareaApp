@@ -388,7 +388,11 @@
     "schedule": "Preferred time",
     "location": "Location",
     "budget": "Budget",
-    "photos": "Photos"
+    "photos": "Photos",
+    "cancelRequest": "Cancel request",
+    "cancelTitle": "Cancel this request?",
+    "cancelBody": "This removes your posted job. This can't be undone.",
+    "cancelled": "Request cancelled"
   },
   "proProfile": {
     "title": "Pro Profile",
