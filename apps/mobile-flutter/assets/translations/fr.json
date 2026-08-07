@@ -295,7 +295,14 @@
     "included": "Inclus",
     "pickService": "Choisissez d'abord un service",
     "describeJob": "Ajoutez une brève description",
-    "addLocation": "Ajoutez l'adresse et la ville"
+    "addLocation": "Ajoutez l'adresse et la ville",
+    "pickTaskTitle": "Choisissez une tâche",
+    "pickTask": "Choisissez une tâche",
+    "answerDetails": "Répondez aux détails",
+    "notesOptional": "Ajouter des détails (facultatif)",
+    "zipCode": "Code postal",
+    "addZip": "Ajoutez le code postal",
+    "estimatedPrice": "Prix estimé"
   },
   "browse": {
     "title": "Parcourir les pros",

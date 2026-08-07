@@ -295,7 +295,14 @@
     "included": "Included",
     "pickService": "Choose a service first",
     "describeJob": "Add a short description",
-    "addLocation": "Add the job address and city"
+    "addLocation": "Add the job address and city",
+    "pickTaskTitle": "Choose a task",
+    "pickTask": "Pick a task",
+    "answerDetails": "Answer the quick details",
+    "notesOptional": "Add details (optional)",
+    "zipCode": "ZIP code",
+    "addZip": "Add the ZIP code",
+    "estimatedPrice": "Estimated price"
   },
   "browse": {
     "title": "Browse Pros",

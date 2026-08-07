@@ -295,7 +295,14 @@
     "included": "مشمول",
     "pickService": "اختر خدمة أولاً",
     "describeJob": "أضف وصفاً قصيراً",
-    "addLocation": "أضف عنوان المهمة والمدينة"
+    "addLocation": "أضف عنوان المهمة والمدينة",
+    "pickTaskTitle": "اختر مهمة",
+    "pickTask": "اختر مهمة",
+    "answerDetails": "أجب عن التفاصيل السريعة",
+    "notesOptional": "أضف تفاصيل (اختياري)",
+    "zipCode": "الرمز البريدي",
+    "addZip": "أضف الرمز البريدي",
+    "estimatedPrice": "السعر المقدّر"
   },
   "browse": {
     "title": "تصفّح المحترفين",

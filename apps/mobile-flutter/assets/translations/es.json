@@ -295,7 +295,14 @@
     "included": "Incluido",
     "pickService": "Elige primero un servicio",
     "describeJob": "Añade una breve descripción",
-    "addLocation": "Añade la dirección y la ciudad"
+    "addLocation": "Añade la dirección y la ciudad",
+    "pickTaskTitle": "Elige una tarea",
+    "pickTask": "Elige una tarea",
+    "answerDetails": "Responde los detalles",
+    "notesOptional": "Añadir detalles (opcional)",
+    "zipCode": "Código postal",
+    "addZip": "Añade el código postal",
+    "estimatedPrice": "Precio estimado"
   },
   "browse": {
     "title": "Buscar pros",

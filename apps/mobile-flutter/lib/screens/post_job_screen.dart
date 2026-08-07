@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
+import '../service_catalog.dart';
 
 class _Urgency {
   final String value, labelKey, descKey;
@@ -18,23 +19,6 @@ const _urgencies = [
   _Urgency('URGENT', 'postjob.urgencyUrgent', 'postjob.urgencyUrgentDesc', Icons.bolt, C.red),
 ];
 
-// (canonical enum value, translation key) — the value is sent to the API, the
-// key is only for display, so translating labels never changes what's submitted.
-const _categories = <(String, String)>[
-  ('PLUMBING', 'categories.plumbing'),
-  ('ELECTRICAL', 'categories.electrical'),
-  ('PAINTING', 'categories.painting'),
-  ('ASSEMBLY', 'categories.assembly'),
-  ('CLEANING', 'categories.cleaning'),
-  ('HVAC', 'categories.hvac'),
-  ('ROOFING', 'categories.roofing'),
-  ('LANDSCAPING', 'categories.landscaping'),
-  ('MOVING', 'categories.moving'),
-  ('APPLIANCE', 'categories.appliance'),
-  ('LAUNDRY', 'categories.laundry'),
-  ('GENERAL', 'categories.general'),
-];
-
 const _steps = ['postjob.stepDetails', 'postjob.stepSchedule', 'postjob.stepLocation', 'postjob.stepReview'];
 
 class PostJobScreen extends StatefulWidget {
@@ -47,7 +31,15 @@ class PostJobScreen extends StatefulWidget {
 class _PostJobScreenState extends State<PostJobScreen> {
   int _step = 0;
   String _urgency = 'STANDARD';
-  String _category = '';
+
+  // Structured service picker shared with Instant Quote so both flows ask the
+  // exact same questions (service_catalog.dart).
+  ServiceCat? _cat;
+  Map<String, dynamic>? _task;
+  final Map<String, String> _detailAnswers = {};
+
+  List<dynamic> get _taskDetails => (_task?['details'] as List?) ?? const [];
+  bool get _allFilled => _taskDetails.every((d) => _detailAnswers.containsKey(d['key']));
 
   bool get _isDirected => widget.directed != null;
   String get _proName => (widget.directed?['proName'] ?? 'the pro').toString().split(' ').first;
@@ -56,29 +48,49 @@ class _PostJobScreenState extends State<PostJobScreen> {
   void initState() {
     super.initState();
     final d = widget.directed;
-    if (d != null && (d['category'] ?? '').toString().isNotEmpty) {
-      _category = d['category'].toString().toUpperCase();
+    final cat = (d?['category'] ?? '').toString().toUpperCase();
+    if (cat.isNotEmpty) {
+      for (final c in kServiceCats) {
+        if (c.api == cat || c.name.toUpperCase() == cat) { _cat = c; break; }
+      }
     }
   }
-  final _desc = TextEditingController();
+  final _desc = TextEditingController(); // optional extra notes
   DateTime? _date;
   TimeOfDay? _time;
   final _address = TextEditingController();
   final _city = TextEditingController();
+  final _zip = TextEditingController();
   bool _submitting = false;
   Map<String, dynamic>? _estimate;
   bool _aiLoading = false;
 
+  // Build the plain-text description sent to the pricing AI + stored on the job,
+  // from the chosen task, its structured answers, and any extra notes.
+  String _builtDescription() {
+    final b = StringBuffer();
+    if (_task != null) b.write(_task!['label']);
+    final filled = _taskDetails
+        .where((d) => _detailAnswers[d['key']] != null)
+        .map((d) => '${d['label']}: ${_detailAnswers[d['key']]}')
+        .join(', ');
+    if (filled.isNotEmpty) b.write(' ($filled)');
+    final notes = _desc.text.trim();
+    if (notes.isNotEmpty) b.write('. $notes');
+    return b.toString();
+  }
+
   // AI fixes a fair price from the job details (called on the Review step),
   // mirroring the RN flow — the price is set by AI before you post.
   Future<void> _fetchAiPrice() async {
-    if (_desc.text.trim().isEmpty || _aiLoading) return;
+    if (_cat == null || _task == null || !_allFilled || _aiLoading) return;
     setState(() => _aiLoading = true);
     try {
+      final zip = _zip.text.trim();
       final res = await Api.post('/ai/price-estimate', {
-        'category': _category.toUpperCase(),
-        'description': _desc.text.trim(),
-        'city': _city.text.trim(),
+        'category': _cat!.api,
+        'description': _builtDescription(),
+        'city': zip.isEmpty ? _city.text.trim() : '${_city.text.trim()} $zip',
         'urgent': _urgency == 'URGENT',
       });
       if (res.statusCode == 200) {
@@ -110,13 +122,20 @@ class _PostJobScreenState extends State<PostJobScreen> {
   void _toast(String m) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
 
-  // Backend title (English, stored + shown to pros): first line of the
-  // description, else "<Category> service" — mirrors the RN app.
+  // Backend title (English, stored + shown to pros): the chosen task label,
+  // else "<Category> service".
   String _jobTitle() {
-    final first = _desc.text.trim().split('\n').first.trim();
-    if (first.isNotEmpty) return first.length > 60 ? first.substring(0, 60) : first;
-    final cat = _category.isEmpty ? 'Service' : _category[0] + _category.substring(1).toLowerCase();
-    return '$cat service';
+    final label = (_task?['label'] ?? '').toString().trim();
+    if (label.isNotEmpty) return label;
+    final n = _cat?.name ?? 'Service';
+    return '$n service';
+  }
+
+  // Full street line with the ZIP appended when provided.
+  String _addressLine() {
+    final a = _address.text.trim();
+    final z = _zip.text.trim();
+    return z.isEmpty ? a : '$a, $z';
   }
 
   Future<void> _submit() async {
@@ -128,20 +147,20 @@ class _PostJobScreenState extends State<PostJobScreen> {
               'handymanUserId': widget.directed?['handymanId'],
               if (widget.directed?['serviceId'] != null) 'serviceId': widget.directed?['serviceId'],
               'scheduledAt': (_date ?? DateTime.now().add(const Duration(days: 1))).toIso8601String(),
-              'address': _address.text.trim(),
+              'address': _addressLine(),
               'city': _city.text.trim(),
               if ((_estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceMin']) != null)
                 'totalPrice': _estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceMin'],
-              'description': _desc.text.trim(),
+              'description': _builtDescription(),
             })
           // Open job request — the backend requires title + a non-null scheduledAt.
           : await Api.post('/job-requests', {
-              'category': _category.toUpperCase(),
+              'category': _cat!.api,
               'title': _jobTitle(),
-              'description': _desc.text.trim(),
+              'description': _builtDescription(),
               'urgency': _urgency,
               'scheduledAt': (_date ?? DateTime.now().add(const Duration(days: 1))).toIso8601String(),
-              'address': _address.text.trim(),
+              'address': _addressLine(),
               'city': _city.text.trim(),
             });
       if (res.statusCode < 200 || res.statusCode >= 300) {
@@ -163,12 +182,16 @@ class _PostJobScreenState extends State<PostJobScreen> {
 
   void _next() {
     // Validate required fields before advancing (the backend rejects any missing).
-    if (!_isDirected && _step == 0) {
-      if (_category.isEmpty) return _toast('postjob.pickService'.tr());
-      if (_desc.text.trim().isEmpty) return _toast('postjob.describeJob'.tr());
+    if (_step == 0) {
+      if (_cat == null) return _toast('postjob.pickService'.tr());
+      if (_task == null) return _toast('postjob.pickTask'.tr());
+      if (!_allFilled) return _toast('postjob.answerDetails'.tr());
     }
-    if (_step == 2 && (_address.text.trim().isEmpty || _city.text.trim().isEmpty)) {
-      return _toast('postjob.addLocation'.tr());
+    if (_step == 2) {
+      if (_address.text.trim().isEmpty || _city.text.trim().isEmpty) {
+        return _toast('postjob.addLocation'.tr());
+      }
+      if (_zip.text.trim().isEmpty) return _toast('postjob.addZip'.tr());
     }
     if (_step < 3) {
       setState(() => _step++);
@@ -389,37 +412,87 @@ class _PostJobScreenState extends State<PostJobScreen> {
         _card([
           Text('postjob.needTitle'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
           const SizedBox(height: 12),
+          // Step 1 — service category (emoji tiles, shared with Instant Quote)
           Wrap(
-            spacing: 8, runSpacing: 8,
-            children: _categories.map((c) {
-              final sel = _category == c.$1;
+            spacing: 10, runSpacing: 10,
+            children: kServiceCats.map((c) {
+              final sel = _cat?.name == c.name;
               return GestureDetector(
-                onTap: () => setState(() => _category = c.$1),
+                onTap: () => setState(() { _cat = c; _task = null; _detailAnswers.clear(); _estimate = null; }),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                  width: 96,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
                     color: sel ? C.blue : C.surface,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: sel ? C.blue : C.line),
                   ),
-                  child: Text(c.$2.tr(), style: TextStyle(color: sel ? Colors.white : C.ink, fontWeight: FontWeight.w700)),
+                  child: Column(children: [
+                    Text(c.emoji, style: const TextStyle(fontSize: 24)),
+                    const SizedBox(height: 6),
+                    Text(c.nameKey.tr(), textAlign: TextAlign.center,
+                        style: TextStyle(color: sel ? Colors.white : C.ink, fontWeight: FontWeight.w700, fontSize: 13)),
+                  ]),
                 ),
               );
             }).toList(),
           ),
-          const SizedBox(height: 14),
-          TextField(
-            controller: _desc,
-            maxLines: 4,
-            decoration: InputDecoration(
-              hintText: 'postjob.describeHint'.tr(),
-              filled: true, fillColor: C.surface,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+          // Step 2 — task
+          if (_cat != null) ...[
+            const SizedBox(height: 20),
+            Text('postjob.pickTaskTitle'.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: C.ink)),
+            const SizedBox(height: 10),
+            Wrap(spacing: 8, runSpacing: 8, children: (kServiceTasks[_cat!.name] ?? []).map((t) {
+              final sel = _task?['label'] == t['label'];
+              return _chip(t['label'] as String, sel, () => setState(() { _task = t; _detailAnswers.clear(); _estimate = null; }));
+            }).toList()),
+          ],
+          // Step 3 — structured details for an exact estimate
+          if (_task != null) ...[
+            const SizedBox(height: 20),
+            Text('instantQuote.aFewDetails'.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: C.ink)),
+            ..._taskDetails.map((d) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 12),
+                    Text(d['label'] as String, style: const TextStyle(fontWeight: FontWeight.w700, color: C.ink)),
+                    const SizedBox(height: 8),
+                    Wrap(spacing: 8, runSpacing: 8, children: (d['options'] as List).map<Widget>((o) {
+                      final sel = _detailAnswers[d['key']] == o;
+                      return _chip(o as String, sel, () => setState(() { _detailAnswers[d['key'] as String] = o; _estimate = null; }));
+                    }).toList()),
+                  ],
+                )),
+            const SizedBox(height: 18),
+            Text('postjob.notesOptional'.tr(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: C.ink)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _desc,
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText: 'instantQuote.notesHint'.tr(),
+                filled: true, fillColor: C.surface,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+              ),
             ),
-          ),
+          ],
         ]),
       ],
     );
   }
+
+  Widget _chip(String label, bool sel, VoidCallback onTap) => GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: sel ? C.blue : C.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: sel ? C.blue : C.line),
+          ),
+          child: Text(label, style: TextStyle(color: sel ? Colors.white : C.ink, fontWeight: FontWeight.w700)),
+        ),
+      );
 
   Widget _schedule() {
     return _card([
@@ -458,10 +531,12 @@ class _PostJobScreenState extends State<PostJobScreen> {
       _input(_address, 'postjob.streetAddress'.tr(), Icons.location_on_outlined),
       const SizedBox(height: 12),
       _input(_city, 'postjob.city'.tr(), Icons.location_city_outlined),
+      const SizedBox(height: 12),
+      _input(_zip, 'postjob.zipCode'.tr(), Icons.markunread_mailbox_outlined, keyboard: TextInputType.number),
     ]);
   }
 
-  Widget _input(TextEditingController c, String hint, IconData icon) => Container(
+  Widget _input(TextEditingController c, String hint, IconData icon, {TextInputType? keyboard}) => Container(
         decoration: BoxDecoration(border: Border.all(color: C.line), borderRadius: BorderRadius.circular(14)),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(children: [
@@ -470,6 +545,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
           Expanded(
             child: TextField(
               controller: c,
+              keyboardType: keyboard,
               decoration: InputDecoration(
                 hintText: hint, border: InputBorder.none, isCollapsed: true,
                 contentPadding: const EdgeInsets.symmetric(vertical: 18),
@@ -516,8 +592,12 @@ class _PostJobScreenState extends State<PostJobScreen> {
             style: const TextStyle(color: C.muted, height: 1.4)),
       ]);
     }
-    final fixed = e['isFixed'] == true && e['price'] != null;
-    final priceText = fixed ? '\$${_n(e['price'])}' : '\$${_n(e['min'])}–\$${_n(e['max'])}';
+    final fixed = e['isFixed'] == true;
+    // Always show a single exact figure so the customer knows what to expect —
+    // prefer the AI's fixed price, else the midpoint of its range.
+    final priceVal = e['price'] ??
+        ((e['min'] != null && e['max'] != null) ? ((_n(e['min']) + _n(e['max'])) / 2).round() : null);
+    final priceText = '\$${_n(priceVal)}';
     final bd = (e['breakdown'] as Map?) ?? const {};
     final confLabel = (e['confidenceLabel'] ?? 'Medium').toString();
     final confPct = _n(e['confidence']);
@@ -526,7 +606,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
     return _card([
       Center(child: Text(priceText, style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w900, color: C.blue))),
       Center(
-        child: Text(fixed ? 'postjob.fixedPrice'.tr() : 'postjob.estimatedRange'.tr(),
+        child: Text(fixed ? 'postjob.fixedPrice'.tr() : 'postjob.estimatedPrice'.tr(),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: C.muted)),
       ),
       const SizedBox(height: 16),
