@@ -113,7 +113,7 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
               border: Border.all(color: sel ? C.blue : C.line),
             ),
             child: Column(children: [
-              Text(c.emoji, style: const TextStyle(fontSize: 26)),
+              Icon(c.icon, size: 28, color: sel ? Colors.white : C.blue),
               const SizedBox(height: 6),
               Text(c.nameKey.tr(), textAlign: TextAlign.center, style: TextStyle(color: sel ? Colors.white : C.ink, fontWeight: FontWeight.w700)),
             ]),

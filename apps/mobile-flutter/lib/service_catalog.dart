@@ -8,26 +8,29 @@ import 'package:flutter/material.dart';
 class ServiceCat {
   // `name` (English) is the key into kServiceTasks and part of the AI request.
   // `nameKey` is the categories.* translation key for the displayed chip label.
+  // `icon` matches the customer dashboard's outlined-icon style (emoji kept for
+  // any legacy use, but the flows now render `icon`).
   final String name, emoji, api, nameKey;
   final Color color;
-  const ServiceCat(this.name, this.emoji, this.api, this.color, this.nameKey);
+  final IconData icon;
+  const ServiceCat(this.name, this.emoji, this.api, this.color, this.nameKey, this.icon);
 }
 
 const kServiceCats = [
-  ServiceCat('Plumbing', '🔧', 'PLUMBING', Color(0xFF38BDF8), 'categories.plumbing'),
-  ServiceCat('Electrical', '⚡', 'ELECTRICAL', Color(0xFFF59E0B), 'categories.electrical'),
-  ServiceCat('Carpentry', '🪵', 'CARPENTRY', Color(0xFFD97706), 'categories.carpentry'),
-  ServiceCat('Painting', '🎨', 'PAINTING', Color(0xFFA78BFA), 'categories.painting'),
-  ServiceCat('Cleaning', '✨', 'CLEANING', Color(0xFF34D399), 'categories.cleaning'),
-  ServiceCat('Moving', '📦', 'MOVING', Color(0xFFFB923C), 'categories.moving'),
+  ServiceCat('Plumbing', '🔧', 'PLUMBING', Color(0xFF38BDF8), 'categories.plumbing', Icons.water_drop_outlined),
+  ServiceCat('Electrical', '⚡', 'ELECTRICAL', Color(0xFFF59E0B), 'categories.electrical', Icons.bolt_outlined),
+  ServiceCat('Carpentry', '🪵', 'CARPENTRY', Color(0xFFD97706), 'categories.carpentry', Icons.handyman_outlined),
+  ServiceCat('Painting', '🎨', 'PAINTING', Color(0xFFA78BFA), 'categories.painting', Icons.palette_outlined),
+  ServiceCat('Cleaning', '✨', 'CLEANING', Color(0xFF34D399), 'categories.cleaning', Icons.auto_awesome_outlined),
+  ServiceCat('Moving', '📦', 'MOVING', Color(0xFFFB923C), 'categories.moving', Icons.local_shipping_outlined),
   // No ASSEMBLY enum on the backend — Assembly is stored as GENERAL.
-  ServiceCat('Assembly', '🪑', 'GENERAL', Color(0xFF8B5CF6), 'categories.assembly'),
-  ServiceCat('HVAC', '❄️', 'HVAC', Color(0xFF22D3EE), 'categories.hvac'),
-  ServiceCat('Roofing', '🏠', 'ROOFING', Color(0xFFEF4444), 'categories.roofing'),
-  ServiceCat('Landscaping', '🌿', 'LANDSCAPING', Color(0xFF22C55E), 'categories.landscaping'),
-  ServiceCat('Appliance Repair', '🔌', 'APPLIANCE_REPAIR', Color(0xFF64748B), 'categories.appliance'),
-  ServiceCat('Laundry', '🧺', 'LAUNDRY', Color(0xFF14B8A6), 'categories.laundry'),
-  ServiceCat('General', '🛠️', 'GENERAL', Color(0xFF94A3B8), 'categories.general'),
+  ServiceCat('Assembly', '🪑', 'GENERAL', Color(0xFF8B5CF6), 'categories.assembly', Icons.chair_outlined),
+  ServiceCat('HVAC', '❄️', 'HVAC', Color(0xFF22D3EE), 'categories.hvac', Icons.ac_unit_outlined),
+  ServiceCat('Roofing', '🏠', 'ROOFING', Color(0xFFEF4444), 'categories.roofing', Icons.roofing_outlined),
+  ServiceCat('Landscaping', '🌿', 'LANDSCAPING', Color(0xFF22C55E), 'categories.landscaping', Icons.eco_outlined),
+  ServiceCat('Appliance Repair', '🔌', 'APPLIANCE_REPAIR', Color(0xFF64748B), 'categories.appliance', Icons.kitchen_outlined),
+  ServiceCat('Laundry', '🧺', 'LAUNDRY', Color(0xFF14B8A6), 'categories.laundry', Icons.local_laundry_service_outlined),
+  ServiceCat('General', '🛠️', 'GENERAL', Color(0xFF94A3B8), 'categories.general', Icons.build_outlined),
 ];
 
 // task label -> list of details {key, label, options}
