@@ -2,14 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
+import { CUSTOMER_FEE_RATE } from "@/lib/fees";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-// Customer-facing pricing model constants.
+// Pricing model. `price` is the SERVICE price (labor + materials + travel +
+// urgency) — what the pro is paid and what becomes the job budget. The customer
+// pays that plus the Service & Protection Fee (CUSTOMER_FEE_RATE, from fees.ts),
+// matching checkout/invoice exactly — no separate platform/risk markup.
 const TRAVEL_ADJUSTMENT = 15;
 const URGENCY_RATE  = 0.20;
-const PLATFORM_RATE = 0.12;
-const RISK_RATE     = 0.08;
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 const round5 = (n: number) => Math.round(n / 5) * 5;
 
@@ -61,12 +63,11 @@ No markdown, just the JSON.`,
     const hMax = clamp(Number(ai.laborHoursMax) || Math.max(hMin, 2), hMin, 80);
     const materials = Math.max(0, Number(ai.materials) || 0);
 
-    // Estimated price = rate × hours + materials + travel + urgency + platform + risk
+    // Service price = rate × hours + materials + travel + urgency (pre-fee).
     const priceFor = (hours: number) => {
       const labor = hourlyRate * hours;
       const urgency = urgent ? labor * URGENCY_RATE : 0;
-      const base = labor + materials + TRAVEL_ADJUSTMENT + urgency;
-      return round5(base * (1 + PLATFORM_RATE + RISK_RATE));
+      return round5(labor + materials + TRAVEL_ADJUSTMENT + urgency);
     };
     const hMid = (hMin + hMax) / 2;
     const price = priceFor(hMid);
@@ -84,12 +85,19 @@ No markdown, just the JSON.`,
     // Breakdown at the midpoint. Urgency premium applies to labor only.
     const labor = hourlyRate * hMid;
     const urgency = urgent ? labor * URGENCY_RATE : 0;
-    const base = labor + materials + TRAVEL_ADJUSTMENT + urgency;
+
+    // Service & Protection Fee (15%) on top of the service price = what the
+    // customer actually pays. Same rate + label as checkout/invoice.
+    const serviceFee = Math.round(price * CUSTOMER_FEE_RATE);
+    const total = price + serviceFee;
 
     return NextResponse.json({
       isFixed,
-      price,                       // fixed estimate (use when isFixed)
-      min, max,                    // estimated range (use when !isFixed)
+      price,                       // service price (pre-fee) — becomes the budget
+      min, max,                    // service-price range (use when !isFixed)
+      serviceFee,                  // 15% Service & Protection Fee
+      feeRate: CUSTOMER_FEE_RATE,  // 0.15
+      total,                       // what the customer pays (price + fee)
       workTime,
       minWindow,                   // hours
       confidence,
@@ -100,7 +108,7 @@ No markdown, just the JSON.`,
         hourlyRate, laborHours: workTime,
         labor: Math.round(labor), materials: Math.round(materials),
         travel: TRAVEL_ADJUSTMENT, urgency: Math.round(urgency),
-        platform: Math.round(base * PLATFORM_RATE), risk: Math.round(base * RISK_RATE),
+        serviceFee, total,
       },
       note: typeof ai.note === "string" ? ai.note : "Based on local labor rates, time, materials and fees.",
     });

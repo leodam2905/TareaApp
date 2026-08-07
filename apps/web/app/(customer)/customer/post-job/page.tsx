@@ -26,7 +26,7 @@ function PostJobForm() {
   const router = useRouter();
   const { t } = useT();
   const presetCat = (useSearchParams().get("category") || "").toUpperCase();
-  const [estimate, setEstimate] = useState<{ price: number; urgency: number; isFixed: boolean } | null>(null);
+  const [estimate, setEstimate] = useState<{ price: number; urgency: number; isFixed: boolean; fee: number; total: number; feePct: number } | null>(null);
   const [saving, setSaving] = useState(false);
   const [locating, setLocating] = useState(false);
   const [aiAssisting, setAiAssisting] = useState(false);
@@ -126,7 +126,14 @@ function PostJobForm() {
       // Exact single price (AI fixed price, else range midpoint).
       const price = d.price ?? (d.min != null && d.max != null ? Math.round((d.min + d.max) / 2) : null);
       if (price != null) { set("budgetMin", String(price)); set("budgetMax", String(price)); }
-      setEstimate({ price: price ?? 0, urgency: d.breakdown?.urgency ?? 0, isFixed: !!d.isFixed });
+      setEstimate({
+        price: price ?? 0,
+        urgency: d.breakdown?.urgency ?? 0,
+        isFixed: !!d.isFixed,
+        fee: d.serviceFee ?? 0,
+        total: d.total ?? (price ?? 0),
+        feePct: Math.round((d.feeRate ?? 0.15) * 100),
+      });
       setPriceNote(d.note || "");
     } else {
       toast.error("Could not estimate price");
@@ -299,14 +306,14 @@ function PostJobForm() {
             <input type="number" min="0" value={form.budgetMax} onChange={e => set("budgetMax", e.target.value)} placeholder="Max (e.g. 200)" className="input" />
           </div>
           {estimate && (
-            <p className="text-sm font-bold text-gray-900 mt-2">
-              {estimate.isFixed ? "Fixed price" : "Estimated price"}: ${estimate.price}
-            </p>
-          )}
-          {estimate && estimate.urgency > 0 && (
-            <p className="text-xs font-semibold text-red-600 mt-1 flex items-center gap-1">
-              <Zap className="w-3 h-3 flex-shrink-0" /> Includes urgent rush fee +${estimate.urgency}
-            </p>
+            <div className="mt-3 rounded-xl bg-orange-50/60 border border-orange-100 p-3 space-y-1.5 text-sm">
+              <div className="flex justify-between text-gray-600"><span>Service price</span><span>${estimate.price}</span></div>
+              {estimate.urgency > 0 && (
+                <div className="flex justify-between text-red-600 font-semibold"><span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5" /> Urgent rush fee</span><span>+${estimate.urgency}</span></div>
+              )}
+              <div className="flex justify-between text-gray-600"><span>Service &amp; Protection Fee ({estimate.feePct}%)</span><span>${estimate.fee}</span></div>
+              <div className="flex justify-between font-extrabold text-gray-900 pt-1.5 border-t border-orange-100"><span>{estimate.isFixed ? "Total (fixed)" : "Estimated total"}</span><span>${estimate.total}</span></div>
+            </div>
           )}
           {priceNote && (
             <p className="text-xs text-orange-500 mt-1.5 flex items-center gap-1">

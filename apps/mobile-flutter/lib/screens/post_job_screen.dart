@@ -645,14 +645,18 @@ class _PostJobScreenState extends State<PostJobScreen> {
     // prefer the AI's fixed price, else the midpoint of its range.
     final priceVal = e['price'] ??
         ((e['min'] != null && e['max'] != null) ? ((_n(e['min']) + _n(e['max'])) / 2).round() : null);
-    final priceText = '\$${_n(priceVal)}';
     final bd = (e['breakdown'] as Map?) ?? const {};
     final confLabel = (e['confidenceLabel'] ?? 'Medium').toString();
     final confPct = _n(e['confidence']);
     final included = (e['included'] as List?) ?? const [];
+    final serviceFee = _n(e['serviceFee'] ?? bd['serviceFee']);
+    final total = _n(e['total'] ?? bd['total']) > 0
+        ? _n(e['total'] ?? bd['total'])
+        : ((priceVal ?? 0) + serviceFee);
+    final feePct = (((e['feeRate'] is num ? e['feeRate'] as num : 0.15)) * 100).round();
 
     return _card([
-      Center(child: Text(priceText, style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w900, color: C.blue))),
+      Center(child: Text('\$$total', style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w900, color: C.blue))),
       Center(
         child: Text(fixed ? 'postjob.fixedPrice'.tr() : 'postjob.estimatedPrice'.tr(),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: C.muted)),
@@ -660,28 +664,25 @@ class _PostJobScreenState extends State<PostJobScreen> {
       const SizedBox(height: 16),
       Container(
         decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(14)),
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        child: Row(children: [
-          Expanded(child: _splitCell('postjob.laborService'.tr(), '\$${_n(bd['labor'])}')),
-          Container(width: 1, height: 40, color: C.line),
-          Expanded(child: _splitCell('postjob.materialsFurniture'.tr(), '\$${_n(bd['materials'])}')),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Column(children: [
+          _feeRow('postjob.laborService'.tr(), '\$${_n(bd['labor'])}'),
+          if (_n(bd['materials']) > 0) ...[
+            const SizedBox(height: 10),
+            _feeRow('postjob.materialsFurniture'.tr(), '\$${_n(bd['materials'])}'),
+          ],
+          if (_n(bd['urgency']) > 0) ...[
+            const SizedBox(height: 10),
+            _feeRow('postjob.rushFee'.tr(), '+\$${_n(bd['urgency'])}', color: const Color(0xFFB91C1C)),
+          ],
+          const SizedBox(height: 10),
+          _feeRow('${'postjob.serviceFee'.tr()} ($feePct%)', '\$$serviceFee'),
+          const SizedBox(height: 12),
+          const Divider(color: C.line, height: 1),
+          const SizedBox(height: 12),
+          _feeRow('postjob.total'.tr(), '\$$total', bold: true),
         ]),
       ),
-      if (_n(bd['urgency']) > 0) ...[
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(color: const Color(0xFFFEF2F2), borderRadius: BorderRadius.circular(12)),
-          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Row(children: [
-              const Icon(Icons.bolt, size: 18, color: C.red),
-              const SizedBox(width: 8),
-              Text('postjob.rushFee'.tr(), style: const TextStyle(color: Color(0xFFB91C1C), fontWeight: FontWeight.w800)),
-            ]),
-            Text('+\$${_n(bd['urgency'])}', style: const TextStyle(color: Color(0xFFB91C1C), fontWeight: FontWeight.w900, fontSize: 16)),
-          ]),
-        ),
-      ],
       const SizedBox(height: 16),
       const Divider(color: C.line, height: 1),
       const SizedBox(height: 14),
@@ -710,11 +711,13 @@ class _PostJobScreenState extends State<PostJobScreen> {
     ]);
   }
 
-  Widget _splitCell(String label, String value) => Column(children: [
-        Text(label, textAlign: TextAlign.center, style: const TextStyle(color: C.muted, fontSize: 13)),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: C.ink)),
-      ]);
+  Widget _feeRow(String label, String value, {bool bold = false, Color? color}) => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(child: Text(label, style: TextStyle(color: color ?? (bold ? C.ink : C.muted), fontSize: bold ? 15 : 14, fontWeight: bold ? FontWeight.w900 : FontWeight.w600))),
+          Text(value, style: TextStyle(color: color ?? C.ink, fontSize: bold ? 18 : 15, fontWeight: bold ? FontWeight.w900 : FontWeight.w700)),
+        ],
+      );
 
   Widget _statCell(String label, String value, {Color color = C.ink}) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,

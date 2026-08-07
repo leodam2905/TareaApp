@@ -305,7 +305,9 @@
     "estimatedPrice": "Prix estimé",
     "urgentWindow": "Tâche urgente — un pro vise à arriver sous environ 3 heures. Nous avons choisi le créneau le plus tôt ; vous pouvez l'ajuster.",
     "pickDateTime": "Veuillez choisir une date et une heure",
-    "rushFee": "Frais d'urgence"
+    "rushFee": "Frais d'urgence",
+    "serviceFee": "Frais de service et protection",
+    "total": "Total"
   },
   "browse": {
     "title": "Parcourir les pros",
