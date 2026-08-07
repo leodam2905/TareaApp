@@ -302,7 +302,8 @@
     "notesOptional": "Añadir detalles (opcional)",
     "zipCode": "Código postal",
     "addZip": "Añade el código postal",
-    "estimatedPrice": "Precio estimado"
+    "estimatedPrice": "Precio estimado",
+    "urgentWindow": "Trabajo urgente — un profesional intentará llegar en unas 3 horas. Elegimos el horario más próximo; puedes ajustarlo."
   },
   "browse": {
     "title": "Buscar pros",

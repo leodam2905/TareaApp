@@ -64,7 +64,7 @@ No markdown, just the JSON.`,
     // Estimated price = rate × hours + materials + travel + urgency + platform + risk
     const priceFor = (hours: number) => {
       const labor = hourlyRate * hours;
-      const urgency = urgent ? (labor + materials) * URGENCY_RATE : 0;
+      const urgency = urgent ? labor * URGENCY_RATE : 0;
       const base = labor + materials + TRAVEL_ADJUSTMENT + urgency;
       return round5(base * (1 + PLATFORM_RATE + RISK_RATE));
     };
@@ -81,9 +81,9 @@ No markdown, just the JSON.`,
     const confidence = clamp(Math.round(Number(ai.confidence) || 70), 30, 99);
     const isFixed = ai.predictable === true && confidence >= 75;
 
-    // Breakdown at the midpoint.
+    // Breakdown at the midpoint. Urgency premium applies to labor only.
     const labor = hourlyRate * hMid;
-    const urgency = urgent ? (labor + materials) * URGENCY_RATE : 0;
+    const urgency = urgent ? labor * URGENCY_RATE : 0;
     const base = labor + materials + TRAVEL_ADJUSTMENT + urgency;
 
     return NextResponse.json({

@@ -302,7 +302,8 @@
     "notesOptional": "Add details (optional)",
     "zipCode": "ZIP code",
     "addZip": "Add the ZIP code",
-    "estimatedPrice": "Estimated price"
+    "estimatedPrice": "Estimated price",
+    "urgentWindow": "Urgent job — a pro aims to arrive within about 3 hours. We've set the earliest slot; you can still adjust it."
   },
   "browse": {
     "title": "Browse Pros",

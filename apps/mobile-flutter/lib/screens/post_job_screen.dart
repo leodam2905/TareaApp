@@ -138,6 +138,15 @@ class _PostJobScreenState extends State<PostJobScreen> {
     return z.isEmpty ? a : '$a, $z';
   }
 
+  // Combine the picked date + time into scheduledAt (backend needs non-null).
+  // Falls back to tomorrow when nothing is chosen; for URGENT this is preset to
+  // today + the earliest slot.
+  DateTime _scheduledAt() {
+    final d = _date ?? DateTime.now().add(const Duration(days: 1));
+    final t = _time;
+    return t == null ? d : DateTime(d.year, d.month, d.day, t.hour, t.minute);
+  }
+
   Future<void> _submit() async {
     setState(() => _submitting = true);
     try {
@@ -146,7 +155,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
           ? await Api.post('/bookings', {
               'handymanUserId': widget.directed?['handymanId'],
               if (widget.directed?['serviceId'] != null) 'serviceId': widget.directed?['serviceId'],
-              'scheduledAt': (_date ?? DateTime.now().add(const Duration(days: 1))).toIso8601String(),
+              'scheduledAt': _scheduledAt().toIso8601String(),
               'address': _addressLine(),
               'city': _city.text.trim(),
               if ((_estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceMin']) != null)
@@ -159,7 +168,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
               'title': _jobTitle(),
               'description': _builtDescription(),
               'urgency': _urgency,
-              'scheduledAt': (_date ?? DateTime.now().add(const Duration(days: 1))).toIso8601String(),
+              'scheduledAt': _scheduledAt().toIso8601String(),
               'address': _addressLine(),
               'city': _city.text.trim(),
             });
@@ -380,7 +389,17 @@ class _PostJobScreenState extends State<PostJobScreen> {
               final sel = _urgency == u.value;
               return Expanded(
                 child: GestureDetector(
-                  onTap: () => setState(() => _urgency = u.value),
+                  onTap: () => setState(() {
+                    _urgency = u.value;
+                    _estimate = null; // price depends on urgency
+                    // Urgent = ASAP: preselect today + the earliest slot so the
+                    // job lands in a ~3-hour window (customer can still adjust).
+                    if (u.value == 'URGENT') {
+                      final now = DateTime.now();
+                      _date = DateTime(now.year, now.month, now.day);
+                      _time = TimeOfDay.fromDateTime(now);
+                    }
+                  }),
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     padding: const EdgeInsets.all(12),
@@ -500,6 +519,19 @@ class _PostJobScreenState extends State<PostJobScreen> {
       const SizedBox(height: 6),
       Text('postjob.scheduleDesc'.tr(),
           style: const TextStyle(color: C.muted, height: 1.4)),
+      if (_urgency == 'URGENT') ...[
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(color: const Color(0xFFFEF2F2), borderRadius: BorderRadius.circular(12)),
+          child: Row(children: [
+            const Icon(Icons.bolt, size: 18, color: C.red),
+            const SizedBox(width: 8),
+            Expanded(child: Text('postjob.urgentWindow'.tr(),
+                style: const TextStyle(color: Color(0xFFB91C1C), fontSize: 13, height: 1.35, fontWeight: FontWeight.w600))),
+          ]),
+        ),
+      ],
       const SizedBox(height: 16),
       Row(children: [
         Expanded(child: _pickerPill(Icons.calendar_today_outlined,
