@@ -133,8 +133,10 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
       // Step 3 — Details
       if (_task != null) ...[
         const SizedBox(height: 22),
-        Text('instantQuote.aFewDetails'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
-        const SizedBox(height: 4),
+        if (_taskDetails.isNotEmpty) ...[
+          Text('instantQuote.aFewDetails'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
+          const SizedBox(height: 4),
+        ],
         ..._taskDetails.map((d) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

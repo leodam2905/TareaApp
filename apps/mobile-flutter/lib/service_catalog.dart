@@ -213,5 +213,7 @@ const Map<String, List<Map<String, dynamic>>> kServiceTasks = {
       {'key': 'windows', 'label': 'How many windows?', 'options': ['1–2', '3–5', '6+']}]},
     {'label': 'Pressure Washing', 'details': [
       {'key': 'area', 'label': 'What area?', 'options': ['Driveway', 'Patio / deck', 'House siding', 'Fence']}]},
+    // Catch-all — no structured questions, goes straight to the optional notes.
+    {'label': 'Something else', 'details': <Map<String, dynamic>>[]},
   ],
 };

@@ -473,7 +473,8 @@ class _PostJobScreenState extends State<PostJobScreen> {
           // Step 3 — structured details for an exact estimate
           if (_task != null) ...[
             const SizedBox(height: 20),
-            Text('instantQuote.aFewDetails'.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: C.ink)),
+            if (_taskDetails.isNotEmpty)
+              Text('instantQuote.aFewDetails'.tr(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: C.ink)),
             ..._taskDetails.map((d) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
