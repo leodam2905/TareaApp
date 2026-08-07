@@ -15,13 +15,17 @@ export async function GET() {
     orderBy: { completedAt: "desc" },
   });
 
-  const totalSpent = bookings.reduce((s, b) => s + b.totalPrice * (1 + CUSTOMER_FEE_RATE), 0);
+  // What the customer paid: service + 15% fee + materials (at cost, no fee).
+  const charged = (b: (typeof bookings)[number]) =>
+    b.totalPrice * (1 + CUSTOMER_FEE_RATE) + (b.materialsEstimate ?? 0);
+
+  const totalSpent = bookings.reduce((s, b) => s + charged(b), 0);
 
   // By category
   const byCategory: Record<string, number> = {};
   for (const b of bookings) {
     const cat = b.service.category;
-    byCategory[cat] = (byCategory[cat] ?? 0) + b.totalPrice * (1 + CUSTOMER_FEE_RATE);
+    byCategory[cat] = (byCategory[cat] ?? 0) + charged(b);
   }
 
   // Last 6 months buckets
@@ -35,7 +39,7 @@ export async function GET() {
         const bDate = b.completedAt ?? b.createdAt;
         return bDate.getFullYear() === d.getFullYear() && bDate.getMonth() === d.getMonth();
       })
-      .reduce((s, b) => s + b.totalPrice * (1 + CUSTOMER_FEE_RATE), 0);
+      .reduce((s, b) => s + charged(b), 0);
     months.push({ label, amount });
   }
 
@@ -48,7 +52,7 @@ export async function GET() {
       id: b.id,
       title: b.service.title,
       category: b.service.category,
-      amount: b.totalPrice * (1 + CUSTOMER_FEE_RATE),
+      amount: charged(b),
       date: b.completedAt ?? b.createdAt,
     })),
   });

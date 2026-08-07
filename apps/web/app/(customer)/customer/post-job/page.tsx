@@ -26,7 +26,7 @@ function PostJobForm() {
   const router = useRouter();
   const { t } = useT();
   const presetCat = (useSearchParams().get("category") || "").toUpperCase();
-  const [estimate, setEstimate] = useState<{ price: number; urgency: number; isFixed: boolean; fee: number; total: number; feePct: number } | null>(null);
+  const [estimate, setEstimate] = useState<{ price: number; urgency: number; isFixed: boolean; fee: number; total: number; feePct: number; materials: number } | null>(null);
   const [saving, setSaving] = useState(false);
   const [locating, setLocating] = useState(false);
   const [aiAssisting, setAiAssisting] = useState(false);
@@ -133,6 +133,7 @@ function PostJobForm() {
         fee: d.serviceFee ?? 0,
         total: d.total ?? (price ?? 0),
         feePct: Math.round((d.feeRate ?? 0.15) * 100),
+        materials: d.materials ?? d.breakdown?.materials ?? 0,
       });
       setPriceNote(d.note || "");
     } else {
@@ -149,7 +150,7 @@ function PostJobForm() {
     const res = await fetch("/api/job-requests", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, address: form.zip ? `${form.address}, ${form.zip}` : form.address, scheduledAt: new Date(form.scheduledAt).toISOString(), imageUrls }),
+      body: JSON.stringify({ ...form, address: form.zip ? `${form.address}, ${form.zip}` : form.address, materialsCost: estimate?.materials ?? 0, scheduledAt: new Date(form.scheduledAt).toISOString(), imageUrls }),
     });
     if (res.ok) {
       toast.success("Job posted! Handymen near you will be notified.");
@@ -310,6 +311,9 @@ function PostJobForm() {
               <div className="flex justify-between text-gray-600"><span>Service price</span><span>${estimate.price}</span></div>
               {estimate.urgency > 0 && (
                 <div className="flex justify-between text-red-600 font-semibold"><span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5" /> Urgent rush fee</span><span>+${estimate.urgency}</span></div>
+              )}
+              {estimate.materials > 0 && (
+                <div className="flex justify-between text-gray-600"><span>Materials (at cost)</span><span>${estimate.materials}</span></div>
               )}
               <div className="flex justify-between text-gray-600"><span>Service &amp; Protection Fee ({estimate.feePct}%)</span><span>${estimate.fee}</span></div>
               <div className="flex justify-between font-extrabold text-gray-900 pt-1.5 border-t border-orange-100"><span>{estimate.isFixed ? "Total (fixed)" : "Estimated total"}</span><span>${estimate.total}</span></div>

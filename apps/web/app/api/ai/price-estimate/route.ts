@@ -63,11 +63,13 @@ No markdown, just the JSON.`,
     const hMax = clamp(Number(ai.laborHoursMax) || Math.max(hMin, 2), hMin, 80);
     const materials = Math.max(0, Number(ai.materials) || 0);
 
-    // Service price = rate × hours + materials + travel + urgency (pre-fee).
+    // Service price (fee-able) = rate × hours + travel + urgency. Materials are
+    // tracked SEPARATELY (passed through at cost, no fee) — like TaskRabbit
+    // reimbursements. `price` becomes the job budget / booking totalPrice.
     const priceFor = (hours: number) => {
       const labor = hourlyRate * hours;
       const urgency = urgent ? labor * URGENCY_RATE : 0;
-      return round5(labor + materials + TRAVEL_ADJUSTMENT + urgency);
+      return round5(labor + TRAVEL_ADJUSTMENT + urgency);
     };
     const hMid = (hMin + hMax) / 2;
     const price = priceFor(hMid);
@@ -86,19 +88,19 @@ No markdown, just the JSON.`,
     const labor = hourlyRate * hMid;
     const urgency = urgent ? labor * URGENCY_RATE : 0;
 
-    // Service & Protection Fee (15%) applies to everything EXCEPT materials
-    // (parts are passed through at cost). total = service price + fee.
-    const feeBase = labor + TRAVEL_ADJUSTMENT + urgency;
-    const serviceFee = Math.round(feeBase * CUSTOMER_FEE_RATE);
-    const total = price + serviceFee;
+    // Fee (15%) on the service price only; materials passed through at cost.
+    const materialsRounded = Math.round(materials);
+    const serviceFee = Math.round(price * CUSTOMER_FEE_RATE);
+    const total = price + materialsRounded + serviceFee;
 
     return NextResponse.json({
       isFixed,
-      price,                       // service price (pre-fee) — becomes the budget
+      price,                       // service price (fee-able, no materials) = budget
       min, max,                    // service-price range (use when !isFixed)
-      serviceFee,                  // 15% Service & Protection Fee
+      materials: materialsRounded, // pass-through, NOT fee-charged
+      serviceFee,                  // 15% Service & Protection Fee (on service only)
       feeRate: CUSTOMER_FEE_RATE,  // 0.15
-      total,                       // what the customer pays (price + fee)
+      total,                       // service + materials + fee = what the customer pays
       workTime,
       minWindow,                   // hours
       confidence,

@@ -125,6 +125,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         address: booking.address,
         city: booking.city,
         totalPrice: booking.totalPrice,
+        materials: booking.materialsEstimate ?? 0,
       });
     } catch (err) {
       console.error("[bookings/PATCH] Invoice email failed:", err);

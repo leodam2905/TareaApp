@@ -65,11 +65,12 @@ export async function sendInvoiceEmail(params: {
   address: string;
   city: string;
   totalPrice: number;
+  materials?: number;
 }) {
-  const { to, bookingId, serviceTitle, serviceCategory, handymanName, scheduledAt, address, city, totalPrice } = params;
+  const { to, bookingId, serviceTitle, serviceCategory, handymanName, scheduledAt, address, city, totalPrice, materials = 0 } = params;
   const shortId = bookingId.slice(-8).toUpperCase();
   const treaFee = totalPrice * CUSTOMER_FEE_RATE;
-  const total = totalPrice + treaFee;
+  const total = totalPrice + treaFee + materials;
   const dateStr = scheduledAt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   const category = serviceCategory.replace(/_/g, " ");
 
@@ -110,6 +111,7 @@ export async function sendInvoiceEmail(params: {
         <div class="totals">
           <div class="totals-row"><span>Service price</span><span>$${totalPrice.toFixed(2)}</span></div>
           <div class="totals-row"><span>Tarea fee (${Math.round(CUSTOMER_FEE_RATE * 100)}%)</span><span>$${treaFee.toFixed(2)}</span></div>
+          ${materials > 0 ? `<div class="totals-row"><span>Materials (at cost)</span><span>$${materials.toFixed(2)}</span></div>` : ""}
           <div class="totals-row total"><span>Total charged</span><span>$${total.toFixed(2)}</span></div>
         </div>
         <p class="thank-you">Thank you for using Tarea!</p>

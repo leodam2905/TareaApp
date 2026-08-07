@@ -176,11 +176,12 @@ class _PostJobScreenState extends State<PostJobScreen> {
               'scheduledAt': _scheduledAt().toIso8601String(),
               'address': _addressLine(),
               'city': _city.text.trim(),
-              // Persist the AI's exact price as the budget so pros see it (was
-              // dropped before → jobs showed $0).
+              // Persist the AI's service price as the budget (fee-able, no
+              // materials) + materials separately (pass-through, no fee).
               if (_estimate?['price'] != null || _estimate?['min'] != null) ...{
                 'budgetMin': _estimate?['price'] ?? _estimate?['min'],
                 'budgetMax': _estimate?['price'] ?? _estimate?['max'] ?? _estimate?['min'],
+                'materialsCost': _estimate?['materials'] ?? (_estimate?['breakdown'] as Map?)?['materials'] ?? 0,
               },
             });
       if (res.statusCode < 200 || res.statusCode >= 300) {
@@ -666,7 +667,8 @@ class _PostJobScreenState extends State<PostJobScreen> {
         decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(14)),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Column(children: [
-          _feeRow('postjob.laborService'.tr(), '\$${_n(bd['labor'])}'),
+          // Labor + travel = the service price minus the (separately shown) rush fee.
+          _feeRow('postjob.laborService'.tr(), '\$${_n(e['price']) - _n(bd['urgency'])}'),
           if (_n(bd['materials']) > 0) ...[
             const SizedBox(height: 10),
             _feeRow('postjob.materialsFurniture'.tr(), '\$${_n(bd['materials'])}'),

@@ -21,8 +21,10 @@ export default async function InvoicePage({ params }: { params: { id: string } }
   if (booking.customerId !== user.id && user.role !== "ADMIN") redirect("/customer/bookings");
   if (!booking.isPaid) redirect(`/customer/bookings/${params.id}`);
 
+  // Fee applies to the service price only; materials are passed through at cost.
   const serviceFee = Math.round(booking.totalPrice * CUSTOMER_FEE_RATE * 100) / 100;
-  const total = booking.totalPrice + serviceFee;
+  const materials = booking.materialsEstimate ?? 0;
+  const total = booking.totalPrice + serviceFee + materials;
 
-  return <InvoicePrint booking={booking} serviceFee={serviceFee} total={total} />;
+  return <InvoicePrint booking={booking} serviceFee={serviceFee} materials={materials} total={total} />;
 }

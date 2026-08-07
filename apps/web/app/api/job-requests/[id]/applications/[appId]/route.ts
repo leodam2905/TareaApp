@@ -71,7 +71,7 @@ export async function PATCH(
           address: jobRequest.address,
           city: jobRequest.city,
           totalPrice: application.proposedPrice ?? jobRequest.budgetMin,
-          materialsEstimate: application.materialsEstimate ?? 0,
+          materialsEstimate: application.materialsEstimate ?? jobRequest.materialsCost ?? 0,
           responseDeadline: new Date(Date.now() + 60 * 60 * 1000),
         },
       });

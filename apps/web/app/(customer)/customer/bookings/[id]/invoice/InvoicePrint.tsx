@@ -20,10 +20,12 @@ type Booking = {
 export default function InvoicePrint({
   booking,
   serviceFee,
+  materials = 0,
   total,
 }: {
   booking: Booking;
   serviceFee: number;
+  materials?: number;
   total: number;
 }) {
   const fmt = (n: number) =>
@@ -150,6 +152,15 @@ export default function InvoicePrint({
                 </td>
                 <td className="py-3 text-right font-semibold text-gray-900">{fmt(serviceFee)}</td>
               </tr>
+              {materials > 0 && (
+                <tr className="border-b border-gray-100">
+                  <td className="py-3">
+                    <p className="font-semibold text-gray-900">Materials</p>
+                    <p className="text-xs text-gray-500">Passed through at cost — no fee</p>
+                  </td>
+                  <td className="py-3 text-right font-semibold text-gray-900">{fmt(materials)}</td>
+                </tr>
+              )}
             </tbody>
             <tfoot>
               <tr>
