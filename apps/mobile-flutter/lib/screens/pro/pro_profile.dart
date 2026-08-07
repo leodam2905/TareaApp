@@ -70,18 +70,6 @@ class _ProProfileState extends State<ProProfile> {
     if (mounted) setState(() {});
   }
 
-  void _menu() {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => SafeArea(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          ListTile(leading: const Icon(Icons.logout, color: C.red), title: Text('settings.logout'.tr(), style: const TextStyle(color: C.red, fontWeight: FontWeight.w700)),
-              onTap: () async { Navigator.pop(context); await Api.clearToken(); if (mounted) context.go('/'); }),
-        ]),
-      ),
-    );
-  }
-
   Future<void> _signOut() async {
     await Api.clearToken();
     if (mounted) context.go('/');
@@ -138,7 +126,7 @@ class _ProProfileState extends State<ProProfile> {
             child: Row(children: [
               const SizedBox(width: 24),
               Expanded(child: Text('proProfile.title'.tr(), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900))),
-              GestureDetector(onTap: _menu, child: const Icon(Icons.settings_outlined, color: Colors.white)),
+              GestureDetector(onTap: () => context.push('/settings'), child: const Icon(Icons.settings_outlined, color: Colors.white)),
             ]),
           ),
           Expanded(
