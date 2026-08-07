@@ -325,6 +325,7 @@ model JobRequest {
   budgetMin   Float
   budgetMax   Float
   materialsCost Float         @default(0) // furniture/materials the customer buys; excluded from the $500 labor gate
+  urgency     String          @default("STANDARD") // STANDARD, SOON, URGENT
   status      String          @default("OPEN") // OPEN, ASSIGNED, CLOSED
   imageUrls   String[]        @default([])
   createdAt   DateTime        @default(now())
