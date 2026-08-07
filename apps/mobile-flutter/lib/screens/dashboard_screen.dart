@@ -35,6 +35,11 @@ const _cats = [
   _Cat(Icons.ac_unit_outlined, 'categories.hvac'),
   _Cat(Icons.eco_outlined, 'categories.landscaping'),
   _Cat(Icons.local_laundry_service_outlined, 'categories.laundry'),
+  _Cat(Icons.local_shipping_outlined, 'categories.moving'),
+  _Cat(Icons.chair_outlined, 'categories.assembly'),
+  _Cat(Icons.roofing_outlined, 'categories.roofing'),
+  _Cat(Icons.kitchen_outlined, 'categories.appliance'),
+  _Cat(Icons.build_outlined, 'categories.general'),
 ];
 
 class DashboardScreen extends StatefulWidget {

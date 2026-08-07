@@ -20,6 +20,13 @@ const kServiceCats = [
   ServiceCat('Painting', '🎨', 'PAINTING', Color(0xFFA78BFA), 'categories.painting'),
   ServiceCat('Cleaning', '✨', 'CLEANING', Color(0xFF34D399), 'categories.cleaning'),
   ServiceCat('Moving', '📦', 'MOVING', Color(0xFFFB923C), 'categories.moving'),
+  // No ASSEMBLY enum on the backend — Assembly is stored as GENERAL.
+  ServiceCat('Assembly', '🪑', 'GENERAL', Color(0xFF8B5CF6), 'categories.assembly'),
+  ServiceCat('HVAC', '❄️', 'HVAC', Color(0xFF22D3EE), 'categories.hvac'),
+  ServiceCat('Roofing', '🏠', 'ROOFING', Color(0xFFEF4444), 'categories.roofing'),
+  ServiceCat('Landscaping', '🌿', 'LANDSCAPING', Color(0xFF22C55E), 'categories.landscaping'),
+  ServiceCat('Appliance Repair', '🔌', 'APPLIANCE_REPAIR', Color(0xFF64748B), 'categories.appliance'),
+  ServiceCat('Laundry', '🧺', 'LAUNDRY', Color(0xFF14B8A6), 'categories.laundry'),
   ServiceCat('General', '🛠️', 'GENERAL', Color(0xFF94A3B8), 'categories.general'),
 ];
 
@@ -110,6 +117,84 @@ const Map<String, List<Map<String, dynamic>>> kServiceTasks = {
       {'key': 'size', 'label': 'Home size', 'options': ['Studio / 1BR', '2BR', '3BR', '4BR+']}]},
     {'label': 'Rearrange Furniture', 'details': [
       {'key': 'pieces', 'label': 'How many pieces?', 'options': ['1–3', '4–8', '8+']}]},
+  ],
+  'Assembly': [
+    {'label': 'Assemble Furniture', 'details': [
+      {'key': 'pieces', 'label': 'Number of pieces', 'options': ['1', '2–3', '4+']},
+      {'key': 'size', 'label': 'Largest piece', 'options': ['Small', 'Medium', 'Large']}]},
+    {'label': 'Mount TV', 'details': [
+      {'key': 'tvSize', 'label': 'TV size', 'options': ['Under 40"', '40–55"', '55–75"', '75"+']},
+      {'key': 'wall', 'label': 'Wall type', 'options': ['Drywall', 'Concrete / brick', 'Tile']}]},
+    {'label': 'Assemble Exercise Equipment', 'details': [
+      {'key': 'size', 'label': 'Size', 'options': ['Small', 'Medium', 'Large / multi-station']}]},
+    {'label': 'Assemble Playset / Trampoline', 'details': [
+      {'key': 'size', 'label': 'Size', 'options': ['Small', 'Medium', 'Large']}]},
+    {'label': 'Mount Shelves / Cabinets', 'details': [
+      {'key': 'qty', 'label': 'How many?', 'options': ['1–2', '3–5', '6+']},
+      {'key': 'wall', 'label': 'Wall type', 'options': ['Drywall', 'Concrete / brick', 'Tile']}]},
+  ],
+  'HVAC': [
+    {'label': 'Service AC Unit', 'details': [
+      {'key': 'issue', 'label': 'Issue', 'options': ['Not cooling', 'Weak airflow', 'Making noise', 'Routine tune-up']}]},
+    {'label': 'Repair Furnace / Heating', 'details': [
+      {'key': 'issue', 'label': 'Issue', 'options': ['No heat', 'Weak heat', 'Strange noise', 'Routine tune-up']}]},
+    {'label': 'Install Thermostat', 'details': [
+      {'key': 'type', 'label': 'Type', 'options': ['Standard', 'Programmable', 'Smart']}]},
+    {'label': 'Install Window AC', 'details': [
+      {'key': 'size', 'label': 'Unit size', 'options': ['Small', 'Medium', 'Large']}]},
+    {'label': 'Clean Ducts / Vents', 'details': [
+      {'key': 'vents', 'label': 'How many vents?', 'options': ['Under 5', '5–10', '10+']}]},
+    {'label': 'Replace Air Filter', 'details': [
+      {'key': 'qty', 'label': 'How many?', 'options': ['1', '2–3', '4+']}]},
+  ],
+  'Roofing': [
+    {'label': 'Fix Roof Leak', 'details': [
+      {'key': 'roof', 'label': 'Roof type', 'options': ['Shingle', 'Metal', 'Flat', 'Tile']}]},
+    {'label': 'Replace Shingles', 'details': [
+      {'key': 'area', 'label': 'Area', 'options': ['A few shingles', 'Small section', 'Large section']}]},
+    {'label': 'Repair Flashing', 'details': [
+      {'key': 'location', 'label': 'Location', 'options': ['Chimney', 'Vent', 'Skylight', 'Valley']}]},
+    {'label': 'Clean Gutters', 'details': [
+      {'key': 'stories', 'label': 'Home height', 'options': ['1 story', '2 story', '3+ story']}]},
+    {'label': 'Roof Inspection', 'details': [
+      {'key': 'stories', 'label': 'Home height', 'options': ['1 story', '2 story', '3+ story']}]},
+  ],
+  'Landscaping': [
+    {'label': 'Lawn Mowing', 'details': [
+      {'key': 'size', 'label': 'Yard size', 'options': ['Small', 'Medium', 'Large']}]},
+    {'label': 'Tree / Shrub Trimming', 'details': [
+      {'key': 'count', 'label': 'How many?', 'options': ['1–2', '3–5', '6+']}]},
+    {'label': 'Yard Cleanup', 'details': [
+      {'key': 'size', 'label': 'Yard size', 'options': ['Small', 'Medium', 'Large']}]},
+    {'label': 'Mulching / Planting', 'details': [
+      {'key': 'area', 'label': 'Area', 'options': ['Small bed', 'Medium', 'Large']}]},
+    {'label': 'Leaf Removal', 'details': [
+      {'key': 'size', 'label': 'Yard size', 'options': ['Small', 'Medium', 'Large']}]},
+    {'label': 'Sod / Seeding', 'details': [
+      {'key': 'area', 'label': 'Area', 'options': ['Small', 'Medium', 'Large']}]},
+  ],
+  'Appliance Repair': [
+    {'label': 'Repair Refrigerator', 'details': [
+      {'key': 'issue', 'label': 'Issue', 'options': ['Not cooling', 'Leaking', 'Noisy', 'Ice maker']}]},
+    {'label': 'Repair Washer', 'details': [
+      {'key': 'issue', 'label': 'Issue', 'options': ["Won't drain", "Won't spin", 'Leaking', "Won't start"]}]},
+    {'label': 'Repair Dryer', 'details': [
+      {'key': 'issue', 'label': 'Issue', 'options': ['No heat', "Won't tumble", 'Noisy', 'Takes too long']}]},
+    {'label': 'Repair Dishwasher', 'details': [
+      {'key': 'issue', 'label': 'Issue', 'options': ['Not cleaning', 'Leaking', "Won't drain", "Won't start"]}]},
+    {'label': 'Repair Oven / Stove', 'details': [
+      {'key': 'type', 'label': 'Type', 'options': ['Electric', 'Gas']},
+      {'key': 'issue', 'label': 'Issue', 'options': ['Not heating', 'Uneven heat', 'Burner out']}]},
+    {'label': 'Install Appliance', 'details': [
+      {'key': 'appliance', 'label': 'Which appliance?', 'options': ['Dishwasher', 'Washer', 'Dryer', 'Range', 'Microwave']}]},
+  ],
+  'Laundry': [
+    {'label': 'Wash & Fold', 'details': [
+      {'key': 'load', 'label': 'How much?', 'options': ['1 load', '2–3 loads', '4+ loads']}]},
+    {'label': 'Ironing', 'details': [
+      {'key': 'items', 'label': 'How many items?', 'options': ['Under 10', '10–20', '20+']}]},
+    {'label': 'Pickup & Delivery', 'details': [
+      {'key': 'load', 'label': 'How much?', 'options': ['Small', 'Medium', 'Large']}]},
   ],
   'General': [
     {'label': 'TV Mounting', 'details': [
