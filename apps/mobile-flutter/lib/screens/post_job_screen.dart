@@ -661,6 +661,21 @@ class _PostJobScreenState extends State<PostJobScreen> {
           Expanded(child: _splitCell('postjob.materialsFurniture'.tr(), '\$${_n(bd['materials'])}')),
         ]),
       ),
+      if (_n(bd['urgency']) > 0) ...[
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(color: const Color(0xFFFEF2F2), borderRadius: BorderRadius.circular(12)),
+          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Row(children: [
+              const Icon(Icons.bolt, size: 18, color: C.red),
+              const SizedBox(width: 8),
+              Text('postjob.rushFee'.tr(), style: const TextStyle(color: Color(0xFFB91C1C), fontWeight: FontWeight.w800)),
+            ]),
+            Text('+\$${_n(bd['urgency'])}', style: const TextStyle(color: Color(0xFFB91C1C), fontWeight: FontWeight.w900, fontSize: 16)),
+          ]),
+        ),
+      ],
       const SizedBox(height: 16),
       const Divider(color: C.line, height: 1),
       const SizedBox(height: 14),

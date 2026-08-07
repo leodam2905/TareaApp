@@ -304,7 +304,8 @@
     "addZip": "Add the ZIP code",
     "estimatedPrice": "Estimated price",
     "urgentWindow": "Urgent job — a pro aims to arrive within about 3 hours. We've set the earliest slot; you can still adjust it.",
-    "pickDateTime": "Please pick a date and time"
+    "pickDateTime": "Please pick a date and time",
+    "rushFee": "Urgent rush fee"
   },
   "browse": {
     "title": "Browse Pros",
