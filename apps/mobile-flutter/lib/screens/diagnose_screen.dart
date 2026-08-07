@@ -227,7 +227,7 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
             child: FilledButton(
               style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-              onPressed: () => context.push('/post-job'),
+              onPressed: () => context.push('/post-job', extra: {'category': category}),
               child: Text('diagnose.postThisJob'.tr(), style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.white, fontSize: 16)),
             ),
           ),

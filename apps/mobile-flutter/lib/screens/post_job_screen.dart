@@ -41,7 +41,9 @@ class _PostJobScreenState extends State<PostJobScreen> {
   List<dynamic> get _taskDetails => (_task?['details'] as List?) ?? const [];
   bool get _allFilled => _taskDetails.every((d) => _detailAnswers.containsKey(d['key']));
 
-  bool get _isDirected => widget.directed != null;
+  // Directed = booking one specific pro (carries handymanId). A plain category
+  // handoff (e.g. from AI Diagnose) preselects the service but stays an open job.
+  bool get _isDirected => widget.directed?['handymanId'] != null;
   String get _proName => (widget.directed?['proName'] ?? 'the pro').toString().split(' ').first;
 
   @override
@@ -50,8 +52,11 @@ class _PostJobScreenState extends State<PostJobScreen> {
     final d = widget.directed;
     final cat = (d?['category'] ?? '').toString().toUpperCase();
     if (cat.isNotEmpty) {
-      for (final c in kServiceCats) {
-        if (c.api == cat || c.name.toUpperCase() == cat) { _cat = c; break; }
+      // Prefer an exact name match before the api match, so "GENERAL" resolves
+      // to General (not Assembly, which also maps to the GENERAL enum).
+      for (final c in kServiceCats) { if (c.name.toUpperCase() == cat) { _cat = c; break; } }
+      if (_cat == null) {
+        for (final c in kServiceCats) { if (c.api == cat) { _cat = c; break; } }
       }
     }
   }
