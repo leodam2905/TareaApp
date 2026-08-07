@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft, Loader2, MapPin, Calendar, DollarSign,
-  MessageCircle, SendHorizontal, User, CheckCircle2, XCircle, Star, CreditCard, ShieldCheck, ShieldAlert, Sparkles, FileText, RefreshCw
+  MessageCircle, SendHorizontal, User, CheckCircle2, XCircle, Star, CreditCard, ShieldCheck, ShieldAlert, Sparkles, FileText, RefreshCw, Camera
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -44,6 +44,8 @@ type Booking = {
   materialsEstimate: number;
   cancelReason: string | null;
   isPaid: boolean;
+  workDoneAt: string | null;
+  receiptUrl: string | null;
   isOnMyWay: boolean;
   handymanLat: number | null;
   handymanLng: number | null;
@@ -77,6 +79,8 @@ export default function BookingDetailPage() {
   const [sending, setSending] = useState(false);
   const [acting, setActing] = useState(false);
   const [paying, setPaying] = useState(false);
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
   const [currentUserId, setCurrentUserId] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [disputeStatement, setDisputeStatement] = useState("");
@@ -233,6 +237,34 @@ export default function BookingDetailPage() {
       toast.success(`Booking ${status.toLowerCase()}`);
     } else {
       toast.error("Action failed");
+    }
+    setActing(false);
+  };
+
+  const uploadReceipt = async (file: File) => {
+    setUploadingReceipt(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("folder", "tarea/receipts");
+    const res = await fetch("/api/upload/image", { method: "POST", body: fd });
+    if (res.ok) { const { url } = await res.json(); setReceiptUrl(url); }
+    else toast.error("Upload failed");
+    setUploadingReceipt(false);
+  };
+
+  const confirmCompletion = async () => {
+    setActing(true);
+    const res = await fetch(`/api/bookings/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "COMPLETED", ...(receiptUrl ? { receiptUrl } : {}) }),
+    });
+    if (res.ok) {
+      setBooking(prev => prev ? { ...prev, status: "COMPLETED" } : prev);
+      toast.success("Completed — payment released to your pro.");
+    } else {
+      const b = await res.json().catch(() => ({}));
+      toast.error(b.error || "Could not confirm");
     }
     setActing(false);
   };
@@ -400,6 +432,27 @@ export default function BookingDetailPage() {
           {paying ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
           {paying ? "Redirecting to payment…" : `Pay ${formatCurrency(booking.totalPrice * 1.15 + (booking.materialsEstimate ?? 0))} to Confirm`}
         </button>
+      )}
+
+      {booking.status === "IN_PROGRESS" && booking.workDoneAt && (
+        <div className="rounded-2xl border border-emerald-300 bg-emerald-50 p-5 space-y-3">
+          <div>
+            <p className="font-extrabold text-gray-900">Job finished?</p>
+            <p className="text-sm text-gray-600 mt-0.5">Your pro marked the work done. Confirm to release payment — it auto-confirms in 3 days.</p>
+          </div>
+          <label className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-white p-3 cursor-pointer hover:border-emerald-400 transition-colors">
+            {receiptUrl ? <CheckCircle2 className="w-5 h-5 text-emerald-500" /> : <Camera className="w-5 h-5 text-gray-400" />}
+            <span className="text-sm font-semibold text-gray-800">{receiptUrl ? "Receipt added" : "Add materials receipt (optional)"}</span>
+            {uploadingReceipt && <Loader2 className="w-4 h-4 animate-spin text-gray-400 ml-auto" />}
+            <input type="file" accept="image/*" capture="environment" className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; if (f) uploadReceipt(f); e.target.value = ""; }} />
+          </label>
+          <button onClick={confirmCompletion} disabled={acting}
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500 text-white font-bold hover:bg-emerald-400 transition-all disabled:opacity-50">
+            {acting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
+            Confirm &amp; release payment
+          </button>
+        </div>
       )}
 
       {(canCancel || booking.status === "COMPLETED") && (
