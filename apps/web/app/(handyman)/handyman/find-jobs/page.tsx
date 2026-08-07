@@ -19,6 +19,7 @@ type JobRequest = {
   scheduledAt: string;
   budgetMin: number;
   budgetMax: number;
+  materialsCost: number;
   status: string;
   createdAt: string;
   imageUrls: string[];
@@ -62,10 +63,11 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(diff / 1440)}d ago`;
 }
 
-function ApplyForm({ jobId, onApplied }: { jobId: string; onApplied: () => void }) {
+function ApplyForm({ jobId, defaultMaterials = 0, onApplied }: { jobId: string; defaultMaterials?: number; onApplied: () => void }) {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [proposedPrice, setProposedPrice] = useState("");
+  const [materials, setMaterials] = useState(defaultMaterials > 0 ? String(defaultMaterials) : "");
   const [sending, setSending] = useState(false);
   const { t } = useT();
 
@@ -74,7 +76,7 @@ function ApplyForm({ jobId, onApplied }: { jobId: string; onApplied: () => void 
     const res = await fetch(`/api/job-requests/${jobId}/apply`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: message.trim() || null, proposedPrice: proposedPrice || null }),
+      body: JSON.stringify({ message: message.trim() || null, proposedPrice: proposedPrice || null, materialsEstimate: materials || null }),
     });
     if (res.ok) {
       toast.success(t("toast_applied"));
@@ -109,6 +111,13 @@ function ApplyForm({ jobId, onApplied }: { jobId: string; onApplied: () => void 
         <input type="number" min="0" value={proposedPrice} onChange={e => setProposedPrice(e.target.value)}
           placeholder="Leave blank to accept customer's budget"
           className="input" />
+      </div>
+      <div>
+        <label className="label">Materials estimate ($)</label>
+        <input type="number" min="0" value={materials} onChange={e => setMaterials(e.target.value)}
+          placeholder="Cost of parts you'll supply"
+          className="input" />
+        <p className="text-[11px] text-gray-400 mt-1">Charged to the customer at cost (no fee). You'll provide receipts.</p>
       </div>
       <div className="flex gap-2">
         <button onClick={() => setOpen(false)}
@@ -333,7 +342,7 @@ export default function FindJobsPage() {
                         <p>{job.address}, {job.city}</p>
                       </div>
                       {!alreadyApplied && (
-                        <ApplyForm jobId={job.id} onApplied={() => markApplied(job.id)} />
+                        <ApplyForm jobId={job.id} defaultMaterials={job.materialsCost} onApplied={() => markApplied(job.id)} />
                       )}
                     </div>
                   )}

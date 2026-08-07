@@ -30,10 +30,41 @@ class _ProFindJobsState extends State<ProFindJobs> {
     if (mounted) setState(() => _loading = false);
   }
 
-  Future<void> _apply(String id) async {
+  String _numText(dynamic v) => (v is num && v > 0) ? '${v.round()}' : '';
+
+  // Ask the pro to confirm their labor price + materials estimate before
+  // applying (materials prefilled from the AI estimate, but the pro owns it).
+  Future<void> _applySheet(dynamic job) async {
+    final id = (job['id'] ?? '').toString();
+    final priceCtl = TextEditingController(text: _numText(job['budgetMin']));
+    final matCtl = TextEditingController(text: _numText(job['materialsCost']));
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('proFind.applyTitle'.tr()),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          TextField(controller: priceCtl, keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'proFind.yourPrice'.tr())),
+          const SizedBox(height: 14),
+          TextField(controller: matCtl, keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'proFind.materialsEstimate'.tr(), helperText: 'proFind.materialsHint'.tr(), helperMaxLines: 3)),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('common.cancel'.tr())),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text('proFind.apply'.tr())),
+        ],
+      ),
+    );
+    if (ok == true) await _apply(id, price: priceCtl.text.trim(), materials: matCtl.text.trim());
+  }
+
+  Future<void> _apply(String id, {String price = '', String materials = ''}) async {
     setState(() => _applied.add(id));
     try {
-      final res = await Api.post('/job-requests/$id/apply', {});
+      final res = await Api.post('/job-requests/$id/apply', {
+        if (price.isNotEmpty) 'proposedPrice': price,
+        if (materials.isNotEmpty) 'materialsEstimate': materials,
+      });
       if (res.statusCode >= 200 && res.statusCode < 300) {
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('proFind.applicationSent'.tr())));
       } else {
@@ -139,7 +170,7 @@ class _ProFindJobsState extends State<ProFindJobs> {
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: applied ? C.muted : C.blue, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-            onPressed: applied ? null : () => _apply(id),
+            onPressed: applied ? null : () => _applySheet(j),
             child: Text(applied ? 'proFind.applied'.tr() : 'proFind.apply'.tr(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
           ),
         ]),

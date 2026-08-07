@@ -431,7 +431,11 @@
     "applyFailed": "No se pudo aplicar. Inténtalo de nuevo.",
     "budget": "presupuesto",
     "applied": "Aplicado",
-    "apply": "Aplicar"
+    "apply": "Aplicar",
+    "applyTitle": "Postularse a este trabajo",
+    "yourPrice": "Tu precio — mano de obra ($)",
+    "materialsEstimate": "Estimación de materiales ($)",
+    "materialsHint": "Se cobra al cliente al costo — sin comisión. Tú entregas los recibos."
   },
   "proJobs": {
     "noJobs": "Aún no hay trabajos aquí.",
