@@ -3,8 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
-import { handymanNet } from "@/lib/fees";
-import { sendInvoiceEmail } from "@/lib/email";
+import { completeBooking } from "@/lib/complete-booking";
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
@@ -39,7 +38,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { status, cancelReason } = await req.json();
+  const { status, cancelReason, receiptUrl, workDone } = await req.json();
   const booking = await prisma.booking.findUnique({
     where: { id: params.id },
     include: {
@@ -62,6 +61,23 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   // dedicated /dispute route, not here.
   const isHandyman = user.id === booking.handymanId;
   const actorRole: "CUSTOMER" | "HANDYMAN" = isHandyman ? "HANDYMAN" : "CUSTOMER";
+
+  // Pro signals work is finished — not a status change. Starts the 3-day
+  // auto-release clock and prompts the customer to confirm + release payment.
+  if (workDone === true) {
+    if (!isHandyman) return NextResponse.json({ error: "Only the pro can mark work done." }, { status: 403 });
+    if (booking.status !== "IN_PROGRESS") return NextResponse.json({ error: "Job is not in progress." }, { status: 409 });
+    await prisma.booking.update({ where: { id: params.id }, data: { workDoneAt: new Date() } });
+    await createNotification({
+      userId: booking.customerId,
+      title: "Work finished — please confirm",
+      body: `${booking.handyman.name} marked "${booking.service.title}" as done. Confirm to release payment — it auto-confirms in 3 days.`,
+      type: "booking_accepted",
+      refId: booking.id,
+    });
+    return NextResponse.json({ ok: true });
+  }
+
   const ALLOWED_TRANSITIONS: Record<string, Record<string, Array<"CUSTOMER" | "HANDYMAN">>> = {
     PENDING: {
       ACCEPTED: ["HANDYMAN"],
@@ -72,7 +88,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       CANCELLED: ["CUSTOMER", "HANDYMAN"],
     },
     IN_PROGRESS: {
-      COMPLETED: ["HANDYMAN"],
+      COMPLETED: ["CUSTOMER"],   // customer confirms completion → releases payment
       CANCELLED: ["CUSTOMER", "HANDYMAN"],
     },
   };
@@ -95,60 +111,25 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     return NextResponse.json({ error: "Cannot complete an unpaid booking." }, { status: 409 });
   }
 
-  const updated = await prisma.booking.update({
-    where: { id: params.id },
-    data: {
-      status,
-      cancelReason,
-      // When handyman accepts, give customer 2 hours to pay before auto-cancel
-      ...(status === "ACCEPTED" && { responseDeadline: new Date(Date.now() + 2 * 60 * 60 * 1000) }),
-      ...(status === "IN_PROGRESS" && !booking.jobStartedAt && { jobStartedAt: new Date() }),
-      ...(status === "COMPLETED" && { completedAt: new Date() }),
-    },
-  });
-
+  // COMPLETED is customer-driven — delegate to the shared helper (sets status +
+  // completedAt, credits earnings, emails the invoice, and releases escrow to
+  // the pro = labor net + full materials). Everything else is a plain update.
+  let updated;
   if (status === "COMPLETED") {
-    await prisma.handymanProfile.updateMany({
-      where: { userId: booking.handymanId },
-      data: { totalEarnings: { increment: handymanNet(booking.totalPrice) } },
+    updated = await completeBooking(params.id, {
+      receiptUrl: typeof receiptUrl === "string" && receiptUrl ? receiptUrl : undefined,
     });
-
-    // Send invoice email to customer
-    try {
-      await sendInvoiceEmail({
-        to: booking.customer.email,
-        bookingId: booking.id,
-        serviceTitle: booking.service.title,
-        serviceCategory: booking.service.category,
-        handymanName: booking.handyman.name,
-        scheduledAt: booking.scheduledAt,
-        address: booking.address,
-        city: booking.city,
-        totalPrice: booking.totalPrice,
-        materials: booking.materialsEstimate ?? 0,
-      });
-    } catch (err) {
-      console.error("[bookings/PATCH] Invoice email failed:", err);
-    }
-
-    // Auto-transfer net earnings to handyman's Stripe Connect account
-    const handymanUser = await prisma.user.findUnique({ where: { id: booking.handymanId } });
-    if (handymanUser?.stripeAccountId && handymanUser.stripeAccountStatus === "active" && booking.isPaid) {
-      try {
-        await stripe.transfers.create({
-          amount: Math.round(handymanNet(booking.totalPrice) * 100),
-          currency: "usd",
-          destination: handymanUser.stripeAccountId,
-          transfer_group: booking.id,
-        });
-        await prisma.booking.update({
-          where: { id: params.id },
-          data: { handymanPaidOut: true },
-        });
-      } catch (err) {
-        console.error("[bookings/PATCH] Stripe transfer failed:", err);
-      }
-    }
+  } else {
+    updated = await prisma.booking.update({
+      where: { id: params.id },
+      data: {
+        status,
+        cancelReason,
+        // When handyman accepts, give customer 2 hours to pay before auto-cancel
+        ...(status === "ACCEPTED" && { responseDeadline: new Date(Date.now() + 2 * 60 * 60 * 1000) }),
+        ...(status === "IN_PROGRESS" && !booking.jobStartedAt && { jobStartedAt: new Date() }),
+      },
+    });
   }
 
   // Cancellation penalties

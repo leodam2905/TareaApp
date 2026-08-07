@@ -235,6 +235,9 @@ model Booking {
   resolvedAt       DateTime?
   materialsEstimate Float         @default(0)
   jobStartedAt     DateTime?
+  workDoneAt       DateTime?      // pro marked work finished — starts the 3-day auto-release clock
+  receiptUrl       String?        // optional materials receipt the customer attaches on completion
+  receiptUploadedAt DateTime?
   handymanPaidOut  Boolean       @default(false)
   paidOutAt        DateTime?
   createdAt        DateTime      @default(now())
