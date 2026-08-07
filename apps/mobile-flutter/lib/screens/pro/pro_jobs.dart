@@ -52,6 +52,20 @@ class _ProJobsState extends State<ProJobs> {
     }
   }
 
+  // Pro signals work finished — the customer then confirms + releases payment.
+  Future<void> _markWorkDone(dynamic b) async {
+    try {
+      final res = await Api.patch('/bookings/${b['id']}', {'workDone': true});
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        setState(() => b['workDoneAt'] = DateTime.now().toIso8601String());
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('proJobs.updateFailed'.tr())));
+      }
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('common.connectionRetry'.tr())));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final filtered = _filter == 'ALL' ? _bookings : _bookings.where((b) => b['status'] == _filter).toList();
@@ -125,7 +139,9 @@ class _ProJobsState extends State<ProJobs> {
           ] else if (status == 'ACCEPTED')
             _smallBtn('proJobs.startJob'.tr(), C.blue, () => _setStatus(b, 'IN_PROGRESS'))
           else if (status == 'IN_PROGRESS')
-            _smallBtn('proJobs.markComplete'.tr(), C.green, () => _setStatus(b, 'COMPLETED')),
+            (b['workDoneAt'] != null
+                ? Text('proJobs.awaiting'.tr(), style: const TextStyle(color: Color(0xFF15803D), fontWeight: FontWeight.w800, fontSize: 12))
+                : _smallBtn('jobDetail.markWorkDone'.tr(), C.green, () => _markWorkDone(b))),
         ]),
       ]),
       ),

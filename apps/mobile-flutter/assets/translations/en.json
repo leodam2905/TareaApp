@@ -444,7 +444,8 @@
     "customerFallback": "Customer",
     "accept": "Accept",
     "startJob": "Start job",
-    "markComplete": "Mark complete"
+    "markComplete": "Mark complete",
+    "awaiting": "Awaiting customer"
   },
   "proEarnings": {
     "totalEarned": "Total earned",

@@ -444,7 +444,8 @@
     "customerFallback": "Client",
     "accept": "Accepter",
     "startJob": "Démarrer",
-    "markComplete": "Marquer terminée"
+    "markComplete": "Marquer terminée",
+    "awaiting": "En attente du client"
   },
   "proEarnings": {
     "totalEarned": "Total gagné",

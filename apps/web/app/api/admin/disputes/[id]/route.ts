@@ -40,7 +40,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     if (h.stripeAccountId && h.stripeAccountStatus === "active") {
       try {
         await stripe.transfers.create({
-          amount: Math.round(handymanNet(booking.totalPrice) * 100),
+          amount: Math.round((handymanNet(booking.totalPrice) + (booking.materialsEstimate ?? 0)) * 100),
           currency: "usd",
           destination: h.stripeAccountId,
           transfer_group: booking.id,

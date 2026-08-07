@@ -444,7 +444,8 @@
     "customerFallback": "عميل",
     "accept": "قبول",
     "startJob": "بدء العمل",
-    "markComplete": "وضع علامة مكتمل"
+    "markComplete": "وضع علامة مكتمل",
+    "awaiting": "بانتظار العميل"
   },
   "proEarnings": {
     "totalEarned": "إجمالي الأرباح",
