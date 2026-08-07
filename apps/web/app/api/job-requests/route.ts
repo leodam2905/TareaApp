@@ -184,5 +184,22 @@ export async function POST(req: NextRequest) {
     }));
   }
 
+  // Confirmation to the customer on their own device.
+  await prisma.notification.create({
+    data: {
+      userId: user.id,
+      title: "Job posted",
+      body: `Your "${title}" request is live. We'll let you know when a pro applies.`,
+      type: "booking_request",
+      refId: jobRequest.id,
+    },
+  });
+  await sendPushToUser(
+    user.id,
+    "Job posted ✅",
+    `Your "${title}" request is live — we'll notify you when a pro applies.`,
+    { type: "booking_request", screen: "Requests", jobId: jobRequest.id }
+  );
+
   return NextResponse.json(jobRequest, { status: 201 });
 }
