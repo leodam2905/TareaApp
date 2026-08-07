@@ -196,6 +196,10 @@ class _PostJobScreenState extends State<PostJobScreen> {
       if (_task == null) return _toast('postjob.pickTask'.tr());
       if (!_allFilled) return _toast('postjob.answerDetails'.tr());
     }
+    // Standard/Soon must pick a date + time; Urgent is auto-set to ASAP.
+    if (_step == 1 && _urgency != 'URGENT' && (_date == null || _time == null)) {
+      return _toast('postjob.pickDateTime'.tr());
+    }
     if (_step == 2) {
       if (_address.text.trim().isEmpty || _city.text.trim().isEmpty) {
         return _toast('postjob.addLocation'.tr());
