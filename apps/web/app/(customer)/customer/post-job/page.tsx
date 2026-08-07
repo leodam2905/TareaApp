@@ -317,6 +317,9 @@ function PostJobForm() {
               )}
               <div className="flex justify-between text-gray-600"><span>Service &amp; Protection Fee ({estimate.feePct}%)</span><span>${estimate.fee}</span></div>
               <div className="flex justify-between font-extrabold text-gray-900 pt-1.5 border-t border-orange-100"><span>{estimate.isFixed ? "Total (fixed)" : "Estimated total"}</span><span>${estimate.total}</span></div>
+              {estimate.materials > 0 && (
+                <p className="text-[11px] text-gray-500 pt-1">Materials is a suggested estimate — your pro confirms the actual cost (with receipts) when they apply.</p>
+              )}
             </div>
           )}
           {priceNote && (

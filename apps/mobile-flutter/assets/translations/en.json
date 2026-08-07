@@ -307,7 +307,8 @@
     "pickDateTime": "Please pick a date and time",
     "rushFee": "Urgent rush fee",
     "serviceFee": "Service & Protection Fee",
-    "total": "Total"
+    "total": "Total",
+    "materialsNote": "Materials is a suggested estimate — your pro confirms the actual cost (with receipts) when they apply."
   },
   "browse": {
     "title": "Browse Pros",

@@ -307,7 +307,8 @@
     "pickDateTime": "Veuillez choisir une date et une heure",
     "rushFee": "Frais d'urgence",
     "serviceFee": "Frais de service et protection",
-    "total": "Total"
+    "total": "Total",
+    "materialsNote": "Le coût des matériaux est une estimation — votre pro confirme le montant réel (avec reçus) lorsqu’il postule."
   },
   "browse": {
     "title": "Parcourir les pros",

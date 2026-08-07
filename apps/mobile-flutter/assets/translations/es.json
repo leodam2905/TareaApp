@@ -307,7 +307,8 @@
     "pickDateTime": "Elige una fecha y una hora",
     "rushFee": "Recargo por urgencia",
     "serviceFee": "Tarifa de servicio y protección",
-    "total": "Total"
+    "total": "Total",
+    "materialsNote": "El costo de materiales es una estimación — tu profesional confirma el importe real (con recibos) al postularse."
   },
   "browse": {
     "title": "Buscar pros",

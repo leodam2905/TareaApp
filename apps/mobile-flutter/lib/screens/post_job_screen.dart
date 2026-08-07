@@ -685,6 +685,15 @@ class _PostJobScreenState extends State<PostJobScreen> {
           _feeRow('postjob.total'.tr(), '\$$total', bold: true),
         ]),
       ),
+      if (_n(bd['materials']) > 0) ...[
+        const SizedBox(height: 8),
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Icon(Icons.info_outline, size: 14, color: C.muted),
+          const SizedBox(width: 6),
+          Expanded(child: Text('postjob.materialsNote'.tr(),
+              style: const TextStyle(color: C.muted, fontSize: 12, height: 1.3))),
+        ]),
+      ],
       const SizedBox(height: 16),
       const Divider(color: C.line, height: 1),
       const SizedBox(height: 14),
