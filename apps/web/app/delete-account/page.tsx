@@ -101,6 +101,7 @@ export default function DeleteAccountPage() {
         {/* Footer */}
         <div className="mt-16 pt-8 border-t border-white/10 space-y-2">
           <div className="flex gap-6 text-sm text-slate-500">
+            <Link href="/guarantee" className="hover:text-white transition-colors">ZenTarea Guarantee</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
             <Link href="/" className="hover:text-white transition-colors">Back to Tarea</Link>

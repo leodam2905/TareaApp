@@ -784,6 +784,7 @@ export default function HomePage() {
               <ul className="space-y-2.5 text-gray-500 text-sm">
                 {[
                   { label: "Contact & Support", href: "/contact" },
+                  { label: "ZenTarea Guarantee", href: "/guarantee" },
                   { label: "Privacy Policy",    href: "/privacy" },
                   { label: "Terms of Service",  href: "/terms" },
                   { label: "Delete Account",    href: "/delete-account" },
@@ -820,6 +821,7 @@ export default function HomePage() {
             <p className="text-gray-400 text-sm">© 2026 <span className="logo-script">Tarea</span>. All rights reserved.</p>
             <div className="flex gap-6 text-gray-500 text-sm">
               <Link href="/contact" className="hover:text-gray-900 transition-colors">Contact & Support</Link>
+              <Link href="/guarantee" className="hover:text-gray-900 transition-colors">ZenTarea Guarantee</Link>
               <Link href="/privacy" className="hover:text-gray-900 transition-colors">Privacy Policy</Link>
               <Link href="/terms" className="hover:text-gray-900 transition-colors">Terms of Service</Link>
             </div>

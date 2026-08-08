@@ -146,7 +146,7 @@ export default function InvoicePrint({
               </tr>
               <tr className="border-b border-gray-100">
                 <td className="py-3">
-                  <p className="font-semibold text-gray-900">Service &amp; Protection Fee</p>
+                  <p className="font-semibold text-gray-900">Service Fee</p>
                   <p className="text-xs text-gray-500">{Math.round(CUSTOMER_FEE_RATE * 100)}% of service price</p>
                 </td>
                 <td className="py-3 text-right font-semibold text-gray-900">{fmt(serviceFee)}</td>

@@ -8,7 +8,7 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // Pricing model. `price` is the SERVICE price (labor + materials + travel +
 // urgency) — what the pro is paid and what becomes the job budget. The customer
-// pays that plus the Service & Protection Fee (CUSTOMER_FEE_RATE, from fees.ts),
+// pays that plus the Service Fee (CUSTOMER_FEE_RATE, from fees.ts),
 // matching checkout/invoice exactly — no separate platform/risk markup.
 const TRAVEL_ADJUSTMENT = 15;
 const URGENCY_RATE  = 0.20;
@@ -98,7 +98,7 @@ No markdown, just the JSON.`,
       price,                       // service price (fee-able, no materials) = budget
       min, max,                    // service-price range (use when !isFixed)
       materials: materialsRounded, // pass-through, NOT fee-charged
-      serviceFee,                  // 15% Service & Protection Fee (on service only)
+      serviceFee,                  // 15% Service Fee (on service only)
       feeRate: CUSTOMER_FEE_RATE,  // 0.15
       total,                       // service + materials + fee = what the customer pays
       workTime,
