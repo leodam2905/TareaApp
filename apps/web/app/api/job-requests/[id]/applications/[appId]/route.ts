@@ -27,11 +27,14 @@ export async function PATCH(
     return NextResponse.json({ error: "Application not found" }, { status: 404 });
   }
 
-  const application = await prisma.jobApplication.update({
+  // Fetch (don't update yet) — the safety gate must run BEFORE we mark the
+  // application accepted, so a blocked hire doesn't leave a phantom ACCEPTED
+  // application with no booking.
+  const application = await prisma.jobApplication.findUnique({
     where: { id: params.appId },
-    data: { status: action === "accept" ? "ACCEPTED" : "REJECTED" },
     include: { handyman: { include: { user: true } }, user: true },
   });
+  if (!application) return NextResponse.json({ error: "Application not found" }, { status: 404 });
 
   if (action === "accept") {
     // Safety gate — handyman must have photo + passed background check before booking
@@ -51,6 +54,8 @@ export async function PATCH(
       return NextResponse.json({ error: "This handyman has not passed a background check yet and cannot be booked." }, { status: 400 });
     }
 
+    // Gate passed — now mark accepted, assign, and reject the others.
+    await prisma.jobApplication.update({ where: { id: params.appId }, data: { status: "ACCEPTED" } });
     await prisma.jobRequest.update({ where: { id: params.id }, data: { status: "ASSIGNED" } });
     await prisma.jobApplication.updateMany({
       where: { jobRequestId: params.id, id: { not: params.appId } },
@@ -114,6 +119,7 @@ export async function PATCH(
       refId: booking.id,
     });
   } else {
+    await prisma.jobApplication.update({ where: { id: params.appId }, data: { status: "REJECTED" } });
     await createNotification({
       userId: application.user.id,
       title: "Application Not Selected",
@@ -123,5 +129,5 @@ export async function PATCH(
     });
   }
 
-  return NextResponse.json(application);
+  return NextResponse.json({ ok: true });
 }
