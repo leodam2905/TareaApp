@@ -676,7 +676,10 @@
     "confirmRelease": "تأكيد وتحرير الدفع",
     "takePhoto": "التقاط صورة",
     "chooseGallery": "اختيار من المعرض",
-    "uploadFailed": "فشل الرفع"
+    "uploadFailed": "فشل الرفع",
+    "payNow": "ادفع الآن",
+    "payNote": "دفع آمن عبر Stripe. يُلغى الحجز إذا لم يتم الدفع خلال ساعتين.",
+    "payFailed": "تعذّر فتح صفحة الدفع. حاول مرة أخرى."
   },
   "instantQuote": {
     "title": "عرض سعر فوري",

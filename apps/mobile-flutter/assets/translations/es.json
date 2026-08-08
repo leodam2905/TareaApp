@@ -676,7 +676,10 @@
     "confirmRelease": "Confirmar y liberar el pago",
     "takePhoto": "Tomar foto",
     "chooseGallery": "Elegir de la galería",
-    "uploadFailed": "Error al subir"
+    "uploadFailed": "Error al subir",
+    "payNow": "Pagar ahora",
+    "payNote": "Pago seguro con Stripe. Se cancela si no pagas en 2 horas.",
+    "payFailed": "No se pudo abrir el pago. Inténtalo de nuevo."
   },
   "instantQuote": {
     "title": "Cotización al instante",

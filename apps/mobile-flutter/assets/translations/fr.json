@@ -676,7 +676,10 @@
     "confirmRelease": "Confirmer et libérer le paiement",
     "takePhoto": "Prendre une photo",
     "chooseGallery": "Choisir dans la galerie",
-    "uploadFailed": "Échec du téléversement"
+    "uploadFailed": "Échec du téléversement",
+    "payNow": "Payer",
+    "payNote": "Paiement sécurisé via Stripe. Annulé si non payé sous 2 heures.",
+    "payFailed": "Impossible d'ouvrir le paiement. Réessayez."
   },
   "instantQuote": {
     "title": "Devis instantané",

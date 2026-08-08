@@ -676,7 +676,10 @@
     "confirmRelease": "Confirm & release payment",
     "takePhoto": "Take photo",
     "chooseGallery": "Choose from gallery",
-    "uploadFailed": "Upload failed"
+    "uploadFailed": "Upload failed",
+    "payNow": "Pay now",
+    "payNote": "Secure checkout with Stripe. Cancels if unpaid within 2 hours.",
+    "payFailed": "Could not start checkout. Try again."
   },
   "instantQuote": {
     "title": "Instant Quote",

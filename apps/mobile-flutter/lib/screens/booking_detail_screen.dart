@@ -33,7 +33,7 @@ class BookingDetailScreen extends StatefulWidget {
   State<BookingDetailScreen> createState() => _BookingDetailScreenState();
 }
 
-class _BookingDetailScreenState extends State<BookingDetailScreen> {
+class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsBindingObserver {
   Map<String, dynamic> _b = {};
   bool _busy = false;
   bool _reviewed = false;
@@ -41,6 +41,10 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   bool _uploadingReceipt = false;
   Timer? _ticker;
   int _elapsed = 0;
+  // Set while the customer is away paying in the external browser. Checkout is
+  // not an in-app route, so RouteAware.didPopNext never fires for it — we pick
+  // the result up on app resume instead.
+  bool _awaitingPayment = false;
 
   Future<void> _pickReceipt() async {
     final source = await showModalBottomSheet<ImageSource>(
@@ -82,7 +86,15 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   }
 
   @override
-  void dispose() { _ticker?.cancel(); super.dispose(); }
+  void dispose() { WidgetsBinding.instance.removeObserver(this); _ticker?.cancel(); super.dispose(); }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _awaitingPayment) {
+      _awaitingPayment = false;
+      _load(); // reflects isPaid once Stripe's webhook has landed
+    }
+  }
 
   void _syncTimer() {
     _ticker?.cancel();
@@ -129,6 +141,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _b = Map<String, dynamic>.from(widget.booking);
     _load();
   }
@@ -145,6 +158,30 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     } catch (_) {}
     _syncTimer();
     if (mounted) setState(() {});
+  }
+
+  // Payment is due once the pro accepts. Card details are entered on Stripe's
+  // hosted Checkout page in an external browser — they never touch the app.
+  // The booking auto-cancels if it goes unpaid for 2h, so this has to be
+  // reachable from the app, not just the web.
+  Future<void> _payNow() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      final res = await Api.post('/stripe/checkout', {'bookingId': _id});
+      final data = jsonDecode(res.body);
+      final url = (data is Map ? data['url'] : null)?.toString();
+      if (res.statusCode >= 200 && res.statusCode < 300 && url != null && url.startsWith('http')) {
+        _awaitingPayment = true;
+        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      } else {
+        _toast((data is Map ? data['error'] : null)?.toString() ?? 'booking.payFailed'.tr());
+      }
+    } catch (_) {
+      _toast('common.connectionRetry'.tr());
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   Future<void> _leaveTip() async {
@@ -269,6 +306,14 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               if (!isPaid) ...[
                 const SizedBox(height: 6),
                 Text('booking.paymentPending'.tr(), style: const TextStyle(color: C.amber, fontSize: 13, fontWeight: FontWeight.w600)),
+                // Payment only opens once the pro has accepted — the checkout
+                // endpoint rejects anything else.
+                if (status == 'ACCEPTED') ...[
+                  const SizedBox(height: 12),
+                  _primaryBtn(_busy ? 'common.loading'.tr() : 'booking.payNow'.tr(), _busy ? () {} : _payNow),
+                  const SizedBox(height: 4),
+                  Text('booking.payNote'.tr(), style: const TextStyle(color: C.muted, fontSize: 12)),
+                ],
               ],
             ]),
           ),
