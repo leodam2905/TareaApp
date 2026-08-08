@@ -80,6 +80,10 @@ model User {
   isActive     Boolean  @default(true)
   stripeAccountId     String?
   stripeAccountStatus String?
+  // Customer-side Stripe identity: lets us charge a saved card off-session
+  // (authorization hold at acceptance, add-on charges during the job).
+  stripeCustomerId       String?
+  defaultPaymentMethodId String?
   notifBookingUpdates Boolean @default(true)
   notifReminders      Boolean @default(true)
   notifMessages       Boolean @default(true)
@@ -222,6 +226,12 @@ model Booking {
   isPaid                Boolean       @default(false)
   stripeSessionId       String?
   stripePaymentIntentId String?
+  // Uber-style hold: authorize at acceptance, capture at completion.
+  authorizedAmount      Float?
+  authorizedAt          DateTime?
+  authExpiresAt         DateTime?   // holds lapse after ~7 days
+  capturedAmount        Float?
+  capturedAt            DateTime?
   completedAt      DateTime?
   cancelReason     String?
   responseDeadline DateTime?

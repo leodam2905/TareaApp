@@ -134,6 +134,20 @@ export async function POST(req: NextRequest) {
       ]);
     }
 
+    // A card was saved for later use. Record it as the customer's default so
+    // acceptance holds and add-on charges have something to charge off-session.
+    if (event.type === "setup_intent.succeeded") {
+      const si = event.data.object as Stripe.SetupIntent;
+      const userId = si.metadata?.tareaUserId;
+      const paymentMethodId = typeof si.payment_method === "string" ? si.payment_method : si.payment_method?.id;
+      if (userId && paymentMethodId) {
+        await prisma.user.update({
+          where: { id: userId },
+          data: { defaultPaymentMethodId: paymentMethodId },
+        });
+      }
+    }
+
     if (event.type === "customer.subscription.deleted") {
       const sub = event.data.object as Stripe.Subscription;
       await prisma.handymanProfile.updateMany({
