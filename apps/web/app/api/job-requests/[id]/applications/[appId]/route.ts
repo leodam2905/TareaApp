@@ -57,32 +57,61 @@ export async function PATCH(
       data: { status: "REJECTED" },
     });
 
-    const service = await prisma.service.findFirst({
-      where: { handymanId: application.handymanId, category: jobRequest.category, isActive: true },
+    // A hire must ALWAYS produce a customer booking. Use the pro's matching
+    // service if they have one; otherwise create a private (inactive) service
+    // from the job so a booking can exist even when the pro has no listing in
+    // this category.
+    let service = await prisma.service.findFirst({
+      where: { handymanId: application.handymanId, category: jobRequest.category },
+      orderBy: { isActive: "desc" },
     });
-
-    if (service) {
-      await prisma.booking.create({
+    if (!service) {
+      const price = application.proposedPrice ?? jobRequest.budgetMin ?? 0;
+      service = await prisma.service.create({
         data: {
-          customerId: user.id,
-          handymanId: application.user.id,
-          serviceId: service.id,
-          scheduledAt: jobRequest.scheduledAt,
-          address: jobRequest.address,
-          city: jobRequest.city,
-          totalPrice: application.proposedPrice ?? jobRequest.budgetMin,
-          materialsEstimate: application.materialsEstimate ?? jobRequest.materialsCost ?? 0,
-          responseDeadline: new Date(Date.now() + 60 * 60 * 1000),
+          handymanId: application.handymanId,
+          title: jobRequest.title,
+          description: (jobRequest.description || jobRequest.title).slice(0, 500),
+          category: jobRequest.category,
+          minPrice: price,
+          maxPrice: application.proposedPrice ?? jobRequest.budgetMax ?? price,
+          duration: 60,
+          isActive: false,
         },
       });
     }
+
+    // Both parties agreed (pro applied, customer hired) → create the booking
+    // ACCEPTED so the customer can pay right away.
+    const booking = await prisma.booking.create({
+      data: {
+        customerId: user.id,
+        handymanId: application.user.id,
+        serviceId: service.id,
+        status: "ACCEPTED",
+        scheduledAt: jobRequest.scheduledAt,
+        address: jobRequest.address,
+        city: jobRequest.city,
+        totalPrice: application.proposedPrice ?? jobRequest.budgetMin,
+        materialsEstimate: application.materialsEstimate ?? jobRequest.materialsCost ?? 0,
+        responseDeadline: new Date(Date.now() + 2 * 60 * 60 * 1000),
+      },
+    });
 
     await createNotification({
       userId: application.user.id,
       title: "Application Accepted!",
       body: `You got the job: "${jobRequest.title}". Check your Jobs tab.`,
       type: "booking_accepted",
-      refId: jobRequest.id,
+      refId: booking.id,
+    });
+    // Prompt the customer to pay & confirm their new booking.
+    await createNotification({
+      userId: user.id,
+      title: "Pro hired — confirm & pay",
+      body: `You hired ${application.user.name} for "${jobRequest.title}". Open the booking to pay and confirm.`,
+      type: "booking_accepted",
+      refId: booking.id,
     });
   } else {
     await createNotification({
