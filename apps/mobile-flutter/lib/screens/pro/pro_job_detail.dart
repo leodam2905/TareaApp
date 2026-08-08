@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
+import '../../masked_call.dart';
 
 // [translation key, textColor, bgColor]
 const _statusMeta = {
@@ -221,7 +221,7 @@ class _ProJobDetailState extends State<ProJobDetail> {
     final meta = _statusMeta[_status] ?? ['pro.jobFallback', 0xFF64748B, 0xFFF1F5F9];
     final customer = _b['customer'] ?? {};
     final name = (customer['name'] ?? 'proJobs.customerFallback'.tr()).toString();
-    final phone = (customer['phone'] ?? '').toString();
+    final callable = _b['canCall'] == true;
     final service = (_b['service']?['title'] ?? _b['category'] ?? 'proProfile.serviceFallback'.tr()).toString();
     final price = (_b['totalPrice'] ?? 0) as num;
     final phases = (_b['phases'] as List?) ?? [];
@@ -355,11 +355,11 @@ class _ProJobDetailState extends State<ProJobDetail> {
             onPressed: () => context.push('/chat', extra: {'bookingId': _id, 'name': name}),
             icon: const Icon(Icons.chat_bubble_outline, size: 18, color: C.ink),
             label: Text('jobDetail.messageCustomer'.tr(args: [name]), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w800))),
-          if (phone.isNotEmpty) ...[
+          if (callable) ...[
             const SizedBox(height: 10),
             OutlinedButton.icon(
               style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50), side: const BorderSide(color: C.line)),
-              onPressed: () => launchUrl(Uri.parse('tel:$phone')),
+              onPressed: () => startMaskedCall(context, _id),
               icon: const Icon(Icons.call_outlined, size: 18, color: C.ink),
               label: Text('jobDetail.callCustomer'.tr(), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w800))),
           ],

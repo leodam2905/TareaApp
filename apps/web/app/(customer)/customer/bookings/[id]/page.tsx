@@ -51,7 +51,8 @@ type Booking = {
   handymanLng: number | null;
   service: { title: string; category: string };
   customer: { id: string; name: string; avatarUrl: string | null };
-  handyman: { id: string; name: string; avatarUrl: string | null; phone: string | null };
+  handyman: { id: string; name: string; avatarUrl: string | null };
+  canCall: boolean;
   review: { rating: number; comment: string | null } | null;
   phases: Phase[];
   messages: Message[];
@@ -92,6 +93,22 @@ export default function BookingDetailPage() {
   const [rebookModalOpen, setRebookModalOpen] = useState(false);
   const [rebookDate, setRebookDate] = useState("");
   const [rebookTime, setRebookTime] = useState("09:00");
+
+  // Masked calling: ask the server for the proxy number that reaches the pro,
+  // then hand it to the dialer. The pro's real number never reaches the browser.
+  const startCall = async () => {
+    const res = await fetch(`/api/bookings/${id}/call`, { method: "POST" });
+    if (!res.ok) {
+      toast.error(
+        res.status === 422
+          ? "Add a phone number to your profile to place calls."
+          : "Calling isn't available right now. Try the chat instead."
+      );
+      return;
+    }
+    const { proxyNumber } = await res.json();
+    window.location.href = `tel:${proxyNumber}`;
+  };
 
   const loadBooking = useCallback(async () => {
     const res = await fetch(`/api/bookings/${id}`);
@@ -406,8 +423,10 @@ export default function BookingDetailPage() {
         <Avatar url={booking.handyman.avatarUrl} name={booking.handyman.name} size={12} />
         <div className="flex-1">
           <p className="text-white font-bold">{booking.handyman.name}</p>
-          {booking.handyman.phone && (
-            <p className="text-slate-400 text-sm">📞 {booking.handyman.phone}</p>
+          {booking.canCall && (
+            <button onClick={startCall} className="text-slate-400 hover:text-white text-sm">
+              📞 Call {booking.handyman.name.split(" ")[0]}
+            </button>
           )}
         </div>
         {booking.review && (

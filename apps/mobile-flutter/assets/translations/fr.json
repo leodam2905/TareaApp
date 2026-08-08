@@ -696,5 +696,9 @@
     "whatsIncluded": "Ce qui est inclus",
     "postThisJobArrow": "Publier cette tâche  →",
     "editAnswers": "Modifier les réponses"
+  },
+  "call": {
+    "unavailable": "Appel indisponible pour le moment. Utilisez le chat.",
+    "addPhone": "Ajoutez un numéro à votre profil pour appeler."
   }
 }

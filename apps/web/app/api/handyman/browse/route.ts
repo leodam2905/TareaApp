@@ -28,6 +28,7 @@ export async function GET(_req: NextRequest) {
       latitude: true,
       longitude: true,
       isVerified: true,
+      // Server-side only — never returned; drives the phoneVerified trust badge.
       phone: true,
       stripeAccountStatus: true,
       handymanProfile: {

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { completeBooking } from "@/lib/complete-booking";
+import { canCall, releaseProxySessions } from "@/lib/voice";
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
@@ -31,7 +32,16 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  return NextResponse.json(booking);
+  // Neither party ever receives the other's real number — calls go through a
+  // masked proxy (POST /api/bookings/[id]/call). We only advertise whether a
+  // call can be placed.
+  const { customer, handyman, ...rest } = booking;
+  return NextResponse.json({
+    ...rest,
+    customer: { id: customer.id, name: customer.name, avatarUrl: customer.avatarUrl },
+    handyman: { id: handyman.id, name: handyman.name, avatarUrl: handyman.avatarUrl },
+    canCall: canCall(booking.status, customer.phone, handyman.phone),
+  });
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
@@ -175,6 +185,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   if (status === "CANCELLED") {
+    // Contact closes with the engagement — hand the proxy number back to the pool.
+    await releaseProxySessions(params.id);
+
     const cancelledByHandyman = user.id === booking.handymanId;
     const hoursUntil = (booking.scheduledAt.getTime() - Date.now()) / (1000 * 60 * 60);
     const isLate = hoursUntil < 24;

@@ -7,6 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:image_picker/image_picker.dart';
 import '../theme.dart';
 import '../api.dart';
+import '../masked_call.dart';
 
 const _statusColor = {
   'PENDING': 0xFFB45309,
@@ -225,7 +226,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     final color = Color(_statusColor[status] ?? 0xFF64748B);
     final handyman = (_b['handyman'] ?? {}) as Map;
     final name = (handyman['name'] ?? 'handymanDetail.proFallback'.tr()).toString();
-    final phone = (handyman['phone'] ?? '').toString();
+    final callable = _b['canCall'] == true;
     final service = (_b['service']?['title'] ?? _b['category'] ?? 'proProfile.serviceFallback'.tr()).toString();
     final category = (_b['service']?['category'] ?? '').toString();
     final price = (_b['totalPrice'] ?? 0) as num;
@@ -333,8 +334,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               const SizedBox(width: 12),
               Expanded(child: Text(name, style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16))),
               IconButton(icon: const Icon(Icons.chat_bubble_outline, color: C.blue), onPressed: () => context.push('/chat', extra: {'bookingId': _id, 'name': name})),
-              if (phone.isNotEmpty)
-                IconButton(icon: const Icon(Icons.call_outlined, color: C.blue), onPressed: () => launchUrl(Uri.parse('tel:$phone'))),
+              if (callable)
+                IconButton(icon: const Icon(Icons.call_outlined, color: C.blue), onPressed: () => startMaskedCall(context, _id)),
             ]),
           ),
           const SizedBox(height: 20),

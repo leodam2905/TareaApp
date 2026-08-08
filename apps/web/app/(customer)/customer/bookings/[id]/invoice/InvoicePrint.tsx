@@ -14,7 +14,7 @@ type Booking = {
   stripePaymentIntentId: string | null;
   service: { title: string; category: string };
   customer: { name: string; email: string; phone: string | null };
-  handyman: { name: string; email: string; phone: string | null };
+  handyman: { name: string; email: string };
 };
 
 export default function InvoicePrint({
@@ -95,10 +95,9 @@ export default function InvoicePrint({
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Service Provider</p>
               <p className="font-bold text-gray-900">{booking.handyman.name}</p>
+              {/* The pro's phone is deliberately omitted — contact goes through
+                  the masked proxy, and the invoice would otherwise leak it. */}
               <p className="text-sm text-gray-600">{booking.handyman.email}</p>
-              {booking.handyman.phone && (
-                <p className="text-sm text-gray-600">{booking.handyman.phone}</p>
-              )}
             </div>
           </div>
 

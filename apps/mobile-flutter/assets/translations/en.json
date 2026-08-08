@@ -696,5 +696,9 @@
     "whatsIncluded": "What's included",
     "postThisJobArrow": "Post this job  →",
     "editAnswers": "Edit answers"
+  },
+  "call": {
+    "unavailable": "Calling isn't available right now. Try the chat instead.",
+    "addPhone": "Add a phone number in your profile to place calls."
   }
 }

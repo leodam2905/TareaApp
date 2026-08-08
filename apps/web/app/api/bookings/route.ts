@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { assertPromoUsable, hasPriorPaidOrder } from "@/lib/promo";
+import { canCall } from "@/lib/voice";
 
 const createSchema = z.object({
   serviceId: z.string(),
@@ -47,7 +48,16 @@ export async function GET(req: NextRequest) {
     orderBy: { createdAt: "desc" },
   });
 
-  return NextResponse.json(bookings);
+  // Strip the real numbers — calls are placed through a masked proxy, so the
+  // client only needs to know whether a call can be placed.
+  return NextResponse.json(
+    bookings.map(({ customer, handyman, ...rest }) => ({
+      ...rest,
+      customer: { name: customer.name, avatarUrl: customer.avatarUrl },
+      handyman: { name: handyman.name, avatarUrl: handyman.avatarUrl },
+      canCall: canCall(rest.status, customer.phone, handyman.phone),
+    }))
+  );
 }
 
 export async function POST(req: NextRequest) {

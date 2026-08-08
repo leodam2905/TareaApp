@@ -13,7 +13,7 @@ export default async function InvoicePage({ params }: { params: { id: string } }
     include: {
       service: true,
       customer: { select: { id: true, name: true, email: true, phone: true } },
-      handyman: { select: { id: true, name: true, email: true, phone: true } },
+      handyman: { select: { id: true, name: true, email: true } },
     },
   });
 

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { handymanNet } from "@/lib/fees";
 import { sendInvoiceEmail } from "@/lib/email";
+import { releaseProxySessions } from "@/lib/voice";
 
 // Completes a paid, in-progress booking and releases escrow to the pro. Used by
 // both the customer's "Confirm completion" (bookings PATCH) and the 3-day
@@ -74,6 +75,10 @@ export async function completeBooking(bookingId: string, opts?: { receiptUrl?: s
       console.error("[completeBooking] Stripe transfer failed:", err);
     }
   }
+
+  // The job is over — free the proxy number so it can serve another booking.
+  // Covers both the customer's confirmation and the 3-day auto-release cron.
+  await releaseProxySessions(bookingId);
 
   return booking;
 }
