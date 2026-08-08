@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
 import '../api.dart';
+import '../route_observer.dart';
 
 class MyJobsScreen extends StatefulWidget {
   const MyJobsScreen({super.key});
@@ -21,7 +22,7 @@ const _statusPill = {
   'CANCELLED': ['status.cancelled', 0xFFB91C1C, 0xFFFEE2E2],
 };
 
-class _MyJobsScreenState extends State<MyJobsScreen> {
+class _MyJobsScreenState extends State<MyJobsScreen> with RouteAware {
   List<dynamic> _bookings = [];
   bool _loading = true;
   String _filter = 'ALL';
@@ -31,6 +32,24 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
     super.initState();
     _load();
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) routeObserver.subscribe(this, route);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  // Reload when returning to the shell (e.g. after hiring a pro) so a newly
+  // created booking shows up.
+  @override
+  void didPopNext() => _load();
 
   Future<void> _load() async {
     try {
@@ -67,7 +86,10 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
       body: SafeArea(
         child: _loading
             ? const Center(child: CircularProgressIndicator())
-            : ListView(
+            : RefreshIndicator(
+                onRefresh: _load,
+                child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 children: [
                   // Header
@@ -116,8 +138,14 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                     ]),
                   ),
                   const SizedBox(height: 16),
-                  if (_filter == 'ALL') ...[
-                    // Calendar illustration
+                  if (filtered.isNotEmpty) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(children: filtered.map(_bookingCard).toList()),
+                    ),
+                    const SizedBox(height: 24),
+                  ] else if (_filter == 'ALL') ...[
+                    // Empty state — calendar illustration + support
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Image.asset('assets/images/bookings-illustration.png', fit: BoxFit.contain),
@@ -128,11 +156,12 @@ class _MyJobsScreenState extends State<MyJobsScreen> {
                   ] else ...[
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: filtered.isEmpty ? _emptyCard() : Column(children: filtered.map(_bookingCard).toList()),
+                      child: _emptyCard(),
                     ),
                     const SizedBox(height: 24),
                   ],
                 ],
+              ),
               ),
       ),
     );
