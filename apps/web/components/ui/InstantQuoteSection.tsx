@@ -4,14 +4,16 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Zap, Loader2, BadgeCheck, ArrowRight, Clock, ChevronRight, RotateCcw, CheckCircle } from "lucide-react";
+import { Droplet, Snowflake, Hammer, Paintbrush, Home, Sparkles, Leaf, Refrigerator, Truck, Wrench, type LucideIcon } from "lucide-react";
 
-// Rotating "popular requests" shown in the placeholder
+// Rotating "popular requests" shown in the placeholder. The icon comes from the
+// category so there's one place to change it.
 const POPULAR = [
-  { label: "Install Ceiling Fan", cat: "Electrical",  icon: "⚡" },
-  { label: "AC Tune-Up",           cat: "HVAC",        icon: "❄️" },
-  { label: "Lawn Mowing",          cat: "Landscaping", icon: "🌿" },
-  { label: "TV Mounting",          cat: "General",     icon: "🛠️" },
-  { label: "Fix Leaky Faucet",     cat: "Plumbing",    icon: "🔧" },
+  { label: "Install Ceiling Fan", cat: "Electrical"  },
+  { label: "AC Tune-Up",           cat: "HVAC"        },
+  { label: "Lawn Mowing",          cat: "Landscaping" },
+  { label: "TV Mounting",          cat: "General"     },
+  { label: "Fix Leaky Faucet",     cat: "Plumbing"    },
 ];
 
 type DetailField = { key: string; label: string; options: string[] };
@@ -88,18 +90,21 @@ const TASKS: Record<string, Task[]> = {
 
 const CATEGORIES = Object.keys(TASKS);
 
-const CATEGORY_META: Record<string, { icon: string; color: string }> = {
-  Plumbing:          { icon: "🔧", color: "#38BDF8" },
-  Electrical:        { icon: "⚡", color: "#F59E0B" },
-  HVAC:              { icon: "❄️", color: "#7DD3FC" },
-  Carpentry:         { icon: "🪵", color: "#D97706" },
-  Painting:          { icon: "🎨", color: "#A78BFA" },
-  Roofing:           { icon: "🏠", color: "#94A3B8" },
-  Cleaning:          { icon: "✨", color: "#34D399" },
-  Landscaping:       { icon: "🌿", color: "#4ADE80" },
-  "Appliance Repair":{ icon: "🔌", color: "#818CF8" },
-  Moving:            { icon: "📦", color: "#FB923C" },
-  General:           { icon: "🛠️", color: "#64748B" },
+// Line icons, mirroring the mobile app's outlined-icon set (see
+// apps/mobile-flutter/lib/service_catalog.dart) so a category looks the same on
+// web and in the app.
+const CATEGORY_META: Record<string, { icon: LucideIcon; color: string }> = {
+  Plumbing:          { icon: Droplet,      color: "#38BDF8" },
+  Electrical:        { icon: Zap,          color: "#F59E0B" },
+  HVAC:              { icon: Snowflake,    color: "#7DD3FC" },
+  Carpentry:         { icon: Hammer,       color: "#D97706" },
+  Painting:          { icon: Paintbrush,   color: "#A78BFA" },
+  Roofing:           { icon: Home,         color: "#94A3B8" },
+  Cleaning:          { icon: Sparkles,     color: "#34D399" },
+  Landscaping:       { icon: Leaf,         color: "#4ADE80" },
+  "Appliance Repair":{ icon: Refrigerator, color: "#818CF8" },
+  Moving:            { icon: Truck,        color: "#FB923C" },
+  General:           { icon: Wrench,       color: "#64748B" },
 };
 
 const CATEGORY_API: Record<string, string> = {
@@ -151,6 +156,9 @@ export default function InstantQuoteSection() {
     const id = setInterval(() => setSpin(s => (s + 1) % POPULAR.length), 2200);
     return () => clearInterval(id);
   }, []);
+
+  const popular     = POPULAR[spin];
+  const PopularIcon = CATEGORY_META[popular.cat].icon;
 
   return (
     <section className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl bg-gray-950 overflow-hidden py-4 sm:py-6">
@@ -232,6 +240,7 @@ export default function InstantQuoteSection() {
               <div className="grid grid-cols-4 gap-1.5">
                 {CATEGORIES.map(c => {
                   const meta   = CATEGORY_META[c];
+                  const CatIcon = meta.icon;
                   const active = category === c;
                   return (
                     <button
@@ -244,7 +253,11 @@ export default function InstantQuoteSection() {
                         borderColor:     active ? `${meta.color}50` : "rgba(255,255,255,0.08)",
                       }}
                     >
-                      <span className="text-xl leading-none">{meta.icon}</span>
+                      <CatIcon
+                        className="w-5 h-5"
+                        strokeWidth={1.75}
+                        style={{ color: active ? meta.color : "rgba(255,255,255,0.65)" }}
+                      />
                       <span className="text-xs font-semibold leading-tight" style={{ color: active ? meta.color : "rgba(255,255,255,0.55)" }}>
                         {c}
                       </span>
@@ -503,15 +516,15 @@ export default function InstantQuoteSection() {
                         transition={{ duration: 0.4, ease: "easeInOut" }}
                         style={{ transformStyle: "preserve-3d" }}
                         onClick={() => {
-                          const { cat, label } = POPULAR[spin];
+                          const { cat, label } = popular;
                           selectCategory(cat);
                           const found = TASKS[cat].find(t => t.label === label || label.startsWith(t.label.split(" ")[0]));
                           if (found) selectTask(found);
                         }}
                         className="w-full text-left flex items-center gap-2 px-3 py-2.5 bg-white/4 border border-white/8 rounded-xl hover:bg-white/8 hover:border-white/15 transition-colors text-sm group"
                       >
-                        <span className="text-base">{POPULAR[spin].icon}</span>
-                        <span className="text-gray-300 font-medium flex-1">{POPULAR[spin].label}</span>
+                        <PopularIcon className="w-4 h-4 text-gray-400" strokeWidth={1.75} />
+                        <span className="text-gray-300 font-medium flex-1">{popular.label}</span>
                         <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-orange-400 transition-colors" />
                       </motion.button>
                     </AnimatePresence>
