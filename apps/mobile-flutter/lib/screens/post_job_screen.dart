@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:geolocator/geolocator.dart';
 import '../theme.dart';
 import '../api.dart';
 import '../service_catalog.dart';
@@ -152,9 +153,30 @@ class _PostJobScreenState extends State<PostJobScreen> {
     return t == null ? d : DateTime(d.year, d.month, d.day, t.hour, t.minute);
   }
 
+  // Coordinates let the backend match pros by distance instead of falling back
+  // to an exact city-name comparison. Best-effort only: never prompt from the
+  // posting flow and never block the post — no coordinates just means the
+  // server uses its city fallback.
+  Future<Position?> _coords() async {
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) return null;
+      final perm = await Geolocator.checkPermission();
+      if (perm != LocationPermission.always &&
+          perm != LocationPermission.whileInUse) {
+        return null;
+      }
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.medium),
+      ).timeout(const Duration(seconds: 4));
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _submit() async {
     setState(() => _submitting = true);
     try {
+      final pos = _isDirected ? null : await _coords();
       final res = _isDirected
           // Directed booking — request goes to one specific pro.
           ? await Api.post('/bookings', {
@@ -176,6 +198,10 @@ class _PostJobScreenState extends State<PostJobScreen> {
               'scheduledAt': _scheduledAt().toIso8601String(),
               'address': _addressLine(),
               'city': _city.text.trim(),
+              if (pos != null) ...{
+                'latitude': pos.latitude,
+                'longitude': pos.longitude,
+              },
               // Persist the AI's service price as the budget (fee-able, no
               // materials) + materials separately (pass-through, no fee).
               if (_estimate?['price'] != null || _estimate?['min'] != null) ...{
