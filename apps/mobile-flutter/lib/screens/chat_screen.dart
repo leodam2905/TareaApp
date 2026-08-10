@@ -88,7 +88,16 @@ class _ChatScreenState extends State<ChatScreen> {
           child: _loading
               ? const Center(child: CircularProgressIndicator())
               : _messages.isEmpty
-                  ? Center(child: Text('chat.noMessages'.tr(), style: const TextStyle(color: C.muted)))
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.waving_hand_outlined, size: 32, color: C.muted),
+                          const SizedBox(height: 10),
+                          Text('chat.noMessages'.tr(), style: const TextStyle(color: C.muted)),
+                        ],
+                      ),
+                    )
                   : ListView.builder(
                       controller: _scroll,
                       padding: const EdgeInsets.all(16),

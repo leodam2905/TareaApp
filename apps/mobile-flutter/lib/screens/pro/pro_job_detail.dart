@@ -260,7 +260,11 @@ class _ProJobDetailState extends State<ProJobDetail> {
               gradient: const LinearGradient(colors: [C.blue, Color(0xFF7C3AED)], begin: Alignment.topLeft, end: Alignment.bottomRight),
               borderRadius: BorderRadius.circular(16)),
             child: Column(children: [
-              Text('jobDetail.timerLabel'.tr(), style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: 1)),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                const Icon(Icons.timer_outlined, size: 14, color: Colors.white70),
+                const SizedBox(width: 6),
+                Text('jobDetail.timerLabel'.tr(), style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: 1)),
+              ]),
               const SizedBox(height: 8),
               Text(_fmtTime(_elapsed), style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w900, letterSpacing: 2)),
               const SizedBox(height: 4),
@@ -306,7 +310,11 @@ class _ProJobDetailState extends State<ProJobDetail> {
             const SizedBox(height: 10),
             ...extensions.map(_extRow),
             if (_active && pendingExt)
-              Padding(padding: const EdgeInsets.only(top: 8), child: Text('jobDetail.requestPending'.tr(), style: const TextStyle(color: C.muted, fontSize: 13))),
+              Padding(padding: const EdgeInsets.only(top: 8), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Icon(Icons.hourglass_empty, size: 15, color: C.muted),
+                const SizedBox(width: 6),
+                Expanded(child: Text('jobDetail.requestPending'.tr(), style: const TextStyle(color: C.muted, fontSize: 13))),
+              ])),
             if (_active && !pendingExt) ...[
               const SizedBox(height: 8),
               _showExt ? _extForm() : OutlinedButton(
@@ -329,16 +337,23 @@ class _ProJobDetailState extends State<ProJobDetail> {
           ]),
         if (_status == 'ACCEPTED') ...[
           if (_b['isOnMyWay'] != true)
-            FilledButton(style: FilledButton.styleFrom(backgroundColor: const Color(0xFF7C3AED), minimumSize: const Size.fromHeight(50)),
-              onPressed: _busy ? null : _onMyWay, child: Text('jobDetail.onMyWay'.tr(), style: const TextStyle(fontWeight: FontWeight.w800)))
+            FilledButton.icon(style: FilledButton.styleFrom(backgroundColor: const Color(0xFF7C3AED), minimumSize: const Size.fromHeight(50)),
+              onPressed: _busy ? null : _onMyWay,
+              icon: const Icon(Icons.directions_car_outlined, size: 20),
+              label: Text('jobDetail.onMyWay'.tr(), style: const TextStyle(fontWeight: FontWeight.w800)))
           else
-            Container(width: double.infinity, padding: const EdgeInsets.all(14), alignment: Alignment.center,
+            Container(width: double.infinity, padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(color: const Color(0xFFF5F3FF), borderRadius: BorderRadius.circular(12)),
-              child: Text('jobDetail.sharingLocation'.tr(), textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF7C3AED), fontWeight: FontWeight.w700))),
+              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                const Icon(Icons.location_on_outlined, size: 18, color: Color(0xFF7C3AED)),
+                const SizedBox(width: 8),
+                Flexible(child: Text('jobDetail.sharingLocation'.tr(), textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF7C3AED), fontWeight: FontWeight.w700))),
+              ])),
           const SizedBox(height: 10),
-          FilledButton(style: FilledButton.styleFrom(backgroundColor: C.blue, minimumSize: const Size.fromHeight(50)),
+          FilledButton.icon(style: FilledButton.styleFrom(backgroundColor: C.blue, minimumSize: const Size.fromHeight(50)),
             onPressed: _busy ? null : () => _confirmStatus('jobDetail.startJobTitle'.tr(), 'jobDetail.startJobMsg'.tr(), 'IN_PROGRESS'),
-            child: Text('jobDetail.startJobBtn'.tr(), style: const TextStyle(fontWeight: FontWeight.w800))),
+            icon: const Icon(Icons.play_arrow, size: 20),
+            label: Text('jobDetail.startJobBtn'.tr(), style: const TextStyle(fontWeight: FontWeight.w800))),
         ],
         if (_status == 'IN_PROGRESS')
           _b['workDoneAt'] != null
@@ -374,7 +389,13 @@ class _ProJobDetailState extends State<ProJobDetail> {
               const SizedBox(height: 6),
               Text('jobDetail.earnings'.tr(args: ['\$${(price * 0.9).toStringAsFixed(2)}']), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
               if (_b['review'] != null)
-                Padding(padding: const EdgeInsets.only(top: 6), child: Text('jobDetail.customerRated'.tr(args: ['★' * ((_b['review']['rating'] ?? 0) as int)]), style: const TextStyle(color: Color(0xFFF59E0B)))),
+                Padding(padding: const EdgeInsets.only(top: 6), child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Text('jobDetail.customerRated'.tr(), style: const TextStyle(color: Color(0xFFF59E0B))),
+                  const SizedBox(width: 6),
+                  ...List.generate(5, (i) => Icon(
+                    i < ((_b['review']['rating'] ?? 0) as int) ? Icons.star : Icons.star_border,
+                    size: 16, color: const Color(0xFFF59E0B))),
+                ])),
             ]),
           ),
         const SizedBox(height: 20),

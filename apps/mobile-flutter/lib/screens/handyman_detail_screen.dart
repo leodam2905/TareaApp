@@ -192,7 +192,11 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
         ),
         GestureDetector(
           onTap: () => _book(service: sv is Map ? sv : null),
-          child: Text('handymanDetail.book'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Text('handymanDetail.book'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+            const SizedBox(width: 4),
+            const Icon(Icons.arrow_forward, size: 16, color: C.blue),
+          ]),
         ),
       ]),
     );
@@ -210,7 +214,9 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
         Row(children: [
           Text(author, style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink)),
           const Spacer(),
-          Text('★' * rating.round() + '☆' * (5 - rating.round()), style: const TextStyle(color: Color(0xFFF59E0B))),
+          Row(mainAxisSize: MainAxisSize.min, children: List.generate(5, (i) => Icon(
+            i < rating.round() ? Icons.star : Icons.star_border,
+            size: 15, color: const Color(0xFFF59E0B)))),
         ]),
         if (comment.isNotEmpty) ...[
           const SizedBox(height: 6),

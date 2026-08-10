@@ -305,7 +305,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
               _row('booking.total'.tr(), '\$${price.toStringAsFixed(2)}', highlight: true),
               if (!isPaid) ...[
                 const SizedBox(height: 6),
-                Text('booking.paymentPending'.tr(), style: const TextStyle(color: C.amber, fontSize: 13, fontWeight: FontWeight.w600)),
+                Row(children: [
+                  const Icon(Icons.credit_card, size: 16, color: C.amber),
+                  const SizedBox(width: 6),
+                  Expanded(child: Text('booking.paymentPending'.tr(), style: const TextStyle(color: C.amber, fontSize: 13, fontWeight: FontWeight.w600))),
+                ]),
                 // Payment only opens once the pro has accepted — the checkout
                 // endpoint rejects anything else.
                 if (status == 'ACCEPTED') ...[
@@ -324,7 +328,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
               width: double.infinity, padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(color: const Color(0xFFF5F3FF), borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFDDD6FE))),
               child: Row(children: [
-                const Text('🚗', style: TextStyle(fontSize: 20)), const SizedBox(width: 10),
+                const Icon(Icons.directions_car_outlined, size: 20, color: Color(0xFF7C3AED)), const SizedBox(width: 10),
                 Expanded(child: Text('booking.onTheWay'.tr(), style: const TextStyle(color: Color(0xFF7C3AED), fontWeight: FontWeight.w800))),
               ]),
             ),

@@ -147,7 +147,10 @@ class _ProPayoutMethodsState extends State<ProPayoutMethods> {
                 icon: const Icon(Icons.credit_card, size: 18, color: C.blue),
                 label: Text('payout.addCard'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
               const SizedBox(height: 10),
-              TextButton(onPressed: _connectStripe, child: Text('payout.manageStripe'.tr(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w700))),
+              TextButton.icon(onPressed: _connectStripe,
+                iconAlignment: IconAlignment.end,
+                icon: const Icon(Icons.arrow_forward, size: 16, color: C.muted),
+                label: Text('payout.manageStripe'.tr(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w700))),
               const SizedBox(height: 24),
               Center(
                 child: Image.asset(

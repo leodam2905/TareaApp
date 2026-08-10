@@ -209,7 +209,11 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(color: (guaranteed ? C.green : C.amber).withValues(alpha: 0.14), borderRadius: BorderRadius.circular(20)),
-          child: Text(guaranteed ? 'instantQuote.guaranteed'.tr() : 'instantQuote.estimate'.tr(), style: TextStyle(color: guaranteed ? C.green : C.amber, fontWeight: FontWeight.w800)),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Icon(guaranteed ? Icons.verified_outlined : Icons.info_outline, size: 15, color: guaranteed ? C.green : C.amber),
+            const SizedBox(width: 5),
+            Text(guaranteed ? 'instantQuote.guaranteed'.tr() : 'instantQuote.estimate'.tr(), style: TextStyle(color: guaranteed ? C.green : C.amber, fontWeight: FontWeight.w800)),
+          ]),
         ),
         const SizedBox(height: 14),
         Text('\$${(q['minPrice'] as num?)?.round()}–${(q['maxPrice'] as num?)?.round()}',
@@ -237,7 +241,11 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(color: const Color(0x14F97316), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0x33F97316))),
-            child: Text('📋  $note', style: const TextStyle(color: Color(0xFFB45309), fontSize: 13, height: 1.5)),
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Icon(Icons.assignment_outlined, size: 16, color: Color(0xFFB45309)),
+              const SizedBox(width: 8),
+              Expanded(child: Text(note, style: const TextStyle(color: Color(0xFFB45309), fontSize: 13, height: 1.5))),
+            ]),
           ),
         ],
         const SizedBox(height: 18),
@@ -247,7 +255,11 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
             style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
             onPressed: () => context.push('/post-job'),
-            child: Text('instantQuote.postThisJobArrow'.tr(), textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Flexible(child: Text('instantQuote.postThisJobArrow'.tr(), textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white))),
+              const SizedBox(width: 8),
+              const Icon(Icons.arrow_forward, size: 20, color: Colors.white),
+            ]),
           ),
         ),
         const SizedBox(height: 8),

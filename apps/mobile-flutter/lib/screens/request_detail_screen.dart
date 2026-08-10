@@ -226,7 +226,11 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
               Text('  ${'requests.jobsCount'.tr(args: ['$jobs'])}', style: const TextStyle(color: C.muted, fontSize: 12)),
             ]),
           ])),
-          if (accepted) Text('requests.hired'.tr(), style: const TextStyle(color: Color(0xFF16A34A), fontWeight: FontWeight.w800, fontSize: 12)),
+          if (accepted) Row(mainAxisSize: MainAxisSize.min, children: [
+            const Icon(Icons.check, size: 14, color: Color(0xFF16A34A)),
+            const SizedBox(width: 3),
+            Text('requests.hired'.tr(), style: const TextStyle(color: Color(0xFF16A34A), fontWeight: FontWeight.w800, fontSize: 12)),
+          ]),
           if (rejected) Text('requests.declined'.tr(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w700, fontSize: 12)),
         ]),
         if ((hp['bio'] ?? '') != '') ...[

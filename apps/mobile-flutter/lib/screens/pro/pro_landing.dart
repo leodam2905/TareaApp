@@ -86,7 +86,15 @@ class ProLanding extends StatelessWidget {
                 child: FilledButton(
                   style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(vertical: 18), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
                   onPressed: () => context.go('/register'),
-                  child: Text('pro.joinCta'.tr(), textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(child: Text('pro.joinCta'.tr(), textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white))),
+                      const SizedBox(width: 8),
+                      // arrow_forward mirrors itself in RTL (matchTextDirection).
+                      const Icon(Icons.arrow_forward, size: 20, color: Colors.white),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 12),

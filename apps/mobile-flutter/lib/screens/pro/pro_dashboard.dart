@@ -380,7 +380,7 @@ class _ProDashboardState extends State<ProDashboard> {
   }
 }
 
-/// A 👋 emoji that gently waves (tilts back and forth), pivoting at the wrist.
+/// A waving-hand icon that gently waves (tilts back and forth), pivoting at the wrist.
 class WavingHand extends StatefulWidget {
   const WavingHand({super.key});
   @override
@@ -404,7 +404,7 @@ class _WavingHandState extends State<WavingHand> with SingleTickerProviderStateM
       builder: (_, __) => Transform.rotate(
         angle: (_c.value - 0.5) * 0.5, // ~ -0.25 to +0.25 rad
         alignment: Alignment.bottomCenter,
-        child: const Text('👋', style: TextStyle(fontSize: 22)),
+        child: const Icon(Icons.waving_hand, size: 22, color: Color(0xFFF59E0B)),
       ),
     );
   }
