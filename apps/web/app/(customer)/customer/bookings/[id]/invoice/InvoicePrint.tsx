@@ -3,6 +3,7 @@
 import { Printer, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
+import Logo from "@/components/ui/Logo";
 
 type Booking = {
   id: string;
@@ -72,7 +73,7 @@ export default function InvoicePrint({
           {/* Header */}
           <div className="flex items-start justify-between mb-10">
             <div>
-              <p className="text-3xl font-extrabold tracking-tight text-gray-900">Tarea</p>
+              <Logo size={44} />
               <p className="text-sm text-gray-500 mt-0.5">taptarea.com</p>
             </div>
             <div className="text-right">

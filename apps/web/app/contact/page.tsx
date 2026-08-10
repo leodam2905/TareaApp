@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Wrench, Mail, MessageSquare, Clock, CheckCircle2, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { Mail, MessageSquare, Clock, CheckCircle2, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import toast from "react-hot-toast";
+import Logo from "@/components/ui/Logo";
 
 const FAQS = [
   {
@@ -87,10 +88,7 @@ export default function ContactPage() {
       <header className="border-b border-white/8 px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-hero-gradient rounded-xl flex items-center justify-center">
-              <Wrench className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-white">Tarea</span>
+            <Logo size={32} light />
           </Link>
           <div className="flex items-center gap-4 text-sm">
             <Link href="/login" className="text-slate-400 hover:text-white transition-colors">Sign in</Link>

@@ -268,7 +268,7 @@ function RegisterForm() {
             ))}
           </div>
         </div>
-        <p className="text-blue-300 text-sm">© 2026 Tarea. All rights reserved.</p>
+        <p className="text-blue-300 text-sm">© 2026 <span className="logo-script">Tarea</span>. All rights reserved.</p>
       </div>
 
       {/* Right panel */}

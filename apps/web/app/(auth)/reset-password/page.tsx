@@ -3,8 +3,9 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Wrench, Eye, EyeOff, Loader2, CheckCircle2, KeyRound } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckCircle2, KeyRound } from "lucide-react";
 import toast from "react-hot-toast";
+import Logo from "@/components/ui/Logo";
 
 function ResetForm() {
   const router = useRouter();
@@ -122,25 +123,17 @@ export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen bg-tarea-surface flex">
       <div className="hidden lg:flex lg:w-1/2 bg-hero-gradient flex-col justify-between p-12">
-        <div className="flex items-center gap-2">
-          <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
-            <Wrench className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-2xl font-bold text-white">Tarea</span>
-        </div>
+        <Logo size={40} light />
         <div className="space-y-4">
           <h2 className="text-4xl font-extrabold text-white leading-tight">Almost there</h2>
           <p className="text-blue-100 text-lg">Set your new password and you're back in.</p>
         </div>
-        <p className="text-blue-300 text-sm">© 2026 Tarea. All rights reserved.</p>
+        <p className="text-blue-300 text-sm">© 2026 <span className="logo-script">Tarea</span>. All rights reserved.</p>
       </div>
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
-          <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-9 h-9 bg-hero-gradient rounded-xl flex items-center justify-center">
-              <Wrench className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-tarea-dark">Tarea</span>
+          <div className="lg:hidden mb-8">
+            <Logo size={40} />
           </div>
           <Suspense><ResetForm /></Suspense>
         </div>
