@@ -711,11 +711,12 @@ export default function HomePage() {
       {/* ── CTA ── */}
       <section className="relative mx-4 sm:mx-6 lg:mx-auto max-w-7xl my-8 rounded-3xl overflow-hidden py-24">
         <div className="absolute inset-0 bg-gradient-to-br from-[#7C2D12] via-[#9A3412] to-[#7C2D12]" />
-        <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(ellipse at 50% 50%, rgba(251,146,60,0.25) 0%, transparent 65%)" }} />
+        <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(ellipse at 50% 50%, rgba(255,106,0,0.3) 0%, transparent 65%)" }} />
         <motion.div
           animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-orange-500/15 blur-3xl"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl"
+          style={{ backgroundColor: "rgba(255,106,0,0.18)" }}
         />
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -725,7 +726,13 @@ export default function HomePage() {
         >
           <h2 className="text-6xl font-extrabold text-white mb-5 leading-tight">
             Ready to Get<br />
-            <span className="text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(135deg, #FDBA74, #FB923C)" }}>
+            <span
+              className="text-transparent bg-clip-text"
+              style={{
+                backgroundImage: "linear-gradient(135deg, #FFB020, #FF6A00)",
+                filter: "drop-shadow(0 0 18px rgba(255,106,0,0.75)) drop-shadow(0 0 48px rgba(255,106,0,0.45))",
+              }}
+            >
               Things Fixed?
             </span>
           </h2>
