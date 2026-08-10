@@ -51,7 +51,7 @@ class PushService {
   // Handle a foreground push (from FlutterFire on Android, or the native
   // AppDelegate bridge on iOS). Rings full-screen if the pro is Online, else
   // shows a normal local notification (chime).
-  static void _handleForeground(Map<String, dynamic> data) {
+  static Future<void> _handleForeground(Map<String, dynamic> data) async {
     final job = _isJobRequest(data);
     final title = (data['title'] ?? '').toString().isEmpty
         ? 'New Job Request'
@@ -63,28 +63,42 @@ class PushService {
       return;
     }
 
+    // A fresh id per notification so alerts stack. This used to be
+    // title.hashCode, which is constant for a repeated title ("Job posted ✅"),
+    // so every new alert silently replaced the previous one.
+    final id = DateTime.now().millisecondsSinceEpoch.remainder(1 << 31);
+    final payload = jsonEncode(data);
+
+    try {
+      await _local.show(id, title, body, _details(job), payload: payload);
+    } catch (_) {
+      // The job channel carries a custom sound, and resolving it can fail (a
+      // release build that shrank away res/raw/job_ring, say). Losing the tone
+      // is acceptable; losing the notification is not — retry on the plain
+      // channel so something always reaches the user.
+      try {
+        await _local.show(id, title, body, _details(false), payload: payload);
+      } catch (_) {}
+    }
+  }
+
+  static NotificationDetails _details(bool job) {
     final ch = job ? _jobChannel : _channel;
-    _local.show(
-      title.hashCode,
-      title,
-      body,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          ch.id, ch.name,
-          channelDescription: ch.description,
-          importance: job ? Importance.max : Importance.high,
-          priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
-          sound: job ? const RawResourceAndroidNotificationSound('job_ring') : null,
-        ),
-        iOS: DarwinNotificationDetails(
-          sound: job ? 'job_ring.caf' : null,
-          presentAlert: true,
-          presentBanner: true,
-          presentSound: true,
-        ),
+    return NotificationDetails(
+      android: AndroidNotificationDetails(
+        ch.id, ch.name,
+        channelDescription: ch.description,
+        importance: job ? Importance.max : Importance.high,
+        priority: Priority.high,
+        icon: '@mipmap/ic_launcher',
+        sound: job ? const RawResourceAndroidNotificationSound('job_ring') : null,
       ),
-      payload: jsonEncode(data),
+      iOS: DarwinNotificationDetails(
+        sound: job ? 'job_ring.caf' : null,
+        presentAlert: true,
+        presentBanner: true,
+        presentSound: true,
+      ),
     );
   }
 
@@ -145,7 +159,12 @@ class PushService {
     final android = _local
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
     await android?.createNotificationChannel(_channel);
-    await android?.createNotificationChannel(_jobChannel);
+    // Isolated: the job channel references a custom sound, so it's the one that
+    // can fail. It must not take the default channel — or push registration,
+    // which initFirebase's catch would disable wholesale — down with it.
+    try {
+      await android?.createNotificationChannel(_jobChannel);
+    } catch (_) {}
   }
 
   // Route a notification tap to a sensible screen based on its data payload.
@@ -178,13 +197,16 @@ class PushService {
           if (apns == null) await Future.delayed(const Duration(seconds: 1));
         }
       }
+      // Report the platform so device_tokens can tell iOS from Android — the
+      // server otherwise files every Flutter device under a flat "fcm".
+      final platform = Platform.isIOS ? 'ios' : 'android';
       final token = await fm.getToken();
       if (token != null) {
-        await Api.post('/push-token', {'token': token});
+        await Api.post('/push-token', {'token': token, 'platform': platform});
       }
       fm.onTokenRefresh.listen((t) async {
         if (await Api.token() != null) {
-          await Api.post('/push-token', {'token': t});
+          await Api.post('/push-token', {'token': t, 'platform': platform});
         }
       });
     } catch (_) {}

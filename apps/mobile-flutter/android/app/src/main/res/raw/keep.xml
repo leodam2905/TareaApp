@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  job_ring is referenced only by name at runtime — RawResourceAndroidNotificationSound
+  ('job_ring') resolves through getIdentifier(), which R8's resource shrinker cannot
+  see. Without this the shrinker strips it from every release build (debug builds
+  don't shrink, so it only ever broke in shipped APKs/AABs): the notification channel
+  can't resolve its sound, flutter_local_notifications throws, and foreground job
+  notifications vanish silently.
+-->
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@raw/job_ring" />
