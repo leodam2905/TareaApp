@@ -132,13 +132,23 @@ export async function POST(req: NextRequest) {
 
   // Match by distance (catches pros in nearby towns, not just an exact city-name
   // match). Fall back to city only when coordinates are missing on either side.
+  //
+  // A pro is excluded only on positive evidence they're out of range. Missing
+  // coordinates or a blank city are gaps in our own data, not a signal the pro
+  // is far away — treating them as a mismatch meant an open job could notify
+  // nobody at all while still appearing in every pro's Find Jobs list (GET
+  // applies no location filter), which is how this stayed invisible.
+  const norm = (s?: string | null) => (s ?? "").trim().toLowerCase();
+  const jobCity = norm(city);
   const jLat = jobRequest.latitude, jLng = jobRequest.longitude;
   const nearby = handymen.filter(h => {
     const u = h.user;
     if (jLat != null && jLng != null && u.latitude != null && u.longitude != null) {
       return haversine(jLat, jLng, u.latitude, u.longitude) <= RADIUS_KM;
     }
-    return u.city?.toLowerCase() === city.toLowerCase();
+    const proCity = norm(u.city);
+    if (!proCity || !jobCity) return true;
+    return proCity === jobCity;
   });
 
   if (nearby.length > 0) {
