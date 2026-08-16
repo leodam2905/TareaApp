@@ -140,12 +140,22 @@ export async function GET(req: NextRequest) {
 
   if (here) {
     located.sort((a, b) => {
+      // Whether we know where a pro is outranks everything else, including
+      // premium placement: a customer asked to see who is near them, and a pro
+      // of unknown location cannot answer that question at any price. Pros with
+      // coordinates fill the top of the list, those without sit below.
+      const aKnown = a.distanceKm !== null;
+      const bKnown = b.distanceKm !== null;
+      if (aKnown !== bKnown) return aKnown ? -1 : 1;
+
+      // Within each group the previous order still holds: paid placement first,
+      // then proximity, then rating.
       const premium = Number(b.handymanProfile?.isPremium ?? false) - Number(a.handymanProfile?.isPremium ?? false);
       if (premium !== 0) return premium;
-      // Unknown distance sorts after everything known, rather than to the top.
-      const ad = a.distanceKm ?? Number.POSITIVE_INFINITY;
-      const bd = b.distanceKm ?? Number.POSITIVE_INFINITY;
-      if (ad !== bd) return ad - bd;
+      if (aKnown) {
+        const d = (a.distanceKm as number) - (b.distanceKm as number);
+        if (d !== 0) return d;
+      }
       return (b.handymanProfile?.rating ?? 0) - (a.handymanProfile?.rating ?? 0);
     });
   }
