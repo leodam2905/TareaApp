@@ -21,25 +21,35 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 // had pros never learning a job existed. Push and email stay primary; this is
 // the floor under them.
 //
+// NB the codebase reuses a small set of generic types for many distinct
+// events, so this list reads shorter than the coverage it gives. What each one
+// actually carries today:
+//
+//   booking_request   — a customer books, AND a pro applies to a job
+//   booking_accepted  — a pro is hired, AND "I'm on my way" (bookings/[id]/location)
+//   booking_cancelled — either party cancels
+//   job_completed     — the pro marks the work done
+//
+// Types like `job_application`, `application_accepted`, `booking_completed`,
+// `message` and `review` appear in ctaForType but are never emitted by any
+// call site — listing them here would look like coverage while doing nothing.
+//
 // Deliberately NOT included: `payout` (platform to pro, not an interaction
-// with a customer) and `booking_reminder` (system-generated, and a reminder
-// that arrives as a text at an awkward hour reads as spam rather than help).
+// with a customer), `booking_reminder` (system-generated; a text at an awkward
+// hour reads as spam), and chat, which creates no notification at all and
+// stays inside the app once a customer has hired a pro.
 const SMS_TYPES = new Set([
-  "booking_request",      // customer books -> pro
-  "booking_accepted",     // pro accepts -> customer
-  "booking_cancelled",    // either party cancels -> the other
-  "booking_completed",    // pro marks done -> customer
-  "job_application",      // pro applies -> customer
-  "application_accepted", // customer selects a pro -> pro
-  "message",              // chat, either direction
-  "review",               // customer reviews -> pro
+  "booking_request",
+  "booking_accepted",
+  "booking_cancelled",
+  "job_completed",
 ]);
 
 /// SMS has no buttons, so a text without a link is a dead end — the recipient
 /// knows something happened and has no way to act on it. It also bills per
 /// 160-character segment, so the body is trimmed to keep the common case to
 /// one segment rather than silently costing three.
-function smsBody(title: string, body: string, url: string): string {
+export function smsBody(title: string, body: string, url: string): string {
   const tail = ` ${url}`;
   const room = 160 - "Tarea: ".length - tail.length;
   let text = `${title} — ${body}`.replace(/\s+/g, " ").trim();

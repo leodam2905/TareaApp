@@ -87,7 +87,7 @@ model User {
   notifBookingUpdates Boolean @default(true)
   notifReminders      Boolean @default(true)
   notifMessages       Boolean @default(true)
-  notifSms            Boolean @default(false)
+  notifSms            Boolean @default(true)
   referralCode        String? @unique
   referredBy          String?
   createdAt    DateTime @default(now())
@@ -126,6 +126,51 @@ model DeviceToken {
   @@map("device_tokens")
 }
 
+// One record per push send attempt, per device.
+//
+// sendFcm() previously discarded FCM's response and logged only failures, so the
+// only trace of a send was the notifications row written next to it. That made
+// "never sent" and "sent but the device swallowed it" indistinguishable without
+// re-running live tests against a real phone.
+//
+// `accepted_by_fcm` is NOT delivery. FCM returning a message name means it
+// accepted the message; a device with notifications disabled returns success
+// identically. Device receipt, if ever added, is a separate signal acknowledged
+// by the app — never inferred from this table.
+model FcmOutbox {
+  id             String    @id @default(cuid())
+  notificationId String?   @map("notification_id")
+  userId         String    @map("user_id")
+  purpose        String
+
+  // The raw token is not duplicated here — device_tokens holds it, and a token
+  // is a credential-shaped value. The hash correlates a send to a device
+  // without widening exposure.
+  deviceTokenId  String?   @map("device_token_id")
+  tokenHash      String    @map("token_hash")
+  platform       String?
+
+  // Idempotency: one row per (purpose, notification, device). A retry cannot
+  // produce a second push. Enforced by the unique index, not by convention.
+  dedupeKey      String    @unique(map: "fcm_outbox_dedupe_uidx") @map("dedupe_key")
+
+  status         String    @default("queued") // queued | accepted_by_fcm | invalid_token | error
+  attemptCount   Int       @default(0) @map("attempt_count")
+  lastAttemptAt  DateTime? @map("last_attempt_at")
+  nextAttemptAt  DateTime? @map("next_attempt_at")
+
+  fcmMessageName String?   @map("fcm_message_name") // provider ack; not delivery
+  errorCode      String?   @map("error_code")       // sanitized provider code only
+
+  createdAt      DateTime  @default(now())  @map("created_at")
+  updatedAt      DateTime  @updatedAt       @map("updated_at")
+
+  @@index([status, nextAttemptAt], map: "fcm_outbox_retry_idx")
+  @@index([notificationId], map: "fcm_outbox_notification_idx")
+  @@index([userId, createdAt], map: "fcm_outbox_user_created_idx")
+  @@map("fcm_outbox")
+}
+
 model OtpCode {
   id        String   @id @default(cuid())
   userId    String
@@ -149,7 +194,15 @@ model HandymanProfile {
   totalJobs       Int      @default(0)
   totalEarnings   Float    @default(0)
   responseTime    Int      @default(60)
-  serviceRadius   Int      @default(50)
+  serviceRadius   Int      @default(50) // MILES the pro will travel; drives eligibility
+
+  // Server-derived service centre, geocoded from the pro's address. Paired with
+  // serviceRadius above to decide eligibility. Unsupported() because Prisma has
+  // no geography type — queried via $queryRaw against the GiST index.
+  servicePoint      Unsupported("geography(Point, 4326)")? @map("service_point")
+  geocodeConfidence Float?    @map("geocode_confidence")
+  geocodeSource     String?   @map("geocode_source")
+  geocodedAt        DateTime? @map("geocoded_at")
   isPremium             Boolean  @default(false)
   stripeSubId           String?
   stripeSubStatus       String?
@@ -332,6 +385,8 @@ model JobRequest {
   description String
   address     String
   city        String
+  // Client-supplied and UNTRUSTED. Retained for display only; never used for
+  // eligibility. Geographic matching reads servicePoint, which the server derives.
   latitude    Float?
   longitude   Float?
   scheduledAt DateTime
@@ -339,7 +394,19 @@ model JobRequest {
   budgetMax   Float
   materialsCost Float         @default(0) // furniture/materials the customer buys; excluded from the $500 labor gate
   urgency     String          @default("STANDARD") // STANDARD, SOON, URGENT
-  status      String          @default("OPEN") // OPEN, ASSIGNED, CLOSED
+  // DRAFT = geocoding failed or was low confidence; not published, not matchable.
+  // Every read path either filters status="OPEN" or rejects non-OPEN, so a DRAFT
+  // job is inert: invisible to pros and unappliable.
+  status      String          @default("OPEN") // DRAFT, OPEN, ASSIGNED, CLOSED
+
+  // Server-derived location. Written only from a server-side geocode of `address`
+  // — never from client input. Unsupported() because Prisma has no geography
+  // type: queried via $queryRaw so ST_DWithin can use the GiST index.
+  servicePoint      Unsupported("geography(Point, 4326)")? @map("service_point")
+  geocodeConfidence Float?    @map("geocode_confidence")
+  geocodeSource     String?   @map("geocode_source")
+  geocodeError      String?   @map("geocode_error")
+  geocodedAt        DateTime? @map("geocoded_at")
   imageUrls   String[]        @default([])
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
