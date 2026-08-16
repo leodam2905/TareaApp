@@ -4,7 +4,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
 import { sendPushToUser } from "@/lib/push";
 import { sendSms } from "@/lib/sms";
-import { smsBody } from "@/lib/notify";
+import { smsBody, createNotification } from "@/lib/notify";
+import { geocodeAddress } from "@/lib/geo/geocode";
 
 const RADIUS_KM = 50 * 1.60934;
 
@@ -59,7 +60,12 @@ export async function GET() {
   const requests = await prisma.jobRequest.findMany({
     where: {
       status: "OPEN",
-      ...(myCategories.length > 0 ? { category: { in: myCategories as never[] } } : {}),
+      // GENERAL is included for every pro, matching the notification fan-out.
+      // If these two disagreed a pro would get the push and then find nothing
+      // in the list, which is worse than not being told at all.
+      ...(myCategories.length > 0
+          ? { category: { in: myCategories.concat("GENERAL" as never).filter((c, n, a) => a.indexOf(c) === n) as never[] } }
+        : {}),
       applications: { none: { handymanId: profile.id } },
     },
     include: {
@@ -102,6 +108,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "All fields are required" }, { status: 400 });
   }
 
+  // Geocode what the customer actually typed.
+  //
+  // The app sends the PHONE's position, and only when location permission was
+  // granted — so a job posted from the sofa for a house across town was located
+  // at the sofa, and one posted with permission denied had no position at all.
+  // The address is the job's location; the phone is not. Client coordinates are
+  // kept only as a fallback for when geocoding cannot resolve the address.
+  let geoLat: number | undefined = latitude ? parseFloat(latitude) : undefined;
+  let geoLng: number | undefined = longitude ? parseFloat(longitude) : undefined;
+
+  const geo = await geocodeAddress(`${address}, ${city}`, { country: "US" });
+  if (geo.coords) {
+    geoLat = geo.coords.lat;
+    geoLng = geo.coords.lng;
+  }
+
   const jobRequest = await prisma.jobRequest.create({
     data: {
       customerId: user.id,
@@ -110,8 +132,8 @@ export async function POST(req: NextRequest) {
       description,
       address,
       city,
-      latitude:  latitude  ? parseFloat(latitude)  : undefined,
-      longitude: longitude ? parseFloat(longitude) : undefined,
+      latitude:  geoLat,
+      longitude: geoLng,
       scheduledAt: new Date(scheduledAt),
       budgetMin: budgetMin ? parseFloat(budgetMin) : 0,
       budgetMax: budgetMax ? parseFloat(budgetMax) : 0,
@@ -127,7 +149,14 @@ export async function POST(req: NextRequest) {
       isAvailable: true,
       backgroundCheckStatus: "PASSED",
       user: { avatarUrl: { not: null } },
-      services: { some: { category: category as never, isActive: true } },
+      // GENERAL is the AI's catch-all: anything it cannot place lands there.
+      // Few pros register for it, so those jobs reached nobody at all — no
+      // push, no SMS, and no row in Find Jobs, in complete silence. A GENERAL
+      // job therefore goes to every otherwise-eligible pro; specific
+      // categories still match exactly.
+      ...(category === "GENERAL"
+        ? {}
+        : { services: { some: { category: category as never, isActive: true } } }),
     },
     include: { user: { select: { id: true, city: true, email: true, name: true, expoPushToken: true, fcmToken: true, latitude: true, longitude: true, phone: true, notifSms: true } } },
   });
@@ -226,6 +255,35 @@ export async function POST(req: NextRequest) {
         { label: "View Job & Apply", url: jobUrl }
       ),
     ])));
+  }
+
+  // A job nobody can see is the marketplace's worst failure, and it used to
+  // happen in silence: the block above is skipped, and the customer is still
+  // told their request is live. Record it and tell the admins, so a hole in
+  // coverage is something somebody knows about.
+  if (nearby.length === 0) {
+    const admins = await prisma.user.findMany({ where: { role: "ADMIN" }, select: { id: true } });
+    await Promise.allSettled(
+      admins.map((a) =>
+        createNotification({
+          userId: a.id,
+          title: "Job reached no pros",
+          body: `"${title}" (${category}) in ${city} matched no available pro. The customer has not been told.`,
+          type: "booking_cancelled",
+          refId: jobRequest.id,
+        }),
+      ),
+    );
+    console.warn(
+      JSON.stringify({
+        level: "warn",
+        msg: "job_reached_no_pros",
+        jobId: jobRequest.id,
+        category,
+        city,
+        geocoded: geo.decision.outcome,
+      }),
+    );
   }
 
   // Confirmation to the customer on their own device.
