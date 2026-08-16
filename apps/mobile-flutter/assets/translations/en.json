@@ -19,7 +19,8 @@
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy",
     "connectionError": "Could not connect. Check your internet connection.",
-    "connectionRetry": "Could not connect. Try again."
+    "connectionRetry": "Could not connect. Try again.",
+    "saving": "Saving…"
   },
   "nav": {
     "home": "Home",
@@ -704,5 +705,42 @@
   "call": {
     "unavailable": "Calling isn't available right now. Try the chat instead.",
     "addPhone": "Add a phone number in your profile to place calls."
+  },
+  "proSetup": {
+    "title": "Finish setting up",
+    "allDone": "You're all set — you can be booked.",
+    "remaining": "{} step(s) left before customers can book you.",
+    "awaitingReview": "Submitted — awaiting review",
+    "profile": "Your profile",
+    "profileDesc": "Photo, bio and ID",
+    "services": "Services you offer",
+    "servicesDesc": "Pick your trades and prices",
+    "availability": "Weekly availability",
+    "availabilityDesc": "The hours you can work",
+    "backgroundCheck": "Background check",
+    "backgroundCheckDesc": "Required before you can be booked",
+    "payouts": "Payouts",
+    "payoutsDesc": "Where you get paid",
+    "agreement": "Contractor agreement",
+    "agreementDesc": "Sign to start accepting jobs"
+  },
+  "proAvailability": {
+    "title": "Weekly availability",
+    "subtitle": "Set the hours you can work. Customers only see you for jobs inside these hours.",
+    "from": "From",
+    "to": "To",
+    "saved": "Availability saved",
+    "saveFailed": "Could not save availability",
+    "needOneDay": "Choose at least one day. Availability cannot be cleared entirely.",
+    "endAfterStart": "End time must be after the start time",
+    "day": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
+    }
   }
 }

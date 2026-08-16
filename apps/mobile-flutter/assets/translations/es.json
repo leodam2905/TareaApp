@@ -19,7 +19,8 @@
     "termsOfService": "Términos del servicio",
     "privacyPolicy": "Privacidad",
     "connectionError": "No se pudo conectar. Revisa tu conexión a internet.",
-    "connectionRetry": "No se pudo conectar. Inténtalo de nuevo."
+    "connectionRetry": "No se pudo conectar. Inténtalo de nuevo.",
+    "saving": "Guardando…"
   },
   "nav": {
     "home": "Inicio",
@@ -704,5 +705,42 @@
   "call": {
     "unavailable": "Las llamadas no están disponibles. Usa el chat.",
     "addPhone": "Agrega un número a tu perfil para llamar."
+  },
+  "proSetup": {
+    "title": "Termina la configuración",
+    "allDone": "Todo listo: ya pueden reservarte.",
+    "remaining": "Quedan {} paso(s) para que puedan reservarte.",
+    "awaitingReview": "Enviado — en revisión",
+    "profile": "Tu perfil",
+    "profileDesc": "Foto, biografía e identificación",
+    "services": "Servicios que ofreces",
+    "servicesDesc": "Elige tus oficios y precios",
+    "availability": "Disponibilidad semanal",
+    "availabilityDesc": "Las horas en que puedes trabajar",
+    "backgroundCheck": "Verificación de antecedentes",
+    "backgroundCheckDesc": "Obligatoria antes de recibir reservas",
+    "payouts": "Pagos",
+    "payoutsDesc": "Dónde recibes tu dinero",
+    "agreement": "Contrato de profesional",
+    "agreementDesc": "Fírmalo para aceptar trabajos"
+  },
+  "proAvailability": {
+    "title": "Disponibilidad semanal",
+    "subtitle": "Indica las horas en que puedes trabajar. Solo te verán para trabajos dentro de ese horario.",
+    "from": "Desde",
+    "to": "Hasta",
+    "saved": "Disponibilidad guardada",
+    "saveFailed": "No se pudo guardar",
+    "needOneDay": "Elige al menos un día. La disponibilidad no puede quedar vacía.",
+    "endAfterStart": "La hora final debe ser posterior a la inicial",
+    "day": {
+      "0": "Domingo",
+      "1": "Lunes",
+      "2": "Martes",
+      "3": "Miércoles",
+      "4": "Jueves",
+      "5": "Viernes",
+      "6": "Sábado"
+    }
   }
 }

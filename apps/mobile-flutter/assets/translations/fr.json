@@ -19,7 +19,8 @@
     "termsOfService": "Conditions d'utilisation",
     "privacyPolicy": "Confidentialité",
     "connectionError": "Connexion impossible. Vérifiez votre connexion internet.",
-    "connectionRetry": "Connexion impossible. Réessayez."
+    "connectionRetry": "Connexion impossible. Réessayez.",
+    "saving": "Enregistrement…"
   },
   "nav": {
     "home": "Accueil",
@@ -704,5 +705,42 @@
   "call": {
     "unavailable": "Appel indisponible pour le moment. Utilisez le chat.",
     "addPhone": "Ajoutez un numéro à votre profil pour appeler."
+  },
+  "proSetup": {
+    "title": "Terminer la configuration",
+    "allDone": "Tout est prêt — vous pouvez être réservé.",
+    "remaining": "{} étape(s) avant de pouvoir être réservé.",
+    "awaitingReview": "Envoyé — en cours d'examen",
+    "profile": "Votre profil",
+    "profileDesc": "Photo, bio et pièce d'identité",
+    "services": "Vos services",
+    "servicesDesc": "Choisissez vos métiers et tarifs",
+    "availability": "Disponibilités",
+    "availabilityDesc": "Vos heures de travail",
+    "backgroundCheck": "Vérification d'antécédents",
+    "backgroundCheckDesc": "Obligatoire avant toute réservation",
+    "payouts": "Paiements",
+    "payoutsDesc": "Où vous êtes payé",
+    "agreement": "Contrat de prestataire",
+    "agreementDesc": "Signez pour accepter des missions"
+  },
+  "proAvailability": {
+    "title": "Disponibilités",
+    "subtitle": "Indiquez vos heures de travail. Les clients ne vous voient que pour des missions dans ces créneaux.",
+    "from": "De",
+    "to": "À",
+    "saved": "Disponibilités enregistrées",
+    "saveFailed": "Échec de l'enregistrement",
+    "needOneDay": "Choisissez au moins un jour. Les disponibilités ne peuvent pas être entièrement supprimées.",
+    "endAfterStart": "L'heure de fin doit suivre l'heure de début",
+    "day": {
+      "0": "Dimanche",
+      "1": "Lundi",
+      "2": "Mardi",
+      "3": "Mercredi",
+      "4": "Jeudi",
+      "5": "Vendredi",
+      "6": "Samedi"
+    }
   }
 }

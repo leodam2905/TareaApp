@@ -8,6 +8,7 @@ import '../../theme.dart';
 import '../../api.dart';
 import '../../avatar_util.dart';
 import '../../pro_online.dart';
+import 'pro_setup_steps.dart';
 import 'pro_shell.dart';
 
 class ProDashboard extends StatefulWidget {
@@ -335,7 +336,13 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
             // Profile completeness
             GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () => ProShell.go?.call(4),
+              // The percentage comes from /handyman/checklist, so this opens the steps
+              // behind it. It used to jump to the profile tab, where most of those
+              // steps are not done — a pro was told what was missing and sent to the
+              // wrong place. Availability, in particular, had no screen at all.
+              onTap: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const ProSetupSteps()))
+                  .then((_) { if (mounted) _load(); }),
               child: Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
