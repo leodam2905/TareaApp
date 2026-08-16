@@ -79,7 +79,13 @@ export async function POST(req: NextRequest) {
   ];
 
   const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card", "apple_pay", "google_pay"],
+    // "card" ONLY. Apple Pay and Google Pay are not payment_method_types —
+    // they are wallets Stripe surfaces automatically under "card" on an
+    // eligible device. Listing them by name made every session creation fail
+    // with `Invalid payment_method_types[1]`, so no customer could ever reach
+    // a payment page. Adding them back does not add wallet support; it removes
+    // payment entirely.
+    payment_method_types: ["card"],
     payment_method_options: {
       card: { request_three_d_secure: "automatic" },
     },
