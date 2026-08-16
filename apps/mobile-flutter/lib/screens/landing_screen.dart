@@ -71,7 +71,11 @@ class LandingScreen extends StatelessWidget {
               Text('landing.subtitle'.tr(),
                   style: const TextStyle(fontSize: 15, color: C.muted, height: 1.4)),
               const SizedBox(height: 16),
-              Center(child: Image.asset('assets/images/landing-house.png', height: 230, fit: BoxFit.contain)),
+              // Portrait hero (611x780). The previous art was landscape 853x520,
+              // so height 230 filled the width; at that height a portrait image
+              // renders ~180px wide and reads as small. 300 gives it presence
+              // without pushing the CTAs off the first scroll.
+              Center(child: Image.asset('assets/images/landing-hero.png', height: 300, fit: BoxFit.contain)),
               const SizedBox(height: 16),
               // Feature grid — rows sized to their tallest card, so a longer
               // description (e.g. 3 lines on iOS) can't overflow into the next
