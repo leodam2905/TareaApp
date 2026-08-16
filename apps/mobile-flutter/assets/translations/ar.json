@@ -434,10 +434,10 @@
     "applied": "تم التقديم",
     "apply": "تقديم",
     "applyTitle": "التقديم لهذه المهمة",
-    "yourPrice": "سعرك — العمالة ($)",
     "materialsEstimate": "تقدير المواد ($)",
     "materialsHint": "يُحتسب على العميل بسعر التكلفة — بدون رسوم. أنت تقدّم الإيصالات.",
-    "updatedAt": "آخر تحديث {}"
+    "updatedAt": "آخر تحديث {}",
+    "labourPriceFixed": "سعر العمل (تحدده Tarea)"
   },
   "proJobs": {
     "noJobs": "لا أعمال هنا بعد.",

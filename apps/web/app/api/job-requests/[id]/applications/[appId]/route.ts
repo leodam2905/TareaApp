@@ -71,7 +71,8 @@ export async function PATCH(
       orderBy: { isActive: "desc" },
     });
     if (!service) {
-      const price = application.proposedPrice ?? jobRequest.budgetMin ?? 0;
+      // The labour price is the job's, never the applicant's — see totalPrice below.
+      const price = jobRequest.budgetMin ?? 0;
       service = await prisma.service.create({
         data: {
           handymanId: application.handymanId,
@@ -79,7 +80,7 @@ export async function PATCH(
           description: (jobRequest.description || jobRequest.title).slice(0, 500),
           category: jobRequest.category,
           minPrice: price,
-          maxPrice: application.proposedPrice ?? jobRequest.budgetMax ?? price,
+          maxPrice: jobRequest.budgetMax ?? price,
           duration: 60,
           isActive: false,
         },
@@ -97,7 +98,11 @@ export async function PATCH(
         scheduledAt: jobRequest.scheduledAt,
         address: jobRequest.address,
         city: jobRequest.city,
-        totalPrice: application.proposedPrice ?? jobRequest.budgetMin,
+          // Tarea sets the labour price; a pro cannot bid it up or change it.
+          // This previously preferred the applicant's proposed figure over the
+          // job's, so whatever a pro typed became the amount the customer owed:
+          // they agreed to one number and could be billed another.
+          totalPrice: jobRequest.budgetMin,
         materialsEstimate: application.materialsEstimate ?? jobRequest.materialsCost ?? 0,
         responseDeadline: new Date(Date.now() + 2 * 60 * 60 * 1000),
       },

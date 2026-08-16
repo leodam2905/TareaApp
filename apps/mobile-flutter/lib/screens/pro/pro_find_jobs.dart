@@ -103,19 +103,35 @@ class _ProFindJobsState extends State<ProFindJobs> with WidgetsBindingObserver {
 
   String _numText(dynamic v) => (v is num && v > 0) ? '${v.round()}' : '';
 
-  // Ask the pro to confirm their labor price + materials estimate before
-  // applying (materials prefilled from the AI estimate, but the pro owns it).
+  // Show the labour price and ask only for the materials estimate.
+  //
+  // The price field used to be editable here, and whatever the pro typed became
+  // the amount the customer owed — a customer agreed to one number and could be
+  // billed another. Tarea sets the labour price from its pricing rules; a pro
+  // takes the job at that price or does not take it. Materials are genuinely
+  // the pro's to estimate, so that field stays.
   Future<void> _applySheet(dynamic job) async {
     final id = (job['id'] ?? '').toString();
-    final priceCtl = TextEditingController(text: _numText(job['budgetMin']));
     final matCtl = TextEditingController(text: _numText(job['materialsCost']));
+    final labour = _numText(job['budgetMin']);
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         title: Text('proFind.applyTitle'.tr()),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: priceCtl, keyboardType: TextInputType.number,
-              decoration: InputDecoration(labelText: 'proFind.yourPrice'.tr())),
+        content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          // Read-only on purpose: shown so the pro knows what they are accepting.
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(color: C.bg, borderRadius: BorderRadius.circular(12)),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('proFind.labourPriceFixed'.tr(),
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: C.muted)),
+              const SizedBox(height: 4),
+              Text(labour.isEmpty ? '—' : '\$$labour',
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
+            ]),
+          ),
           const SizedBox(height: 14),
           TextField(controller: matCtl, keyboardType: TextInputType.number,
               decoration: InputDecoration(labelText: 'proFind.materialsEstimate'.tr(), helperText: 'proFind.materialsHint'.tr(), helperMaxLines: 3)),
@@ -126,14 +142,15 @@ class _ProFindJobsState extends State<ProFindJobs> with WidgetsBindingObserver {
         ],
       ),
     );
-    if (ok == true) await _apply(id, price: priceCtl.text.trim(), materials: matCtl.text.trim());
+    if (ok == true) await _apply(id, materials: matCtl.text.trim());
   }
 
-  Future<void> _apply(String id, {String price = '', String materials = ''}) async {
+  Future<void> _apply(String id, {String materials = ''}) async {
     setState(() => _applied.add(id));
     try {
+      // No proposedPrice: the server ignores it, and sending it would imply the
+      // pro had set something.
       final res = await Api.post('/job-requests/$id/apply', {
-        if (price.isNotEmpty) 'proposedPrice': price,
         if (materials.isNotEmpty) 'materialsEstimate': materials,
       });
       if (res.statusCode >= 200 && res.statusCode < 300) {

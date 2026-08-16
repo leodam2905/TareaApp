@@ -434,10 +434,10 @@
     "applied": "Postulé",
     "apply": "Postuler",
     "applyTitle": "Postuler à ce travail",
-    "yourPrice": "Votre prix — main-d’œuvre ($)",
     "materialsEstimate": "Estimation des matériaux ($)",
     "materialsHint": "Facturé au client au prix coûtant — sans frais. Vous fournissez les reçus.",
-    "updatedAt": "Mis à jour à {}"
+    "updatedAt": "Mis à jour à {}",
+    "labourPriceFixed": "Prix de la main-d'œuvre (fixé par Tarea)"
   },
   "proJobs": {
     "noJobs": "Aucune mission ici pour l'instant.",

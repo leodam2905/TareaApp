@@ -434,10 +434,10 @@
     "applied": "Applied",
     "apply": "Apply",
     "applyTitle": "Apply to this job",
-    "yourPrice": "Your price — labor ($)",
     "materialsEstimate": "Materials estimate ($)",
     "materialsHint": "Charged to the customer at cost — no fee. You provide receipts.",
-    "updatedAt": "Updated {}"
+    "updatedAt": "Updated {}",
+    "labourPriceFixed": "Labour price (set by Tarea)"
   },
   "proJobs": {
     "noJobs": "No jobs here yet.",

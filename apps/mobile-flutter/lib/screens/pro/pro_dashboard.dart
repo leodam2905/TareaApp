@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
@@ -145,12 +146,48 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
     if (mounted) setState(() {});
   }
 
+  /// The pro's current position, or null if unavailable.
+  ///
+  /// Same shape as the en-route sharing in pro_job_detail: ask once, give up
+  /// quietly if refused. Going online must not be blocked by a permission
+  /// dialog — a pro who declines location still wants to be online.
+  Future<Position?> _currentPosition() async {
+    try {
+      var perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) perm = await Geolocator.requestPermission();
+      if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) return null;
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+      ).timeout(const Duration(seconds: 12));
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _toggleOnline() async {
     final next = !_available;
     setState(() { _available = next; _busy = true; });
     ProOnline.set(next);
     try {
-      final res = await Api.patch('/profile', {'isAvailable': next});
+      // Going online sends where "here" is.
+      //
+      // isAvailable alone only says a pro is willing to work; it says nothing
+      // about where. Matching is by distance — haversine over user.latitude /
+      // longitude — and with those null on every pro the distance branch never
+      // ran at all, so jobs either reached everyone or nobody. Capturing the
+      // position at the moment of going online is what makes "jobs near you"
+      // mean anything.
+      //
+      // Only when going ON: coordinates captured while going offline would
+      // describe somewhere the pro is not working from.
+      Position? pos;
+      if (next) pos = await _currentPosition();
+
+      final res = await Api.patch('/profile', {
+        'isAvailable': next,
+        if (pos != null) 'latitude': pos.latitude,
+        if (pos != null) 'longitude': pos.longitude,
+      });
       if (res.statusCode < 200 || res.statusCode >= 300) {
         setState(() => _available = !next);
         ProOnline.set(!next);
