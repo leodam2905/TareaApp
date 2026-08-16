@@ -602,7 +602,12 @@
     "reviewsCountOne": "{} review",
     "reviewsCountMany": "{} reviews",
     "yourReply": "Your reply",
-    "photoRequired": "A photo is required before customers can book you."
+    "photoRequired": "A photo is required before customers can book you.",
+    "idFront": "Government ID (front)",
+    "idBack": "Government ID (back)",
+    "idLocked": "Your ID is on file and cannot be changed here. Contact support if it needs updating.",
+    "upload": "Upload",
+    "replace": "Replace"
   },
   "diagnose": {
     "title": "AI Diagnose",

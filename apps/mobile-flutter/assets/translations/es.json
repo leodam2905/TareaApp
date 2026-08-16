@@ -602,7 +602,12 @@
     "reviewsCountOne": "{} reseña",
     "reviewsCountMany": "{} reseñas",
     "yourReply": "Tu respuesta",
-    "photoRequired": "Se requiere una foto para que puedan reservarte."
+    "photoRequired": "Se requiere una foto para que puedan reservarte.",
+    "idFront": "Identificación oficial (frente)",
+    "idBack": "Identificación oficial (reverso)",
+    "idLocked": "Tu identificación está registrada y no se puede cambiar aquí. Contacta con soporte si necesitas actualizarla.",
+    "upload": "Subir",
+    "replace": "Reemplazar"
   },
   "diagnose": {
     "title": "Diagnóstico IA",

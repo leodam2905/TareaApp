@@ -16,8 +16,11 @@ class _ProCertificationsState extends State<ProCertifications> {
   String _status = '';
   bool _hasLicense = false;
   bool _hasInsurance = false;
+  bool _hasIdFront = false;
+  bool _hasIdBack = false;
   bool _loading = true;
-  bool _uploading = false;
+  /// Which document is uploading, so only that row shows a spinner.
+  String? _busyField;
 
   @override
   void initState() { super.initState(); _load(); }
@@ -31,22 +34,45 @@ class _ProCertificationsState extends State<ProCertifications> {
         _status = (hp['verificationStatus'] ?? 'none').toString();
         _hasLicense = hp['licenseDocUrl'] != null;
         _hasInsurance = hp['insuranceDocUrl'] != null;
+          _hasIdFront = hp['idFrontUrl'] != null;
+          _hasIdBack = hp['idBackUrl'] != null;
       }
     } catch (_) {}
     if (mounted) setState(() => _loading = false);
   }
 
-  Future<void> _upload() async {
+  /// Upload a document and attach it to a specific field.
+  ///
+  /// Two steps because they are two different things: /api/verification stores
+  /// the file and hands back a URL, and /api/handyman/onboarding records which
+  /// document that URL actually is. The old screen only did the first, so every
+  /// document landed in the same generic slot — a licence and an insurance
+  /// certificate were indistinguishable afterwards.
+  ///
+  /// Uploading anything also returns verification to `pending`, which is
+  /// correct: a new document is a document an admin has not seen.
+  Future<void> _uploadFor(String field) async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
     );
     final path = result?.files.single.path;
     if (path == null) return;
-    setState(() => _uploading = true);
+
+    setState(() => _busyField = field);
     try {
-      final res = await Api.uploadDoc(path);
-      if (res.statusCode >= 200 && res.statusCode < 300) {
+      final up = await Api.uploadDoc(path);
+      if (up.statusCode < 200 || up.statusCode >= 300) {
+        _toast('proEdit.uploadDocFailed'.tr());
+        return;
+      }
+      final url = (jsonDecode(up.body)['url'] ?? '').toString();
+      if (url.isEmpty) {
+        _toast('proEdit.uploadDocFailed'.tr());
+        return;
+      }
+      final save = await Api.post('/handyman/onboarding', {field: url});
+      if (save.statusCode >= 200 && save.statusCode < 300) {
         _toast('proEdit.docSubmitted'.tr());
         await _load();
       } else {
@@ -55,7 +81,7 @@ class _ProCertificationsState extends State<ProCertifications> {
     } catch (_) {
       _toast('common.connectionRetry'.tr());
     } finally {
-      if (mounted) setState(() => _uploading = false);
+      if (mounted) setState(() => _busyField = null);
     }
   }
 
@@ -92,26 +118,75 @@ class _ProCertificationsState extends State<ProCertifications> {
                 ]),
               ),
               const SizedBox(height: 14),
-              _docRow(Icons.badge_outlined, 'proEdit.license'.tr(), _hasLicense),
-              _docRow(Icons.shield_outlined, 'proEdit.insurance'.tr(), _hasInsurance),
+
+              // Government ID — set ONCE.
+              //
+              // The server accepts idFront/idBack only while they are empty and
+              // silently ignores them afterwards. A screen that kept offering
+              // Upload would look like it worked and change nothing, so once a
+              // document is on file the control is replaced by who to ask.
+              _docRow(Icons.badge_outlined, 'proEdit.idFront'.tr(), _hasIdFront,
+                  field: 'idFrontUrl', locked: _hasIdFront),
+              _docRow(Icons.badge_outlined, 'proEdit.idBack'.tr(), _hasIdBack,
+                  field: 'idBackUrl', locked: _hasIdBack),
+              if (_hasIdFront || _hasIdBack)
+                Padding(
+                  padding: const EdgeInsets.only(left: 4, bottom: 10),
+                  child: Text('proEdit.idLocked'.tr(),
+                      style: const TextStyle(color: C.muted, fontSize: 12.5, height: 1.35)),
+                ),
+
+              // Licence and insurance can be replaced — they expire and get renewed.
+              _docRow(Icons.workspace_premium_outlined, 'proEdit.license'.tr(), _hasLicense,
+                  field: 'licenseDocUrl'),
+              _docRow(Icons.shield_outlined, 'proEdit.insurance'.tr(), _hasInsurance,
+                  field: 'insuranceDocUrl'),
+
               const SizedBox(height: 8),
               Text('proEdit.certDesc'.tr(),
                   style: const TextStyle(color: C.muted, fontSize: 13, height: 1.4)),
-              const SizedBox(height: 16),
-              proSaveButton(_uploading, _upload, label: 'proEdit.uploadDocument'.tr()),
             ]),
     );
   }
 
-  Widget _docRow(IconData icon, String label, bool present) => Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(14)),
-        child: Row(children: [
-          Container(width: 40, height: 40, decoration: BoxDecoration(color: const Color(0xFFEFF5FF), borderRadius: BorderRadius.circular(20)), child: Icon(icon, color: C.blue, size: 20)),
-          const SizedBox(width: 12),
-          Expanded(child: Text(label, style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink))),
-          Icon(present ? Icons.check_circle : Icons.remove_circle_outline, color: present ? const Color(0xFF16A34A) : C.muted, size: 20),
-        ]),
-      );
+  Widget _docRow(
+    IconData icon,
+    String label,
+    bool present, {
+    required String field,
+    bool locked = false,
+  }) {
+    final busy = _busyField == field;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(14)),
+      child: Row(children: [
+        Container(
+          width: 40, height: 40,
+          decoration: BoxDecoration(color: const Color(0xFFEFF5FF), borderRadius: BorderRadius.circular(20)),
+          child: Icon(icon, color: C.blue, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Expanded(child: Text(label, style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink))),
+        if (busy)
+          const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+        else if (locked)
+          // On file and unchangeable — a tick, and no control that would lie.
+          const Icon(Icons.lock_outline, color: Color(0xFF16A34A), size: 20)
+        else
+          TextButton(
+            onPressed: _busyField != null ? null : () => _uploadFor(field),
+            child: Text(
+              present ? 'proEdit.replace'.tr() : 'proEdit.upload'.tr(),
+              style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800),
+            ),
+          ),
+        if (!busy && !locked && present) ...[
+          const SizedBox(width: 6),
+          const Icon(Icons.check_circle, color: Color(0xFF16A34A), size: 20),
+        ],
+      ]),
+    );
+  }
 }

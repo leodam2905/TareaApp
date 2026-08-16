@@ -602,7 +602,12 @@
     "reviewsCountOne": "{} avis",
     "reviewsCountMany": "{} avis",
     "yourReply": "Votre réponse",
-    "photoRequired": "Une photo est obligatoire pour pouvoir être réservé."
+    "photoRequired": "Une photo est obligatoire pour pouvoir être réservé.",
+    "idFront": "Pièce d'identité (recto)",
+    "idBack": "Pièce d'identité (verso)",
+    "idLocked": "Votre pièce d'identité est enregistrée et ne peut pas être modifiée ici. Contactez le support si besoin.",
+    "upload": "Envoyer",
+    "replace": "Remplacer"
   },
   "diagnose": {
     "title": "Diagnostic IA",
