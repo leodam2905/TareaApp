@@ -92,7 +92,20 @@ export async function GET() {
     // Jobs whose LABOR value (budget minus furniture/materials the customer buys)
     // exceeds $500 are reserved for Licensed & Insured pros.
     .filter(r => licensedInsured || (r.budgetMax - (r.materialsCost ?? 0)) <= 500)
-    .sort((a, b) => (a.distanceKm ?? 999) - (b.distanceKm ?? 999));
+    // Newest first.
+    //
+    // The query already ordered by createdAt desc and this sort was throwing
+    // that away, ranking purely by distance — so a week-old job two miles away
+    // sat above one posted a minute ago. A pro opening this list is looking for
+    // what has just come in; distance is still applied as the radius filter
+    // above and is shown on every card, so nothing is lost by not ranking on it.
+    //
+    // Distance breaks ties between jobs posted in the same second.
+    .sort((a, b) => {
+      const byNewest = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (byNewest !== 0) return byNewest;
+      return (a.distanceKm ?? Number.POSITIVE_INFINITY) - (b.distanceKm ?? Number.POSITIVE_INFINITY);
+    });
 
   return NextResponse.json(scored);
 }
