@@ -436,7 +436,8 @@
     "applyTitle": "Postularse a este trabajo",
     "yourPrice": "Tu precio — mano de obra ($)",
     "materialsEstimate": "Estimación de materiales ($)",
-    "materialsHint": "Se cobra al cliente al costo — sin comisión. Tú entregas los recibos."
+    "materialsHint": "Se cobra al cliente al costo — sin comisión. Tú entregas los recibos.",
+    "updatedAt": "Actualizado a las {}"
   },
   "proJobs": {
     "noJobs": "Aún no hay trabajos aquí.",

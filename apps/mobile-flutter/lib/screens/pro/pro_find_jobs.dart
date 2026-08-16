@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -11,23 +12,93 @@ class ProFindJobs extends StatefulWidget {
   State<ProFindJobs> createState() => _ProFindJobsState();
 }
 
-class _ProFindJobsState extends State<ProFindJobs> {
+class _ProFindJobsState extends State<ProFindJobs> with WidgetsBindingObserver {
   List<dynamic> _jobs = [];
   bool _loading = true;
   final Set<String> _applied = {};
 
-  @override
-  void initState() { super.initState(); _load(); }
+  // A job a pro cannot see is a job they cannot take. This screen used to load
+  // once in initState and never again, so a pro sitting on it never saw
+  // anything posted after they opened it — the list was only as fresh as the
+  // moment they navigated in.
+  Timer? _poll;
+  static const _interval = Duration(seconds: 20);
 
-  Future<void> _load() async {
+  /// Guards against overlapping requests: a slow response must not be
+  /// overtaken by the next tick and applied out of order.
+  bool _inFlight = false;
+
+  DateTime? _lastUpdated;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _load();
+    _startPolling();
+  }
+
+  @override
+  void dispose() {
+    _poll?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void _startPolling() {
+    _poll?.cancel();
+    _poll = Timer.periodic(_interval, (_) => _load(silent: true));
+  }
+
+  // Polling a REST endpoint from a backgrounded app spends the pro's battery
+  // and data on results nobody is looking at. Stop while away, and refresh
+  // once on return so the first thing they see is current rather than stale.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _load(silent: true);
+      _startPolling();
+    } else {
+      _poll?.cancel();
+    }
+  }
+
+  /// [silent] keeps the current list and spinner state untouched while
+  /// refreshing. Only the very first load may show a spinner: replacing a
+  /// populated list with a loading indicator every 20 seconds would make the
+  /// screen unusable, and a failed background refresh must leave what the pro
+  /// is already reading exactly where it is.
+  Future<void> _load({bool silent = false}) async {
+    if (_inFlight) return;
+    _inFlight = true;
     try {
       final res = await Api.get('/job-requests');
       if (res.statusCode == 200) {
         final d = jsonDecode(res.body);
-        _jobs = d is List ? d : (d['requests'] ?? d['jobRequests'] ?? []);
+        final next = d is List ? d : (d['requests'] ?? d['jobRequests'] ?? []);
+        if (mounted) {
+          setState(() {
+            _jobs = next;
+            _lastUpdated = DateTime.now();
+          });
+        }
       }
-    } catch (_) {}
-    if (mounted) setState(() => _loading = false);
+    } catch (_) {
+      // Swallowed on purpose for background ticks: a dropped poll on a phone
+      // moving between cells is normal, and an error banner every 20 seconds
+      // would train the pro to ignore the screen.
+    } finally {
+      _inFlight = false;
+      if (mounted && !silent) setState(() => _loading = false);
+    }
+  }
+
+  String _updatedLabel() {
+    final t = _lastUpdated;
+    if (t == null) return '';
+    final hh = t.hour.toString().padLeft(2, '0');
+    final mm = t.minute.toString().padLeft(2, '0');
+    return 'proFind.updatedAt'.tr(args: ['$hh:$mm']);
   }
 
   String _numText(dynamic v) => (v is num && v > 0) ? '${v.round()}' : '';
@@ -89,18 +160,45 @@ class _ProFindJobsState extends State<ProFindJobs> {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
             child: Text('nav.findJobs'.tr(), style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink)),
           ),
-          Padding(padding: const EdgeInsets.symmetric(horizontal: 20), child: Text('proFind.subtitle'.tr(), style: const TextStyle(color: C.muted))),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(children: [
+              Expanded(child: Text('proFind.subtitle'.tr(), style: const TextStyle(color: C.muted))),
+              // Says the list is live without claiming more than it can: a
+              // clock time the pro can compare against their own.
+              if (_lastUpdated != null)
+                Text(_updatedLabel(), style: const TextStyle(color: C.muted, fontSize: 11.5)),
+            ]),
+          ),
           const SizedBox(height: 12),
           Expanded(
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
-                : _jobs.isEmpty
-                    ? Center(child: Text('proFind.noOpen'.tr(), style: const TextStyle(color: C.muted)))
-                    : ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                        itemCount: _jobs.length,
-                        itemBuilder: (_, i) => _jobCard(_jobs[i]),
-                      ),
+                : RefreshIndicator(
+                    onRefresh: () => _load(silent: true),
+                    child: _jobs.isEmpty
+                        // Still a scroll view: an empty list must be pullable,
+                        // or the one pro who most needs to refresh — the one
+                        // seeing nothing — is the one who cannot.
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height * 0.5,
+                                child: Center(
+                                  child: Text('proFind.noOpen'.tr(),
+                                      style: const TextStyle(color: C.muted)),
+                                ),
+                              ),
+                            ],
+                          )
+                        : ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                            itemCount: _jobs.length,
+                            itemBuilder: (_, i) => _jobCard(_jobs[i]),
+                          ),
+                  ),
           ),
         ]),
       ),

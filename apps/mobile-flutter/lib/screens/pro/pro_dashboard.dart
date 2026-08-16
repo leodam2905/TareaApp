@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -14,7 +15,7 @@ class ProDashboard extends StatefulWidget {
   State<ProDashboard> createState() => _ProDashboardState();
 }
 
-class _ProDashboardState extends State<ProDashboard> {
+class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver {
   String _name = '';
   String _avatar = '';
   double _rating = 0;
@@ -29,10 +30,59 @@ class _ProDashboardState extends State<ProDashboard> {
   List<dynamic> _upcoming = [];
   List<dynamic> _requests = [];
 
+  // The dashboard shows the three newest open jobs. It loaded them once in
+  // initState, so a pro who left this screen open saw whatever was posted
+  // before they arrived and nothing after — which is the "new jobs don't
+  // appear" symptom, on the screen a pro actually sits on.
+  Timer? _poll;
+  static const _interval = Duration(seconds: 20);
+  bool _inFlight = false;
+
   @override
-  void initState() { super.initState(); _load(); }
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _load();
+    _startPolling();
+  }
+
+  @override
+  void dispose() {
+    _poll?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void _startPolling() {
+    _poll?.cancel();
+    _poll = Timer.periodic(_interval, (_) => _load());
+  }
+
+  // Nothing is being read while the app is backgrounded, so nothing should be
+  // fetched. Refresh once on return rather than showing a stale dashboard.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _load();
+      _startPolling();
+    } else {
+      _poll?.cancel();
+    }
+  }
 
   Future<void> _load() async {
+    // Six sequential requests: a slow run must not be overtaken by the next
+    // tick and land its results out of order.
+    if (_inFlight) return;
+    _inFlight = true;
+    try {
+      await _fetchAll();
+    } finally {
+      _inFlight = false;
+    }
+  }
+
+  Future<void> _fetchAll() async {
     try {
       final p = await Api.get('/profile');
       if (p.statusCode == 200) {
@@ -125,7 +175,13 @@ class _ProDashboardState extends State<ProDashboard> {
     return Scaffold(
       backgroundColor: C.bg,
       body: SafeArea(
+        // Pull-to-refresh in addition to the 20s poll: when a pro is waiting on
+        // a specific job they will reach for it, and waiting out a timer they
+        // cannot see feels broken even when it is working.
+        child: RefreshIndicator(
+        onRefresh: _load,
         child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             // Header
@@ -272,6 +328,7 @@ class _ProDashboardState extends State<ProDashboard> {
             else
               ..._requests.map(_reqRow),
           ],
+        ),
         ),
       ),
     );
