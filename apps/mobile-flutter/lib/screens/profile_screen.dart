@@ -19,6 +19,7 @@ const _menu = [
   _MenuItem(Icons.account_balance_wallet_outlined, 'profile.spending', '/spending'),
   _MenuItem(Icons.notifications_outlined, 'settings.notifications', '/notifications'),
   _MenuItem(Icons.description_outlined, 'profile.myRequests', '/requests'),
+  _MenuItem(Icons.gavel_outlined, 'disputes.title', '/disputes'),
   _MenuItem(Icons.settings_outlined, 'settings.title', '/settings'),
 ];
 

@@ -681,7 +681,10 @@
     "uploadFailed": "Upload failed",
     "payNow": "Pay now",
     "payNote": "Secure checkout with Stripe. Cancels if unpaid within 2 hours.",
-    "payFailed": "Could not start checkout. Try again."
+    "payFailed": "Could not start checkout. Try again.",
+    "tipPromptTitle": "Add a tip?",
+    "tipPromptBody": "100% of a tip goes to your Pro.",
+    "notNow": "Not now"
   },
   "instantQuote": {
     "title": "Instant Quote",
@@ -742,5 +745,22 @@
       "5": "Friday",
       "6": "Saturday"
     }
+  },
+  "disputes": {
+    "title": "Disputes",
+    "openHeading": "Open disputes",
+    "raiseHeading": "Report a problem",
+    "raiseTitle": "Report a problem",
+    "raiseExplain": "Tell us what went wrong. This pauses the booking and sends it to our team to review — it does not issue a refund by itself.",
+    "reasonHint": "What went wrong?",
+    "reasonRequired": "Please describe the problem",
+    "submit": "Submit",
+    "filed": "Reported. Our team will review it.",
+    "failed": "Could not file the report",
+    "report": "Report",
+    "underReview": "Under review by our team. We'll be in touch.",
+    "thisBooking": "This booking",
+    "nothingDisputable": "Nothing to report right now. You can report a problem on a job that is in progress or completed.",
+    "footnote": "Reports are reviewed by Tarea. Payouts are held while a dispute is open."
   }
 }

@@ -681,7 +681,10 @@
     "uploadFailed": "Error al subir",
     "payNow": "Pagar ahora",
     "payNote": "Pago seguro con Stripe. Se cancela si no pagas en 2 horas.",
-    "payFailed": "No se pudo abrir el pago. Inténtalo de nuevo."
+    "payFailed": "No se pudo abrir el pago. Inténtalo de nuevo.",
+    "tipPromptTitle": "¿Añadir propina?",
+    "tipPromptBody": "El 100 % de la propina es para tu profesional.",
+    "notNow": "Ahora no"
   },
   "instantQuote": {
     "title": "Cotización al instante",
@@ -742,5 +745,22 @@
       "5": "Viernes",
       "6": "Sábado"
     }
+  },
+  "disputes": {
+    "title": "Disputas",
+    "openHeading": "Disputas abiertas",
+    "raiseHeading": "Informar de un problema",
+    "raiseTitle": "Informar de un problema",
+    "raiseExplain": "Cuéntanos qué pasó. Esto pausa la reserva y la envía a nuestro equipo — no genera un reembolso por sí solo.",
+    "reasonHint": "¿Qué salió mal?",
+    "reasonRequired": "Describe el problema",
+    "submit": "Enviar",
+    "filed": "Informado. Nuestro equipo lo revisará.",
+    "failed": "No se pudo enviar",
+    "report": "Informar",
+    "underReview": "En revisión por nuestro equipo. Te contactaremos.",
+    "thisBooking": "Esta reserva",
+    "nothingDisputable": "Nada que informar ahora. Puedes informar de un problema en un trabajo en curso o completado.",
+    "footnote": "Tarea revisa los informes. Los pagos se retienen mientras haya una disputa abierta."
   }
 }

@@ -76,6 +76,13 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
       });
       if (res.statusCode >= 200 && res.statusCode < 300) {
         await _load();
+        // Ask now, while the job is fresh.
+        //
+        // Rating and tipping were reachable only by opening the booking and
+        // finding two buttons, so almost nothing was ever left. The moment a
+        // customer confirms the work is done is the moment they have an opinion
+        // — the same instant a ride-hailing app asks.
+        if (mounted) await _promptRateAndTip();
       } else {
         String msg = 'proJobs.updateFailed'.tr();
         try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
@@ -84,6 +91,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
     } catch (_) { _toast('common.connectionRetry'.tr()); }
     finally { if (mounted) setState(() => _busy = false); }
   }
+
 
   @override
   void dispose() { WidgetsBinding.instance.removeObserver(this); _ticker?.cancel(); super.dispose(); }
@@ -200,6 +208,54 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
         _toast((data is Map ? data['error'] : null)?.toString() ?? 'booking.tipStartFailed'.tr());
       }
     } catch (_) { _toast('common.connectionRetry'.tr()); }
+  }
+
+  /// Rate, then offer a tip — the ride-hailing pattern, at the moment the
+  /// customer confirms the work is done.
+  ///
+  /// Rating first and tipping second is deliberate: a tip asked before any
+  /// judgement has been expressed reads as a toll, and a customer who was
+  /// unhappy should be able to say so and leave without being asked for money.
+  ///
+  /// Both steps are skippable, and skipping is not a failure — the buttons on
+  /// the booking remain, so nothing is lost by dismissing this.
+  Future<void> _promptRateAndTip() async {
+    if (_reviewed || _b['review'] != null) return;
+
+    final rated = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _ReviewSheet(bookingId: _id),
+    );
+    if (!mounted) return;
+
+    if (rated == true) {
+      setState(() => _reviewed = true);
+      _toast('booking.thanksReview'.tr());
+    }
+
+    // A tip is never implied by a rating: it is asked separately, and only
+    // after the customer has chosen to leave one. 100% of it goes to the pro.
+    if (!mounted) return;
+    final wantsTip = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('booking.tipPromptTitle'.tr()),
+        content: Text('booking.tipPromptBody'.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('booking.notNow'.tr()),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('booking.addTip'.tr()),
+          ),
+        ],
+      ),
+    );
+    if (wantsTip == true && mounted) await _leaveTip();
   }
 
   Future<void> _leaveReview() async {

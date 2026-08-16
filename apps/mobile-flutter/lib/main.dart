@@ -5,6 +5,7 @@ import 'theme.dart';
 import 'api.dart';
 import 'flavor.dart';
 import 'route_observer.dart';
+import 'screens/disputes_screen.dart';
 import 'screens/landing_screen.dart';
 import 'screens/pro/pro_landing.dart';
 import 'screens/login_screen.dart';
@@ -85,6 +86,7 @@ final appRouter = GoRouter(
     GoRoute(path: '/spending', builder: (_, __) => const SpendingScreen()),
     GoRoute(path: '/refer-earn', builder: (_, __) => const ReferEarnScreen()),
     GoRoute(path: '/requests', builder: (_, __) => const RequestsScreen()),
+    GoRoute(path: '/disputes', builder: (_, __) => const DisputesScreen()),
     GoRoute(path: '/request-detail', builder: (_, s) => RequestDetailScreen(request: (s.extra as Map?)?.cast<String, dynamic>() ?? const {})),
     GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
     GoRoute(path: '/chat', builder: (_, s) => ChatScreen(data: (s.extra as Map?)?.cast<String, dynamic>() ?? const {})),

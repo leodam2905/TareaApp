@@ -681,7 +681,10 @@
     "uploadFailed": "Échec du téléversement",
     "payNow": "Payer",
     "payNote": "Paiement sécurisé via Stripe. Annulé si non payé sous 2 heures.",
-    "payFailed": "Impossible d'ouvrir le paiement. Réessayez."
+    "payFailed": "Impossible d'ouvrir le paiement. Réessayez.",
+    "tipPromptTitle": "Ajouter un pourboire ?",
+    "tipPromptBody": "100 % du pourboire revient à votre pro.",
+    "notNow": "Pas maintenant"
   },
   "instantQuote": {
     "title": "Devis instantané",
@@ -742,5 +745,22 @@
       "5": "Vendredi",
       "6": "Samedi"
     }
+  },
+  "disputes": {
+    "title": "Litiges",
+    "openHeading": "Litiges en cours",
+    "raiseHeading": "Signaler un problème",
+    "raiseTitle": "Signaler un problème",
+    "raiseExplain": "Dites-nous ce qui s'est passé. Cela suspend la réservation et l'envoie à notre équipe — cela ne déclenche pas un remboursement automatique.",
+    "reasonHint": "Que s'est-il passé ?",
+    "reasonRequired": "Veuillez décrire le problème",
+    "submit": "Envoyer",
+    "filed": "Signalé. Notre équipe va l'examiner.",
+    "failed": "Échec du signalement",
+    "report": "Signaler",
+    "underReview": "En cours d'examen par notre équipe. Nous vous recontacterons.",
+    "thisBooking": "Cette réservation",
+    "nothingDisputable": "Rien à signaler pour l'instant. Vous pouvez signaler un problème sur une mission en cours ou terminée.",
+    "footnote": "Les signalements sont examinés par Tarea. Les paiements sont suspendus pendant un litige."
   }
 }
