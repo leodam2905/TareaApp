@@ -261,7 +261,6 @@
     "sendRequestTo": "إرسال الطلب إلى {}",
     "acceptEstimate": "قبول التقدير والنشر",
     "editDetails": "تعديل التفاصيل",
-    "inPersonQuote": "طلب عرض سعر حضوري",
     "requestSent": "تم إرسال الطلب إلى {}!",
     "jobPosted": "تم نشر الطلب!",
     "postFailed": "تعذّر نشر الطلب.",

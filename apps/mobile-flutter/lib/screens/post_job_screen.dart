@@ -331,15 +331,15 @@ class _PostJobScreenState extends State<PostJobScreen> {
                   ),
                   if (_step == 3) ...[
                     const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () => setState(() => _step = 0),
-                          child: Text('postjob.editDetails'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
-                        ),
-                        Flexible(child: Text('postjob.inPersonQuote'.tr(), overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
-                      ],
+                    // "Request an in-person quote" used to sit here beside Edit
+                    // details. It was a bare Text — styled to look tappable, with
+                    // no handler and nothing behind it anywhere in the codebase —
+                    // so it shipped to production promising something the app could
+                    // not do. Accuracy comes from AI Diagnose, where the customer
+                    // photographs the problem.
+                    GestureDetector(
+                      onTap: () => setState(() => _step = 0),
+                      child: Text('postjob.editDetails'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
                     ),
                   ],
                 ],

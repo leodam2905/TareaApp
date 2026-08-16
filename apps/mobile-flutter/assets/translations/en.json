@@ -261,7 +261,6 @@
     "sendRequestTo": "Send request to {}",
     "acceptEstimate": "Accept estimate & post job",
     "editDetails": "Edit details",
-    "inPersonQuote": "Request an in-person quote",
     "requestSent": "Request sent to {}!",
     "jobPosted": "Job posted!",
     "postFailed": "Could not post job.",
