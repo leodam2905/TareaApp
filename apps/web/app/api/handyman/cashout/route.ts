@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
-import { handymanNet } from "@/lib/fees";
+import { proOwedFor, proOwedForAll } from "@/lib/pro-payout";
 import { createNotification } from "@/lib/notify";
 import { BACKGROUND_CHECK_FEE } from "../background-check/route";
 
@@ -21,12 +21,12 @@ export async function GET() {
   const [unpaid, paid, pendingTips, activeDisputes] = await Promise.all([
     prisma.booking.findMany({
       where: { handymanId: user.id, status: "COMPLETED", isPaid: true, handymanPaidOut: false },
-      select: { id: true, totalPrice: true, completedAt: true, service: { select: { title: true } } },
+      select: { id: true, totalPrice: true, materialsEstimate: true, completedAt: true, service: { select: { title: true } } },
       orderBy: { completedAt: "desc" },
     }),
     prisma.booking.findMany({
       where: { handymanId: user.id, status: "COMPLETED", handymanPaidOut: true },
-      select: { id: true, totalPrice: true, paidOutAt: true, service: { select: { title: true } } },
+      select: { id: true, totalPrice: true, materialsEstimate: true, paidOutAt: true, service: { select: { title: true } } },
       orderBy: { paidOutAt: "desc" },
       take: 20,
     }),
@@ -39,7 +39,7 @@ export async function GET() {
     }),
   ]);
 
-  const bookingEarnings = unpaid.reduce((s, b) => s + handymanNet(b.totalPrice), 0);
+  const bookingEarnings = proOwedForAll(unpaid);
   const tipEarnings = pendingTips.reduce((s, t) => s + t.amount, 0);
   const available = bookingEarnings + tipEarnings;
 
@@ -53,13 +53,13 @@ export async function GET() {
     pendingBookings: unpaid.map(b => ({
       id: b.id,
       service: b.service.title,
-      net: handymanNet(b.totalPrice),
+      net: proOwedFor(b),
       completedAt: b.completedAt,
     })),
     payoutHistory: paid.map(b => ({
       id: b.id,
       service: b.service.title,
-      net: handymanNet(b.totalPrice),
+      net: proOwedFor(b),
       paidOutAt: b.paidOutAt,
     })),
   });
@@ -100,7 +100,10 @@ export async function POST(_req: NextRequest) {
   }
 
   const tipTotal = pendingTips.reduce((s, t) => s + t.amount, 0);
-  const gross = pending.reduce((s, b) => s + handymanNet(b.totalPrice), 0) + tipTotal;
+  // Everything the pro is owed: labour net, materials at cost, and tips.
+  // The instant fee is charged on this whole total, per the pricing rule
+  // that the pro bears the cost of the amount they choose to move.
+  const gross = proOwedForAll(pending) + tipTotal;
 
   if (gross < MIN_CASHOUT) {
     return NextResponse.json(
@@ -125,9 +128,17 @@ export async function POST(_req: NextRequest) {
   const fee = calcInstantFee(gross);
   const net = gross - fee - bgCheckDeduction;
 
-  // Move gross from platform → connected account
+  // Move platform → connected account, WITHOUT the background-check deduction.
+  //
+  // Transferring the full gross and then paying out less left the deduction
+  // sitting in the pro's own Stripe balance, where their next scheduled payout
+  // simply handed it back to them — Tarea never actually recouped the fee. It
+  // is retained by not sending it.
+  //
+  // The 1% instant fee IS still transferred: it stays in the connected balance
+  // on purpose, because that is where Stripe charges its own instant-payout fee.
   await stripe.transfers.create({
-    amount: Math.round(gross * 100),
+    amount: Math.round((gross - bgCheckDeduction) * 100),
     currency: "usd",
     destination: user.stripeAccountId,
     description: `Tarea instant cashout — ${pending.length} job${pending.length > 1 ? "s" : ""}`,
