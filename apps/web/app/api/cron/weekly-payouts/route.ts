@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { proOwedForAll } from "@/lib/pro-payout";
+import { checkPayoutAccount, alertPayoutFailure } from "@/lib/payout-account";
 import { createNotification } from "@/lib/notify";
 import { isAuthorizedCron } from "@/lib/cron-auth";
 
@@ -35,14 +36,25 @@ export async function GET(_req: NextRequest) {
   const now = new Date();
 
   for (const { handyman, bookings } of byHandyman.values()) {
-    // Skip handymen without an active Stripe account
-    if (!handyman.stripeAccountId || handyman.stripeAccountStatus !== "active") {
+    const total = proOwedForAll(bookings);
+    if (total < 1) { skipped++; continue; }
+
+    // Ask Stripe whether this destination is payable, rather than believing
+    // stripeAccountStatus. This cron is the retry for transfers that already
+    // failed once, so a silent skip here repeats every Monday forever — which
+    // is exactly what a mode-mismatched account used to do.
+    const check = await checkPayoutAccount(handyman.stripeAccountId);
+    if (!check.ok) {
+      await alertPayoutFailure({
+        handymanId: handyman.id,
+        amount: total,
+        reason: check.reason,
+        detail: check.detail,
+        bookingId: bookings[0]?.id,
+      });
       skipped++;
       continue;
     }
-
-    const total = proOwedForAll(bookings);
-    if (total < 1) { skipped++; continue; }
 
     try {
       // Transfer from platform → connected account
@@ -80,7 +92,13 @@ export async function GET(_req: NextRequest) {
 
       paid++;
     } catch (err) {
-      console.error(`[weekly-payouts] Failed for handyman ${handyman.id}:`, err);
+      await alertPayoutFailure({
+        handymanId: handyman.id,
+        amount: total,
+        reason: "transfer_failed",
+        detail: err instanceof Error ? err.message : String(err),
+        bookingId: bookings[0]?.id,
+      });
       skipped++;
     }
   }

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { handymanNet } from "@/lib/fees";
 import { proOwedFor } from "@/lib/pro-payout";
+import { checkPayoutAccount, alertPayoutFailure } from "@/lib/payout-account";
 import { sendInvoiceEmail } from "@/lib/email";
 import { releaseProxySessions } from "@/lib/voice";
 
@@ -53,27 +54,44 @@ export async function completeBooking(bookingId: string, opts?: { receiptUrl?: s
   }
 
   // Release escrow: labor net + full materials.
+  //
+  // The destination is verified against Stripe rather than against
+  // stripeAccountStatus, which claimed "active" for accounts the live key could
+  // not even see. A payout that cannot happen is now reported, not swallowed.
   const handymanUser = await prisma.user.findUnique({ where: { id: booking.handymanId } });
-  if (
-    handymanUser?.stripeAccountId &&
-    handymanUser.stripeAccountStatus === "active" &&
-    booking.isPaid &&
-    !booking.handymanPaidOut
-  ) {
-    try {
-      const payout = proOwedFor(booking);
-      await stripe.transfers.create({
-        amount: Math.round(payout * 100),
-        currency: "usd",
-        destination: handymanUser.stripeAccountId,
-        transfer_group: booking.id,
+  if (booking.isPaid && !booking.handymanPaidOut) {
+    const payout = proOwedFor(booking);
+    const check = await checkPayoutAccount(handymanUser?.stripeAccountId);
+
+    if (!check.ok) {
+      await alertPayoutFailure({
+        handymanId: booking.handymanId,
+        amount: payout,
+        reason: check.reason,
+        detail: check.detail,
+        bookingId,
       });
-      await prisma.booking.update({
-        where: { id: bookingId },
-        data: { handymanPaidOut: true, paidOutAt: new Date() },
-      });
-    } catch (err) {
-      console.error("[completeBooking] Stripe transfer failed:", err);
+    } else {
+      try {
+        await stripe.transfers.create({
+          amount: Math.round(payout * 100),
+          currency: "usd",
+          destination: handymanUser!.stripeAccountId!,
+          transfer_group: booking.id,
+        });
+        await prisma.booking.update({
+          where: { id: bookingId },
+          data: { handymanPaidOut: true, paidOutAt: new Date() },
+        });
+      } catch (err) {
+        await alertPayoutFailure({
+          handymanId: booking.handymanId,
+          amount: payout,
+          reason: "transfer_failed",
+          detail: err instanceof Error ? err.message : String(err),
+          bookingId,
+        });
+      }
     }
   }
 
