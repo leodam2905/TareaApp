@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
@@ -50,9 +51,32 @@ class _BrowseScreenState extends State<BrowseScreen> {
     _load();
   }
 
-  Future<void> _load() async {
+  /// The customer's position, or null if unavailable.
+  ///
+  /// Never blocks browsing: permission may be refused, location may be off, or
+  /// the fix may time out, and in every one of those cases the screen must
+  /// still list pros — just not sorted by distance.
+  Future<Position?> _here() async {
     try {
-      final res = await Api.get('/handyman/browse');
+      var perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) perm = await Geolocator.requestPermission();
+      if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) return null;
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.medium),
+      ).timeout(const Duration(seconds: 10));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> _load() async {
+    // Sends where the customer is so the server can return pros within 60
+    // miles, nearest first. Without it the server falls back to its previous
+    // behaviour and returns everyone.
+    final pos = await _here();
+    final query = pos == null ? '' : '?lat=${pos.latitude}&lng=${pos.longitude}';
+    try {
+      final res = await Api.get('/handyman/browse$query');
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
         _pros = data is List ? data : (data['handymen'] ?? data['pros'] ?? []);
