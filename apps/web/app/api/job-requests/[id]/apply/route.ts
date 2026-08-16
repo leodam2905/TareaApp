@@ -2,6 +2,7 @@ import { createNotification } from "@/lib/notify";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { unmetSteps, unmetStepsMessage } from "@/lib/pro-bookable";
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
@@ -19,15 +20,31 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: "You can't apply to your own job request." }, { status: 400 });
   }
 
-  // A pro with no profile photo cannot be booked — the hire endpoint refuses
-  // it. Letting them apply anyway pushes that refusal onto the customer, who
-  // picks somebody, gets an error and has to choose again. Refuse here so the
-  // person who can fix it is the one who hears about it.
-  if (!user.avatarUrl) {
-    return NextResponse.json(
-      { error: "Add a profile photo before applying — customers cannot book a Pro without one." },
-      { status: 400 },
-    );
+  // Only a bookable pro may apply: all six onboarding steps complete.
+  //
+  // Letting an unfinished pro apply pushes the refusal onto the customer, who
+  // picks somebody and is told no at the last step. Refusing here puts it in
+  // front of the person who can actually fix it, and names what is missing —
+  // "you cannot apply" is useless to someone who does not know which of six
+  // things to go and do.
+  const [servicesCount, availabilityCount] = await Promise.all([
+    prisma.service.count({ where: { handymanId: profile.id } }),
+    prisma.handymanAvailability.count({ where: { profileId: profile.id } }),
+  ]);
+  const missing = unmetSteps({
+    avatarUrl: user.avatarUrl,
+    stripeAccountStatus: user.stripeAccountStatus,
+    profile: {
+      icaSignedAt: profile.icaSignedAt,
+      bio: profile.bio,
+      idFrontUrl: profile.idFrontUrl,
+      backgroundCheckStatus: profile.backgroundCheckStatus as string,
+      servicesCount,
+      availabilityCount,
+    },
+  });
+  if (missing.length > 0) {
+    return NextResponse.json({ error: unmetStepsMessage(missing), missing }, { status: 400 });
   }
 
   const { message, proposedPrice, materialsEstimate } = await req.json();

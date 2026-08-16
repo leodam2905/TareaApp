@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { BOOKABLE_USER_WHERE } from "@/lib/pro-bookable";
 
 // Trades that legally require a license — "Licensed" badge only shows for these.
 const LICENSE_REQUIRED = new Set(["PLUMBING", "ELECTRICAL", "HVAC", "ROOFING", "GENERAL"]);
@@ -37,17 +38,13 @@ export async function GET(req: NextRequest) {
       : null;
   const handymen = await prisma.user.findMany({
     where: {
-      role: "HANDYMAN",
-      isActive: true,
-      // Bookable means bookable.
+      // Bookable means bookable: all six onboarding steps complete.
       //
-      // Hiring refuses a pro with no profile photo, and refuses one who has not
-      // passed a background check. Listing either as a choice sets the customer
-      // up to pick somebody and be told no at the last step — so browse applies
-      // the same two conditions the hire endpoint enforces. If these ever drift
-      // apart, the customer discovers it and the pro takes the blame.
-      avatarUrl: { not: null },
-      handymanProfile: { isAvailable: true, backgroundCheckStatus: "PASSED" },
+      // Listing a pro who cannot be hired sets the customer up to pick somebody
+      // and be told no at the last step, with the pro looking like the problem.
+      // The condition lives in one place so browse, applying and hiring cannot
+      // drift apart.
+      ...BOOKABLE_USER_WHERE,
     },
     select: {
       id: true,

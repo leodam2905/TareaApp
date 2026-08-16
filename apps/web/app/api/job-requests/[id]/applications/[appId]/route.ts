@@ -2,6 +2,7 @@ import { createNotification } from "@/lib/notify";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { unmetSteps } from "@/lib/pro-bookable";
 
 export async function PATCH(
   req: NextRequest,
@@ -37,21 +38,41 @@ export async function PATCH(
   if (!application) return NextResponse.json({ error: "Application not found" }, { status: 404 });
 
   if (action === "accept") {
-    // Safety gate — handyman must have photo + passed background check before booking
+    // Bookable means all six onboarding steps complete — the same rule browse
+    // filters on and applying asserts. Checked again here because this is the
+    // moment a stranger is sent to somebody's home, and it must not depend on
+    // an earlier surface having been correct.
     const handymanProfile = await prisma.handymanProfile.findUnique({
       where: { id: application.handymanId },
-      select: { backgroundCheckStatus: true },
+      select: { backgroundCheckStatus: true, icaSignedAt: true, bio: true, idFrontUrl: true },
     });
     const handymanUserRecord = await prisma.user.findUnique({
       where: { id: application.user.id },
-      select: { avatarUrl: true },
+      select: { avatarUrl: true, stripeAccountStatus: true },
     });
-
-    if (!handymanUserRecord?.avatarUrl) {
-      return NextResponse.json({ error: "This handyman has not uploaded a profile photo yet and cannot be booked." }, { status: 400 });
-    }
-    if (handymanProfile?.backgroundCheckStatus !== "PASSED") {
-      return NextResponse.json({ error: "This handyman has not passed a background check yet and cannot be booked." }, { status: 400 });
+    const [hmServices, hmAvailability] = await Promise.all([
+      prisma.service.count({ where: { handymanId: application.handymanId } }),
+      prisma.handymanAvailability.count({ where: { profileId: application.handymanId } }),
+    ]);
+    const proMissing = unmetSteps({
+      avatarUrl: handymanUserRecord?.avatarUrl ?? null,
+      stripeAccountStatus: handymanUserRecord?.stripeAccountStatus ?? null,
+      profile: handymanProfile
+        ? {
+            icaSignedAt: handymanProfile.icaSignedAt,
+            bio: handymanProfile.bio,
+            idFrontUrl: handymanProfile.idFrontUrl,
+            backgroundCheckStatus: handymanProfile.backgroundCheckStatus as string,
+            servicesCount: hmServices,
+            availabilityCount: hmAvailability,
+          }
+        : null,
+    });
+    if (proMissing.length > 0) {
+      return NextResponse.json(
+        { error: "This Pro has not finished setting up and cannot be booked yet." },
+        { status: 400 },
+      );
     }
 
     // Gate passed — now mark accepted, assign, and reject the others.
