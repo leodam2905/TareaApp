@@ -53,6 +53,8 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
   String _firstName = '';
   String _avatar = '';
+  /// Unread notifications, for the badge on the bell.
+  int _unread = 0;
   List<dynamic> _pros = [];
   List<dynamic> _recent = [];
 
@@ -92,6 +94,18 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
         });
       }
     } catch (_) {/* greeting stays generic */}
+    try {
+      // Counted from the list rather than a new endpoint: /notifications already
+      // returns isRead per row, and a dedicated count route would be one more
+      // thing to keep in step with it.
+      final res = await Api.get('/notifications');
+      if (res.statusCode == 200) {
+        final d = jsonDecode(res.body);
+        final list = (d is List ? d : (d['notifications'] ?? [])) as List;
+        final n = list.where((x) => x is Map && x['isRead'] != true).length;
+        if (mounted) setState(() => _unread = n);
+      }
+    } catch (_) {/* the badge simply stays as it was */}
     try {
       final res = await Api.get('/handyman/browse');
       if (res.statusCode == 200) {
@@ -162,9 +176,18 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
                     ),
                   ]),
                   Row(children: [
-                    GestureDetector(onTap: () => context.push('/notifications'), child: _circleIcon(Icons.notifications_none)),
+                    GestureDetector(
+                      onTap: () => context.push('/notifications').then((_) { if (mounted) _load(); }),
+                      child: _bellWithBadge(),
+                    ),
                     const SizedBox(width: 10),
-                    roundAvatar(url: _avatar, radius: 18),
+                    // The avatar looked like a control and was not one — tapping it
+                    // did nothing, which is exactly where someone goes to change
+                    // their picture.
+                    GestureDetector(
+                      onTap: () => context.push('/edit-profile').then((_) { if (mounted) _load(); }),
+                      child: roundAvatar(url: _avatar, radius: 18),
+                    ),
                   ]),
                 ],
               ),
@@ -259,6 +282,39 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
         ),
       ),
     );
+  }
+
+  /// The bell, carrying the number of unread notifications.
+  ///
+  /// Without a count the bell says "notifications exist somewhere" — the same
+  /// thing it says when there is nothing to see, so there was never a reason
+  /// to tap it.
+  Widget _bellWithBadge() {
+    final n = _unread;
+    return Stack(clipBehavior: Clip.none, children: [
+      _circleIcon(n > 0 ? Icons.notifications : Icons.notifications_none),
+      if (n > 0)
+        Positioned(
+          right: -2,
+          top: -2,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+            constraints: const BoxConstraints(minWidth: 18),
+            decoration: BoxDecoration(
+              color: C.red,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: C.white, width: 1.5),
+            ),
+            child: Text(
+              // Past 99 the exact number stops meaning anything, and stops fitting.
+              n > 99 ? '99+' : '$n',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, height: 1.2),
+            ),
+          ),
+        ),
+    ]);
   }
 
   Widget _circleIcon(IconData icon) => Container(

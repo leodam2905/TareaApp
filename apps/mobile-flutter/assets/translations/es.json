@@ -350,7 +350,11 @@
     "updated": "Perfil actualizado",
     "saveFailed": "No se pudo guardar. Inténtalo de nuevo.",
     "phone": "Teléfono",
-    "address": "Dirección"
+    "address": "Dirección",
+    "changePhoto": "Cambiar foto",
+    "uploading": "Subiendo…",
+    "photoUpdated": "Foto actualizada",
+    "photoSaveFailed": "No se pudo guardar la foto"
   },
   "spending": {
     "title": "Informe de gastos",

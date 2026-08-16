@@ -350,7 +350,11 @@
     "updated": "تم تحديث الملف",
     "saveFailed": "تعذّر الحفظ. حاول مرة أخرى.",
     "phone": "الهاتف",
-    "address": "العنوان"
+    "address": "العنوان",
+    "changePhoto": "تغيير الصورة",
+    "uploading": "جارٍ الرفع…",
+    "photoUpdated": "تم تحديث الصورة",
+    "photoSaveFailed": "تعذّر حفظ الصورة"
   },
   "spending": {
     "title": "تقرير الإنفاق",

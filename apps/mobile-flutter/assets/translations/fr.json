@@ -350,7 +350,11 @@
     "updated": "Profil mis à jour",
     "saveFailed": "Enregistrement impossible. Réessayez.",
     "phone": "Téléphone",
-    "address": "Adresse"
+    "address": "Adresse",
+    "changePhoto": "Changer la photo",
+    "uploading": "Envoi…",
+    "photoUpdated": "Photo mise à jour",
+    "photoSaveFailed": "Impossible d'enregistrer la photo"
   },
   "spending": {
     "title": "Rapport de dépenses",

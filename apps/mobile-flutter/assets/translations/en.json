@@ -350,7 +350,11 @@
     "updated": "Profile updated",
     "saveFailed": "Could not save. Please try again.",
     "phone": "Phone",
-    "address": "Address"
+    "address": "Address",
+    "changePhoto": "Change photo",
+    "uploading": "Uploading…",
+    "photoUpdated": "Photo updated",
+    "photoSaveFailed": "Could not save your photo"
   },
   "spending": {
     "title": "Spending Report",
