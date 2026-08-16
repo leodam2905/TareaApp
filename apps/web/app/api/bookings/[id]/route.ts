@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { completeBooking } from "@/lib/complete-booking";
 import { canCall, releaseProxySessions } from "@/lib/voice";
+import { handymanNet } from "@/lib/fees";
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
@@ -167,7 +168,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         const handymanUser = await prisma.user.findUnique({ where: { id: booking.handymanId } });
         if (handymanUser?.stripeAccountId && handymanUser.stripeAccountStatus === "active") {
           try {
-            const handymanAmount = Math.round(booking.totalPrice * 0.90 * 0.50 * 100);
+            // 0.90 was HANDYMAN_FEE_RATE written out by hand, so a change to the
+              // fee would silently miss this payout. No materials: the job never
+              // happened, so the pro bought nothing to be reimbursed for.
+              const handymanAmount = Math.round(handymanNet(booking.totalPrice) * 0.50 * 100);
             await stripe.transfers.create({
               amount: handymanAmount,
               currency: "usd",
@@ -191,7 +195,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const cancelledByHandyman = user.id === booking.handymanId;
     const hoursUntil = (booking.scheduledAt.getTime() - Date.now()) / (1000 * 60 * 60);
     const isLate = hoursUntil < 24;
-    const handymanNet50 = (booking.totalPrice * 0.90 * 0.50).toFixed(2);
+    const handymanNet50 = (handymanNet(booking.totalPrice) * 0.50).toFixed(2);
 
     if (cancelledByHandyman) {
       // Notify customer — full refund

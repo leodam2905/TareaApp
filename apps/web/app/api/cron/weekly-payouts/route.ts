@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { handymanNet } from "@/lib/fees";
+import { proOwedForAll } from "@/lib/pro-payout";
 import { createNotification } from "@/lib/notify";
 import { isAuthorizedCron } from "@/lib/cron-auth";
 
@@ -41,7 +41,7 @@ export async function GET(_req: NextRequest) {
       continue;
     }
 
-    const total = bookings.reduce((s, b) => s + handymanNet(b.totalPrice), 0);
+    const total = proOwedForAll(bookings);
     if (total < 1) { skipped++; continue; }
 
     try {

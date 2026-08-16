@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { handymanNet } from "@/lib/fees";
+import { proOwedFor } from "@/lib/pro-payout";
 import { sendInvoiceEmail } from "@/lib/email";
 import { releaseProxySessions } from "@/lib/voice";
 
@@ -60,7 +61,7 @@ export async function completeBooking(bookingId: string, opts?: { receiptUrl?: s
     !booking.handymanPaidOut
   ) {
     try {
-      const payout = handymanNet(booking.totalPrice) + (booking.materialsEstimate ?? 0);
+      const payout = proOwedFor(booking);
       await stripe.transfers.create({
         amount: Math.round(payout * 100),
         currency: "usd",
