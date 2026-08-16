@@ -143,12 +143,16 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  // Notify matching handymen — only PASSED background check + photo + available + matching service
+  // Who hears about a new job: every APPROVED pro who is ONLINE.
+  //
+  // A missing profile photo used to exclude a pro here. That is a display
+  // concern — it belongs on the browse surface a customer sees, not on whether
+  // somebody is told work exists. An approved, available pro silently not
+  // hearing about a job is the same failure this whole path keeps producing.
   const handymen = await prisma.handymanProfile.findMany({
     where: {
       isAvailable: true,
       backgroundCheckStatus: "PASSED",
-      user: { avatarUrl: { not: null } },
       // GENERAL is the AI's catch-all: anything it cannot place lands there.
       // Few pros register for it, so those jobs reached nobody at all — no
       // push, no SMS, and no row in Find Jobs, in complete silence. A GENERAL
