@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
+import { grossHourlyFor, grossTravel, grossMinimum, URGENCY_RATE } from "@/lib/pricing-config";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -10,8 +11,11 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 // urgency) — what the pro is paid and what becomes the job budget. The customer
 // pays that plus the Service Fee (CUSTOMER_FEE_RATE, from fees.ts),
 // matching checkout/invoice exactly — no separate platform/risk markup.
-const TRAVEL_ADJUSTMENT = 15;
-const URGENCY_RATE  = 0.20;
+// Travel, the hourly rate and the floor now come from lib/pricing-config.ts,
+// where they are net targets grossed up for the platform's 10% cut. The AI is
+// no longer asked what a pro is worth — only how long the work takes, which is
+// the part it can actually judge.
+const TRAVEL_ADJUSTMENT = grossTravel();
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 const round5 = (n: number) => Math.round(n / 5) * 5;
 
@@ -58,7 +62,10 @@ No markdown, just the JSON.`,
     const text = message.content[0].type === "text" ? message.content[0].text : "";
     const ai = JSON.parse(text.replace(/```json|```/g, "").trim());
 
-    const hourlyRate = clamp(Number(ai.hourlyRate) || 65, 25, 300);
+    // The rate card decides, not the model. The AI's suggestion is kept only to
+    // flag a category whose card looks badly out of line with the market.
+    const aiSuggested = clamp(Number(ai.hourlyRate) || 0, 0, 300);
+    const hourlyRate = grossHourlyFor(category);
     const hMin = clamp(Number(ai.laborHoursMin) || 1, 0.5, 60);
     const hMax = clamp(Number(ai.laborHoursMax) || Math.max(hMin, 2), hMin, 80);
     const materials = Math.max(0, Number(ai.materials) || 0);
@@ -69,7 +76,9 @@ No markdown, just the JSON.`,
     const priceFor = (hours: number) => {
       const labor = hourlyRate * hours;
       const urgency = urgent ? labor * URGENCY_RATE : 0;
-      return round5(labor + TRAVEL_ADJUSTMENT + urgency);
+      // Never below the call-out floor: a price too low to be worth the trip is
+      // a job nobody takes, which is indistinguishable from having no pros.
+      return round5(Math.max(labor + TRAVEL_ADJUSTMENT + urgency, grossMinimum()));
     };
     const hMid = (hMin + hMax) / 2;
     const price = priceFor(hMid);

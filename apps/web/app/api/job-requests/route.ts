@@ -7,7 +7,23 @@ import { sendSms } from "@/lib/sms";
 import { smsBody, createNotification } from "@/lib/notify";
 import { geocodeAddress } from "@/lib/geo/geocode";
 
-const RADIUS_KM = 50 * 1.60934;
+// Fallback only. Each pro sets their own serviceRadius in miles, and that is
+// what decides eligibility — this applies when a profile somehow has none.
+//
+// A single global radius was the bug: a flat travel allowance paid the same for
+// a 3-mile trip and a 40-mile one, so pros were offered work that could not pay
+// for the drive. Distance cannot be priced (the price is fixed before a pro is
+// chosen), so it is bounded instead, by the only party who knows what their
+// time is worth.
+// California contractor licensing. B&P §7048 exempts "minor work" from the
+// licence requirement only where the aggregate contract price — labour AND
+// materials together — is under $500. Above it, the pro must be licensed.
+const CSLB_UNLICENSED_CAP = 500;
+
+const DEFAULT_RADIUS_MILES = 50;
+const MILES_TO_KM = 1.60934;
+const radiusKmFor = (miles?: number | null) =>
+  (miles && miles > 0 ? miles : DEFAULT_RADIUS_MILES) * MILES_TO_KM;
 
 function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371;
@@ -51,7 +67,8 @@ export async function GET() {
   });
   const myCategories = myServices.map(s => s.category);
 
-  // Jobs over $500 are reserved for Licensed & Insured pros (license + insurance on file).
+  // Jobs at or over the CSLB unlicensed cap are reserved for Licensed & Insured
+  // pros (license + insurance on file). See the filter below for the rule.
   const docs = await prisma.handymanProfile.findUnique({
     where: { id: profile.id }, select: { licenseDocUrl: true, insuranceDocUrl: true },
   });
@@ -88,10 +105,22 @@ export async function GET() {
           : null;
       return { ...r, distanceKm, score: 0 };
     })
-    .filter(r => r.distanceKm === null || r.distanceKm <= RADIUS_KM)
-    // Jobs whose LABOR value (budget minus furniture/materials the customer buys)
-    // exceeds $500 are reserved for Licensed & Insured pros.
-    .filter(r => licensedInsured || (r.budgetMax - (r.materialsCost ?? 0)) <= 500)
+    // Same rule as the notification fan-out: the pro's own radius. If these
+    // disagreed a pro would be told about a job they cannot then see.
+    .filter(r => r.distanceKm === null || r.distanceKm <= radiusKmFor(profile.serviceRadius))
+    // California CSLB minor-work exemption (B&P §7048): unlicensed work is
+    // capped at $500 for LABOUR AND MATERIALS COMBINED — an aggregate contract
+    // price, not a labour-only figure.
+    //
+    // This previously subtracted materials before comparing, so a $450 labour
+    // job carrying $200 of materials totalled $650 and still reached an
+    // unlicensed pro. That is the wrong side of the line the check exists to
+    // hold, and Tarea is launching in California.
+    //
+    // Materials are an estimate at posting time and can grow during the job, so
+    // this is a floor on exposure rather than a guarantee — a job near the cap
+    // should be treated as licensed work.
+    .filter(r => licensedInsured || (r.budgetMax + (r.materialsCost ?? 0)) <= CSLB_UNLICENSED_CAP)
     // Newest first.
     //
     // The query already ordered by createdAt desc and this sort was throwing
@@ -190,7 +219,8 @@ export async function POST(req: NextRequest) {
   const nearby = handymen.filter(h => {
     const u = h.user;
     if (jLat != null && jLng != null && u.latitude != null && u.longitude != null) {
-      return haversine(jLat, jLng, u.latitude, u.longitude) <= RADIUS_KM;
+      // The pro's own limit, not a global one.
+      return haversine(jLat, jLng, u.latitude, u.longitude) <= radiusKmFor(h.serviceRadius);
     }
     // Without coordinates on both sides we genuinely cannot tell how far apart
     // these are, and a city name is not a proxy for distance: Darby and Crum

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { rateLimit } from "@/lib/rate-limit";
+import { grossHourlyFor, grossTravel, grossMinimum } from "@/lib/pricing-config";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -46,11 +47,11 @@ Customer details:
 ${detailsText}
 </input>
 
-Based on current US market rates for independent handymen, provide an instant quote.
+Estimate how long this job takes. Do NOT estimate a price — Tarea sets the rate.
 
 Return ONLY a JSON object with:
-- "minPrice": integer, low end of the price range in USD (labor only unless stated)
-- "maxPrice": integer, high end of the price range in USD
+- "laborHoursMin": low estimate of labour hours (number)
+- "laborHoursMax": high estimate of labour hours (number)
 - "duration": string, estimated time to complete (e.g. "1–2 hours", "half day")
 - "includes": array of 3 short strings describing what is included in the price
 - "note": one sentence about the biggest variable that could change the price (if any)
@@ -61,8 +62,32 @@ No markdown, no extra text — just valid JSON.`,
     });
 
     const text = message.content[0].type === "text" ? message.content[0].text : "";
-    const json = JSON.parse(text.replace(/```json|```/g, "").trim());
-    return NextResponse.json(json);
+    const ai = JSON.parse(text.replace(/```json|```/g, "").trim());
+
+    // The model estimates hours; the rate card sets the price. This endpoint
+    // used to ask the model for minPrice/maxPrice directly, with no rate, no
+    // travel and no floor — which is where prices a pro would not accept came
+    // from, and why the same job could be priced differently depending on which
+    // screen the customer used.
+    const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
+    const round5 = (n: number) => Math.round(n / 5) * 5;
+    const hMin = clamp(Number(ai.laborHoursMin) || 1, 0.5, 60);
+    const hMax = clamp(Number(ai.laborHoursMax) || Math.max(hMin, 2), hMin, 80);
+
+    const rate = grossHourlyFor(category);
+    const priceFor = (h: number) => round5(Math.max(rate * h + grossTravel(), grossMinimum()));
+
+    const minPrice = priceFor(hMin);
+    const maxPrice = priceFor(hMax);
+
+    return NextResponse.json({
+      ...ai,
+      minPrice,
+      maxPrice,
+      // "Guaranteed" only when the hours are tight enough for a fixed price to
+      // be safe; otherwise the spread is real and the customer should see it.
+      confidence: maxPrice - minPrice <= minPrice * 0.3 ? "guaranteed" : "estimate",
+    });
   } catch {
     return NextResponse.json({ error: "Could not generate quote. Try again." }, { status: 500 });
   }
