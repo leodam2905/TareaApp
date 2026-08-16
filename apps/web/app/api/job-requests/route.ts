@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { CUSTOMER_FEE_RATE } from "@/lib/fees";
 import { sendEmail } from "@/lib/email";
 import { sendPushToUser } from "@/lib/push";
 import { sendSms } from "@/lib/sms";
@@ -15,10 +16,27 @@ import { geocodeAddress } from "@/lib/geo/geocode";
 // for the drive. Distance cannot be priced (the price is fixed before a pro is
 // chosen), so it is bounded instead, by the only party who knows what their
 // time is worth.
-// California contractor licensing. B&P §7048 exempts "minor work" from the
-// licence requirement only where the aggregate contract price — labour AND
-// materials together — is under $500. Above it, the pro must be licensed.
-const CSLB_UNLICENSED_CAP = 500;
+// California contractor licensing — the Minor Work Exemption, B&P §7048.
+//
+// AB 2622 (Carrillo, Ch. 240, Stats. 2024) raised this from $500 to $1,000
+// effective 1 January 2025. The threshold is the AGGREGATE contract price:
+// "labor, materials, and all other items" — not labour alone, and materials
+// count even when the homeowner buys them directly.
+//
+// TWO CONDITIONS THIS CODE CANNOT CHECK, and which void the exemption
+// regardless of price:
+//
+//   - any work requiring a building permit needs a licence, at any value;
+//   - the exemption applies only to someone working alone. A pro who hires or
+//     subcontracts needs a licence even under $1,000.
+//
+// So this cap is necessary, not sufficient. A job under it may still legally
+// require a licensed pro, and nothing here can determine that.
+//
+// Project splitting is also prohibited: a large job cannot be invoiced as
+// several small ones to stay under the cap. Worth watching for if the same
+// customer posts repeated jobs just below it.
+const CSLB_UNLICENSED_CAP = 1000;
 
 const DEFAULT_RADIUS_MILES = 50;
 const MILES_TO_KM = 1.60934;
@@ -108,19 +126,20 @@ export async function GET() {
     // Same rule as the notification fan-out: the pro's own radius. If these
     // disagreed a pro would be told about a job they cannot then see.
     .filter(r => r.distanceKm === null || r.distanceKm <= radiusKmFor(profile.serviceRadius))
-    // California CSLB minor-work exemption (B&P §7048): unlicensed work is
-    // capped at $500 for LABOUR AND MATERIALS COMBINED — an aggregate contract
-    // price, not a labour-only figure.
+    // Measured against what the CUSTOMER pays in total, which is the most
+    // conservative reading of "labor, materials, and all other items": the
+    // service price, the Service Fee charged on it, and materials.
     //
-    // This previously subtracted materials before comparing, so a $450 labour
-    // job carrying $200 of materials totalled $650 and still reached an
-    // unlicensed pro. That is the wrong side of the line the check exists to
-    // hold, and Tarea is launching in California.
+    // Whether Tarea's fee belongs in a contract price between customer and pro
+    // is arguable. Including it only ever routes MORE work to licensed pros,
+    // which is the safe direction to be wrong in.
     //
-    // Materials are an estimate at posting time and can grow during the job, so
-    // this is a floor on exposure rather than a guarantee — a job near the cap
-    // should be treated as licensed work.
-    .filter(r => licensedInsured || (r.budgetMax + (r.materialsCost ?? 0)) <= CSLB_UNLICENSED_CAP)
+    // Materials are an estimate at posting and can grow during a job, so this
+    // is a floor on exposure rather than a guarantee.
+    .filter(r => {
+      const total = r.budgetMax * (1 + CUSTOMER_FEE_RATE) + (r.materialsCost ?? 0);
+      return licensedInsured || total <= CSLB_UNLICENSED_CAP;
+    })
     // Newest first.
     //
     // The query already ordered by createdAt desc and this sort was throwing

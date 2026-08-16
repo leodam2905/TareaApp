@@ -392,7 +392,7 @@ model JobRequest {
   scheduledAt DateTime
   budgetMin   Float
   budgetMax   Float
-  materialsCost Float         @default(0) // furniture/materials the customer buys; INCLUDED in the CSLB $500 cap (labour + materials)
+  materialsCost Float         @default(0) // furniture/materials the customer buys; INCLUDED in the CSLB $1,000 cap (AB 2622)
   urgency     String          @default("STANDARD") // STANDARD, SOON, URGENT
   // DRAFT = geocoding failed or was low confidence; not published, not matchable.
   // Every read path either filters status="OPEN" or rejects non-OPEN, so a DRAFT
