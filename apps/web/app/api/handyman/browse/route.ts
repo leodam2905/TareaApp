@@ -39,7 +39,15 @@ export async function GET(req: NextRequest) {
     where: {
       role: "HANDYMAN",
       isActive: true,
-      handymanProfile: { isAvailable: true },
+      // Bookable means bookable.
+      //
+      // Hiring refuses a pro with no profile photo, and refuses one who has not
+      // passed a background check. Listing either as a choice sets the customer
+      // up to pick somebody and be told no at the last step — so browse applies
+      // the same two conditions the hire endpoint enforces. If these ever drift
+      // apart, the customer discovers it and the pro takes the blame.
+      avatarUrl: { not: null },
+      handymanProfile: { isAvailable: true, backgroundCheckStatus: "PASSED" },
     },
     select: {
       id: true,

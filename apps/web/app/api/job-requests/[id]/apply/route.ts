@@ -19,6 +19,17 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: "You can't apply to your own job request." }, { status: 400 });
   }
 
+  // A pro with no profile photo cannot be booked — the hire endpoint refuses
+  // it. Letting them apply anyway pushes that refusal onto the customer, who
+  // picks somebody, gets an error and has to choose again. Refuse here so the
+  // person who can fix it is the one who hears about it.
+  if (!user.avatarUrl) {
+    return NextResponse.json(
+      { error: "Add a profile photo before applying — customers cannot book a Pro without one." },
+      { status: 400 },
+    );
+  }
+
   const { message, proposedPrice, materialsEstimate } = await req.json();
 
   const application = await prisma.jobApplication.create({
