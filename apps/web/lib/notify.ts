@@ -14,7 +14,38 @@ interface NotifyInput {
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-const SMS_TYPES = new Set(["booking_accepted", "booking_request", "booking_completed", "booking_cancelled"]);
+// Every event where one party does something the other needs to know about.
+//
+// SMS is here because it is the only channel that does not depend on the app
+// being installed, foregrounded, or on push working — the failure mode that
+// had pros never learning a job existed. Push and email stay primary; this is
+// the floor under them.
+//
+// Deliberately NOT included: `payout` (platform to pro, not an interaction
+// with a customer) and `booking_reminder` (system-generated, and a reminder
+// that arrives as a text at an awkward hour reads as spam rather than help).
+const SMS_TYPES = new Set([
+  "booking_request",      // customer books -> pro
+  "booking_accepted",     // pro accepts -> customer
+  "booking_cancelled",    // either party cancels -> the other
+  "booking_completed",    // pro marks done -> customer
+  "job_application",      // pro applies -> customer
+  "application_accepted", // customer selects a pro -> pro
+  "message",              // chat, either direction
+  "review",               // customer reviews -> pro
+]);
+
+/// SMS has no buttons, so a text without a link is a dead end — the recipient
+/// knows something happened and has no way to act on it. It also bills per
+/// 160-character segment, so the body is trimmed to keep the common case to
+/// one segment rather than silently costing three.
+function smsBody(title: string, body: string, url: string): string {
+  const tail = ` ${url}`;
+  const room = 160 - "Tarea: ".length - tail.length;
+  let text = `${title} — ${body}`.replace(/\s+/g, " ").trim();
+  if (text.length > room) text = `${text.slice(0, Math.max(0, room - 1)).trimEnd()}…`;
+  return `Tarea: ${text}${tail}`;
+}
 
 function ctaForType(type: string, refId?: string) {
   const urls: Record<string, string> = {
@@ -73,7 +104,7 @@ export async function createNotification(data: NotifyInput) {
         refId: data.refId ?? null,
       }).catch(() => {});
       if (user.notifSms && user.phone && SMS_TYPES.has(data.type)) {
-        sendSms(user.phone, `Tarea: ${data.title} — ${data.body}`).catch(() => {});
+        sendSms(user.phone, smsBody(data.title, data.body, cta.url)).catch(() => {});
       }
     }
   }
