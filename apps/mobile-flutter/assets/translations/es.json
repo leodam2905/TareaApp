@@ -601,7 +601,8 @@
     "noReviews": "Aún no hay reseñas.",
     "reviewsCountOne": "{} reseña",
     "reviewsCountMany": "{} reseñas",
-    "yourReply": "Tu respuesta"
+    "yourReply": "Tu respuesta",
+    "photoRequired": "Se requiere una foto para que puedan reservarte."
   },
   "diagnose": {
     "title": "Diagnóstico IA",

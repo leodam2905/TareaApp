@@ -601,7 +601,8 @@
     "noReviews": "لا تقييمات بعد.",
     "reviewsCountOne": "{} تقييم",
     "reviewsCountMany": "{} تقييم",
-    "yourReply": "ردّك"
+    "yourReply": "ردّك",
+    "photoRequired": "الصورة مطلوبة قبل أن يتمكن العملاء من حجزك."
   },
   "diagnose": {
     "title": "تشخيص بالذكاء الاصطناعي",

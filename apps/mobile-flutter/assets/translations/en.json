@@ -601,7 +601,8 @@
     "noReviews": "No reviews yet.",
     "reviewsCountOne": "{} review",
     "reviewsCountMany": "{} reviews",
-    "yourReply": "Your reply"
+    "yourReply": "Your reply",
+    "photoRequired": "A photo is required before customers can book you."
   },
   "diagnose": {
     "title": "AI Diagnose",

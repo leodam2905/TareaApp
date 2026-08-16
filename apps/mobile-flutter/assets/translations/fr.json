@@ -601,7 +601,8 @@
     "noReviews": "Aucun avis.",
     "reviewsCountOne": "{} avis",
     "reviewsCountMany": "{} avis",
-    "yourReply": "Votre réponse"
+    "yourReply": "Votre réponse",
+    "photoRequired": "Une photo est obligatoire pour pouvoir être réservé."
   },
   "diagnose": {
     "title": "Diagnostic IA",
