@@ -781,5 +781,30 @@
     "signFailed": "No se pudo registrar tu firma. Inténtalo de nuevo.",
     "alreadySigned": "Has firmado este contrato.",
     "signedOn": "Firmado el {}"
+  },
+  "proBg": {
+    "idTitle": "Identificación oficial",
+    "idDesc": "Toma una foto de ambos lados de tu identificación o sube un archivo. Así confirmamos quién eres — solo se puede hacer una vez.",
+    "takePhoto": "Tomar una foto",
+    "choosePhoto": "Elegir de fotos",
+    "chooseFile": "Elegir un archivo",
+    "add": "Añadir",
+    "feeTitle": "Costo de la verificación",
+    "feeDesc": "Verificación única de ${}, realizada por Certn. Paga ahora o descuéntalo de tu primer pago.",
+    "payNow": "Pagar ${} ahora",
+    "deferPay": "Descontar de mi primer pago",
+    "deferHint": "Hoy no pagas nada. ${} se descontarán de tu primer pago.",
+    "idFirst": "Primero añade ambos lados de tu identificación.",
+    "statusLabel": "Estado",
+    "statusNone": "Sin empezar",
+    "statusPaid": "Pagado",
+    "statusRunning": "En curso",
+    "statusDeferred": "Diferido",
+    "statusPassed": "Aprobado",
+    "statusFailed": "No aprobado",
+    "paidNote": "Tu verificación está en curso. Certn te enviará un enlace seguro por correo.",
+    "deferredNote": "Iniciada. Se descontarán ${} de tu primer pago.",
+    "deferredDone": "Verificación iniciada",
+    "failed": "Algo salió mal. Inténtalo de nuevo."
   }
 }

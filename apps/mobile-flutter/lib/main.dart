@@ -34,6 +34,7 @@ import 'screens/pro/pro_service_area.dart';
 import 'screens/pro/pro_portfolio.dart';
 import 'screens/pro/pro_certifications.dart';
 import 'screens/pro/pro_ica.dart';
+import 'screens/pro/pro_background_check.dart';
 import 'screens/pro/pro_reviews.dart';
 import 'screens/pro/pro_job_detail.dart';
 import 'screens/pro/pro_payout_methods.dart';
@@ -98,6 +99,7 @@ final appRouter = GoRouter(
     GoRoute(path: '/pro/portfolio', builder: (_, __) => const ProPortfolio()),
     GoRoute(path: '/pro/certifications', builder: (_, __) => const ProCertifications()),
     GoRoute(path: '/pro/ica', builder: (_, __) => const ProIca()),
+    GoRoute(path: '/pro/background-check', builder: (_, __) => const ProBackgroundCheck()),
     GoRoute(path: '/pro/reviews', builder: (_, __) => const ProReviews()),
     GoRoute(path: '/pro/job-detail', builder: (_, s) => ProJobDetail(booking: (s.extra as Map?)?.cast<String, dynamic>() ?? const {})),
     GoRoute(path: '/pro/payout-methods', builder: (_, __) => const ProPayoutMethods()),
@@ -116,6 +118,10 @@ final appRouter = GoRouter(
   ],
 );
 
+/// App-wide text size. 1.0 was the design size; everything reads one notch
+/// larger at 1.12 without re-laying-out a single screen.
+const double _kTextScale = 1.12;
+
 class TareaApp extends StatelessWidget {
   const TareaApp({super.key});
 
@@ -133,10 +139,17 @@ class TareaApp extends StatelessWidget {
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      // Lock text to design size regardless of the phone's Text Size setting —
-      // the same fix as the RN app, but native to Flutter (no scaling ever).
+      // Text is pinned to one size for everyone, so the phone's Text Size
+      // setting can't blow the layouts apart (the same fix as the RN app). That
+      // pin was 1.0, which read as small on a phone held at arm's length while
+      // somebody is standing in a customer's kitchen — so the pin moved up
+      // rather than editing hundreds of individual fontSize values, which would
+      // drift apart the moment anyone added a screen.
+      //
+      // Raise this cautiously: every point of scale is a point of overflow risk
+      // in tight rows, and Arabic and French already run longer than English.
       builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
+        data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(_kTextScale)),
         child: child!,
       ),
     );

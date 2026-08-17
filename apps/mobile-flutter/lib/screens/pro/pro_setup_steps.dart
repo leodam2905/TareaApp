@@ -112,7 +112,10 @@ class _ProSetupStepsState extends State<ProSetupSteps> {
           titleKey: 'proSetup.backgroundCheck',
           descKey: 'proSetup.backgroundCheckDesc',
           state: _bgState,
-          onTap: () => _goThen(() => context.push('/pro/certifications')),
+          // Was '/pro/certifications', the licence-and-insurance screen. The
+          // background check needs a government ID and the fee decision, which
+          // that screen has neither of.
+          onTap: () => _goThen(() => context.push('/pro/background-check')),
         ),
         _Step(
           titleKey: 'proSetup.payouts',

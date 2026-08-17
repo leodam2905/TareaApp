@@ -781,5 +781,30 @@
     "signFailed": "Could not record your signature. Please try again.",
     "alreadySigned": "You have signed this agreement.",
     "signedOn": "Signed on {}"
+  },
+  "proBg": {
+    "idTitle": "Government ID",
+    "idDesc": "Take a photo of both sides of your ID, or upload a file. This is how we confirm who you are — it can only be set once.",
+    "takePhoto": "Take a photo",
+    "choosePhoto": "Choose from photos",
+    "chooseFile": "Choose a file",
+    "add": "Add",
+    "feeTitle": "Background check fee",
+    "feeDesc": "A one-time ${} check, run by Certn. You can pay now or have it taken from your first payout.",
+    "payNow": "Pay ${} now",
+    "deferPay": "Take it from my first payout",
+    "deferHint": "Nothing to pay today. ${} comes out of your first payout.",
+    "idFirst": "Add both sides of your ID first.",
+    "statusLabel": "Status",
+    "statusNone": "Not started",
+    "statusPaid": "Paid",
+    "statusRunning": "In progress",
+    "statusDeferred": "Deferred",
+    "statusPassed": "Passed",
+    "statusFailed": "Not passed",
+    "paidNote": "Your background check is under way. Certn will email you a secure link.",
+    "deferredNote": "Started. ${} will be deducted from your first payout.",
+    "deferredDone": "Background check started",
+    "failed": "Something went wrong. Please try again."
   }
 }

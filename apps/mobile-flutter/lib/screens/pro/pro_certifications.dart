@@ -16,8 +16,6 @@ class _ProCertificationsState extends State<ProCertifications> {
   String _status = '';
   bool _hasLicense = false;
   bool _hasInsurance = false;
-  bool _hasIdFront = false;
-  bool _hasIdBack = false;
   bool _loading = true;
   /// Which document is uploading, so only that row shows a spinner.
   String? _busyField;
@@ -34,8 +32,6 @@ class _ProCertificationsState extends State<ProCertifications> {
         _status = (hp['verificationStatus'] ?? 'none').toString();
         _hasLicense = hp['licenseDocUrl'] != null;
         _hasInsurance = hp['insuranceDocUrl'] != null;
-          _hasIdFront = hp['idFrontUrl'] != null;
-          _hasIdBack = hp['idBackUrl'] != null;
       }
     } catch (_) {}
     if (mounted) setState(() => _loading = false);
@@ -119,24 +115,10 @@ class _ProCertificationsState extends State<ProCertifications> {
               ),
               const SizedBox(height: 14),
 
-              // Government ID — set ONCE.
-              //
-              // The server accepts idFront/idBack only while they are empty and
-              // silently ignores them afterwards. A screen that kept offering
-              // Upload would look like it worked and change nothing, so once a
-              // document is on file the control is replaced by who to ask.
-              _docRow(Icons.badge_outlined, 'proEdit.idFront'.tr(), _hasIdFront,
-                  field: 'idFrontUrl', locked: _hasIdFront),
-              _docRow(Icons.badge_outlined, 'proEdit.idBack'.tr(), _hasIdBack,
-                  field: 'idBackUrl', locked: _hasIdBack),
-              if (_hasIdFront || _hasIdBack)
-                Padding(
-                  padding: const EdgeInsets.only(left: 4, bottom: 10),
-                  child: Text('proEdit.idLocked'.tr(),
-                      style: const TextStyle(color: C.muted, fontSize: 12.5, height: 1.35)),
-                ),
-
-              // Licence and insurance can be replaced — they expire and get renewed.
+              // Government ID is NOT here. It identifies the person and gates the
+              // background check, so it lives on that screen. This one is the
+              // credentials a pro keeps current — licence and insurance expire
+              // and get renewed, so both stay replaceable.
               _docRow(Icons.workspace_premium_outlined, 'proEdit.license'.tr(), _hasLicense,
                   field: 'licenseDocUrl'),
               _docRow(Icons.shield_outlined, 'proEdit.insurance'.tr(), _hasInsurance,

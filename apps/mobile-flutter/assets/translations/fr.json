@@ -781,5 +781,30 @@
     "signFailed": "Impossible d'enregistrer votre signature. Réessayez.",
     "alreadySigned": "Vous avez signé ce contrat.",
     "signedOn": "Signé le {}"
+  },
+  "proBg": {
+    "idTitle": "Pièce d'identité",
+    "idDesc": "Photographiez le recto et le verso de votre pièce d'identité, ou envoyez un fichier. C'est ainsi que nous confirmons votre identité — une seule fois.",
+    "takePhoto": "Prendre une photo",
+    "choosePhoto": "Choisir une photo",
+    "chooseFile": "Choisir un fichier",
+    "add": "Ajouter",
+    "feeTitle": "Frais de vérification",
+    "feeDesc": "Vérification unique de {} $, réalisée par Certn. Payez maintenant ou sur votre premier virement.",
+    "payNow": "Payer {} $",
+    "deferPay": "Prélever sur mon premier virement",
+    "deferHint": "Rien à payer aujourd'hui. {} $ seront prélevés sur votre premier virement.",
+    "idFirst": "Ajoutez d'abord les deux faces de votre pièce d'identité.",
+    "statusLabel": "Statut",
+    "statusNone": "Non commencé",
+    "statusPaid": "Payé",
+    "statusRunning": "En cours",
+    "statusDeferred": "Différé",
+    "statusPassed": "Validé",
+    "statusFailed": "Non validé",
+    "paidNote": "Votre vérification est en cours. Certn vous enverra un lien sécurisé par e-mail.",
+    "deferredNote": "Commencé. {} $ seront déduits de votre premier virement.",
+    "deferredDone": "Vérification lancée",
+    "failed": "Une erreur est survenue. Réessayez."
   }
 }
