@@ -69,6 +69,9 @@ class _PostJobScreenState extends State<PostJobScreen> {
   final _zip = TextEditingController();
   bool _submitting = false;
   Map<String, dynamic>? _estimate;
+  /// The estimate call ran and produced no price. Distinct from "not run
+  /// yet", so Review can offer a retry instead of blaming the description.
+  bool _estimateFailed = false;
   bool _aiLoading = false;
 
   // Build the plain-text description sent to the pricing AI + stored on the job,
@@ -90,7 +93,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
   // mirroring the RN flow — the price is set by AI before you post.
   Future<void> _fetchAiPrice() async {
     if (_cat == null || _task == null || !_allFilled || _aiLoading) return;
-    setState(() => _aiLoading = true);
+    setState(() { _aiLoading = true; _estimateFailed = false; });
     try {
       final zip = _zip.text.trim();
       final res = await Api.post('/ai/price-estimate', {
@@ -98,14 +101,26 @@ class _PostJobScreenState extends State<PostJobScreen> {
         'description': _builtDescription(),
         'city': zip.isEmpty ? _city.text.trim() : '${_city.text.trim()} $zip',
         'urgent': _urgency == 'URGENT',
-      });
+      }).timeout(const Duration(seconds: 25));
+      var ok = false;
       if (res.statusCode == 200) {
         final d = jsonDecode(res.body) as Map<String, dynamic>;
         if (d['price'] != null || (d['min'] != null && d['max'] != null)) {
-          setState(() => _estimate = d);
+          _estimate = d;
+          ok = true;
         }
       }
-    } catch (_) {/* price stays open if AI unavailable */}
+      if (!ok) _estimateFailed = true;
+    } catch (_) {
+      // Was swallowed entirely, which is how a failed call ended up being
+      // reported to the customer as "add a description" — advice they could not
+      // act on, since _builtDescription() always contains the task label. The
+      // pricing model needs a real estimate before a job can be posted, so the
+      // failure is now surfaced with a way to retry. 25s because the endpoint
+      // genuinely takes ~4s and there was no timeout at all before, so a hung
+      // request span forever behind the "Calculating…" spinner.
+      _estimateFailed = true;
+    }
     if (mounted) setState(() => _aiLoading = false);
   }
 
@@ -174,6 +189,16 @@ class _PostJobScreenState extends State<PostJobScreen> {
   }
 
   Future<void> _submit() async {
+    // The one place a session is actually required. Everything before this —
+    // AI Diagnose, Instant Quote, and seeing the price — works signed out, so a
+    // visitor can reach Review without an account. Posting would otherwise 401
+    // and look like the app failing rather than asking them to sign up.
+    if (await Api.token() == null) {
+      if (!mounted) return;
+      _toast('postjob.signInToPost'.tr());
+      context.push('/register');
+      return;
+    }
     setState(() => _submitting = true);
     try {
       final pos = _isDirected ? null : await _coords();
@@ -247,6 +272,10 @@ class _PostJobScreenState extends State<PostJobScreen> {
     if (_step < 3) {
       setState(() => _step++);
       if (_step == 3) _fetchAiPrice();
+    } else if (_estimate == null) {
+      // Tarea sets the labour price, so a job with no estimate carries no budget
+      // for a pro to see. Retry rather than post something unpriceable.
+      _fetchAiPrice();
     } else {
       _submit();
     }
@@ -317,7 +346,13 @@ class _PostJobScreenState extends State<PostJobScreen> {
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Flexible(child: Text(_step < 3 ? 'common.continue'.tr() : (_isDirected ? 'postjob.sendRequestTo'.tr(args: [_proName]) : 'postjob.acceptEstimate'.tr()),
+                                Flexible(child: Text(_step < 3
+                                        ? 'common.continue'.tr()
+                                        : (_estimate == null
+                                            ? 'postjob.retryEstimate'.tr()
+                                            : (_isDirected
+                                                ? 'postjob.sendRequestTo'.tr(args: [_proName])
+                                                : 'postjob.acceptEstimate'.tr())),
                                     textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white))),
                                 const SizedBox(width: 10),
                                 Container(
@@ -663,8 +698,33 @@ class _PostJobScreenState extends State<PostJobScreen> {
     final e = _estimate;
     if (e == null) {
       return _card([
-        Text('postjob.addDescription'.tr(),
-            style: const TextStyle(color: C.muted, height: 1.4)),
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Icon(Icons.error_outline, color: Color(0xFFB45309), size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              _estimateFailed
+                  ? 'postjob.estimateFailed'.tr()
+                  : 'postjob.estimatePending'.tr(),
+              style: const TextStyle(color: C.muted, height: 1.4),
+            ),
+          ),
+        ]),
+        const SizedBox(height: 14),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: _aiLoading ? null : _fetchAiPrice,
+            icon: const Icon(Icons.refresh, size: 18, color: C.blue),
+            label: Text('postjob.retryEstimate'.tr(),
+                style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: Color(0xFFBFD4FF)),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+          ),
+        ),
       ]);
     }
     final fixed = e['isFixed'] == true;

@@ -10,15 +10,23 @@ class _Feature {
   // (a const list can't call .tr(), so store the keys, not the text).
   final String titleKey;
   final String descKey;
-  const _Feature(this.icon, this.color, this.titleKey, this.descKey);
+  /// Where tapping goes. Null for the cards that describe how Tarea works
+  /// rather than something you can try, so a tappable card always leads
+  /// somewhere.
+  final String? route;
+  const _Feature(this.icon, this.color, this.titleKey, this.descKey, [this.route]);
 }
 
 const _features = [
   _Feature(Icons.verified_user_outlined, C.blue, 'landing.verifiedPros', 'landing.verifiedProsDesc'),
   _Feature(Icons.bolt_outlined, C.blue, 'landing.fastBooking', 'landing.fastBookingDesc'),
   _Feature(Icons.credit_card_outlined, C.blue, 'landing.upfrontPricing', 'landing.upfrontPricingDesc'),
-  _Feature(Icons.auto_awesome_outlined, C.green, 'landing.diagnose', 'landing.diagnoseDesc'),
-  _Feature(Icons.sell_outlined, Color(0xFF7C3AED), 'landing.instantQuote', 'landing.instantQuoteDesc'),
+  // Both work signed-out — /api/ai/diagnose, /api/ai/instant-quote and now
+  // /api/ai/price-estimate need no session. A visitor can try the thing that
+  // sells Tarea before making an account; the account is asked for when they
+  // accept the estimate and post the job.
+  _Feature(Icons.auto_awesome_outlined, C.green, 'landing.diagnose', 'landing.diagnoseDesc', '/diagnose'),
+  _Feature(Icons.sell_outlined, Color(0xFF7C3AED), 'landing.instantQuote', 'landing.instantQuoteDesc', '/instant-quote'),
   _Feature(Icons.workspace_premium_outlined, Color(0xFFF97316), 'landing.qualityFocused', 'landing.qualityFocusedDesc'),
 ];
 
@@ -91,7 +99,7 @@ class LandingScreen extends StatelessWidget {
                           if (j > i) const SizedBox(width: 8),
                           Expanded(
                             child: j < _features.length
-                                ? _featureCard(_features[j])
+                                ? _featureCard(context, _features[j])
                                 : const SizedBox.shrink(),
                           ),
                         ],
@@ -135,8 +143,8 @@ class LandingScreen extends StatelessWidget {
     );
   }
 
-  Widget _featureCard(_Feature f) {
-    return Column(
+  Widget _featureCard(BuildContext context, _Feature f) {
+    final card = Column(
       children: [
         Container(
           width: 56, height: 56,
@@ -147,7 +155,22 @@ class LandingScreen extends StatelessWidget {
         Text(f.titleKey.tr(), textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: C.ink)),
         const SizedBox(height: 4),
         Text(f.descKey.tr(), textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: C.muted, height: 1.3)),
+        if (f.route != null) ...[
+          const SizedBox(height: 6),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text('landing.tryIt'.tr(),
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: f.color)),
+            const SizedBox(width: 2),
+            Icon(Icons.arrow_forward, size: 11, color: f.color),
+          ]),
+        ],
       ],
+    );
+    if (f.route == null) return card;
+    return InkWell(
+      onTap: () => context.push(f.route!),
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: card),
     );
   }
 }

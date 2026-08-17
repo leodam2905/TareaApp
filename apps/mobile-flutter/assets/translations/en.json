@@ -83,7 +83,8 @@
     "instantQuote": "Instant Quote",
     "instantQuoteDesc": "Get a price before you book.",
     "qualityFocused": "Quality Focused",
-    "qualityFocusedDesc": "Skilled pros who take pride in their work."
+    "qualityFocusedDesc": "Skilled pros who take pride in their work.",
+    "tryIt": "Try it"
   },
   "login": {
     "subtitlePro": "Log in to your account and continue finding jobs and growing your business.",
@@ -281,7 +282,6 @@
     "streetAddress": "Street address",
     "city": "City",
     "calculating": "Calculating a fair price…",
-    "addDescription": "Add a description on the Details step so Tarea can estimate your price.",
     "fixedPrice": "Fixed price",
     "estimatedRange": "Estimated range",
     "laborService": "Labor & service",
@@ -308,7 +308,11 @@
     "rushFee": "Urgent rush fee",
     "serviceFee": "Service Fee",
     "total": "Total",
-    "materialsNote": "Materials is a suggested estimate — your pro confirms the actual cost (with receipts) when they apply."
+    "materialsNote": "Materials is a suggested estimate — your pro confirms the actual cost (with receipts) when they apply.",
+    "estimateFailed": "We couldn't work out a price just now. Tap retry — your details are saved.",
+    "estimatePending": "Working out your price…",
+    "retryEstimate": "Retry estimate",
+    "signInToPost": "Create an account to post this job — your details are saved."
   },
   "browse": {
     "title": "Browse Pros",

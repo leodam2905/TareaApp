@@ -20,9 +20,23 @@ const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n
 const round5 = (n: number) => Math.round(n / 5) * 5;
 
 export async function POST(req: NextRequest) {
+  // Seeing the price does NOT require an account; committing to it does.
+  //
+  // This used to 401 for a signed-out visitor. AI Diagnose and Instant Quote are
+  // already public and both hand off to the posting flow, so a visitor could try
+  // the feature that sold them on Tarea, walk into Post a Job, and hit a dead end
+  // at Review with no price and no explanation. The session is enforced where it
+  // actually matters — accepting the estimate and posting the job.
+  //
+  // Abuse protection follows the other public AI routes: per-user when we know
+  // who it is, per-IP and tighter when we do not, since an unauthenticated
+  // endpoint that calls Anthropic spends real money.
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!rateLimit(`ai-user:${user.id}`, 30, 60_000).ok) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const { ok: withinLimit } = user
+    ? rateLimit(`ai-user:${user.id}`, 30, 60_000)
+    : rateLimit(`ai:${ip}`, 8, 60_000);
+  if (!withinLimit) {
     return NextResponse.json({ error: "Too many requests. Please wait a moment." }, { status: 429 });
   }
 

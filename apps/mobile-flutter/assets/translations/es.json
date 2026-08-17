@@ -83,7 +83,8 @@
     "instantQuote": "Cotización al instante",
     "instantQuoteDesc": "Un precio antes de reservar.",
     "qualityFocused": "Enfoque en calidad",
-    "qualityFocusedDesc": "Pros que cuidan su trabajo."
+    "qualityFocusedDesc": "Pros que cuidan su trabajo.",
+    "tryIt": "Probar"
   },
   "login": {
     "subtitlePro": "Entra a tu cuenta y sigue encontrando trabajos y haciendo crecer tu negocio.",
@@ -281,7 +282,6 @@
     "streetAddress": "Dirección",
     "city": "Ciudad",
     "calculating": "Calculando un precio justo…",
-    "addDescription": "Añade una descripción en el paso Detalles para que Tarea estime tu precio.",
     "fixedPrice": "Precio fijo",
     "estimatedRange": "Rango estimado",
     "laborService": "Mano de obra y servicio",
@@ -308,7 +308,11 @@
     "rushFee": "Recargo por urgencia",
     "serviceFee": "Tarifa de servicio",
     "total": "Total",
-    "materialsNote": "El costo de materiales es una estimación — tu profesional confirma el importe real (con recibos) al postularse."
+    "materialsNote": "El costo de materiales es una estimación — tu profesional confirma el importe real (con recibos) al postularse.",
+    "estimateFailed": "No pudimos calcular un precio ahora mismo. Reintenta — tus datos se han guardado.",
+    "estimatePending": "Calculando tu precio…",
+    "retryEstimate": "Reintentar estimación",
+    "signInToPost": "Crea una cuenta para publicar — tus datos se han guardado."
   },
   "browse": {
     "title": "Buscar pros",
