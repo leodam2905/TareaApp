@@ -29,21 +29,12 @@ class StripeTokens {
         'bank_account[account_holder_type]': 'individual',
       });
 
-  static Future<StripeTokenResult> card({
-    required String number,
-    required String expMonth,
-    required String expYear,
-    required String cvc,
-    String name = '',
-  }) =>
-      _token({
-        'card[number]': number,
-        'card[exp_month]': expMonth,
-        'card[exp_year]': expYear,
-        'card[cvc]': cvc,
-        'card[currency]': 'usd',
-        if (name.isNotEmpty) 'card[name]': name,
-      });
+  // card() was removed: Stripe refuses raw card tokenization with a
+  // publishable key on this account ("This integration surface is unsupported
+  // for publishable key tokenization"), because handling card numbers puts the
+  // platform in PCI SAQ-D scope. Payout cards are added in Stripe's dashboard.
+  // Bank accounts are NOT restricted, which is why bankAccount() stays.
+
 
   static Future<StripeTokenResult> _token(Map<String, String> body) async {
     if (_publishableKey.isEmpty || _publishableKey.contains('placeholder')) {

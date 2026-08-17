@@ -543,10 +543,10 @@
     "bankPrivacy": "Vos données vont directement à Stripe et ne passent jamais par Tarea.",
     "enterBank": "Saisissez le numéro de routage, le numéro de compte et le nom",
     "nameOnCard": "Nom sur la carte (facultatif)",
-    "cardNumber": "Numéro de carte",
-    "cardPrivacy": "Les cartes de débit permettent des paiements instantanés. Les données vont directement à Stripe.",
     "enterCard": "Saisissez le numéro de carte, l'expiration et le CVC",
-    "add": "Ajouter"
+    "add": "Ajouter",
+    "cardViaStripe": "Les cartes de débit s'ajoutent dans Stripe, qui vérifie et sécurise votre carte. Les virements instantanés en exigent une.",
+    "finishSetupFirst": "Terminez d'abord la vérification Stripe — nous vous y emmenons."
   },
   "proEdit": {
     "myServices": "Mes services",

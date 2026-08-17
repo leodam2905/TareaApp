@@ -543,10 +543,10 @@
     "bankPrivacy": "Your details go directly to Stripe and never touch Tarea.",
     "enterBank": "Enter routing number, account number and name",
     "nameOnCard": "Name on card (optional)",
-    "cardNumber": "Card number",
-    "cardPrivacy": "Debit cards enable instant payouts. Details go directly to Stripe.",
     "enterCard": "Enter the card number, expiry and CVC",
-    "add": "Add"
+    "add": "Add",
+    "cardViaStripe": "Debit cards are added in Stripe, where your card is checked and kept secure. Instant payouts need one.",
+    "finishSetupFirst": "Finish verifying with Stripe first — we'll take you there now."
   },
   "proEdit": {
     "myServices": "My Services",

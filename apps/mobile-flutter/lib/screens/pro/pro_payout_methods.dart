@@ -84,12 +84,34 @@ class _ProPayoutMethodsState extends State<ProPayoutMethods> {
     else if (tok?.error != null) _toast(tok!.error!);
   }
 
-  Future<void> _addCard() async {
-    final tok = await showModalBottomSheet<StripeTokenResult>(
-      context: context, isScrollControlled: true, backgroundColor: Colors.transparent,
-      builder: (_) => const _CardSheet());
-    if (tok?.id != null) _addToken(tok!.id!, 'card');
-    else if (tok?.error != null) _toast(tok!.error!);
+  /// Debit cards are added in Stripe's dashboard, not here.
+  ///
+  /// The in-app form posted raw card[number]/card[cvc] to /v1/tokens with the
+  /// publishable key. Stripe refuses that on this account — "This integration
+  /// surface is unsupported for publishable key tokenization" — because
+  /// handling raw card numbers moves the platform into PCI SAQ-D scope. It is
+  /// an account policy, so the form could never succeed, in test or live.
+  ///
+  /// Stripe also validates what the form could not: that the card is debit and
+  /// belongs to the account holder, both required for instant payouts.
+  Future<void> _openStripePayouts() async {
+    setState(() => _busy = true);
+    try {
+      final res = await Api.post('/stripe/login-link', {});
+      final body = res.body.isNotEmpty ? jsonDecode(res.body) : {};
+      final url = (body is Map ? body['url'] : null)?.toString() ?? '';
+      if (res.statusCode >= 200 && res.statusCode < 300 && url.startsWith('http')) {
+        if ((body as Map)['kind'] == 'onboarding') _toast('payout.finishSetupFirst'.tr());
+        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+        await _load();
+      } else {
+        _toast((body is Map ? body['error'] : null)?.toString() ?? 'payout.openStripeFailed'.tr());
+      }
+    } catch (_) {
+      _toast('common.connectionRetry'.tr());
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   Future<void> _connectStripe() async {
@@ -143,9 +165,14 @@ class _ProPayoutMethodsState extends State<ProPayoutMethods> {
               const SizedBox(height: 10),
               OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50), side: const BorderSide(color: C.blue)),
-                onPressed: _busy ? null : _addCard,
+                onPressed: _busy ? null : _openStripePayouts,
                 icon: const Icon(Icons.credit_card, size: 18, color: C.blue),
                 label: Text('payout.addCard'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
+              Padding(
+                padding: const EdgeInsets.only(top: 6, left: 4, right: 4),
+                child: Text('payout.cardViaStripe'.tr(),
+                    style: const TextStyle(color: C.muted, fontSize: 12.5, height: 1.35)),
+              ),
               const SizedBox(height: 10),
               TextButton.icon(onPressed: _connectStripe,
                 iconAlignment: IconAlignment.end,
@@ -220,47 +247,10 @@ class _BankSheetState extends State<_BankSheet> {
       ]);
 }
 
-class _CardSheet extends StatefulWidget {
-  const _CardSheet();
-  @override
-  State<_CardSheet> createState() => _CardSheetState();
-}
-
-class _CardSheetState extends State<_CardSheet> {
-  final _number = TextEditingController();
-  final _month = TextEditingController();
-  final _year = TextEditingController();
-  final _cvc = TextEditingController();
-  final _name = TextEditingController();
-  bool _saving = false;
-
-  void _toast(String m) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
-
-  Future<void> _submit() async {
-    if (_number.text.trim().length < 12 || _month.text.trim().isEmpty || _year.text.trim().isEmpty || _cvc.text.trim().isEmpty) {
-      return _toast('payout.enterCard'.tr());
-    }
-    setState(() => _saving = true);
-    final r = await StripeTokens.card(
-      number: _number.text.replaceAll(' ', ''), expMonth: _month.text.trim(), expYear: _year.text.trim(),
-      cvc: _cvc.text.trim(), name: _name.text.trim());
-    if (mounted) { setState(() => _saving = false); Navigator.pop(context, r); }
-  }
-
-  @override
-  Widget build(BuildContext context) => _sheet(context, 'payout.addCard'.tr(), _saving, _submit, [
-        _f('payout.nameOnCard'.tr(), _name),
-        _f('payout.cardNumber'.tr(), _number, keyboard: TextInputType.number),
-        Row(children: [
-          Expanded(child: _f('MM', _month, keyboard: TextInputType.number)),
-          const SizedBox(width: 10),
-          Expanded(child: _f('YYYY', _year, keyboard: TextInputType.number)),
-          const SizedBox(width: 10),
-          Expanded(child: _f('CVC', _cvc, keyboard: TextInputType.number)),
-        ]),
-        Text('payout.cardPrivacy'.tr(), style: const TextStyle(color: C.muted, fontSize: 12)),
-      ]);
-}
+// The debit-card sheet lived here. It tokenized raw card details with the
+// publishable key, which Stripe refuses on this account (PCI SAQ-D scope), so
+// it could never succeed. Cards are added in Stripe's dashboard instead —
+// see _openStripePayouts above.
 
 // Shared sheet chrome + field.
 Widget _sheet(BuildContext context, String title, bool saving, VoidCallback onSubmit, List<Widget> fields) => Padding(

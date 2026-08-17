@@ -543,10 +543,10 @@
     "bankPrivacy": "Tus datos van directamente a Stripe y nunca pasan por Tarea.",
     "enterBank": "Ingresa el número de ruta, número de cuenta y nombre",
     "nameOnCard": "Nombre en la tarjeta (opcional)",
-    "cardNumber": "Número de tarjeta",
-    "cardPrivacy": "Las tarjetas de débito permiten pagos instantáneos. Los datos van directamente a Stripe.",
     "enterCard": "Ingresa el número de tarjeta, la expiración y el CVC",
-    "add": "Añadir"
+    "add": "Añadir",
+    "cardViaStripe": "Las tarjetas de débito se añaden en Stripe, que verifica y protege tu tarjeta. Los pagos instantáneos requieren una.",
+    "finishSetupFirst": "Primero completa la verificación con Stripe — te llevamos allí."
   },
   "proEdit": {
     "myServices": "Mis servicios",
