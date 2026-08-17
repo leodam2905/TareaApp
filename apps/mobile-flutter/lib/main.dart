@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'theme.dart';
 import 'api.dart';
 import 'flavor.dart';
@@ -43,9 +44,22 @@ import 'push_service.dart';
 
 // Shared entry point for both flavors. Sets up localization (EasyLocalization
 // must wrap MaterialApp) then boots the app; push init stays non-blocking.
+/// How long the launch screen stays up, for both apps.
+///
+/// It is a MINIMUM, not a sleep: the clock starts at launch and only the
+/// remainder is waited out, so startup work counts towards the three seconds
+/// rather than being added on top. On a slow device that finishes init in 2.5s
+/// the splash holds 0.5s longer; on one that takes 4s it is already past and
+/// nothing is added.
+const _kSplashMinimum = Duration(seconds: 3);
+
 Future<void> bootstrap(Flavor flavor) async {
+  final launchedAt = DateTime.now();
   appFlavor = flavor;
-  WidgetsFlutterBinding.ensureInitialized();
+  final binding = WidgetsFlutterBinding.ensureInitialized();
+  // Without this the native splash is torn down the moment the first Flutter
+  // frame renders, so it flashed for whatever startup happened to take.
+  FlutterNativeSplash.preserve(widgetsBinding: binding);
   await EasyLocalization.ensureInitialized();
   runApp(
     EasyLocalization(
@@ -56,6 +70,11 @@ Future<void> bootstrap(Flavor flavor) async {
       child: const TareaApp(),
     ),
   );
+  // Hold the launch screen out to the minimum, then hand over to the app.
+  final remaining = _kSplashMinimum - DateTime.now().difference(launchedAt);
+  if (remaining > Duration.zero) await Future.delayed(remaining);
+  FlutterNativeSplash.remove();
+
   // Init push AFTER the first frame so a slow/failed Firebase init on any
   // platform can never block the UI from rendering (white screen).
   PushService.initFirebase().then((_) => PushService.registerToken());
