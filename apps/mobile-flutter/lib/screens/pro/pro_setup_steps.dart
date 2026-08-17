@@ -124,7 +124,10 @@ class _ProSetupStepsState extends State<ProSetupSteps> {
           titleKey: 'proSetup.agreement',
           descKey: 'proSetup.agreementDesc',
           state: _flag('ica') ? _StepState.done : _StepState.todo,
-          onTap: () => _goThen(() => context.push('/pro/certifications')),
+          // Was '/pro/certifications' — the document-upload screen. There was
+          // no agreement screen to point at, so this step could never be
+          // completed and no pro could become bookable from the app.
+          onTap: () => _goThen(() => context.push('/pro/ica')),
         ),
       ];
 

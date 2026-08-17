@@ -33,6 +33,7 @@ import 'screens/pro/pro_edit_services.dart';
 import 'screens/pro/pro_service_area.dart';
 import 'screens/pro/pro_portfolio.dart';
 import 'screens/pro/pro_certifications.dart';
+import 'screens/pro/pro_ica.dart';
 import 'screens/pro/pro_reviews.dart';
 import 'screens/pro/pro_job_detail.dart';
 import 'screens/pro/pro_payout_methods.dart';
@@ -96,6 +97,7 @@ final appRouter = GoRouter(
     GoRoute(path: '/pro/service-area', builder: (_, __) => const ProServiceArea()),
     GoRoute(path: '/pro/portfolio', builder: (_, __) => const ProPortfolio()),
     GoRoute(path: '/pro/certifications', builder: (_, __) => const ProCertifications()),
+    GoRoute(path: '/pro/ica', builder: (_, __) => const ProIca()),
     GoRoute(path: '/pro/reviews', builder: (_, __) => const ProReviews()),
     GoRoute(path: '/pro/job-detail', builder: (_, s) => ProJobDetail(booking: (s.extra as Map?)?.cast<String, dynamic>() ?? const {})),
     GoRoute(path: '/pro/payout-methods', builder: (_, __) => const ProPayoutMethods()),

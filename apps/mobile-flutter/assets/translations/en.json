@@ -771,5 +771,15 @@
     "thisBooking": "This booking",
     "nothingDisputable": "Nothing to report right now. You can report a problem on a job that is in progress or completed.",
     "footnote": "Reports are reviewed by Tarea. Payouts are held while a dispute is open."
+  },
+  "proIca": {
+    "title": "Contractor Agreement",
+    "scrollToEnd": "Scroll to the end to continue",
+    "accept": "I have read and agree to the Independent Contractor Agreement.",
+    "signContinue": "Sign & Continue",
+    "signedToast": "Agreement signed",
+    "signFailed": "Could not record your signature. Please try again.",
+    "alreadySigned": "You have signed this agreement.",
+    "signedOn": "Signed on {}"
   }
 }

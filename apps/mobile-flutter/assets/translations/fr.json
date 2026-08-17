@@ -771,5 +771,15 @@
     "thisBooking": "Cette réservation",
     "nothingDisputable": "Rien à signaler pour l'instant. Vous pouvez signaler un problème sur une mission en cours ou terminée.",
     "footnote": "Les signalements sont examinés par Tarea. Les paiements sont suspendus pendant un litige."
+  },
+  "proIca": {
+    "title": "Contrat de prestataire",
+    "scrollToEnd": "Faites défiler jusqu'à la fin pour continuer",
+    "accept": "J'ai lu et j'accepte le contrat de prestataire indépendant (Independent Contractor Agreement).",
+    "signContinue": "Signer et continuer",
+    "signedToast": "Contrat signé",
+    "signFailed": "Impossible d'enregistrer votre signature. Réessayez.",
+    "alreadySigned": "Vous avez signé ce contrat.",
+    "signedOn": "Signé le {}"
   }
 }

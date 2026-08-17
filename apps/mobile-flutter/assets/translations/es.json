@@ -771,5 +771,15 @@
     "thisBooking": "Esta reserva",
     "nothingDisputable": "Nada que informar ahora. Puedes informar de un problema en un trabajo en curso o completado.",
     "footnote": "Tarea revisa los informes. Los pagos se retienen mientras haya una disputa abierta."
+  },
+  "proIca": {
+    "title": "Contrato de contratista",
+    "scrollToEnd": "Desplázate hasta el final para continuar",
+    "accept": "He leído y acepto el contrato de contratista independiente (Independent Contractor Agreement).",
+    "signContinue": "Firmar y continuar",
+    "signedToast": "Contrato firmado",
+    "signFailed": "No se pudo registrar tu firma. Inténtalo de nuevo.",
+    "alreadySigned": "Has firmado este contrato.",
+    "signedOn": "Firmado el {}"
   }
 }

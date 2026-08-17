@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Fragment } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Dancing_Script } from "next/font/google";
 
@@ -8,6 +8,7 @@ const dancingScript = Dancing_Script({ subsets: ["latin"], weight: "700" });
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { Check, ChevronRight, ChevronLeft, Wrench, Camera, Loader2, Clock, ShieldCheck, CreditCard, Clock3, FileText, ScrollText } from "lucide-react";
+import { ICA, type IcaBlock } from "@/lib/ica-text";
 
 const BG_CHECK_FEE = 29.99;
 
@@ -40,6 +41,80 @@ type ServiceEntry = {
   category: string; title: string; description: string;
   minPrice: string; maxPrice: string; duration: string;
 };
+
+// Renders the agreement from lib/ica-text.ts — the single source the mobile app
+// also reads via GET /api/handyman/ica. Classes are unchanged from when this
+// text was inline here, so the rendered document is identical.
+function IcaBlockView({ block }: { block: IcaBlock }) {
+  if (block.kind === "label") {
+    return <p className="text-slate-300 font-medium">{block.text}</p>;
+  }
+  if (block.kind === "bullets") {
+    return (
+      <ul className="list-disc pl-5 space-y-1">
+        {block.items.map((it, i) => (
+          <li key={i}>
+            {it.lead ? <><strong className="text-slate-300">{it.lead}</strong> {it.text}</> : it.text}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  if (block.kind === "caps") {
+    const cls = block.tone === "warn"
+      ? "text-amber-300 text-xs font-semibold uppercase"
+      : "uppercase text-xs text-slate-400 leading-relaxed";
+    return (
+      <p className={cls}>
+        {block.lead ? <><strong className="text-slate-300">{block.lead}</strong> </> : null}
+        {block.text}
+      </p>
+    );
+  }
+  return (
+    <p>
+      {block.lead ? <><strong className="text-slate-200">{block.lead}</strong> </> : null}
+      {block.text}
+    </p>
+  );
+}
+
+function IcaBody() {
+  return (
+    <>
+      <p className="text-white font-bold text-lg text-center">{ICA.title}</p>
+      <p className="text-slate-400 text-xs text-center">{ICA.subtitle}</p>
+
+      <div className="border border-white/10 rounded-lg p-3 space-y-1 text-xs">
+        <p className="text-white font-semibold">{ICA.parties.heading}</p>
+        {ICA.parties.rows.map((r) => (
+          <p key={r.lead}><strong className="text-slate-300">{r.lead}</strong> {r.text}</p>
+        ))}
+        <p className="mt-2 text-slate-400">{ICA.parties.note}</p>
+      </div>
+
+      {ICA.preamble.map((b, i) => <IcaBlockView key={`pre-${i}`} block={b} />)}
+
+      {ICA.sections.map((s) => (
+        <Fragment key={s.number}>
+          <p className="text-white font-semibold">{s.number}. {s.heading}</p>
+          {s.blocks.map((b, i) => <IcaBlockView key={`${s.number}-${i}`} block={b} />)}
+        </Fragment>
+      ))}
+
+      <div className="border-t border-white/10 pt-4 space-y-2">
+        <p className="text-white font-semibold text-center">{ICA.execution.heading}</p>
+        <p className="text-slate-400 text-xs text-center">{ICA.execution.note}</p>
+        <div className="flex flex-col items-center gap-0.5">
+          <p className={`${dancingScript.className} text-2xl text-tarea-sky`}>{ICA.execution.signatureName}</p>
+          <p className="text-slate-500 text-xs">{ICA.execution.signatureTitle}</p>
+          <p className="text-slate-600 text-xs">{ICA.execution.signatureNote}</p>
+        </div>
+        <p className="text-center text-slate-600 text-xs">{ICA.execution.footer}</p>
+      </div>
+    </>
+  );
+}
 
 export default function HandymanOnboarding() {
   const router = useRouter();
@@ -280,109 +355,7 @@ export default function HandymanOnboarding() {
                 onScroll={handleIcaScroll}
                 className="h-96 overflow-y-auto bg-black/20 border border-white/10 rounded-xl p-5 text-slate-300 text-sm leading-relaxed space-y-4"
               >
-                <p className="text-white font-bold text-lg text-center">INDEPENDENT CONTRACTOR AGREEMENT</p>
-                <p className="text-slate-400 text-xs text-center">Platform Service Professional Agreement · Governing Law: State of California · AB5 Compliant</p>
-
-                <div className="border border-white/10 rounded-lg p-3 space-y-1 text-xs">
-                  <p className="text-white font-semibold">PARTIES</p>
-                  <p><strong className="text-slate-300">Platform Company:</strong> Tarea US LLC, a California Limited Liability Company</p>
-                  <p><strong className="text-slate-300">Principal Office:</strong> 400 N Oakland Avenue, Apt 209, Pasadena, California 91101</p>
-                  <p><strong className="text-slate-300">Email:</strong> support@taptarea.com</p>
-                  <p className="mt-2 text-slate-400">AND the Pro whose name, business information, and email address are associated with the Tarea account accepting this Agreement electronically.</p>
-                </div>
-
-                <p>This Independent Contractor Agreement ("Agreement") is entered into as of the date the Pro electronically accepts through the Tarea platform onboarding process ("Effective Date").</p>
-                <p className="text-amber-300 text-xs font-semibold uppercase">IMPORTANT: BY SIGNING OR ELECTRONICALLY ACCEPTING THIS AGREEMENT, THE PRO ACKNOWLEDGES THAT THEY HAVE READ, UNDERSTOOD, AND AGREE TO BE BOUND BY ALL TERMS AND CONDITIONS HEREIN.</p>
-
-                <p className="text-white font-semibold">1. Independent Contractor Status — AB5 Compliance</p>
-                <p><strong className="text-slate-200">1.1 — Independent Contractor Relationship.</strong> The Pro is and shall at all times remain an independent contractor and not an employee, agent, partner, joint venturer, or franchisee of Tarea. This Agreement does not create an employment relationship of any kind. The Parties expressly intend to maintain an independent contractor relationship consistent with California AB5, California Labor Code §§ 3350–3371, and applicable federal law.</p>
-                <p><strong className="text-slate-200">1.2 — ABC Test Compliance (Cal. Lab. Code § 2775).</strong> The Pro represents, warrants, and agrees as follows:</p>
-                <p className="text-slate-300 font-medium">(A) Freedom from Control — Test A:</p>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>The Pro is free from Tarea's control and direction in the performance of services, both under this Agreement and in fact.</li>
-                  <li>Tarea does not and shall not direct, supervise, or control the manner, method, means, or details of the Pro's services.</li>
-                  <li>The Pro may accept or decline any job request without penalty, deactivation, or negative consequence of any kind.</li>
-                  <li>Tarea may not require the Pro to maintain specific hours, minimum bookings, or minimum availability.</li>
-                </ul>
-                <p className="text-slate-300 font-medium">(B) Work Outside Usual Course of Business — Test B:</p>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>The Pro performs physical home services (plumbing, electrical, carpentry, painting, HVAC, landscaping, or other skilled trades).</li>
-                  <li>Tarea is a software technology company providing marketplace infrastructure — not a home services company.</li>
-                </ul>
-                <p className="text-slate-300 font-medium">(C) Independently Established Trade — Test C:</p>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li>The Pro operates their own business, holds required professional licenses, maintains their own tools and equipment, and is available to serve multiple clients.</li>
-                  <li>The Pro is free to perform the same services for other platforms, businesses, or clients without restriction by Tarea.</li>
-                </ul>
-                <p><strong className="text-slate-200">1.3 — No Employment Benefits.</strong> As an independent contractor, the Pro is not entitled to and will not receive: wages or salary from Tarea, workers' compensation, unemployment insurance, health or dental benefits, retirement or 401(k) plans, paid time off, sick leave, reimbursement for tools or expenses, or any other employment benefit required by California or federal law for employees.</p>
-                <p><strong className="text-slate-200">1.4 — Tax Obligations.</strong> The Pro is solely responsible for all federal, state, and local taxes on earnings, including self-employment taxes. Tarea will issue IRS Form 1099-NEC for annual earnings of $600 or more. The Pro agrees to provide a completed IRS Form W-9 prior to receiving any payout.</p>
-
-                <p className="text-white font-semibold">2. Platform Access and Use</p>
-                <p><strong className="text-slate-200">2.1 — Pro Autonomy.</strong> The Pro has complete autonomy to: set their own rates and pricing; define their own hours and availability; set their own service area; accept or decline any job request for any reason; use other platforms or direct channels simultaneously; and work for competitors with no exclusivity obligation to Tarea.</p>
-                <p><strong className="text-slate-200">2.2 — Platform Rules.</strong> While retaining full autonomy over their work, the Pro agrees to: maintain required licenses and insurance; treat Customers professionally; accurately represent qualifications; not solicit Customers off-platform during this Agreement and for 12 months after termination; and comply with all applicable laws. Compliance with Platform rules is a condition of platform access only — not a condition of employment.</p>
-
-                <p className="text-white font-semibold">3. Licensing, Insurance, and Compliance</p>
-                <p><strong className="text-slate-200">3.1 — Required Licenses.</strong> The Pro warrants they hold all required licenses including: California CSLB license for work valued at $500+ in labor and materials (Cal. Bus. &amp; Prof. Code § 7028); any trade-specific license required by California or applicable municipality; and any local business license required where the Pro operates.</p>
-                <p><strong className="text-slate-200">3.2 — Insurance Requirements.</strong> The Pro must maintain: General Liability Insurance (minimum $1,000,000 per occurrence / $2,000,000 aggregate); Commercial Auto Insurance if driving to job sites (minimum $100,000 per occurrence); Workers' Compensation if the Pro has their own employees (as required by California law). The Pro shall name Tarea US LLC as an additional insured on their general liability policy upon request. Failure to maintain required insurance is grounds for immediate suspension.</p>
-                <p><strong className="text-slate-200">3.3 — Worker Classification.</strong> If the Pro employs or subcontracts any workers, the Pro — not Tarea — is solely responsible for properly classifying, compensating, and providing benefits to those workers in accordance with AB5 and applicable law.</p>
-
-                <p className="text-white font-semibold">4. Compensation and Payments</p>
-                <p><strong className="text-slate-200">4.1 — Fee Structure.</strong> The Pro earns 90% of their stated service rate for each completed booking. Tarea retains a 10% platform fee from the Pro's earnings for marketplace technology, payment processing, and customer acquisition services. Customers are charged an additional 15% Service Fee on top of the Pro's rate. The Pro independently sets their own rates.</p>
-                <p><strong className="text-slate-200">4.2 — Payout Processing.</strong> Payouts are processed via Stripe Connect. The Pro must maintain a Stripe Connect account and comply with Stripe's Terms of Service. Standard payout timing is within 30 minutes of job completion, subject to Stripe's processing schedule.</p>
-                <p><strong className="text-slate-200">4.3 — Fee Changes.</strong> Tarea may modify the platform fee upon 30 days' written notice. Continued use after notice constitutes acceptance. If the Pro does not accept, they may terminate this Agreement.</p>
-                <p><strong className="text-slate-200">4.4 — Cancellation Compensation.</strong> If a Customer cancels a confirmed booking within 24 hours of the scheduled time, the Pro receives 50% of the agreed service rate as compensation.</p>
-
-                <p className="text-white font-semibold">5. Tools, Equipment, and Expenses</p>
-                <p>The Pro is solely responsible for providing all tools, equipment, vehicles, materials, and supplies necessary to perform services. Tarea shall not provide, reimburse, or subsidize any tools, equipment, or business expenses. The Pro's use of their own tools and equipment is a hallmark of independent contractor status under California law.</p>
-
-                <p className="text-white font-semibold">6. Intellectual Property</p>
-                <p>All Tarea intellectual property remains Tarea's exclusive property. The Pro retains ownership of content uploaded to the Platform but grants Tarea a non-exclusive, royalty-free, worldwide license to display and use such content on the Platform and in promotional materials for as long as the Pro's account is active. Any physical work product created for Customers belongs to the Customer — not Tarea.</p>
-
-                <p className="text-white font-semibold">7. Confidentiality</p>
-                <p>The Pro agrees to keep confidential all non-public information regarding Tarea's business, technology, Customer data, pricing algorithms, and trade secrets. This obligation survives termination for three (3) years. Confidential Information excludes information that is publicly known through no breach of this Agreement.</p>
-
-                <p className="text-white font-semibold">8. Indemnification and Liability</p>
-                <p><strong className="text-slate-200">8.1 — Pro Indemnification.</strong> The Pro shall indemnify, defend, and hold harmless Tarea from any claims arising out of: the Pro's performance of services; breach of this Agreement; any claim the Pro is an employee of Tarea; any injury or property damage caused by the Pro; failure to maintain required licenses or insurance; or misclassification of the Pro's own workers.</p>
-                <p className="uppercase text-xs text-slate-400 leading-relaxed"><strong className="text-slate-300">8.2 — Limitation of Tarea's Liability.</strong> TO THE MAXIMUM EXTENT PERMITTED BY CALIFORNIA LAW, TAREA'S TOTAL LIABILITY SHALL NOT EXCEED THE TOTAL PLATFORM FEES PAID TO THE PRO IN THE THREE (3) MONTHS PRECEDING THE CLAIM. TAREA SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES.</p>
-                <p><strong className="text-slate-200">8.3 — No Guarantee of Work.</strong> Tarea makes no guarantee of the volume, frequency, or value of job requests the Pro will receive through the Platform.</p>
-
-                <p className="text-white font-semibold">9. Term and Termination</p>
-                <p><strong className="text-slate-200">9.1 — Term.</strong> This Agreement begins on the Effective Date and continues until terminated by either Party.</p>
-                <p><strong className="text-slate-200">9.2 — Termination by Pro.</strong> The Pro may terminate at any time by written notice to support@taptarea.com and deactivating their account. Termination does not relieve the Pro of obligations for services already booked.</p>
-                <p><strong className="text-slate-200">9.3 — Termination by Tarea.</strong> Tarea may suspend or terminate the Pro's access at any time for: violation of this Agreement or Terms of Service; failure to maintain licenses or insurance; repeated low ratings or Customer complaints; fraudulent, abusive, or illegal conduct; or any action creating legal, reputational, or safety risk. Deactivation does not constitute termination of employment — no such relationship exists.</p>
-                <p><strong className="text-slate-200">9.4 — Effect of Termination.</strong> Upon termination: the Pro's platform access immediately ceases; outstanding payouts for completed services will be processed within the standard window; and confidentiality, indemnification, non-solicitation, and dispute resolution obligations survive.</p>
-
-                <p className="text-white font-semibold">10. Non-Solicitation</p>
-                <p>During this Agreement and for twelve (12) months following termination, the Pro agrees not to directly solicit Customers introduced through Tarea to transact outside the Platform for the same or similar services. This is not a non-compete — the Pro may freely offer services through other channels to independently obtained customers.</p>
-
-                <p className="text-white font-semibold">11. Dispute Resolution, Arbitration, and PAGA Waiver</p>
-                <p><strong className="text-slate-200">11.1 — Informal Resolution.</strong> The Parties agree to attempt in good faith to resolve any dispute for thirty (30) days before initiating formal proceedings.</p>
-                <p><strong className="text-slate-200">11.2 — Binding Arbitration.</strong> Any unresolved dispute shall be resolved by final and binding individual arbitration administered by JAMS or AAA in Los Angeles County, California, applying California law.</p>
-                <p className="uppercase text-xs text-slate-400 leading-relaxed"><strong className="text-slate-300">11.3 — Class and Collective Action Waiver.</strong> THE PRO WAIVES THE RIGHT TO PARTICIPATE IN ANY CLASS ACTION, COLLECTIVE ACTION, CLASS ARBITRATION, OR REPRESENTATIVE PROCEEDING. ALL DISPUTES MUST BE BROUGHT INDIVIDUALLY.</p>
-                <p><strong className="text-slate-200">11.4 — PAGA Waiver.</strong> To the fullest extent permitted by California law, the Pro waives any right to bring a PAGA representative action (Labor Code § 2698 et seq.) on behalf of others. Any individual PAGA claim not subject to waiver shall be litigated in a California court, with all other claims remaining in arbitration.</p>
-
-                <p className="text-white font-semibold">12. Governing Law and Jurisdiction</p>
-                <p>This Agreement is governed by California law. Any claims not subject to arbitration shall be brought in the state or federal courts of Los Angeles County, California.</p>
-
-                <p className="text-white font-semibold">13. General Provisions</p>
-                <ul className="list-disc pl-5 space-y-1">
-                  <li><strong className="text-slate-300">Entire Agreement:</strong> This Agreement together with Tarea's Terms of Service and Privacy Policy is the entire agreement between the Parties.</li>
-                  <li><strong className="text-slate-300">Amendment:</strong> Tarea may amend upon 30 days' written notice. Continued use constitutes acceptance.</li>
-                  <li><strong className="text-slate-300">Severability:</strong> If any provision is held invalid, remaining provisions continue in full force.</li>
-                  <li><strong className="text-slate-300">Electronic Signatures:</strong> Electronic acceptance has the same legal effect as a handwritten signature under the California Uniform Electronic Transactions Act (Cal. Civ. Code § 1633.1 et seq.) and the federal E-SIGN Act.</li>
-                  <li><strong className="text-slate-300">Notices:</strong> Notices to Tarea shall be sent to support@taptarea.com.</li>
-                </ul>
-
-                <div className="border-t border-white/10 pt-4 space-y-2">
-                  <p className="text-white font-semibold text-center">EXECUTION</p>
-                  <p className="text-slate-400 text-xs text-center">By clicking "Sign &amp; Continue" below, you electronically sign this Agreement on behalf of yourself or your business entity. Your electronic signature, IP address, and timestamp will be recorded as legally binding evidence of your acceptance.</p>
-                  <div className="flex flex-col items-center gap-0.5">
-                    <p className={`${dancingScript.className} text-2xl text-tarea-sky`}>Debohi Jean Jacques Dah</p>
-                    <p className="text-slate-500 text-xs">Debohi Jean Jacques Dah — Chief Executive Officer, Tarea US LLC</p>
-                    <p className="text-slate-600 text-xs">Signed electronically on behalf of Tarea US LLC</p>
-                  </div>
-                  <p className="text-center text-slate-600 text-xs">© 2026 Tarea US LLC · 400 N Oakland Ave, Apt 209, Pasadena, CA 91101 · legal@taptarea.com</p>
-                </div>
+                <IcaBody />
               </div>
 
               {!icaScrolled && (

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { ICA, AGREEMENT_VERSION } from "@/lib/ica-text";
 
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
@@ -28,5 +29,13 @@ export async function GET(req: NextRequest) {
     select: { icaSignedAt: true },
   });
 
-  return NextResponse.json({ signed: !!profile?.icaSignedAt, signedAt: profile?.icaSignedAt ?? null });
+  // The agreement itself ships with the response so the mobile app renders the
+  // same text the web does, from the same source. Without this the app had no
+  // copy of the contract and the agreement step could not be built at all.
+  return NextResponse.json({
+    signed: !!profile?.icaSignedAt,
+    signedAt: profile?.icaSignedAt ?? null,
+    version: AGREEMENT_VERSION,
+    document: ICA,
+  });
 }
