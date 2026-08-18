@@ -283,48 +283,52 @@ class _PostJobScreenState extends State<PostJobScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Read here, ABOVE the Scaffold: Scaffold strips viewInsets from its own
-    // body (that is how resizeToAvoidBottomInset works), so checking inside the
-    // body would always report the keyboard as closed.
-    final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     return Scaffold(
       backgroundColor: C.bg,
+      // The form owns the scrollable, and the CTA lives in bottomNavigationBar.
+      //
+      // This screen used to be a Column with a pinned header, subtitle and
+      // stepper above an Expanded scroll view and a pinned button below. With
+      // the keyboard up, the city and ZIP fields on the Location step ended up
+      // behind it. Every other form in this app -- register, login, instant
+      // quote -- makes the whole body a SingleChildScrollView and none of them
+      // has ever had the problem, so this now matches them.
+      //
+      // With adjustResize (already set in the manifest) the Scaffold shrinks to
+      // the space above the keyboard, so the scroll viewport ends exactly where
+      // the keyboard begins and any focused field can always be scrolled clear
+      // of it. bottomNavigationBar rides just above the keyboard rather than
+      // competing with the form for height.
       body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _circleBtn(Icons.chevron_left, () => _step > 0 ? setState(() => _step--) : (context.canPop() ? context.pop() : context.go('/home'))),
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(_isDirected ? 'postjob.requestPro'.tr(args: [_proName]) : 'nav.postJob'.tr(),
-                            maxLines: 1, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
+        bottom: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Column(
+            children: [
+              // Header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _circleBtn(Icons.chevron_left, () => _step > 0 ? setState(() => _step--) : (context.canPop() ? context.pop() : context.go('/home'))),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(_isDirected ? 'postjob.requestPro'.tr(args: [_proName]) : 'nav.postJob'.tr(),
+                              maxLines: 1, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
+                        ),
                       ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('postjob.draftSaved'.tr()))),
-                    child: Text('postjob.saveDraft'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
-                  ),
-                ],
+                    GestureDetector(
+                      onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('postjob.draftSaved'.tr()))),
+                      child: Text('postjob.saveDraft'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            // With the keyboard up, the subtitle and the stepper are the two
-            // things a person typing their address does not need. Keeping them
-            // pinned left the form roughly 200dp of viewport between the fixed
-            // header and the fixed Continue button — so on the Location step the
-            // city and ZIP fields sat behind the keyboard. Android is already
-            // set to adjustResize; the space was being spent on chrome. Raising
-            // the app-wide text scale to 1.12 made that chrome ~12% taller and
-            // pushed a tight layout over the edge.
-            if (!keyboardOpen) ...[
               const SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -333,70 +337,62 @@ class _PostJobScreenState extends State<PostJobScreen> {
               ),
               const SizedBox(height: 16),
               _stepper(),
-            ],
-            const SizedBox(height: 16),
-            Expanded(
-              child: SingleChildScrollView(
-                // Bottom room so the last field can clear the Continue button
-                // once it has been scrolled into view.
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: _stepBody(),
               ),
-            ),
-            // Continue / Accept
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      style: FilledButton.styleFrom(
-                        backgroundColor: C.blue,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                      ),
-                      onPressed: _submitting ? null : _next,
-                      child: _submitting
-                          ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Flexible(child: Text(_step < 3
-                                        ? 'common.continue'.tr()
-                                        : (_estimate == null
-                                            ? 'postjob.retryEstimate'.tr()
-                                            : (_isDirected
-                                                ? 'postjob.sendRequestTo'.tr(args: [_proName])
-                                                : 'postjob.acceptEstimate'.tr())),
-                                    textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white))),
-                                const SizedBox(width: 10),
-                                Container(
-                                  width: 30, height: 30,
-                                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                                  child: const Icon(Icons.arrow_forward, size: 18, color: C.blue),
-                                ),
-                              ],
-                            ),
-                    ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: C.blue,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                   ),
-                  if (_step == 3) ...[
-                    const SizedBox(height: 12),
-                    // "Request an in-person quote" used to sit here beside Edit
-                    // details. It was a bare Text — styled to look tappable, with
-                    // no handler and nothing behind it anywhere in the codebase —
-                    // so it shipped to production promising something the app could
-                    // not do. Accuracy comes from AI Diagnose, where the customer
-                    // photographs the problem.
-                    GestureDetector(
-                      onTap: () => setState(() => _step = 0),
-                      child: Text('postjob.editDetails'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
-                    ),
-                  ],
-                ],
+                  onPressed: _submitting ? null : _next,
+                  child: _submitting
+                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(child: Text(_step < 3
+                                    ? 'common.continue'.tr()
+                                    : (_estimate == null
+                                        ? 'postjob.retryEstimate'.tr()
+                                        : (_isDirected
+                                            ? 'postjob.sendRequestTo'.tr(args: [_proName])
+                                            : 'postjob.acceptEstimate'.tr())),
+                                textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white))),
+                            const SizedBox(width: 10),
+                            Container(
+                              width: 30, height: 30,
+                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                              child: const Icon(Icons.arrow_forward, size: 18, color: C.blue),
+                            ),
+                          ],
+                        ),
+                ),
               ),
-            ),
-          ],
+              if (_step == 3) ...[
+                const SizedBox(height: 12),
+                GestureDetector(
+                  onTap: () => setState(() => _step = 0),
+                  child: Text('postjob.editDetails'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800)),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
