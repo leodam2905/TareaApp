@@ -283,6 +283,10 @@ class _PostJobScreenState extends State<PostJobScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Read here, ABOVE the Scaffold: Scaffold strips viewInsets from its own
+    // body (that is how resizeToAvoidBottomInset works), so checking inside the
+    // body would always report the keyboard as closed.
+    final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     return Scaffold(
       backgroundColor: C.bg,
       body: SafeArea(
@@ -312,18 +316,30 @@ class _PostJobScreenState extends State<PostJobScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text('postjob.subtitle'.tr(),
-                  textAlign: TextAlign.center, style: const TextStyle(color: C.muted, fontSize: 15)),
-            ),
-            const SizedBox(height: 16),
-            _stepper(),
+            // With the keyboard up, the subtitle and the stepper are the two
+            // things a person typing their address does not need. Keeping them
+            // pinned left the form roughly 200dp of viewport between the fixed
+            // header and the fixed Continue button — so on the Location step the
+            // city and ZIP fields sat behind the keyboard. Android is already
+            // set to adjustResize; the space was being spent on chrome. Raising
+            // the app-wide text scale to 1.12 made that chrome ~12% taller and
+            // pushed a tight layout over the edge.
+            if (!keyboardOpen) ...[
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text('postjob.subtitle'.tr(),
+                    textAlign: TextAlign.center, style: const TextStyle(color: C.muted, fontSize: 15)),
+              ),
+              const SizedBox(height: 16),
+              _stepper(),
+            ],
             const SizedBox(height: 16),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                // Bottom room so the last field can clear the Continue button
+                // once it has been scrolled into view.
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
                 child: _stepBody(),
               ),
             ),
