@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { checkPayoutAccount, stripeMode } from "@/lib/payout-account";
+import { checkPayoutAccount, stripeMode, syncPayoutStatus } from "@/lib/payout-account";
 import { accountLinkUrls, returnTarget } from "@/lib/stripe-return-urls";
 
 // POST /api/stripe/connect — create/resume onboarding link
@@ -72,17 +72,12 @@ export async function GET(_req: NextRequest) {
   }
 
   try {
-    // Sync status from Stripe
-    const account = await stripe.accounts.retrieve(user.stripeAccountId);
-    const status = account.charges_enabled ? "active" : "pending";
-
-    if (status !== user.stripeAccountStatus) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { stripeAccountStatus: status },
-      });
-    }
-
+    // Was `account.charges_enabled`, which is the wrong question. These Express
+    // accounts request only the `transfers` capability, so a fully onboarded
+    // payout account can report charges_enabled false and would be pinned to
+    // "pending" for ever. syncPayoutStatus asks whether transfers are active,
+    // matching checkPayoutAccount and every other payout decision.
+    const status = await syncPayoutStatus(user);
     return NextResponse.json({ status, accountId: user.stripeAccountId });
   } catch (err: unknown) {
     // Do NOT leave a stale "active" behind. If the account cannot be read, the

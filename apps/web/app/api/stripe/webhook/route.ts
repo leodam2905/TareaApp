@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { createNotification } from "@/lib/notify";
+import { syncPayoutStatus } from "@/lib/payout-account";
 import Stripe from "stripe";
 
 // Raw body needed for signature verification
@@ -33,6 +34,54 @@ export async function POST(req: NextRequest) {
   }).catch(() => {});
 
   try {
+    // A connected account finished (or lost) onboarding.
+    //
+    // Nothing used to listen for this, and the only code that marked a pro's
+    // payouts active was GET /api/stripe/connect, which the app never calls.
+    // So a pro who completed onboarding stayed "pending" for ever: they could
+    // not apply for jobs and did not appear in Browse. This makes Stripe the
+    // source of truth at the moment it changes, instead of waiting for the pro
+    // to reopen the app.
+    //
+    // The account arrives on `event.account` for Connect events, and the
+    // account object itself carries our userId in metadata; either can identify
+    // the pro, so both are tried.
+    if (event.type === "account.updated" || event.type === "capability.updated") {
+      const accountId =
+        event.account ??
+        (event.type === "account.updated"
+          ? (event.data.object as Stripe.Account).id
+          : undefined);
+
+      if (accountId) {
+        let user = await prisma.user.findFirst({
+          where: { stripeAccountId: accountId },
+          select: { id: true, stripeAccountId: true, stripeAccountStatus: true },
+        });
+
+        // A pro whose id was never stored (onboarding abandoned midway, or the
+        // row written after the event) is still recoverable through metadata.
+        if (!user && event.type === "account.updated") {
+          const metaUserId = (event.data.object as Stripe.Account).metadata?.userId;
+          if (metaUserId) {
+            user = await prisma.user.findUnique({
+              where: { id: metaUserId },
+              select: { id: true, stripeAccountId: true, stripeAccountStatus: true },
+            });
+            if (user && !user.stripeAccountId) {
+              await prisma.user
+                .update({ where: { id: user.id }, data: { stripeAccountId: accountId } })
+                .catch(() => {});
+              user = { ...user, stripeAccountId: accountId };
+            }
+          }
+        }
+
+        if (user) await syncPayoutStatus(user);
+      }
+      return NextResponse.json({ received: true });
+    }
+
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
 

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { unmetSteps, unmetStepsMessage } from "@/lib/pro-bookable";
+import { syncPayoutStatus } from "@/lib/payout-account";
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
@@ -27,13 +28,20 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   // front of the person who can actually fix it, and names what is missing —
   // "you cannot apply" is useless to someone who does not know which of six
   // things to go and do.
-  const [servicesCount, availabilityCount] = await Promise.all([
+  // Ask Stripe before refusing on payouts. The stored status is only written
+  // when something syncs it, and for a pro who onboarded through the app
+  // nothing ever did — so a finished payout account still read "pending" and
+  // this endpoint refused work the pro was perfectly entitled to take.
+  const [servicesCount, availabilityCount, payoutStatus] = await Promise.all([
     prisma.service.count({ where: { handymanId: profile.id } }),
     prisma.handymanAvailability.count({ where: { profileId: profile.id } }),
+    user.stripeAccountStatus === "active"
+      ? Promise.resolve("active")
+      : syncPayoutStatus(user),
   ]);
   const missing = unmetSteps({
     avatarUrl: user.avatarUrl,
-    stripeAccountStatus: user.stripeAccountStatus,
+    stripeAccountStatus: payoutStatus,
     profile: {
       icaSignedAt: profile.icaSignedAt,
       bio: profile.bio,

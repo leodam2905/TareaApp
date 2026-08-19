@@ -93,6 +93,54 @@ export async function checkPayoutAccount(accountId?: string | null): Promise<Pay
 }
 
 /**
+ * Bring `users.stripeAccountStatus` back in line with Stripe. Returns the
+ * status now stored.
+ *
+ * WHY THIS EXISTS
+ *
+ * The status was only ever written to "active" by GET /api/stripe/connect, and
+ * nothing called it: the app POSTs to start onboarding and never asks again,
+ * and the webhook handled no Connect events at all. So a pro who completed
+ * onboarding stayed "pending" forever. That is not cosmetic — `unmetSteps()`
+ * then reports payouts outstanding, so /apply refuses ("you still need to set
+ * up payouts") and BOOKABLE_USER_WHERE hides them from Browse. Verified in
+ * production on 2026-08-19: a pro with all six steps done, a real Stripe
+ * account and a PASSED background check could not apply for a single job.
+ *
+ * "Active" means `capabilities.transfers === "active"`, matching
+ * checkPayoutAccount and the separate-charges-and-transfers model. It is NOT
+ * charges_enabled, which the old GET tested: these Express accounts request
+ * only `transfers`, so a perfectly good payout account can have
+ * charges_enabled false and would be held "pending" for ever.
+ *
+ * A transient lookup failure never downgrades a working account — a Stripe
+ * blip would otherwise unbook every pro at once.
+ */
+export async function syncPayoutStatus(user: {
+  id: string;
+  stripeAccountId?: string | null;
+  stripeAccountStatus?: string | null;
+}): Promise<string> {
+  const current = user.stripeAccountStatus ?? "pending";
+  if (!user.stripeAccountId) return current;
+
+  const check = await checkPayoutAccount(user.stripeAccountId);
+  if (!check.ok && check.reason === "lookup_failed") return current;
+
+  const desired = check.ok ? "active" : "pending";
+  if (desired === current) return current;
+
+  await prisma.user
+    .update({ where: { id: user.id }, data: { stripeAccountStatus: desired } })
+    .catch(() => {});
+  console.log(
+    "[payout] status synced",
+    JSON.stringify({ userId: user.id, from: current, to: desired, mode: stripeMode() }),
+  );
+  return desired;
+}
+
+/**
  * Record a payout that did not happen, loudly.
  *
  * A pro who has finished a job and not been paid is the worst failure this
