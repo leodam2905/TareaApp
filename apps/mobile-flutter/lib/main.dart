@@ -5,6 +5,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'theme.dart';
 import 'api.dart';
 import 'flavor.dart';
+import 'deep_links.dart';
 import 'route_observer.dart';
 import 'screens/disputes_screen.dart';
 import 'screens/landing_screen.dart';
@@ -74,6 +75,9 @@ Future<void> bootstrap(Flavor flavor) async {
   final remaining = _kSplashMinimum - DateTime.now().difference(launchedAt);
   if (remaining > Duration.zero) await Future.delayed(remaining);
   FlutterNativeSplash.remove();
+
+  // Listen for deep links back from the browser (Stripe payout onboarding).
+  DeepLinks.start();
 
   // Init push AFTER the first frame so a slow/failed Firebase init on any
   // platform can never block the UI from rendering (white screen).

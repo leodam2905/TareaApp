@@ -61,12 +61,14 @@ android {
             dimension = "app"
             applicationId = "com.taptarea.customer"
             manifestPlaceholders["appName"] = "Tarea"
+            manifestPlaceholders["deepLinkScheme"] = "tarea"
             if (hasKeystores) signingConfig = signingConfigs.getByName("customer")
         }
         create("pro") {
             dimension = "app"
             applicationId = "com.taptarea.handyman"
             manifestPlaceholders["appName"] = "Tarea Pro"
+            manifestPlaceholders["deepLinkScheme"] = "tareapro"
             if (hasKeystores) signingConfig = signingConfigs.getByName("handyman")
         }
     }

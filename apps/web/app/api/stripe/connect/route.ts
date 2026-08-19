@@ -3,15 +3,17 @@ import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { checkPayoutAccount, stripeMode } from "@/lib/payout-account";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+import { accountLinkUrls, returnTarget } from "@/lib/stripe-return-urls";
 
 // POST /api/stripe/connect — create/resume onboarding link
-export async function POST(_req: NextRequest) {
+export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user || user.role !== "HANDYMAN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  // A body is optional here — the web dashboard posts nothing.
+  const target = returnTarget(await req.json().catch(() => null));
 
   try {
     let accountId = user.stripeAccountId;
@@ -47,8 +49,7 @@ export async function POST(_req: NextRequest) {
 
     const link = await stripe.accountLinks.create({
       account: accountId,
-      refresh_url: `${APP_URL}/handyman/payout-methods?stripe=refresh`,
-      return_url:  `${APP_URL}/handyman/payout-methods?stripe=connected`,
+      ...accountLinkUrls(target),
       type: "account_onboarding",
     });
 

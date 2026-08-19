@@ -13,14 +13,33 @@ class ProPayoutMethods extends StatefulWidget {
   State<ProPayoutMethods> createState() => _ProPayoutMethodsState();
 }
 
-class _ProPayoutMethodsState extends State<ProPayoutMethods> {
+class _ProPayoutMethodsState extends State<ProPayoutMethods> with WidgetsBindingObserver {
   List<dynamic> _banks = [];
   List<dynamic> _cards = [];
   bool _loading = true;
   bool _busy = false;
 
   @override
-  void initState() { super.initState(); _load(); }
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _load();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// Stripe onboarding happens in the browser, so anything added there is
+  /// invisible until we look again. Refreshing on resume means a pro who comes
+  /// back sees the new payout method whether they returned via the deep link
+  /// or just switched apps themselves.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) _load();
+  }
 
   Future<void> _load() async {
     try {
@@ -97,7 +116,9 @@ class _ProPayoutMethodsState extends State<ProPayoutMethods> {
   Future<void> _openStripePayouts() async {
     setState(() => _busy = true);
     try {
-      final res = await Api.post('/stripe/login-link', {});
+      // 'app' tells the server to return through the deep-link bridge instead
+      // of stranding the pro on the web dashboard.
+      final res = await Api.post('/stripe/login-link', {'platform': 'app'});
       final body = res.body.isNotEmpty ? jsonDecode(res.body) : {};
       final url = (body is Map ? body['url'] : null)?.toString() ?? '';
       if (res.statusCode >= 200 && res.statusCode < 300 && url.startsWith('http')) {
@@ -116,7 +137,7 @@ class _ProPayoutMethodsState extends State<ProPayoutMethods> {
 
   Future<void> _connectStripe() async {
     try {
-      final res = await Api.post('/stripe/connect', {});
+      final res = await Api.post('/stripe/connect', {'platform': 'app'});
       final url = (jsonDecode(res.body)['url'] ?? '').toString();
       if (url.startsWith('http')) await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
       else _toast('payout.openStripeFailed'.tr());

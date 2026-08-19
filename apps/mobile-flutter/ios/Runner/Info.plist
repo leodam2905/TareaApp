@@ -22,6 +22,22 @@
 		<string>$(FLUTTER_BUILD_NAME)</string>
 		<key>CFBundleSignature</key>
 		<string>????</string>
+		<!-- Deep link back from Safari. Stripe payout onboarding returns via
+		     /stripe/return on the website, which forwards to this scheme.
+		     swap_ios_app.sh rewrites it per app (tarea / tareapro). -->
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>com.taptarea.deeplink</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>tareapro</string>
+				</array>
+			</dict>
+		</array>
 		<key>CFBundleVersion</key>
 		<string>$(FLUTTER_BUILD_NUMBER)</string>
 		<key>FirebaseAppDelegateProxyEnabled</key>

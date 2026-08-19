@@ -14,8 +14,8 @@ set -euo pipefail
 
 FLAVOR="${1:-}"
 case "$FLAVOR" in
-  home) BUNDLE="com.taptarea.customer"; DISPLAY="Tarea";     GCFG="customer"; ICON="assets/images/icon.png" ;;
-  pro)  BUNDLE="com.taptarea.handyman"; DISPLAY="Tarea Pro"; GCFG="handyman"; ICON="assets/images/icon-pro.png" ;;
+  home) BUNDLE="com.taptarea.customer"; DISPLAY="Tarea";     GCFG="customer"; ICON="assets/images/icon.png";     SCHEME="tarea" ;;
+  pro)  BUNDLE="com.taptarea.handyman"; DISPLAY="Tarea Pro"; GCFG="handyman"; ICON="assets/images/icon-pro.png"; SCHEME="tareapro" ;;
   *) echo "usage: $0 {home|pro}" >&2; exit 1 ;;
 esac
 
@@ -34,6 +34,9 @@ sed -i '' -E "s/PRODUCT_BUNDLE_IDENTIFIER = com\.taptarea\.[a-z]+;/PRODUCT_BUNDL
 
 # 3) Firebase config for this app.
 cp "ios/config/${GCFG}/GoogleService-Info.plist" "ios/Runner/GoogleService-Info.plist"
+
+# 3b) Deep-link scheme — must differ per app or whichever installed last wins.
+/usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 ${SCHEME}" "$PLIST"
 
 # 4) App icon — resize the flavor's 1024 master into every AppIcon slot.
 python3 - "$ICON" "$ICONSET" <<'PY'

@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { getCurrentUser } from "@/lib/auth";
 import { checkPayoutAccount } from "@/lib/payout-account";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+import { accountLinkUrls, returnTarget } from "@/lib/stripe-return-urls";
 
 // Sends a pro into Stripe's own Express dashboard to manage payout methods.
 //
@@ -24,11 +23,13 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 // free, the pro is sent to Stripe. That also gets validation the app cannot do:
 // Stripe checks the card is debit-capable and belongs to the account holder,
 // which is a hard requirement for instant payouts.
-export async function POST(_req: NextRequest) {
+export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user || user.role !== "HANDYMAN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const target = returnTarget(await req.json().catch(() => null));
 
   const check = await checkPayoutAccount(user.stripeAccountId);
 
@@ -57,8 +58,7 @@ export async function POST(_req: NextRequest) {
       }
       const link = await stripe.accountLinks.create({
         account: accountId,
-        refresh_url: `${APP_URL}/handyman/payout-methods?stripe=refresh`,
-        return_url: `${APP_URL}/handyman/payout-methods?stripe=connected`,
+        ...accountLinkUrls(target),
         type: "account_onboarding",
       });
       return NextResponse.json({ url: link.url, kind: "onboarding" });
