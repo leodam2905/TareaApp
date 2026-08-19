@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { createCertnInvitation } from "@/lib/certn";
 import { BACKGROUND_CHECK_FEE } from "@/lib/background-check";
+import { backgroundCheckReturnUrls, returnTarget } from "@/lib/stripe-return-urls";
 
 export { BACKGROUND_CHECK_FEE };
 
@@ -35,7 +36,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ status: profile.backgroundCheckStatus });
   }
 
-  const { method } = await req.json();
+  const body = await req.json();
+  const { method } = body;
+  // A paid, mandatory onboarding step: send the pro back to the setup screen
+  // they started from, not to the website.
+  const target = returnTarget(body);
   if (!["now", "deferred"].includes(method)) {
     return NextResponse.json({ error: "Invalid method" }, { status: 400 });
   }
@@ -86,8 +91,7 @@ export async function POST(req: NextRequest) {
         quantity: 1,
       },
     ],
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/handyman/onboarding?bg_check=success`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/handyman/onboarding?bg_check=cancelled`,
+    ...backgroundCheckReturnUrls(target),
     metadata: { userId: user.id, type: "background_check", certnRef: certnRef ?? "" },
   });
 

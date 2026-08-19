@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { bookingExtraReturnUrls, returnTarget } from "@/lib/stripe-return-urls";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { createNotification } from "@/lib/notify";
 import { stripe } from "@/lib/stripe";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 // PATCH — customer approves or declines the extension
 export async function PATCH(
@@ -32,7 +31,9 @@ export async function PATCH(
     return NextResponse.json({ error: "Extension already responded to" }, { status: 400 });
   }
 
-  const { action } = await req.json();
+  const body = await req.json();
+  const { action } = body;
+  const target = returnTarget(body);
   if (action !== "approve" && action !== "decline") {
     return NextResponse.json({ error: "action must be 'approve' or 'decline'" }, { status: 400 });
   }
@@ -65,8 +66,7 @@ export async function PATCH(
           quantity: 1,
         }],
         metadata: { bookingId: booking.id, type: "extension", extId: params.extId },
-        success_url: `${APP_URL}/customer/bookings/${booking.id}?ext=paid`,
-        cancel_url:  `${APP_URL}/customer/bookings/${booking.id}`,
+        ...bookingExtraReturnUrls(target, booking.id, "extension"),
       });
       checkoutUrl = session.url;
 

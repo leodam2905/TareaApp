@@ -147,7 +147,7 @@ class _ProBackgroundCheckState extends State<ProBackgroundCheck> {
   Future<void> _choose(String method) async {
     setState(() => _submitting = true);
     try {
-      final res = await Api.post('/handyman/background-check', {'method': method});
+      final res = await Api.post('/handyman/background-check', {'method': method, 'platform': 'app'});
       final body = res.body.isNotEmpty ? jsonDecode(res.body) : {};
       if (res.statusCode < 200 || res.statusCode >= 300) {
         _toast((body is Map ? body['error'] : null)?.toString() ?? 'proBg.failed'.tr());

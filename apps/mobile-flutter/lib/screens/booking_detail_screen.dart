@@ -130,11 +130,14 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
 
   Future<void> _respondExtension(String extId, String action) async {
     try {
-      final res = await Api.post('/bookings/$_id/extension/$extId', {'action': action});
+      final res = await Api.post('/bookings/$_id/extension/$extId', {'action': action, 'platform': 'app'});
       final data = jsonDecode(res.body);
       if (res.statusCode >= 200 && res.statusCode < 300) {
         final url = (data is Map ? data['checkoutUrl'] : null)?.toString();
         if (action == 'approve' && url != null && url.startsWith('http')) {
+          // Paid in the browser, so the result only lands on resume — the
+          // _load() below runs long before Stripe's webhook has been near it.
+          _awaitingPayment = true;
           await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
         } else {
           _toast(action == 'approve' ? 'booking.extraApproved'.tr() : 'booking.requestDeclined'.tr());
@@ -201,10 +204,12 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
     );
     if (amt == null || amt <= 0) return;
     try {
-      final res = await Api.post('/stripe/tip', {'bookingId': _id, 'tipAmount': amt});
+      final res = await Api.post('/stripe/tip', {'bookingId': _id, 'tipAmount': amt, 'platform': 'app'});
       final data = jsonDecode(res.body);
       final url = (data is Map ? (data['url'] ?? data['checkoutUrl']) : null)?.toString();
       if (res.statusCode >= 200 && res.statusCode < 300 && url != null && url.startsWith('http')) {
+        // Tipping is paid in the browser too, so refresh on resume.
+        _awaitingPayment = true;
         await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
       } else {
         _toast((data is Map ? data['error'] : null)?.toString() ?? 'booking.tipStartFailed'.tr());
