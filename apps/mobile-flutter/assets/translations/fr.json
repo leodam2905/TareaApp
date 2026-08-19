@@ -694,6 +694,7 @@
     "uploadFailed": "Échec du téléversement",
     "payNow": "Payer",
     "payNote": "Paiement sécurisé via Stripe. Annulé si non payé sous 2 heures.",
+    "payEscrow": "Votre paiement est conservé en toute sécurité par Tarea et versé à votre pro seulement après la fin du travail et votre confirmation.",
     "payFailed": "Impossible d'ouvrir le paiement. Réessayez.",
     "tipPromptTitle": "Ajouter un pourboire ?",
     "tipPromptBody": "100 % du pourboire revient à votre pro.",

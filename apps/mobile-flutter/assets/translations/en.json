@@ -694,6 +694,7 @@
     "uploadFailed": "Upload failed",
     "payNow": "Pay now",
     "payNote": "Secure checkout with Stripe. Cancels if unpaid within 2 hours.",
+    "payEscrow": "Your payment is held securely by Tarea and released to your pro only after the job is complete and you confirm it.",
     "payFailed": "Could not start checkout. Try again.",
     "tipPromptTitle": "Add a tip?",
     "tipPromptBody": "100% of a tip goes to your Pro.",

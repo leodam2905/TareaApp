@@ -694,6 +694,7 @@
     "uploadFailed": "Error al subir",
     "payNow": "Pagar ahora",
     "payNote": "Pago seguro con Stripe. Se cancela si no pagas en 2 horas.",
+    "payEscrow": "Tarea retiene tu pago de forma segura y lo entrega a tu profesional solo cuando el trabajo termina y tú lo confirmas.",
     "payFailed": "No se pudo abrir el pago. Inténtalo de nuevo.",
     "tipPromptTitle": "¿Añadir propina?",
     "tipPromptBody": "El 100 % de la propina es para tu profesional.",

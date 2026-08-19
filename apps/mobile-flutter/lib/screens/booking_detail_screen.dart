@@ -176,7 +176,9 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
     if (_busy) return;
     setState(() => _busy = true);
     try {
-      final res = await Api.post('/stripe/checkout', {'bookingId': _id});
+      // 'app' returns through the deep-link bridge instead of leaving the
+      // customer stranded on the website after paying.
+      final res = await Api.post('/stripe/checkout', {'bookingId': _id, 'platform': 'app'});
       final data = jsonDecode(res.body);
       final url = (data is Map ? data['url'] : null)?.toString();
       if (res.statusCode >= 200 && res.statusCode < 300 && url != null && url.startsWith('http')) {
@@ -369,6 +371,26 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
                 // Payment only opens once the pro has accepted — the checkout
                 // endpoint rejects anything else.
                 if (status == 'ACCEPTED') ...[
+                  const SizedBox(height: 12),
+                  // Say where the money sits BEFORE asking for it. Stripe's own
+                  // page carries the same promise, but by then the customer has
+                  // already decided; the reassurance is worth nothing if it
+                  // only appears after the tap.
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEFF5FF),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      const Icon(Icons.lock_outline, size: 16, color: C.blue),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text('booking.payEscrow'.tr(),
+                            style: const TextStyle(color: C.blue, fontSize: 12.5, height: 1.4, fontWeight: FontWeight.w600)),
+                      ),
+                    ]),
+                  ),
                   const SizedBox(height: 12),
                   _primaryBtn(_busy ? 'common.loading'.tr() : 'booking.payNow'.tr(), _busy ? () {} : _payNow),
                   const SizedBox(height: 4),

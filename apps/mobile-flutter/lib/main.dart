@@ -132,7 +132,15 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/booking-detail',
-      builder: (_, s) => BookingDetailScreen(booking: (s.extra as Map?)?.cast<String, dynamic>() ?? const {}),
+      // Also reachable by deep link after paying, which carries only an id in
+      // the query string — the screen fetches the rest itself.
+      builder: (_, s) => BookingDetailScreen(
+        booking: (s.extra as Map?)?.cast<String, dynamic>() ??
+            {
+              if ((s.uri.queryParameters['bookingId'] ?? '').isNotEmpty)
+                'id': s.uri.queryParameters['bookingId'],
+            },
+      ),
     ),
     GoRoute(
       path: '/handyman-detail',

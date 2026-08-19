@@ -4,8 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
 import { assertPromoUsable, hasPriorPaidOrder } from "@/lib/promo";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+import { checkoutReturnUrls, returnTarget } from "@/lib/stripe-return-urls";
 
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
@@ -13,7 +12,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { bookingId } = await req.json();
+  const body = await req.json();
+  const { bookingId } = body;
+  // Paying starts in the app but finishes in an external browser; without this
+  // the customer was left on the website afterwards with no way back.
+  const target = returnTarget(body);
   if (!bookingId) return NextResponse.json({ error: "bookingId required" }, { status: 400 });
 
   const booking = await prisma.booking.findUnique({
@@ -101,8 +104,7 @@ export async function POST(req: NextRequest) {
         message: "Thank you! Your funds are now held in escrow. The handyman will be paid only after you confirm the job is done.",
       },
     },
-    success_url: `${APP_URL}/customer/pay/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url:  `${APP_URL}/customer/bookings/${booking.id}`,
+    ...checkoutReturnUrls(target, booking.id),
   });
 
   await prisma.booking.update({
