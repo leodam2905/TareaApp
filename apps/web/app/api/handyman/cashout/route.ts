@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { proOwedFor, proOwedForAll } from "@/lib/pro-payout";
 import { createNotification } from "@/lib/notify";
-import { BACKGROUND_CHECK_FEE } from "../background-check/route";
+import { BACKGROUND_CHECK_FEE, bgCheckDeductionFor } from "@/lib/background-check";
 
 export const MIN_CASHOUT = 10;
 
@@ -112,18 +112,26 @@ export async function POST(_req: NextRequest) {
     );
   }
 
-  // Deduct background check fee from first payout if deferred
+  // Deduct the background check fee from the first payout that can carry it.
+  // Shared with the weekly cron so the two paths cannot disagree about when the
+  // fee is owed.
   const profile = await prisma.handymanProfile.findUnique({ where: { userId: user.id } });
-  let bgCheckDeduction = 0;
-  if (profile?.backgroundCheckStatus === "DEFERRED") {
-    if (gross <= BACKGROUND_CHECK_FEE) {
-      return NextResponse.json(
-        { error: `Your first payout must cover the $${BACKGROUND_CHECK_FEE} background check fee. Earn more before cashing out.` },
-        { status: 400 }
-      );
-    }
-    bgCheckDeduction = BACKGROUND_CHECK_FEE;
+  const bg = bgCheckDeductionFor(
+    profile?.backgroundCheckStatus,
+    gross,
+    // Must still cover the instant fee and leave a payable amount behind.
+    calcInstantFee(gross) + 1,
+  );
+  if (bg.deferredAgain) {
+    // Instant cashout is a deliberate request for a specific amount, so it says
+    // no rather than quietly paying out and leaving the fee outstanding. The
+    // weekly cron, which the pro did not ask for, pays and waits instead.
+    return NextResponse.json(
+      { error: `Your first payout must cover the $${BACKGROUND_CHECK_FEE} background check fee. Earn more before cashing out.` },
+      { status: 400 }
+    );
   }
+  const bgCheckDeduction = bg.amount;
 
   const fee = calcInstantFee(gross);
   const net = gross - fee - bgCheckDeduction;

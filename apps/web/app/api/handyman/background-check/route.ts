@@ -3,8 +3,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { createCertnInvitation } from "@/lib/certn";
+import { BACKGROUND_CHECK_FEE } from "@/lib/background-check";
 
-export const BACKGROUND_CHECK_FEE = 29.99; // USD
+export { BACKGROUND_CHECK_FEE };
 
 // GET — current background check status
 export async function GET() {
