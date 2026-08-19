@@ -98,15 +98,57 @@ DB_NAME="$(sed -n 's|.*@[^/]*/\([^?]*\).*|\1|p' <<<"$PROD_DB_URL")"
   || fail "Could not parse the production DATABASE_URL. Refusing to verify against the wrong database."
 
 SQL_PORT="$(python3 -c 'import socket;s=socket.socket();s.bind(("127.0.0.1",0));print(s.getsockname()[1]);s.close()')"
-cloud-sql-proxy "$DB_CONN" --port "$SQL_PORT" >/tmp/tarea-sqlproxy.log 2>&1 &
-SQL_PROXY_PID=$!
 
-for _ in $(seq 1 40); do
-  nc -z 127.0.0.1 "$SQL_PORT" 2>/dev/null && break
-  sleep 0.5
-done
-nc -z 127.0.0.1 "$SQL_PORT" 2>/dev/null || fail "cloud-sql-proxy did not start (see /tmp/tarea-sqlproxy.log).
-If it says invalid_rapt, refresh Application Default Credentials:  gcloud auth application-default login"
+# The proxy used to authenticate only with personal Application Default
+# Credentials, and those expire under the account's reauth policy -- on
+# 2026-08-19 an invalid_rapt blocked the deploy entirely and repeated
+# `gcloud auth application-default login` never wrote a credential. The
+# deployer service account does not expire that way, so its token is tried
+# first and ADC is kept as the fallback.
+#
+# This changes only HOW the proxy authenticates. The gate below still runs,
+# still against production, and still refuses on missing columns.
+#
+# The port opens even when the credential is bad -- the refresh error only
+# surfaces once something connects -- so a probe connection is made and the
+# log inspected, rather than trusting `nc -z`. That is exactly how the bad
+# credential slipped past the readiness check before.
+start_proxy() { # $1 = token|adc
+  : >/tmp/tarea-sqlproxy.log
+  if [[ "$1" == "token" ]]; then
+    cloud-sql-proxy "$DB_CONN" --port "$SQL_PORT" --token "$SQL_TOKEN" >/tmp/tarea-sqlproxy.log 2>&1 &
+  else
+    cloud-sql-proxy "$DB_CONN" --port "$SQL_PORT" >/tmp/tarea-sqlproxy.log 2>&1 &
+  fi
+  SQL_PROXY_PID=$!
+
+  for _ in $(seq 1 40); do
+    nc -z 127.0.0.1 "$SQL_PORT" 2>/dev/null && break
+    sleep 0.5
+  done
+  nc -z 127.0.0.1 "$SQL_PORT" 2>/dev/null || return 1
+
+  (exec 3<>"/dev/tcp/127.0.0.1/$SQL_PORT") 2>/dev/null || true
+  sleep 1.5
+  ! grep -qE 'invalid_rapt|refresh error|Error 403|NOT_AUTHORIZED' /tmp/tarea-sqlproxy.log
+}
+
+SQL_TOKEN="$(gcloud auth print-access-token --account "$ACCOUNT" 2>/dev/null || true)"
+PROXY_AUTH=""
+if [[ -n "$SQL_TOKEN" ]] && start_proxy token; then
+  PROXY_AUTH="$ACCOUNT"
+else
+  cleanup_proxy; SQL_PROXY_PID=""
+  if start_proxy adc; then
+    PROXY_AUTH="Application Default Credentials"
+  else
+    fail "cloud-sql-proxy could not authenticate to the production database
+(see /tmp/tarea-sqlproxy.log). Either grant roles/cloudsql.client to
+  $ACCOUNT
+or refresh Application Default Credentials:  gcloud auth application-default login"
+  fi
+fi
+echo "Proxy authenticated as: $PROXY_AUTH"
 
 echo "Comparing schema against PRODUCTION ($DB_NAME via cloud-sql-proxy)."
 
