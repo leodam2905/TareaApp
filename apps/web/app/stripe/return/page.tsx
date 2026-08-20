@@ -17,25 +17,46 @@ import { useSearchParams } from "next/navigation";
 const SCHEMES = {
   // The two apps register different schemes, so each flow must name its own.
   payouts: (q: string) => `tareapro://app/pro/payout-methods?stripe=${q}`,
+  bgcheck: (q: string) => `tareapro://app/pro/background-check?stripe=${q}`,
   booking: (q: string, id: string) =>
     `tarea://app/booking-detail?stripe=${q}${id ? `&bookingId=${id}` : ""}`,
 } as const;
 
+const CANCELLED = {
+  title: "Payment cancelled",
+  body: "Nothing was charged. You can try again whenever you're ready.",
+  escrow: false,
+};
+
 function copyFor(to: string, stripe: string) {
+  if (stripe === "cancelled") return CANCELLED;
+
   if (to === "booking") {
-    if (stripe === "cancelled") {
+    if (stripe === "tip_paid") {
       return {
-        title: "Payment cancelled",
-        body: "Nothing was charged. You can pay from the booking whenever you're ready.",
+        title: "Tip sent",
+        body: "Thank you — your pro will receive it with their next payout.",
         escrow: false,
       };
     }
+    if (stripe === "ext_paid") {
+      return {
+        title: "Extra time paid",
+        body: "Your booking has been extended. Returning you to the Tarea app…",
+        escrow: true,
+      };
+    }
+    return { title: "Payment received", body: "Returning you to the Tarea app…", escrow: true };
+  }
+
+  if (to === "bgcheck") {
     return {
-      title: "Payment received",
-      body: "Returning you to the Tarea app…",
-      escrow: true,
+      title: "Background check paid",
+      body: "Certn will email you a secure link to complete your screening. It usually takes 1–3 business days.",
+      escrow: false,
     };
   }
+
   if (stripe === "refresh") {
     return {
       title: "Setup not finished",
@@ -49,9 +70,13 @@ function copyFor(to: string, stripe: string) {
 function StripeReturn() {
   const params = useSearchParams();
 
-  const to = params.get("to") === "booking" ? "booking" : "payouts";
+  const rawTo = params.get("to") ?? "";
+  const to = rawTo === "booking" || rawTo === "bgcheck" ? rawTo : "payouts";
+
   const rawStripe = params.get("stripe") ?? "";
-  const stripe = ["connected", "refresh", "paid", "cancelled"].includes(rawStripe)
+  const stripe = ["connected", "refresh", "paid", "cancelled", "tip_paid", "ext_paid"].includes(
+    rawStripe,
+  )
     ? rawStripe
     : "connected";
 
@@ -59,8 +84,18 @@ function StripeReturn() {
   const rawId = params.get("id") ?? "";
   const id = /^[a-z0-9]{1,40}$/i.test(rawId) ? rawId : "";
 
-  const deepLink = to === "booking" ? SCHEMES.booking(stripe, id) : SCHEMES.payouts(stripe);
-  const webFallback = to === "booking" ? "/customer/bookings" : "/handyman/payout-methods";
+  const deepLink =
+    to === "booking"
+      ? SCHEMES.booking(stripe, id)
+      : to === "bgcheck"
+        ? SCHEMES.bgcheck(stripe)
+        : SCHEMES.payouts(stripe);
+  const webFallback =
+    to === "booking"
+      ? "/customer/bookings"
+      : to === "bgcheck"
+        ? "/handyman/onboarding"
+        : "/handyman/payout-methods";
   const { title, body, escrow } = copyFor(to, stripe);
 
   const [handedOff, setHandedOff] = useState(false);
