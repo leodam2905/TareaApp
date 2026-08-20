@@ -198,9 +198,25 @@ class TareaApp extends StatelessWidget {
       //
       // Raise this cautiously: every point of scale is a point of overflow risk
       // in tight rows, and Arabic and French already run longer than English.
+      // Tapping outside a field dismisses the keyboard, everywhere.
+      //
+      // iOS has no back button, and TextInputType.number puts up a number pad
+      // with no return or Done key — so a field like the Post a Job ZIP code
+      // trapped the user completely: keyboard up, nothing to press, no way
+      // forward. Android hid the bug because its back button always dismisses.
+      // Eight screens use numeric keyboards, payout methods (routing and
+      // account number) among them, so this belongs here once rather than
+      // being remembered per screen.
+      //
+      // translucent, and unfocus only: taps still reach the widgets underneath,
+      // so buttons and fields behave exactly as before.
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(_kTextScale)),
-        child: child!,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: child!,
+        ),
       ),
     );
   }
