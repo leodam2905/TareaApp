@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -149,9 +151,26 @@ final appRouter = GoRouter(
   ],
 );
 
-/// App-wide text size. 1.0 was the design size; everything reads one notch
-/// larger at 1.12 without re-laying-out a single screen.
-const double _kTextScale = 1.12;
+/// App-wide text size, per platform.
+///
+/// 1.0 was the design size. Raising it to 1.12 (887f847, shipped in 1.0.16)
+/// made everything read one notch larger "without re-laying-out a single
+/// screen" — which held on Android and broke iOS, because the two are not
+/// rendering the same typeface.
+///
+/// theme.dart asks for '.SF Pro Text'. That family exists only on iOS; Android
+/// silently falls back to Roboto, which is narrower at the same size and
+/// heavier weights. So the layouts were in practice validated against Roboto,
+/// and the extra 12% pushed the wider SF Pro past the edge on iOS alone:
+/// "Landscaping" broke mid-word, the tab bar wrapped "Messages" to two lines,
+/// the stepper split "Schedule", and the completeness ring overflowed its
+/// circle. Android showed none of it.
+///
+/// Each platform therefore keeps the value it is known good at: iOS shipped at
+/// 1.0 from 1.0.3 through 1.0.15 without complaint, and Android is fine at
+/// 1.12 today. Raising iOS needs the tight rows fixed first — auto_size_text
+/// is already a dependency and is not yet used anywhere.
+final double _kTextScale = Platform.isIOS ? 1.0 : 1.12;
 
 class TareaApp extends StatelessWidget {
   const TareaApp({super.key});
@@ -180,7 +199,7 @@ class TareaApp extends StatelessWidget {
       // Raise this cautiously: every point of scale is a point of overflow risk
       // in tight rows, and Arabic and French already run longer than English.
       builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(_kTextScale)),
+        data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(_kTextScale)),
         child: child!,
       ),
     );
