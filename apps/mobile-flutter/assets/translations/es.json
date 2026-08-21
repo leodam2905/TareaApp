@@ -812,5 +812,17 @@
     "deferredNote": "Iniciada. Se descontarán ${} de tu primer pago.",
     "deferredDone": "Verificación iniciada",
     "failed": "Algo salió mal. Inténtalo de nuevo."
+  },
+  "track": {
+    "title": "Sigue a tu profesional",
+    "milesAway": "A {} millas",
+    "justNow": "Actualizando en vivo",
+    "updatedAgo": "Actualizado hace {} min",
+    "noFix": "Esperando una ubicación",
+    "staleNote": "El teléfono de tu profesional dejó de compartir su ubicación, puede que ya no esté aquí.",
+    "yourAddress": "Tu dirección",
+    "noLocationYet": "Tu profesional aún no ha compartido su ubicación. Aparecerá cuando salga.",
+    "message": "Mensaje",
+    "call": "Llamar"
   }
 }

@@ -51,6 +51,7 @@ dependencies:
   easy_localization: ^3.0.7
   auto_size_text: ^3.0.0
   flutter_stripe: ^11.1.0
+  google_maps_flutter: ^2.9.0
   # Runtime, not just the CLI generator: main.dart calls preserve()/remove()
   # to hold the launch screen for a minimum time.
   flutter_native_splash: ^2.4.4

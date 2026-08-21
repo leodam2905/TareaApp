@@ -812,5 +812,17 @@
     "deferredNote": "Started. ${} will be deducted from your first payout.",
     "deferredDone": "Background check started",
     "failed": "Something went wrong. Please try again."
+  },
+  "track": {
+    "title": "Track your pro",
+    "milesAway": "{} miles away",
+    "justNow": "Updating live",
+    "updatedAgo": "Updated {} min ago",
+    "noFix": "Waiting for a location",
+    "staleNote": "Your pro's phone has stopped sharing its location, so this may not be where they are now.",
+    "yourAddress": "Your address",
+    "noLocationYet": "Your pro hasn't shared a location yet. It appears here once they set off.",
+    "message": "Message",
+    "call": "Call"
   }
 }

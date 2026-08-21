@@ -1,4 +1,5 @@
 import Flutter
+import GoogleMaps
 import UIKit
 import UserNotifications
 import FirebaseMessaging
@@ -14,6 +15,8 @@ import FirebaseMessaging
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    // Maps SDK needs its key before any map view is created.
+    GMSServices.provideAPIKey("AIzaSyCqDnoc2Ga5hTkSXd_xHsrk2Wf7p2bo3eI")
     let result = super.application(application, didFinishLaunchingWithOptions: launchOptions)
     // Ensure iOS requests an APNs device token; without it getToken() stays nil.
     application.registerForRemoteNotifications()

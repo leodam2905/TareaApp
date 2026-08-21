@@ -43,6 +43,12 @@
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+        <!-- Maps SDK key. Public by design (it ships in every client) and
+             must be restricted by package name + signing certificate in the
+             Cloud Console, or anyone can bill map loads to this project. -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCqDnoc2Ga5hTkSXd_xHsrk2Wf7p2bo3eI" />
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />

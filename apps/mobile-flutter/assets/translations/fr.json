@@ -812,5 +812,17 @@
     "deferredNote": "Commencé. {} $ seront déduits de votre premier virement.",
     "deferredDone": "Vérification lancée",
     "failed": "Une erreur est survenue. Réessayez."
+  },
+  "track": {
+    "title": "Suivre votre pro",
+    "milesAway": "À {} miles",
+    "justNow": "Mise à jour en direct",
+    "updatedAgo": "Mis à jour il y a {} min",
+    "noFix": "En attente d'une position",
+    "staleNote": "Le téléphone de votre pro ne partage plus sa position ; il n'est peut-être plus ici.",
+    "yourAddress": "Votre adresse",
+    "noLocationYet": "Votre pro n'a pas encore partagé sa position. Elle apparaîtra dès son départ.",
+    "message": "Message",
+    "call": "Appeler"
   }
 }

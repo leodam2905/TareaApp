@@ -31,6 +31,7 @@ import 'screens/requests_screen.dart';
 import 'screens/request_detail_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/booking_detail_screen.dart';
+import 'screens/track_pro_screen.dart';
 import 'screens/chat_screen.dart';
 import 'screens/edit_profile_screen.dart';
 import 'screens/pro/pro_shell.dart';
@@ -148,6 +149,10 @@ final appRouter = GoRouter(
                 'id': s.uri.queryParameters['bookingId'],
             },
       ),
+    ),
+    GoRoute(
+      path: '/track-pro',
+      builder: (_, s) => TrackProScreen(booking: (s.extra as Map?)?.cast<String, dynamic>() ?? const {}),
     ),
     GoRoute(
       path: '/handyman-detail',

@@ -407,13 +407,22 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
           // On the way
           if (status == 'ACCEPTED' && _b['isOnMyWay'] == true) ...[
             const SizedBox(height: 16),
-            Container(
-              width: double.infinity, padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: const Color(0xFFF5F3FF), borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFDDD6FE))),
-              child: Row(children: [
-                const Icon(Icons.directions_car_outlined, size: 20, color: Color(0xFF7C3AED)), const SizedBox(width: 10),
-                Expanded(child: Text('booking.onTheWay'.tr(), style: const TextStyle(color: Color(0xFF7C3AED), fontWeight: FontWeight.w800))),
-              ]),
+            // The pro has been reporting their position to
+            // /bookings/:id/location all along and nothing ever showed it.
+            // Tapping through opens the map.
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => context.push('/track-pro', extra: _b),
+              child: Container(
+                width: double.infinity, padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(color: const Color(0xFFF5F3FF), borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFDDD6FE))),
+                child: Row(children: [
+                  const Icon(Icons.directions_car_outlined, size: 20, color: Color(0xFF7C3AED)), const SizedBox(width: 10),
+                  Expanded(child: Text('booking.onTheWay'.tr(), style: const TextStyle(color: Color(0xFF7C3AED), fontWeight: FontWeight.w800))),
+                  Text('track.title'.tr(), style: const TextStyle(color: Color(0xFF7C3AED), fontWeight: FontWeight.w800, fontSize: 13)),
+                  const Icon(Icons.chevron_right, size: 18, color: Color(0xFF7C3AED)),
+                ]),
+              ),
             ),
           ],
           // Live timer
