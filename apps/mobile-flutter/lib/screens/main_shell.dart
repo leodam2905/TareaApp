@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
+import '../tab_refresh.dart';
 import 'dashboard_screen.dart';
 import 'my_jobs_screen.dart';
 import 'messages_screen.dart';
@@ -13,8 +14,28 @@ class MainShell extends StatefulWidget {
   State<MainShell> createState() => _MainShellState();
 }
 
-class _MainShellState extends State<MainShell> {
+class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
   int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // iOS resumes the same process for days, so without this the visible tab
+  // keeps showing whatever it loaded at the last cold start.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) TabRefresh.resumed();
+  }
+
 
   static const _tabs = [
     DashboardScreen(),
@@ -37,7 +58,7 @@ class _MainShellState extends State<MainShell> {
     return Expanded(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => setState(() => _index = i),
+        onTap: () { setState(() => _index = i); TabRefresh.select(i); },
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

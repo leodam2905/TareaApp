@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../../tab_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -20,7 +21,13 @@ class ProJobs extends StatefulWidget {
   State<ProJobs> createState() => _ProJobsState();
 }
 
-class _ProJobsState extends State<ProJobs> {
+class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
+  @override
+  int get tabIndex => 2;
+
+  @override
+  void onTabRefresh() => _load();
+
   List<dynamic> _bookings = [];
   bool _loading = true;
   String _filter = 'ALL';

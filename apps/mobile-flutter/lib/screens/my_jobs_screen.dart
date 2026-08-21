@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../tab_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -22,7 +23,13 @@ const _statusPill = {
   'CANCELLED': ['status.cancelled', 0xFFB91C1C, 0xFFFEE2E2],
 };
 
-class _MyJobsScreenState extends State<MyJobsScreen> with RouteAware {
+class _MyJobsScreenState extends State<MyJobsScreen> with RouteAware, TabRefreshMixin {
+  @override
+  int get tabIndex => 1;
+
+  @override
+  void onTabRefresh() => _load();
+
   List<dynamic> _bookings = [];
   bool _loading = true;
   String _filter = 'ALL';

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../tab_refresh.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import 'pro_dashboard.dart';
@@ -17,19 +18,26 @@ class ProShell extends StatefulWidget {
   State<ProShell> createState() => _ProShellState();
 }
 
-class _ProShellState extends State<ProShell> {
+class _ProShellState extends State<ProShell> with WidgetsBindingObserver {
   int _index = 0;
 
   @override
   void initState() {
     super.initState();
-    ProShell.go = (i) { if (mounted) setState(() => _index = i); };
+    WidgetsBinding.instance.addObserver(this);
+    ProShell.go = (i) { if (mounted) { setState(() => _index = i); TabRefresh.select(i); } };
   }
 
   @override
   void dispose() {
     ProShell.go = null;
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) TabRefresh.resumed();
   }
 
   static const _tabs = [
@@ -69,7 +77,7 @@ class _ProShellState extends State<ProShell> {
     return Expanded(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => setState(() => _index = i),
+        onTap: () { setState(() => _index = i); TabRefresh.select(i); },
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Icon(icon, color: active ? C.blue : C.muted, size: 24),
           const SizedBox(height: 2),

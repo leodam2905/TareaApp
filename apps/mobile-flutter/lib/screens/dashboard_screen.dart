@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../tab_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -50,7 +51,13 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> with RouteAware {
+class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabRefreshMixin {
+  @override
+  int get tabIndex => 0;
+
+  @override
+  void onTabRefresh() => _load();
+
   String _firstName = '';
   String _avatar = '';
   /// Unread notifications, for the badge on the bell.
