@@ -353,7 +353,22 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
                     shape: BoxShape.circle,
                     border: Border.all(color: _pct >= 100 ? const Color(0xFF16A34A) : C.blue, width: 5),
                   ),
-                  child: Center(child: Text('$_pct%', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: _pct >= 100 ? const Color(0xFF16A34A) : C.blue))),
+                  // A 60px circle with a 5px border leaves 50px inside, and
+                  // "100%" at weight 900 does not fit that in SF Pro — the
+                  // three-digit case is the only one that overflows, so it
+                  // only showed once a pro was actually finished.
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text('$_pct%',
+                            maxLines: 1,
+                            softWrap: false,
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: _pct >= 100 ? const Color(0xFF16A34A) : C.blue)),
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

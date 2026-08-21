@@ -641,7 +641,20 @@ class _PostJobScreenState extends State<PostJobScreen> {
           child: Row(children: [
             Icon(icon, size: 18, color: C.muted),
             const SizedBox(width: 10),
-            Text(label, style: const TextStyle(fontSize: 15, color: C.ink, fontWeight: FontWeight.w600)),
+            // Two of these sit side by side in Expanded halves, so the label
+            // has a hard width limit and the Row overflowed the moment the
+            // text wanted more — 31px for a full date like 8/21/2026, 11px for
+            // the time. Shrink to fit rather than ellipsise: a date clipped to
+            // "8/21/20…" is worse than a date one point smaller.
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(label,
+                    maxLines: 1,
+                    style: const TextStyle(fontSize: 15, color: C.ink, fontWeight: FontWeight.w600)),
+              ),
+            ),
           ]),
         ),
       );
