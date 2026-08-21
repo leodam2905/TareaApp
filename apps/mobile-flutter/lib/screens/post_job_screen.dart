@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:auto_size_text/auto_size_text.dart';
 import '../payment_method.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -537,30 +538,49 @@ class _PostJobScreenState extends State<PostJobScreen> {
           Text('postjob.needTitle'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
           const SizedBox(height: 12),
           // Step 1 — service category (same tile style as Instant Quote)
-          Wrap(
-            spacing: 10, runSpacing: 10,
-            children: kServiceCats.map((c) {
-              final sel = _cat?.name == c.name;
-              return GestureDetector(
-                onTap: () => setState(() { _cat = c; _task = null; _detailAnswers.clear(); _estimate = null; }),
-                child: Container(
-                  width: 100,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  decoration: BoxDecoration(
-                    color: sel ? C.blue : C.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: sel ? C.blue : C.line),
+          // Three across, measured rather than assumed.
+          //
+          // These were fixed 100pt tiles in a Wrap, so the count per row was
+          // whatever happened to fit: 3x100 plus two 10pt gaps is 320, and the
+          // card leaves 313 on a 393pt phone. Seven points short, so it broke
+          // to two. Dividing the real width guarantees three at any size,
+          // including when Display Zoom shrinks the logical width.
+          LayoutBuilder(builder: (context, box) {
+            const gap = 10.0;
+            const columns = 3;
+            final tile = (box.maxWidth - gap * (columns - 1)) / columns;
+            return Wrap(
+              spacing: gap, runSpacing: gap,
+              children: kServiceCats.map((c) {
+                final sel = _cat?.name == c.name;
+                return GestureDetector(
+                  onTap: () => setState(() { _cat = c; _task = null; _detailAnswers.clear(); _estimate = null; }),
+                  child: Container(
+                    width: tile,
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+                    decoration: BoxDecoration(
+                      color: sel ? C.blue : C.white,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: sel ? C.blue : C.line),
+                    ),
+                    child: Column(children: [
+                      Icon(c.icon, size: 28, color: sel ? Colors.white : C.blue),
+                      const SizedBox(height: 6),
+                      // Narrower tiles leave less room for the longest names,
+                      // so the label shrinks to fit instead of breaking
+                      // mid-word the way "Landscaping" did.
+                      AutoSizeText(c.nameKey.tr(),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          minFontSize: 9,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: sel ? Colors.white : C.ink, fontWeight: FontWeight.w700)),
+                    ]),
                   ),
-                  child: Column(children: [
-                    Icon(c.icon, size: 28, color: sel ? Colors.white : C.blue),
-                    const SizedBox(height: 6),
-                    Text(c.nameKey.tr(), textAlign: TextAlign.center,
-                        style: TextStyle(color: sel ? Colors.white : C.ink, fontWeight: FontWeight.w700)),
-                  ]),
-                ),
-              );
-            }).toList(),
-          ),
+                );
+              }).toList(),
+            );
+          }),
           // Step 2 — task
           if (_cat != null) ...[
             const SizedBox(height: 20),
