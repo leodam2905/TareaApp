@@ -1,0 +1,22 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.taptarea.customer",
+      "sha256_cert_fingerprints": [
+        "FE:F3:04:9F:92:10:38:0A:4D:15:4F:ED:22:64:98:33:9F:6C:2A:F2:37:38:D9:47:64:01:CB:91:6A:4F:36:1E"
+      ]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.taptarea.handyman",
+      "sha256_cert_fingerprints": [
+        "7B:E3:19:7D:3F:A4:C0:C7:66:31:51:DF:9C:82:90:02:A7:25:C7:4E:34:0B:D6:4C:38:45:F8:54:30:3D:1A:18"
+      ]
+    }
+  }
+]

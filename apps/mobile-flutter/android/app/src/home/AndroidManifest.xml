@@ -1,0 +1,23 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity android:name=".MainActivity">
+            <!-- Android App Links for Tarea (customer).
+                 autoVerify makes Android fetch /.well-known/assetlinks.json and
+                 check this package's signing certificate against it; only then
+                 do these links open the app instead of the browser. Without it
+                 the emails and SMS from lib/notify.ts land in Chrome.
+
+                 Paths mirror the AASA scoping so the two apps never claim each
+                 other's links. /stripe/* is deliberately NOT claimed — the
+                 payment bridge forwards to the tarea:// scheme itself, and
+                 intercepting it would break a flow that works. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https" android:host="taptarea.com" android:pathPrefix="/customer"/>
+                <data android:scheme="https" android:host="taptarea.com" android:pathPrefix="/chat"/>
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

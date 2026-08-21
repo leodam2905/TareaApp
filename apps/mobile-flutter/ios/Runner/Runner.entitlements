@@ -4,5 +4,19 @@
 <dict>
 	<key>aps-environment</key>
 	<string>development</string>
+	<!-- Universal Links. Without this entitlement iOS never even requests
+	     /.well-known/apple-app-site-association, so serving that file does
+	     nothing on its own — which is why the links in our emails and SMS
+	     opened Safari instead of the app.
+
+	     Both apps use the same domain and are kept apart by the path scoping
+	     inside the AASA (/customer/* and /chat/* for Tarea, /handyman/* for
+	     Tarea Pro, with /stripe/* excluded from both so the payment bridge
+	     keeps working). -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:taptarea.com</string>
+		<string>webcredentials:taptarea.com</string>
+	</array>
 </dict>
 </plist>

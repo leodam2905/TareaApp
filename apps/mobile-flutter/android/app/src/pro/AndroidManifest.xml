@@ -1,0 +1,15 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity android:name=".MainActivity">
+            <!-- Android App Links for Tarea Pro. See the home flavour's
+                 manifest; this claims only /handyman/* so the two apps stay
+                 disjoint, and leaves /stripe/* to the payment bridge. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https" android:host="taptarea.com" android:pathPrefix="/handyman"/>
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
