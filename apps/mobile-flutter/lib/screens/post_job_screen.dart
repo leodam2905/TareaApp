@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../payment_method.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -199,6 +200,21 @@ class _PostJobScreenState extends State<PostJobScreen> {
       context.push('/register');
       return;
     }
+    // A directed hire commits a specific pro to a specific job, so the card
+    // goes on file BEFORE the booking exists. Doing it afterwards would leave
+    // bookings a pro can accept and drive to with no payment method behind
+    // them — which is what the 2h auto-cancel was standing in for.
+    //
+    // Nothing is charged here. The hold is placed when the pro accepts and
+    // captured at completion; see apps/web/lib/payment-hold.ts.
+    if (_isDirected) {
+      final ok = await PaymentMethods.ensureCardOnFile(context);
+      if (!ok) {
+        if (mounted) _toast('postjob.cardRequired'.tr());
+        return;
+      }
+    }
+    if (!mounted) return;
     setState(() => _submitting = true);
     try {
       final pos = _isDirected ? null : await _coords();

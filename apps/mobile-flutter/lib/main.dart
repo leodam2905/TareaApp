@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'theme.dart';
 import 'api.dart';
 import 'flavor.dart';
+import 'payment_method.dart';
 import 'deep_links.dart';
 import 'route_observer.dart';
 import 'screens/disputes_screen.dart';
@@ -64,6 +66,9 @@ Future<void> bootstrap(Flavor flavor) async {
   // frame renders, so it flashed for whatever startup happened to take.
   FlutterNativeSplash.preserve(widgetsBinding: binding);
   await EasyLocalization.ensureInitialized();
+  // Stripe only needs the publishable key; the sheet is rendered by Stripe's
+  // own SDK so card details never enter this app.
+  Stripe.publishableKey = stripePublishableKey;
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('fr'), Locale('es'), Locale('ar')],

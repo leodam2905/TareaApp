@@ -312,7 +312,8 @@
     "estimateFailed": "No pudimos calcular un precio ahora mismo. Reintenta — tus datos se han guardado.",
     "estimatePending": "Calculando tu precio…",
     "retryEstimate": "Reintentar estimación",
-    "signInToPost": "Crea una cuenta para publicar — tus datos se han guardado."
+    "signInToPost": "Crea una cuenta para publicar — tus datos se han guardado.",
+    "cardRequired": "Necesitas una tarjeta para confirmar la reserva. No se te cobrará hasta que el trabajo esté terminado."
   },
   "browse": {
     "title": "Buscar pros",

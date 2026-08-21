@@ -312,7 +312,8 @@
     "estimateFailed": "Impossible de calculer un prix pour le moment. Réessayez — vos informations sont conservées.",
     "estimatePending": "Calcul de votre prix…",
     "retryEstimate": "Réessayer l'estimation",
-    "signInToPost": "Créez un compte pour publier — vos informations sont conservées."
+    "signInToPost": "Créez un compte pour publier — vos informations sont conservées.",
+    "cardRequired": "Une carte est nécessaire pour confirmer la réservation. Rien ne sera débité avant la fin du travail."
   },
   "browse": {
     "title": "Parcourir les pros",

@@ -1,5 +1,7 @@
 package com.taptarea.tarea
 
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 
-class MainActivity : FlutterActivity()
+// FlutterFragmentActivity, not FlutterActivity: Stripe's Android
+// PaymentSheet is a DialogFragment and needs a FragmentActivity host.
+class MainActivity : FlutterFragmentActivity()

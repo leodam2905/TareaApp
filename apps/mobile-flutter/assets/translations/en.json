@@ -312,7 +312,8 @@
     "estimateFailed": "We couldn't work out a price just now. Tap retry — your details are saved.",
     "estimatePending": "Working out your price…",
     "retryEstimate": "Retry estimate",
-    "signInToPost": "Create an account to post this job — your details are saved."
+    "signInToPost": "Create an account to post this job — your details are saved.",
+    "cardRequired": "A card is needed to confirm the booking. You won't be charged until the job is done."
   },
   "browse": {
     "title": "Browse Pros",

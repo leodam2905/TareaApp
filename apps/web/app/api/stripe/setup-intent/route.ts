@@ -11,6 +11,13 @@ export async function POST(_req: NextRequest) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // A returning customer already has a card on file, and making them re-enter
+  // it at every hire would be the fastest way to lose the booking. Say so and
+  // let the app skip the sheet entirely.
+  if (user.defaultPaymentMethodId) {
+    return NextResponse.json({ alreadySaved: true });
+  }
+
   const customerId = await getOrCreateStripeCustomer(user.id);
 
   const setupIntent = await stripe.setupIntents.create({
