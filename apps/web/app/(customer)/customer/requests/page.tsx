@@ -64,7 +64,8 @@ export default function CustomerRequestsPage() {
     const res = await fetch(`/api/job-requests/${jobId}/applications/${appId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action }),
+      // Marks this caller as one that follows the returned payment link.
+      body: JSON.stringify({ action, client: "web" }),
     });
     if (res.ok) {
       // Hiring IS paying: accepting an applicant returns a Stripe Checkout

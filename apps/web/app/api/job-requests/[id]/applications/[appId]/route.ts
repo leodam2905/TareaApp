@@ -28,6 +28,14 @@ export async function PATCH(
   // the customer is left on the website afterwards with no way back.
   const target = returnTarget(body);
 
+  // Hiring now returns a payment link instead of hiring outright, and an app
+  // build older than that change ignores it: it would toast "Pro hired" while
+  // nothing was paid and nobody was hired. Rather than break quietly on a
+  // client we cannot update, a hire requires a caller that knows to follow the
+  // link — the app sends platform, our own pages send client. This is what
+  // lets the web half ship without waiting on store review.
+  const hireCapableClient = body?.platform === "app" || body?.client === "web";
+
   // Ensure the application actually belongs to this job request (prevents
   // accepting/rejecting an application from a different customer's job request
   // by passing a foreign appId).
@@ -45,6 +53,13 @@ export async function PATCH(
   if (!application) return NextResponse.json({ error: "Application not found" }, { status: 404 });
 
   if (action === "accept") {
+    if (!hireCapableClient) {
+      return NextResponse.json(
+        { error: "Please update the Tarea app to hire a pro — hiring now includes payment." },
+        { status: 426 },
+      );
+    }
+
     // A request that already has a hired pro must not open a second payment.
     if (jobRequest.status !== "OPEN") {
       return NextResponse.json({ error: "This request already has a hired pro." }, { status: 409 });
