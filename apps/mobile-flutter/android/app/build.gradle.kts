@@ -80,6 +80,10 @@ android {
             if (!hasKeystores) {
                 signingConfig = signingConfigs.getByName("debug")
             }
+            // R8 already runs on release; this only adds our keep rules to the
+            // set Flutter and AGP contribute, without changing the optimisation
+            // profile.
+            proguardFiles("proguard-rules.pro")
         }
     }
 }
