@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>destination</key>
+	<string>export</string>
+	<key>generateAppStoreInformation</key>
+	<false/>
+	<!-- FALSE ON PURPOSE. With this true, Xcode silently bumps the build number
+	     during export: on 2026-08-22 pubspec, both Info.plists, local.properties
+	     and Generated.xcconfig all said 39 and the exported Home IPA read 40,
+	     which cost an afternoon to chase. False means the exported IPA carries
+	     exactly the --build-number that was passed in. -->
+	<key>manageAppVersionAndBuildNumber</key>
+	<false/>
+	<key>method</key>
+	<string>app-store-connect</string>
+	<key>signingStyle</key>
+	<string>automatic</string>
+	<key>stripSwiftSymbols</key>
+	<true/>
+	<key>teamID</key>
+	<string>GZT8C3C2A2</string>
+	<key>testFlightInternalTestingOnly</key>
+	<false/>
+	<key>uploadSymbols</key>
+	<true/>
+</dict>
+</plist>
