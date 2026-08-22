@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { unmetSteps } from "@/lib/pro-bookable";
+import { stripe } from "@/lib/stripe";
+import { hireAmounts } from "@/lib/hire";
+import { hireReturnUrls, returnTarget } from "@/lib/stripe-return-urls";
 
 export async function PATCH(
   req: NextRequest,
@@ -19,7 +22,11 @@ export async function PATCH(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { action } = await req.json();
+  const body = await req.json();
+  const { action } = body;
+  // Paying starts in the app but finishes in an external browser; without this
+  // the customer is left on the website afterwards with no way back.
+  const target = returnTarget(body);
 
   // Ensure the application actually belongs to this job request (prevents
   // accepting/rejecting an application from a different customer's job request
@@ -38,6 +45,11 @@ export async function PATCH(
   if (!application) return NextResponse.json({ error: "Application not found" }, { status: 404 });
 
   if (action === "accept") {
+    // A request that already has a hired pro must not open a second payment.
+    if (jobRequest.status !== "OPEN") {
+      return NextResponse.json({ error: "This request already has a hired pro." }, { status: 409 });
+    }
+
     // Bookable means all six onboarding steps complete — the same rule browse
     // filters on and applying asserts. Checked again here because this is the
     // moment a stranger is sent to somebody's home, and it must not depend on
@@ -75,75 +87,81 @@ export async function PATCH(
       );
     }
 
-    // Gate passed — now mark accepted, assign, and reject the others.
-    await prisma.jobApplication.update({ where: { id: params.appId }, data: { status: "ACCEPTED" } });
-    await prisma.jobRequest.update({ where: { id: params.id }, data: { status: "ASSIGNED" } });
-    await prisma.jobApplication.updateMany({
-      where: { jobRequestId: params.id, id: { not: params.appId } },
-      data: { status: "REJECTED" },
-    });
-
-    // A hire must ALWAYS produce a customer booking. Use the pro's matching
-    // service if they have one; otherwise create a private (inactive) service
-    // from the job so a booking can exist even when the pro has no listing in
-    // this category.
-    let service = await prisma.service.findFirst({
-      where: { handymanId: application.handymanId, category: jobRequest.category },
-      orderBy: { isActive: "desc" },
-    });
-    if (!service) {
-      // The labour price is the job's, never the applicant's — see totalPrice below.
-      const price = jobRequest.budgetMin ?? 0;
-      service = await prisma.service.create({
-        data: {
-          handymanId: application.handymanId,
-          title: jobRequest.title,
-          description: (jobRequest.description || jobRequest.title).slice(0, 500),
-          category: jobRequest.category,
-          minPrice: price,
-          maxPrice: jobRequest.budgetMax ?? price,
-          duration: 60,
-          isActive: false,
-        },
-      });
+    // Gate passed — now collect the money. NOTHING is decided until Stripe
+    // confirms it: no application is accepted, no runner-up is rejected, the
+    // request stays OPEN and the pro is told nothing. Hiring is paying, so a
+    // customer who closes the payment page has simply not hired anybody.
+    // The booking itself is created from the webhook (see lib/hire.ts).
+    const { labour, serviceFee, materials } = hireAmounts(
+      jobRequest.budgetMin ?? 0,
+      application.materialsEstimate ?? jobRequest.materialsCost ?? 0,
+    );
+    if (labour <= 0) {
+      return NextResponse.json({ error: "This job has no price set and cannot be paid for." }, { status: 400 });
     }
 
-    // Both parties agreed (pro applied, customer hired) → create the booking
-    // ACCEPTED so the customer can pay right away.
-    const booking = await prisma.booking.create({
-      data: {
-        customerId: user.id,
-        handymanId: application.user.id,
-        serviceId: service.id,
-        status: "ACCEPTED",
-        scheduledAt: jobRequest.scheduledAt,
-        address: jobRequest.address,
-        city: jobRequest.city,
-          // Tarea sets the labour price; a pro cannot bid it up or change it.
-          // This previously preferred the applicant's proposed figure over the
-          // job's, so whatever a pro typed became the amount the customer owed:
-          // they agreed to one number and could be billed another.
-          totalPrice: jobRequest.budgetMin,
-        materialsEstimate: application.materialsEstimate ?? jobRequest.materialsCost ?? 0,
-        responseDeadline: new Date(Date.now() + 2 * 60 * 60 * 1000),
+    const session = await stripe.checkout.sessions.create({
+      // "card" ONLY — Apple Pay and Google Pay are wallets Stripe surfaces
+      // under "card", not payment_method_types. Naming them makes every
+      // session creation fail. See /api/stripe/checkout.
+      payment_method_types: ["card"],
+      payment_method_options: { card: { request_three_d_secure: "automatic" } },
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: Math.round(labour * 100),
+            product_data: {
+              name: `${jobRequest.title} (Labor)`,
+              description: `${application.user.name} — ${jobRequest.city}`,
+            },
+          },
+          quantity: 1,
+        },
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: Math.round(serviceFee * 100),
+            product_data: { name: "Service Fee (15%)" },
+          },
+          quantity: 1,
+        },
+        ...(materials > 0 ? [{
+          price_data: {
+            currency: "usd" as const,
+            unit_amount: Math.round(materials * 100),
+            product_data: {
+              name: "Materials (estimated)",
+              description: "Cost of materials required to complete the job. Handyman will provide receipts.",
+            },
+          },
+          quantity: 1,
+        }] : []),
+      ],
+      // How the webhook knows this payment is a hire rather than a booking that
+      // already exists.
+      metadata: {
+        type: "hire",
+        jobRequestId: params.id,
+        applicationId: params.appId,
+        userId: user.id,
       },
+      payment_intent_data: {
+        metadata: { type: "hire", jobRequestId: params.id, applicationId: params.appId },
+      },
+      custom_text: {
+        submit: {
+          message: "Paying confirms the hire. Your payment is held securely by Tarea and is only transferred to the handyman once the job is complete.",
+        },
+        after_submit: {
+          message: "Thank you! Your pro is confirmed and has been notified. Tarea holds the funds until you confirm the job is done.",
+        },
+      },
+      ...hireReturnUrls(target),
     });
 
-    await createNotification({
-      userId: application.user.id,
-      title: "Application Accepted!",
-      body: `You got the job: "${jobRequest.title}". Check your Jobs tab.`,
-      type: "booking_accepted",
-      refId: booking.id,
-    });
-    // Prompt the customer to pay & confirm their new booking.
-    await createNotification({
-      userId: user.id,
-      title: "Pro hired — confirm & pay",
-      body: `You hired ${application.user.name} for "${jobRequest.title}". Open the booking to pay and confirm.`,
-      type: "booking_accepted",
-      refId: booking.id,
-    });
+    return NextResponse.json({ ok: true, checkoutUrl: session.url });
   } else {
     await prisma.jobApplication.update({ where: { id: params.appId }, data: { status: "REJECTED" } });
     await createNotification({

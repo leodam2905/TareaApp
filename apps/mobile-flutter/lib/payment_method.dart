@@ -17,11 +17,11 @@ const stripePublishableKey = String.fromEnvironment(
 ///
 /// WHY A CARD IS TAKEN HERE AND NOT CHARGED
 ///
-/// The final amount is not known at hire: the pro confirms materials, time
-/// extensions happen, tips come later. So the card is stored now, an
-/// authorization hold is placed when the Pro accepts, and the capture happens
-/// at completion (see apps/web/lib/payment-hold.ts). Charging up front would
-/// mean refunding the difference on most jobs.
+/// A directed booking is not a hire yet — the pro still has to accept. Taking
+/// the money before they do would mean refunding the Stripe fee on every
+/// decline, so the card is stored now with off-session consent and charged the
+/// instant the pro accepts (see apps/web/lib/booking-charge.ts). Extras that
+/// only exist later — time extensions, tips — are charged separately.
 ///
 /// Card details are collected by Stripe's own PaymentSheet and never touch
 /// this app. That is not a preference — Stripe refuses publishable-key card

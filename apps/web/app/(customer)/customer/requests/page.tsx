@@ -67,6 +67,15 @@ export default function CustomerRequestsPage() {
       body: JSON.stringify({ action }),
     });
     if (res.ok) {
+      // Hiring IS paying: accepting an applicant returns a Stripe Checkout
+      // link, and nobody is hired — no application accepted, no runner-up
+      // rejected, no notification to the pro — until that payment lands.
+      const data = await res.json().catch(() => null);
+      const checkoutUrl = data?.checkoutUrl;
+      if (action === "accept" && typeof checkoutUrl === "string" && checkoutUrl.startsWith("http")) {
+        window.location.href = checkoutUrl;
+        return;
+      }
       toast.success(action === "accept" ? t("status_accepted") + "!" : t("btn_decline"));
       setRequests(prev => prev.map(r => {
         if (r.id !== jobId) return r;

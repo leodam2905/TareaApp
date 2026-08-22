@@ -20,6 +20,9 @@ const SCHEMES = {
   bgcheck: (q: string) => `tareapro://app/pro/background-check?stripe=${q}`,
   booking: (q: string, id: string) =>
     `tarea://app/booking-detail?stripe=${q}${id ? `&bookingId=${id}` : ""}`,
+  // Hiring pays before the booking exists, so there is no id to deep-link to —
+  // the customer goes back to their requests, where the job now reads assigned.
+  hire: (q: string) => `tarea://app/requests?stripe=${q}`,
 } as const;
 
 const CANCELLED = {
@@ -49,6 +52,14 @@ function copyFor(to: string, stripe: string) {
     return { title: "Payment received", body: "Returning you to the Tarea app…", escrow: true };
   }
 
+  if (to === "hire") {
+    return {
+      title: "Pro hired",
+      body: "Your payment is confirmed and your pro has been notified. Returning you to the Tarea app…",
+      escrow: true,
+    };
+  }
+
   if (to === "bgcheck") {
     return {
       title: "Background check paid",
@@ -71,7 +82,8 @@ function StripeReturn() {
   const params = useSearchParams();
 
   const rawTo = params.get("to") ?? "";
-  const to = rawTo === "booking" || rawTo === "bgcheck" ? rawTo : "payouts";
+  const to =
+    rawTo === "booking" || rawTo === "bgcheck" || rawTo === "hire" ? rawTo : "payouts";
 
   const rawStripe = params.get("stripe") ?? "";
   const stripe = ["connected", "refresh", "paid", "cancelled", "tip_paid", "ext_paid"].includes(
@@ -87,15 +99,19 @@ function StripeReturn() {
   const deepLink =
     to === "booking"
       ? SCHEMES.booking(stripe, id)
-      : to === "bgcheck"
-        ? SCHEMES.bgcheck(stripe)
-        : SCHEMES.payouts(stripe);
+      : to === "hire"
+        ? SCHEMES.hire(stripe)
+        : to === "bgcheck"
+          ? SCHEMES.bgcheck(stripe)
+          : SCHEMES.payouts(stripe);
   const webFallback =
     to === "booking"
       ? "/customer/bookings"
-      : to === "bgcheck"
-        ? "/handyman/onboarding"
-        : "/handyman/payout-methods";
+      : to === "hire"
+        ? "/customer/requests"
+        : to === "bgcheck"
+          ? "/handyman/onboarding"
+          : "/handyman/payout-methods";
   const { title, body, escrow } = copyFor(to, stripe);
 
   const [handedOff, setHandedOff] = useState(false);

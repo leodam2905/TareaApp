@@ -2,6 +2,7 @@ import { createNotification } from "@/lib/notify";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { responseDeadlineFromNow } from "@/lib/booking-deadlines";
 import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { assertPromoUsable, hasPriorPaidOrder } from "@/lib/promo";
@@ -103,7 +104,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const responseDeadline = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    const responseDeadline = responseDeadlineFromNow(); // 2 hours for the pro to accept
 
     let promoCodeId: string | undefined;
     if (data.promoCode) {

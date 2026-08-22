@@ -3,6 +3,8 @@ import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { createNotification } from "@/lib/notify";
 import { syncPayoutStatus } from "@/lib/payout-account";
+import { markBookingPaid } from "@/lib/booking-charge";
+import { materializeHire } from "@/lib/hire";
 import Stripe from "stripe";
 
 // Raw body needed for signature verification
@@ -151,36 +153,37 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ ok: true });
       }
 
-      // Handle payment checkout
-      const bookingId = session.metadata?.bookingId;
-      if (!bookingId) return NextResponse.json({ ok: true });
-
       const paymentIntentId = typeof session.payment_intent === "string"
         ? session.payment_intent
         : session.payment_intent?.id ?? null;
 
-      const booking = await prisma.booking.update({
-        where: { id: bookingId },
-        data: { isPaid: true, stripePaymentIntentId: paymentIntentId },
-        include: { service: true },
-      });
+      // Handle a hire: paying IS the hire, so this is the moment the pro is
+      // actually hired, the runners-up are rejected and the booking is created.
+      // Nothing was promised to anyone before this event arrived.
+      if (session.metadata?.type === "hire") {
+        const { jobRequestId, applicationId } = session.metadata;
+        if (jobRequestId && applicationId) {
+          await materializeHire({ jobRequestId, applicationId, paymentIntentId, sessionId: session.id });
+        }
+        return NextResponse.json({ ok: true });
+      }
 
-      await Promise.all([
-        createNotification({
-          userId: booking.customerId,
-          title: "Payment confirmed ✓",
-          body: `Your payment of $${booking.totalPrice.toFixed(2)} for "${booking.service.title}" was successful.`,
-          type: "booking_accepted",
-          refId: booking.id,
-        }),
-        createNotification({
-          userId: booking.handymanId,
-          title: "Customer paid ✓",
-          body: `Payment received for "${booking.service.title}". You're good to go!`,
-          type: "booking_accepted",
-          refId: booking.id,
-        }),
-      ]);
+      // Handle payment checkout for a booking that already exists.
+      const bookingId = session.metadata?.bookingId;
+      if (!bookingId) return NextResponse.json({ ok: true });
+
+      await markBookingPaid(bookingId, paymentIntentId);
+    }
+
+    // Safety net for the off-session charge placed when a pro accepts a
+    // directed booking: the charge marks the booking paid inline, but if that
+    // write lost a race or failed after Stripe took the money, this settles it.
+    // markBookingPaid is conditional on the booking still being unpaid, so the
+    // ordinary case is a no-op rather than a duplicate notification.
+    if (event.type === "payment_intent.succeeded") {
+      const intent = event.data.object as Stripe.PaymentIntent;
+      const intentBookingId = intent.metadata?.bookingId;
+      if (intentBookingId) await markBookingPaid(intentBookingId, intent.id);
     }
 
     // A card was saved for later use. Record it as the customer's default so

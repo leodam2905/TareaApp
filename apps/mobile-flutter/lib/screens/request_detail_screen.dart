@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme.dart';
 import '../api.dart';
 import '../avatar_util.dart';
@@ -54,10 +55,21 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     }
     setState(() => _busy = true);
     try {
-      final res = await Api.patch('/job-requests/${_req['id']}/applications/$appId', {'action': action});
+      final res = await Api.patch('/job-requests/${_req['id']}/applications/$appId', {'action': action, 'platform': 'app'});
       if (res.statusCode >= 200 && res.statusCode < 300) {
         _changed = true;
-        _toast(action == 'accept' ? 'requests.proHired'.tr() : 'requests.applicantDeclined'.tr());
+        // Hiring IS paying: accepting an applicant returns a Stripe Checkout
+        // link, and nobody is hired — no application accepted, no runner-up
+        // rejected, no notification to the pro — until that payment lands.
+        // Closing the payment page simply leaves the request open.
+        String? payUrl;
+        try { payUrl = (jsonDecode(res.body) as Map)['checkoutUrl']?.toString(); } catch (_) {}
+        if (action == 'accept' && payUrl != null && payUrl.startsWith('http')) {
+          _toast('requests.hirePaying'.tr());
+          await launchUrl(Uri.parse(payUrl), mode: LaunchMode.externalApplication);
+        } else {
+          _toast(action == 'accept' ? 'requests.proHired'.tr() : 'requests.applicantDeclined'.tr());
+        }
         await _reload();
       } else {
         String msg = 'requests.updateFailed'.tr();

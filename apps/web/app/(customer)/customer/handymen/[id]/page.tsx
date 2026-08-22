@@ -184,7 +184,7 @@ function ProfileInner() {
     });
 
     if (res.ok) {
-      toast.success("Booking request sent! Handyman will respond within 1 hour.");
+      toast.success("Booking request sent! Handyman will respond within 2 hours.");
       router.push("/customer/bookings");
     } else {
       const body = await res.json();

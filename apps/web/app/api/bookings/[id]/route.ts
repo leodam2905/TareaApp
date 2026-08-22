@@ -1,9 +1,11 @@
 import { createNotification } from "@/lib/notify";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { responseDeadlineFromNow } from "@/lib/booking-deadlines";
 import { getCurrentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { completeBooking } from "@/lib/complete-booking";
+import { chargeSavedCardForBooking } from "@/lib/booking-charge";
 import { canCall, releaseProxySessions } from "@/lib/voice";
 import { handymanNet } from "@/lib/fees";
 
@@ -137,10 +139,33 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         status,
         cancelReason,
         // When handyman accepts, give customer 2 hours to pay before auto-cancel
-        ...(status === "ACCEPTED" && { responseDeadline: new Date(Date.now() + 2 * 60 * 60 * 1000) }),
+        ...(status === "ACCEPTED" && { responseDeadline: responseDeadlineFromNow() }),
         ...(status === "IN_PROGRESS" && !booking.jobStartedAt && { jobStartedAt: new Date() }),
       },
     });
+  }
+
+  // The pro accepting is what finalises a directed booking, so take the money
+  // now rather than sending the customer to a payment page they may never open.
+  // The card was saved with off-session consent when they hired (see
+  // PaymentMethods.ensureCardOnFile / /api/stripe/setup-intent), so no customer
+  // action is needed and the pro's accept becomes a paid job within seconds.
+  //
+  // A failure here is not fatal: the booking stays accepted-but-unpaid and the
+  // customer is asked to pay by hand, exactly as before, with the 2-hour
+  // deadline and expire-bookings cron as the backstop.
+  let chargedOnAccept = false;
+  if (status === "ACCEPTED" && !booking.isPaid) {
+    const charge = await chargeSavedCardForBooking(params.id);
+    chargedOnAccept = charge.ok;
+    if (!charge.ok && charge.reason !== "no_card") {
+      console.warn("[bookings/PATCH] Accept-time charge failed:", params.id, charge.reason);
+    }
+    // The row was read before the charge, so re-read it: the pro who just
+    // accepted should see a paid job, not a stale "awaiting payment".
+    if (chargedOnAccept) {
+      updated = (await prisma.booking.findUnique({ where: { id: params.id } })) ?? updated;
+    }
   }
 
   // Cancellation penalties
@@ -252,16 +277,22 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
   } else {
     const notifyUserId = user.id === booking.customerId ? booking.handymanId : booking.customerId;
-    const acceptBody = user.role === "HANDYMAN" && status === "ACCEPTED"
-      ? "Your booking was accepted! Open your bookings to complete payment."
-      : `Your booking has been marked as ${status.toLowerCase()}.`;
-    await createNotification({
-      userId: notifyUserId,
-      title: status === "ACCEPTED" ? "Booking accepted — payment required" : `Booking ${status.toLowerCase()}`,
-      body: acceptBody,
-      type: "booking_accepted",
-      refId: booking.id,
-    });
+
+    // A booking paid on acceptance is already announced to both parties by
+    // markBookingPaid — saying "payment required" on top of it would be wrong
+    // and alarming.
+    if (!(status === "ACCEPTED" && chargedOnAccept)) {
+      const acceptBody = user.role === "HANDYMAN" && status === "ACCEPTED"
+        ? "Your booking was accepted! Open your bookings to complete payment."
+        : `Your booking has been marked as ${status.toLowerCase()}.`;
+      await createNotification({
+        userId: notifyUserId,
+        title: status === "ACCEPTED" ? "Booking accepted — payment required" : `Booking ${status.toLowerCase()}`,
+        body: acceptBody,
+        type: "booking_accepted",
+        refId: booking.id,
+      });
+    }
   }
 
   return NextResponse.json(updated);

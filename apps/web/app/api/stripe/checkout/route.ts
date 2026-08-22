@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { CUSTOMER_FEE_RATE } from "@/lib/fees";
-import { assertPromoUsable, hasPriorPaidOrder } from "@/lib/promo";
+import { bookingAmounts, bookingLineItems } from "@/lib/booking-charge";
 import { checkoutReturnUrls, returnTarget } from "@/lib/stripe-return-urls";
 
 export async function POST(req: NextRequest) {
@@ -33,53 +32,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Already paid" }, { status: 400 });
   }
 
-  // Re-validate the promo at payment time (expiry / maxUses / ownership), not
-  // just isActive — a code valid at booking creation may no longer be usable.
-  let discountAmount = 0;
-  if (booking.promoCode) {
-    // For a first-order-only code, this booking itself is unpaid, so "prior paid
-    // order" correctly reflects whether they've completed a payment before.
-    const prior = await hasPriorPaidOrder(user.id);
-    const check = assertPromoUsable(booking.promoCode, user.id, booking.totalPrice, prior);
-    if (check.ok) discountAmount = check.discountAmount;
-  }
-  const discountedPrice = Math.max(0, booking.totalPrice - discountAmount);
-  const serviceFee = discountedPrice * CUSTOMER_FEE_RATE;
-
-  const lineItems: Parameters<typeof stripe.checkout.sessions.create>[0]["line_items"] = [
-    {
-      price_data: {
-        currency: "usd",
-        unit_amount: Math.round(discountedPrice * 100),
-        product_data: {
-          name: `${booking.service.title} (Labor)`,
-          description: discountAmount > 0
-            ? `Booking #${booking.id.slice(-8).toUpperCase()} — ${booking.city} · Promo applied: -$${discountAmount.toFixed(2)}`
-            : `Booking #${booking.id.slice(-8).toUpperCase()} — ${booking.city}`,
-        },
-      },
-      quantity: 1,
-    },
-    {
-      price_data: {
-        currency: "usd",
-        unit_amount: Math.round(serviceFee * 100),
-        product_data: { name: "Service Fee (15%)" },
-      },
-      quantity: 1,
-    },
-    ...(booking.materialsEstimate > 0 ? [{
-      price_data: {
-        currency: "usd",
-        unit_amount: Math.round(booking.materialsEstimate * 100),
-        product_data: {
-          name: "Materials (estimated)",
-          description: "Cost of materials required to complete the job. Handyman will provide receipts.",
-        },
-      },
-      quantity: 1,
-    }] : []),
-  ];
+  // Amounts (and the promo re-check) come from lib/booking-charge so that a
+  // customer pays the same figure whether they are sent here or their saved
+  // card is charged off-session when the pro accepts.
+  const amounts = await bookingAmounts(booking);
+  const lineItems = bookingLineItems(booking, amounts);
 
   const session = await stripe.checkout.sessions.create({
     // "card" ONLY. Apple Pay and Google Pay are not payment_method_types —

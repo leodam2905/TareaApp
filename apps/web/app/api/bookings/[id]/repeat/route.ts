@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { responseDeadlineFromNow } from "@/lib/booking-deadlines";
 import { getCurrentUser } from "@/lib/auth";
 import { createNotification } from "@/lib/notify";
 
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const { scheduledAt } = await req.json();
   if (!scheduledAt) return NextResponse.json({ error: "scheduledAt is required" }, { status: 400 });
 
-  const responseDeadline = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+  const responseDeadline = responseDeadlineFromNow(); // 2 hours for the pro to accept
 
   const newBooking = await prisma.booking.create({
     data: {

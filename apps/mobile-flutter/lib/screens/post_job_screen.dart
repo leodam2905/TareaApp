@@ -206,8 +206,10 @@ class _PostJobScreenState extends State<PostJobScreen> {
     // bookings a pro can accept and drive to with no payment method behind
     // them — which is what the 2h auto-cancel was standing in for.
     //
-    // Nothing is charged here. The hold is placed when the pro accepts and
-    // captured at completion; see apps/web/lib/payment-hold.ts.
+    // Nothing is charged here. The card is charged off-session the moment the
+    // pro accepts, so their acceptance confirms a paid job instead of starting
+    // a 2h wait for the customer to open a payment page; see
+    // apps/web/lib/booking-charge.ts (chargeSavedCardForBooking).
     if (_isDirected) {
       final ok = await PaymentMethods.ensureCardOnFile(context);
       if (!ok) {

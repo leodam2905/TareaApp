@@ -22,7 +22,7 @@ export function returnTarget(body: unknown): ReturnTarget {
 }
 
 /** Bridge URL for a flow, or the plain web page when not coming from the app. */
-function bridge(to: "payouts" | "booking" | "bgcheck", stripe: string, id?: string): string {
+function bridge(to: "payouts" | "booking" | "bgcheck" | "hire", stripe: string, id?: string): string {
   const params = new URLSearchParams({ to, stripe });
   if (id) params.set("id", id);
   return `${APP_URL}/stripe/return?${params.toString()}`;
@@ -61,6 +61,26 @@ export function checkoutReturnUrls(
   return {
     success_url: `${APP_URL}/customer/pay/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${APP_URL}/customer/bookings/${bookingId}`,
+  };
+}
+
+/**
+ * Hiring an applicant, where paying IS the hire.
+ *
+ * The booking does not exist yet — it is created from the webhook once Stripe
+ * confirms the money — so there is no booking id to return to. The customer
+ * lands back on their job requests, where the job now shows as assigned.
+ */
+export function hireReturnUrls(target: ReturnTarget): { success_url: string; cancel_url: string } {
+  if (target === "app") {
+    return {
+      success_url: `${bridge("hire", "paid")}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: bridge("hire", "cancelled"),
+    };
+  }
+  return {
+    success_url: `${APP_URL}/customer/requests?hired=1`,
+    cancel_url: `${APP_URL}/customer/requests`,
   };
 }
 
