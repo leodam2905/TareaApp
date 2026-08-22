@@ -516,7 +516,11 @@
     "markWorkDone": "Marcar como hecho",
     "workDoneTitle": "¿Marcar como hecho?",
     "workDoneMsg": "Se pedirá al cliente que confirme y libere el pago. Se confirma automáticamente en 3 días.",
-    "awaitingConfirm": "Esperando la confirmación del cliente"
+    "awaitingConfirm": "Esperando la confirmación del cliente",
+    "timerPause": "Pausar cronómetro",
+    "timerResume": "Reanudar",
+    "timerPaused": "En pausa",
+    "timerFailed": "No se pudo actualizar el cronómetro"
   },
   "payout": {
     "title": "Métodos de pago",
@@ -700,7 +704,9 @@
     "payFailed": "No se pudo abrir el pago. Inténtalo de nuevo.",
     "tipPromptTitle": "¿Añadir propina?",
     "tipPromptBody": "El 100 % de la propina es para tu profesional.",
-    "notNow": "Ahora no"
+    "notNow": "Ahora no",
+    "workPaused": "TRABAJO EN PAUSA",
+    "timerPausedNote": "Tu pro pausó el cronómetro"
   },
   "instantQuote": {
     "title": "Cotización al instante",

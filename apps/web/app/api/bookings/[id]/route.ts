@@ -51,7 +51,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { status, cancelReason, receiptUrl, workDone } = await req.json();
+  const { status, cancelReason, receiptUrl, workDone, timer } = await req.json();
   const booking = await prisma.booking.findUnique({
     where: { id: params.id },
     include: {
@@ -74,6 +74,50 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   // dedicated /dispute route, not here.
   const isHandyman = user.id === booking.handymanId;
   const actorRole: "CUSTOMER" | "HANDYMAN" = isHandyman ? "HANDYMAN" : "CUSTOMER";
+
+  // Pause / resume the on-site timer. Not a status change: the job stays
+  // IN_PROGRESS, only the clock stops. Server-side on purpose — if the pro's
+  // app owned this, the customer's screen would keep counting through a pause
+  // and the two would show different totals for the same job.
+  if (timer === "pause" || timer === "resume") {
+    if (!isHandyman) return NextResponse.json({ error: "Only the pro can control the timer." }, { status: 403 });
+    if (booking.status !== "IN_PROGRESS") return NextResponse.json({ error: "Job is not in progress." }, { status: 409 });
+
+    if (timer === "pause") {
+      // Already paused: return success rather than restarting the pause clock,
+      // which would discard the time already banked.
+      if (booking.pausedAt) return NextResponse.json({ ok: true, pausedAt: booking.pausedAt });
+      const updatedBooking = await prisma.booking.update({
+        where: { id: params.id },
+        data: { pausedAt: new Date() },
+      });
+      await createNotification({
+        userId: booking.customerId,
+        title: "Work paused",
+        body: `${booking.handyman.name} paused work on "${booking.service.title}". The timer is stopped until they resume.`,
+        type: "booking_accepted",
+        refId: booking.id,
+      });
+      return NextResponse.json({ ok: true, pausedAt: updatedBooking.pausedAt });
+    }
+
+    if (!booking.pausedAt) return NextResponse.json({ ok: true, pausedAt: null });
+    // Bank the paused stretch, then clear the marker. Computed from the stored
+    // timestamp rather than anything the client sends.
+    const bankedSeconds = Math.max(0, Math.floor((Date.now() - booking.pausedAt.getTime()) / 1000));
+    const updatedBooking = await prisma.booking.update({
+      where: { id: params.id },
+      data: { pausedAt: null, pausedSeconds: { increment: bankedSeconds } },
+    });
+    await createNotification({
+      userId: booking.customerId,
+      title: "Work resumed",
+      body: `${booking.handyman.name} resumed work on "${booking.service.title}".`,
+      type: "booking_accepted",
+      refId: booking.id,
+    });
+    return NextResponse.json({ ok: true, pausedAt: null, pausedSeconds: updatedBooking.pausedSeconds });
+  }
 
   // Pro signals work is finished — not a status change. Starts the 3-day
   // auto-release clock and prompts the customer to confirm + release payment.
@@ -129,6 +173,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   // the pro = labor net + full materials). Everything else is a plain update.
   let updated;
   if (status === "COMPLETED") {
+    // A job completed while paused would leave pausedAt dangling, so bank the
+    // final stretch first and let the elapsed figure settle.
+    if (booking.pausedAt) {
+      const banked = Math.max(0, Math.floor((Date.now() - booking.pausedAt.getTime()) / 1000));
+      await prisma.booking.update({
+        where: { id: params.id },
+        data: { pausedAt: null, pausedSeconds: { increment: banked } },
+      });
+    }
     updated = await completeBooking(params.id, {
       receiptUrl: typeof receiptUrl === "string" && receiptUrl ? receiptUrl : undefined,
     });

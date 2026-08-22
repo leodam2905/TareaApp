@@ -516,7 +516,11 @@
     "markWorkDone": "Mark work done",
     "workDoneTitle": "Mark work done?",
     "workDoneMsg": "The customer will be asked to confirm and release payment. It auto-confirms in 3 days.",
-    "awaitingConfirm": "Waiting for the customer to confirm"
+    "awaitingConfirm": "Waiting for the customer to confirm",
+    "timerPause": "Pause timer",
+    "timerResume": "Resume timer",
+    "timerPaused": "Paused",
+    "timerFailed": "Could not update the timer"
   },
   "payout": {
     "title": "Payout Methods",
@@ -700,7 +704,9 @@
     "payFailed": "Could not start checkout. Try again.",
     "tipPromptTitle": "Add a tip?",
     "tipPromptBody": "100% of a tip goes to your Pro.",
-    "notNow": "Not now"
+    "notNow": "Not now",
+    "workPaused": "WORK PAUSED",
+    "timerPausedNote": "Your pro paused the timer"
   },
   "instantQuote": {
     "title": "Instant Quote",

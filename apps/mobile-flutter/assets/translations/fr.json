@@ -516,7 +516,11 @@
     "markWorkDone": "Marquer comme terminé",
     "workDoneTitle": "Marquer comme terminé ?",
     "workDoneMsg": "Le client devra confirmer et libérer le paiement. Confirmation automatique sous 3 jours.",
-    "awaitingConfirm": "En attente de confirmation du client"
+    "awaitingConfirm": "En attente de confirmation du client",
+    "timerPause": "Mettre en pause",
+    "timerResume": "Reprendre",
+    "timerPaused": "En pause",
+    "timerFailed": "Impossible de mettre à jour le chrono"
   },
   "payout": {
     "title": "Modes de paiement",
@@ -700,7 +704,9 @@
     "payFailed": "Impossible d'ouvrir le paiement. Réessayez.",
     "tipPromptTitle": "Ajouter un pourboire ?",
     "tipPromptBody": "100 % du pourboire revient à votre pro.",
-    "notNow": "Pas maintenant"
+    "notNow": "Pas maintenant",
+    "workPaused": "TRAVAIL EN PAUSE",
+    "timerPausedNote": "Votre pro a mis le chrono en pause"
   },
   "instantQuote": {
     "title": "Devis instantané",

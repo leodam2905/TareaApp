@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
+import '../../job_timer.dart';
 import '../../masked_call.dart';
 
 // [translation key, textColor, bgColor]
@@ -30,6 +31,7 @@ class _ProJobDetailState extends State<ProJobDetail> {
   Timer? _ticker;
   Timer? _locTimer;
   int _elapsed = 0;
+  bool _paused = false;
 
   // phase form
   bool _showPhase = false;
@@ -69,13 +71,35 @@ class _ProJobDetailState extends State<ProJobDetail> {
 
   void _syncTimer() {
     _ticker?.cancel();
-    if (_status == 'IN_PROGRESS' && _b['jobStartedAt'] != null) {
-      final start = DateTime.tryParse(_b['jobStartedAt'].toString());
-      if (start != null) {
-        _elapsed = DateTime.now().difference(start).inSeconds;
-        _ticker = Timer.periodic(const Duration(seconds: 1), (_) { if (mounted) setState(() => _elapsed++); });
-      }
+    if (_status != 'IN_PROGRESS') return;
+    final t = JobTimer.from(_b);
+    if (t == null) return;
+    _elapsed = t.elapsedSeconds;
+    _paused = t.isPaused;
+    // A paused clock must not tick, or the pro watches a number climb that the
+    // customer's screen has stopped at.
+    if (!_paused) {
+      _ticker = Timer.periodic(const Duration(seconds: 1), (_) { if (mounted) setState(() => _elapsed++); });
     }
+  }
+
+  Future<void> _toggleTimer() async {
+    final action = _paused ? 'resume' : 'pause';
+    setState(() => _busy = true);
+    try {
+      final res = await Api.patch('/bookings/$_id', {'timer': action});
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        // Reload rather than flipping local state: the banked seconds are
+        // computed server-side and this screen must show that figure, not a
+        // guess at it.
+        await _load();
+      } else {
+        String msg = 'jobDetail.timerFailed'.tr();
+        try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
+        _toast(msg);
+      }
+    } catch (_) { _toast('common.connectionRetry'.tr()); }
+    finally { if (mounted) setState(() => _busy = false); }
   }
 
   String _fmtTime(int s) {
@@ -268,7 +292,27 @@ class _ProJobDetailState extends State<ProJobDetail> {
               const SizedBox(height: 8),
               Text(_fmtTime(_elapsed), style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w900, letterSpacing: 2)),
               const SizedBox(height: 4),
-              Text('jobDetail.startedAt'.tr(args: [_clock(_b['jobStartedAt'])]), style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              Text(
+                _paused ? 'jobDetail.timerPaused'.tr() : 'jobDetail.startedAt'.tr(args: [_clock(_b['jobStartedAt'])]),
+                style: const TextStyle(color: Colors.white70, fontSize: 12),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.white.withValues(alpha: 0.18),
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size.fromHeight(44),
+                  ),
+                  onPressed: _busy ? null : _toggleTimer,
+                  icon: Icon(_paused ? Icons.play_arrow_rounded : Icons.pause_rounded, size: 20),
+                  label: Text(
+                    _paused ? 'jobDetail.timerResume'.tr() : 'jobDetail.timerPause'.tr(),
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                ),
+              ),
             ]),
           ),
         ],

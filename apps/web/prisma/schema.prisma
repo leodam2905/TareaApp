@@ -298,6 +298,17 @@ model Booking {
   resolvedAt       DateTime?
   materialsEstimate Float         @default(0)
   jobStartedAt     DateTime?
+  // The on-site timer is informational — the price is fixed before the pro is
+  // chosen, so pausing never changes what anyone is paid. It exists so both
+  // parties see the same number: a pro who stops for lunch, or waits on a part,
+  // should not have a clock running in front of the customer.
+  //
+  // Elapsed is derived, never stored:
+  //   (now - jobStartedAt) - pausedSeconds - (pausedAt ? now - pausedAt : 0)
+  // so both apps compute the same value from the same three fields and a phone
+  // with a wrong clock cannot drift the shared total.
+  pausedAt         DateTime?      // non-null = paused right now
+  pausedSeconds    Int            @default(0) // accumulated paused time
   workDoneAt       DateTime?      // pro marked work finished — starts the 3-day auto-release clock
   receiptUrl       String?        // optional materials receipt the customer attaches on completion
   receiptUploadedAt DateTime?

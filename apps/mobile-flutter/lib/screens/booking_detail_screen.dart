@@ -7,6 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:image_picker/image_picker.dart';
 import '../theme.dart';
 import '../api.dart';
+import '../job_timer.dart';
 import '../masked_call.dart';
 
 const _statusColor = {
@@ -41,6 +42,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
   bool _uploadingReceipt = false;
   Timer? _ticker;
   int _elapsed = 0;
+  bool _paused = false;
   // Set while the customer is away paying in the external browser. Checkout is
   // not an in-app route, so RouteAware.didPopNext never fires for it — we pick
   // the result up on app resume instead.
@@ -106,12 +108,15 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
 
   void _syncTimer() {
     _ticker?.cancel();
-    if ((_b['status'] ?? '') == 'IN_PROGRESS' && _b['jobStartedAt'] != null) {
-      final start = DateTime.tryParse(_b['jobStartedAt'].toString());
-      if (start != null) {
-        _elapsed = DateTime.now().difference(start).inSeconds;
-        _ticker = Timer.periodic(const Duration(seconds: 1), (_) { if (mounted) setState(() => _elapsed++); });
-      }
+    if ((_b['status'] ?? '') != 'IN_PROGRESS') return;
+    final t = JobTimer.from(_b);
+    if (t == null) return;
+    _elapsed = t.elapsedSeconds;
+    _paused = t.isPaused;
+    // Stop counting while the pro has paused, so the customer is never shown a
+    // bigger number than the pro is looking at.
+    if (!_paused) {
+      _ticker = Timer.periodic(const Duration(seconds: 1), (_) { if (mounted) setState(() => _elapsed++); });
     }
   }
 
@@ -432,9 +437,22 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
               width: double.infinity, padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(gradient: const LinearGradient(colors: [C.blue, Color(0xFF7C3AED)], begin: Alignment.topLeft, end: Alignment.bottomRight), borderRadius: BorderRadius.circular(16)),
               child: Column(children: [
-                Text('booking.jobInProgress'.tr(), style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: 1)),
+                Text(
+                  _paused ? 'booking.workPaused'.tr() : 'booking.jobInProgress'.tr(),
+                  style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: 1),
+                ),
                 const SizedBox(height: 8),
                 Text(_fmtElapsed(_elapsed), style: const TextStyle(color: Colors.white, fontSize: 38, fontWeight: FontWeight.w900, letterSpacing: 2)),
+                // Says why the number stopped moving. Without this a frozen
+                // clock reads as a broken app rather than a pro on a break.
+                if (_paused) ...[
+                  const SizedBox(height: 6),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    const Icon(Icons.pause_circle_outline, size: 14, color: Colors.white70),
+                    const SizedBox(width: 6),
+                    Text('booking.timerPausedNote'.tr(), style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                  ]),
+                ],
               ]),
             ),
           ],
