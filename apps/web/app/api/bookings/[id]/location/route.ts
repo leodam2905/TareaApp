@@ -28,7 +28,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       userId: booking.customerId,
       title: "Handyman is on the way!",
       body: "Your handyman has started heading to your location.",
-      type: "booking_accepted",
+      // Its own type, not booking_accepted: this is the one notification that
+      // should open the live map rather than the booking. The app routes on
+      // type, and the two are otherwise indistinguishable.
+      type: "handyman_on_way",
       refId: booking.id,
     });
   }

@@ -52,7 +52,28 @@ class _TrackProScreenState extends State<TrackProScreen> with WidgetsBindingObse
 
   Map<String, dynamic> get _b => widget.booking;
   String get _id => (_b['id'] ?? '').toString();
-  String get _proName => (_b['handyman']?['name'] ?? _b['handymanName'] ?? '').toString();
+
+  /// Name from the booking that was handed in, or fetched if it came without one.
+  String _fetchedName = '';
+  String get _passedName => (_b['handyman']?['name'] ?? _b['handymanName'] ?? '').toString();
+  String get _proName => _passedName.isNotEmpty ? _passedName : _fetchedName;
+
+  /// Entry points that carry only an id — a notification tap, or the deep link
+  /// back from paying — leave the name blank, which shows an empty marker title
+  /// and hands an empty name to chat. Fetch it once, and only when it is missing.
+  Future<void> _ensureName() async {
+    if (_passedName.isNotEmpty || _id.isEmpty) return;
+    try {
+      final res = await Api.get('/bookings/$_id');
+      if (res.statusCode == 200) {
+        final d = jsonDecode(res.body);
+        if (d is Map) {
+          final name = (d['handyman']?['name'] ?? d['handymanName'] ?? '').toString();
+          if (name.isNotEmpty && mounted) setState(() => _fetchedName = name);
+        }
+      }
+    } catch (_) {}
+  }
 
   // A Booking stores an address, not coordinates, so the destination is
   // geocoded server-side and asked for once when the screen opens.
@@ -62,6 +83,7 @@ class _TrackProScreenState extends State<TrackProScreen> with WidgetsBindingObse
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _ensureName();
     _load();
     _poll = Timer.periodic(const Duration(seconds: 20), (_) => _load());
   }

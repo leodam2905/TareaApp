@@ -29,6 +29,8 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
   int _upcoming7 = 0;
   int _reviews = 0;
   int _pct = 0;
+  /// Unread notifications, for the badge on the bell.
+  int _unread = 0;
   List<dynamic> _upcoming = [];
   List<dynamic> _requests = [];
 
@@ -135,6 +137,17 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
       }
     } catch (_) {}
     try {
+      // Counted from the list rather than a new endpoint: /notifications already
+      // returns isRead per row, and a dedicated count route would be one more
+      // thing to keep in step with it.
+      final n = await Api.get('/notifications');
+      if (n.statusCode == 200) {
+        final d = jsonDecode(n.body);
+        final list = (d is List ? d : (d['notifications'] ?? [])) as List;
+        _unread = list.where((x) => x is Map && x['isRead'] != true).length;
+      }
+    } catch (_) {/* the badge simply stays as it was */}
+    try {
       final c = await Api.get('/handyman/checklist');
       if (c.statusCode == 200) {
         final cj = jsonDecode(c.body);
@@ -145,6 +158,38 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
       }
     } catch (_) {}
     if (mounted) setState(() {});
+  }
+
+  /// The bell, carrying the number of unread notifications.
+  ///
+  /// A bell with no count says "notifications exist somewhere" — the same thing
+  /// it says when there is nothing to see, so there was never a reason to tap it.
+  Widget _bellWithBadge() {
+    final n = _unread;
+    return Stack(clipBehavior: Clip.none, children: [
+      Icon(n > 0 ? Icons.notifications : Icons.notifications_none, size: 26, color: C.ink),
+      if (n > 0)
+        Positioned(
+          right: -4,
+          top: -4,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+            constraints: const BoxConstraints(minWidth: 18),
+            decoration: BoxDecoration(
+              color: C.red,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: C.white, width: 1.5),
+            ),
+            child: Text(
+              // Past 99 the exact number stops meaning anything, and stops fitting.
+              n > 99 ? '99+' : '$n',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, height: 1.2),
+            ),
+          ),
+        ),
+    ]);
   }
 
   /// The pro's current position, or null if unavailable.
@@ -226,7 +271,16 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               const Text('Tarea Pro', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: C.blue, letterSpacing: -0.5)),
               Row(children: [
-                GestureDetector(onTap: () => context.push('/notifications'), child: const Icon(Icons.notifications_none, size: 26, color: C.ink)),
+                GestureDetector(
+                  // Coming back from the list with everything read should clear
+                  // the badge; without this it keeps the stale count until the
+                  // next 20s tick.
+                  onTap: () async {
+                    await context.push('/notifications');
+                    if (mounted) _load();
+                  },
+                  child: _bellWithBadge(),
+                ),
                 const SizedBox(width: 16),
                 GestureDetector(
                   onTap: () async {

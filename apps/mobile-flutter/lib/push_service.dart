@@ -171,10 +171,15 @@ class PushService {
   static void _handleTap(Map<String, dynamic> data) {
     final screen = (data['screen'] ?? '').toString();
     final type = (data['type'] ?? '').toString();
+    final refId = (data['refId'] ?? '').toString();
     try {
       if (isPro && (screen == 'FindJobs' || type == 'booking_request')) {
         appRouter.go(homeRoute);
         Future.delayed(const Duration(milliseconds: 350), () => ProShell.go?.call(1));
+      } else if (!isPro && type == 'handyman_on_way' && refId.isNotEmpty) {
+        // Straight to the map: the notification list is a detour from the one
+        // thing this push is about.
+        appRouter.push('/track-pro', extra: {'id': refId});
       } else {
         appRouter.push('/notifications');
       }

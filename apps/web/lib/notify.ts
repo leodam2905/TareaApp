@@ -41,6 +41,9 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 const SMS_TYPES = new Set([
   "booking_request",
   "booking_accepted",
+  // Was sent as booking_accepted until it got its own type; without this line
+  // splitting the type would have silently dropped the "on the way" SMS.
+  "handyman_on_way",
   "booking_cancelled",
   "job_completed",
 ]);
@@ -61,6 +64,7 @@ function ctaForType(type: string, refId?: string) {
   const urls: Record<string, string> = {
     booking_request:      `${APP_URL}/handyman/jobs`,
     booking_accepted:     `${APP_URL}/customer/bookings`,
+    handyman_on_way:      refId ? `${APP_URL}/customer/bookings/${refId}` : `${APP_URL}/customer/bookings`,
     booking_cancelled:    `${APP_URL}/customer/bookings`,
     booking_completed:    refId ? `${APP_URL}/customer/bookings/${refId}/review` : `${APP_URL}/customer/bookings`,
     job_application:      `${APP_URL}/customer/requests`,
@@ -72,6 +76,7 @@ function ctaForType(type: string, refId?: string) {
   const labels: Record<string, string> = {
     booking_request:      "View Job",
     booking_accepted:     "View Booking",
+    handyman_on_way:      "Track Handyman",
     booking_cancelled:    "View Bookings",
     booking_completed:    "Leave a Review",
     job_application:      "Review Applications",
