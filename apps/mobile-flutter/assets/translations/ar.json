@@ -149,7 +149,17 @@
     "noActivity": "لا يوجد نشاط بعد. انشر طلباً للبدء.",
     "handyman": "فنّي",
     "proSuffix": "محترف {}",
-    "posted": "منشور"
+    "posted": "منشور",
+    "stPosted": "منشور",
+    "stAwaitingPro": "في انتظار المحترف",
+    "stPaymentRequired": "الدفع مطلوب",
+    "stProHired": "تم التوظيف",
+    "stInProgress": "قيد التنفيذ",
+    "stPaused": "متوقف مؤقتًا",
+    "stExtensionRequested": "طلب تمديد",
+    "stConfirmCompletion": "أكّد الإنجاز",
+    "stCompleted": "مكتمل",
+    "stCancelled": "ملغى"
   },
   "categories": {
     "plumbing": "سباكة",

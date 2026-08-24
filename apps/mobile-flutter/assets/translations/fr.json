@@ -149,7 +149,17 @@
     "noActivity": "Aucune activité. Publiez une tâche pour commencer.",
     "handyman": "Artisan",
     "proSuffix": "Pro {}",
-    "posted": "Publié"
+    "posted": "Publié",
+    "stPosted": "PUBLIÉ",
+    "stAwaitingPro": "EN ATTENTE DU PRO",
+    "stPaymentRequired": "PAIEMENT REQUIS",
+    "stProHired": "PRO ENGAGÉ",
+    "stInProgress": "EN COURS",
+    "stPaused": "EN PAUSE",
+    "stExtensionRequested": "PROLONGATION DEMANDÉE",
+    "stConfirmCompletion": "À CONFIRMER",
+    "stCompleted": "TERMINÉ",
+    "stCancelled": "ANNULÉ"
   },
   "categories": {
     "plumbing": "Plomberie",

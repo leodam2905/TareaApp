@@ -45,6 +45,9 @@ export async function GET(req: NextRequest) {
       customer: { select: { name: true, avatarUrl: true, phone: true } },
       handyman: { select: { name: true, avatarUrl: true, phone: true } },
       review: true,
+      // Only the pending ones, and only their ids: the customer's activity list
+      // needs to know an extension is AWAITING them, not the whole record.
+      extensions: { where: { status: "PENDING" }, select: { id: true } },
     },
     orderBy: { createdAt: "desc" },
   });

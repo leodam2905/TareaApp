@@ -137,13 +137,19 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
         final data = jsonDecode(res.body);
         final list = (data is List ? data : (data['requests'] ?? data['jobRequests'] ?? [])) as List;
         for (final r in list) { if (r is Map) r['_isRequest'] = true; }
-        activity.addAll(list);
+        // A hired request becomes a booking, and the booking is the one with
+        // the live status. Keeping both would list the same job twice — once
+        // frozen at "posted" and once showing what is actually happening.
+        activity.addAll(list.where((r) => r is Map && r['status'] == 'OPEN'));
       }
     } catch (_) {}
     DateTime _when(dynamic x) => DateTime.tryParse(
         (x['updatedAt'] ?? x['createdAt'] ?? x['scheduledAt'] ?? '').toString()) ?? DateTime(2000);
     activity.sort((a, b) => _when(b).compareTo(_when(a)));
-    if (mounted) setState(() => _recent = activity.take(4).toList());
+    // Every job, not the last four: this is the customer's whole picture of
+    // what is happening, and a job scrolling off the end is a job they stop
+    // chasing.
+    if (mounted) setState(() => _recent = activity);
   }
 
   String get _greeting {
@@ -448,13 +454,54 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
     );
   }
 
+  /// Where a job actually IS, in one label.
+  ///
+  /// The raw status was shown prettified ("In progress"), which hid everything
+  /// that had happened underneath it: an unpaid booking, a pro waiting for the
+  /// customer to confirm completion, and an extension request needing an answer
+  /// all read as the same word. These are the states a customer needs to act
+  /// on, so each gets its own label — the ones needing THEM are amber, work in
+  /// motion is blue, settled states are grey or green.
+  _ActivityStatus? _activityStatus(dynamic b) {
+    if (b['_isRequest'] == true) {
+      return _ActivityStatus('dashboard.stPosted'.tr(), const Color(0xFFB45309), const Color(0xFFFEF3C7));
+    }
+    final status = (b['status'] ?? '').toString();
+    final paid = b['isPaid'] == true;
+    final pendingExt = ((b['extensions'] as List?) ?? const []).isNotEmpty;
+
+    switch (status) {
+      case 'PENDING':
+        return _ActivityStatus('dashboard.stAwaitingPro'.tr(), C.muted, C.surface);
+      case 'ACCEPTED':
+        return paid
+            ? _ActivityStatus('dashboard.stProHired'.tr(), const Color(0xFF15803D), const Color(0xFFDCFCE7))
+            : _ActivityStatus('dashboard.stPaymentRequired'.tr(), const Color(0xFFB45309), const Color(0xFFFEF3C7));
+      case 'IN_PROGRESS':
+        // Ordered by what the customer has to do about it: an extension needs an
+        // answer, a finished job needs confirming, everything else is just news.
+        if (pendingExt) {
+          return _ActivityStatus('dashboard.stExtensionRequested'.tr(), const Color(0xFFB45309), const Color(0xFFFEF3C7));
+        }
+        if (b['workDoneAt'] != null) {
+          return _ActivityStatus('dashboard.stConfirmCompletion'.tr(), const Color(0xFFB45309), const Color(0xFFFEF3C7));
+        }
+        if (b['pausedAt'] != null) {
+          return _ActivityStatus('dashboard.stPaused'.tr(), C.muted, C.surface);
+        }
+        return _ActivityStatus('dashboard.stInProgress'.tr(), const Color(0xFFC2410C), const Color(0xFFFFEDD5));
+      case 'COMPLETED':
+        return _ActivityStatus('dashboard.stCompleted'.tr(), const Color(0xFF15803D), const Color(0xFFDCFCE7));
+      case 'CANCELLED':
+        return _ActivityStatus('dashboard.stCancelled'.tr(), const Color(0xFFB91C1C), const Color(0xFFFEE2E2));
+    }
+    return null;
+  }
+
   Widget _activityRow(dynamic b) {
     final isReq = b['_isRequest'] == true;
     final service = (b['service']?['title'] ?? b['category'] ?? b['title'] ?? 'Service').toString();
-    final rawStatus = (b['status'] ?? '').toString();
-    final label = isReq && rawStatus == 'OPEN'
-        ? 'dashboard.posted'.tr()
-        : rawStatus.isEmpty ? '' : '${rawStatus[0]}${rawStatus.substring(1).toLowerCase().replaceAll('_', ' ')}';
+    final st = _activityStatus(b);
     return GestureDetector(
       onTap: () {
         if (isReq) {
@@ -481,9 +528,13 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
           const UrgentBadge(),
           const SizedBox(width: 8),
         ],
-        if (label.isNotEmpty)
-          Text(label,
-              style: TextStyle(color: isReq ? C.red : C.muted, fontSize: 12, fontWeight: FontWeight.w700)),
+        if (st != null)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+            decoration: BoxDecoration(color: st.bg, borderRadius: BorderRadius.circular(20)),
+            child: Text(st.label,
+                style: TextStyle(color: st.fg, fontSize: 11, fontWeight: FontWeight.w800)),
+          ),
       ]),
       ),
     );
@@ -493,4 +544,11 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
     if (c.isEmpty) return '';
     return c[0].toUpperCase() + c.substring(1).toLowerCase().replaceAll('_', ' ');
   }
+}
+
+class _ActivityStatus {
+  final String label;
+  final Color fg;
+  final Color bg;
+  const _ActivityStatus(this.label, this.fg, this.bg);
 }

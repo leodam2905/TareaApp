@@ -149,7 +149,17 @@
     "noActivity": "No activity yet. Post a job to get started.",
     "handyman": "Handyman",
     "proSuffix": "{} Pro",
-    "posted": "Posted"
+    "posted": "Posted",
+    "stPosted": "POSTED",
+    "stAwaitingPro": "AWAITING PRO",
+    "stPaymentRequired": "PAYMENT REQUIRED",
+    "stProHired": "PRO HIRED",
+    "stInProgress": "IN PROGRESS",
+    "stPaused": "PAUSED",
+    "stExtensionRequested": "EXTENSION REQUESTED",
+    "stConfirmCompletion": "CONFIRM COMPLETION",
+    "stCompleted": "COMPLETED",
+    "stCancelled": "CANCELLED"
   },
   "categories": {
     "plumbing": "Plumbing",

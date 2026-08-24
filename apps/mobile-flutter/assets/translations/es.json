@@ -149,7 +149,17 @@
     "noActivity": "Sin actividad aún. Publica un trabajo para empezar.",
     "handyman": "Profesional",
     "proSuffix": "Pro de {}",
-    "posted": "Publicado"
+    "posted": "Publicado",
+    "stPosted": "PUBLICADO",
+    "stAwaitingPro": "ESPERANDO AL PRO",
+    "stPaymentRequired": "PAGO REQUERIDO",
+    "stProHired": "PRO CONTRATADO",
+    "stInProgress": "EN CURSO",
+    "stPaused": "EN PAUSA",
+    "stExtensionRequested": "EXTENSIÓN SOLICITADA",
+    "stConfirmCompletion": "CONFIRMAR FINALIZACIÓN",
+    "stCompleted": "COMPLETADO",
+    "stCancelled": "CANCELADO"
   },
   "categories": {
     "plumbing": "Plomería",
