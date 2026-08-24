@@ -474,9 +474,15 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
       case 'PENDING':
         return _ActivityStatus('dashboard.stAwaitingPro'.tr(), C.muted, C.surface);
       case 'ACCEPTED':
+        // Unpaid + ACCEPTED has exactly one cause now: the card saved at hire
+        // was charged when the pro accepted and the charge failed (declined, or
+        // the bank wanted 3-D Secure, which needs the customer present). It is
+        // never a step the customer simply has not reached — hiring pays. And
+        // it self-cancels within 2h, so the label has to prompt action, not
+        // describe a state.
         return paid
             ? _ActivityStatus('dashboard.stProHired'.tr(), const Color(0xFF15803D), const Color(0xFFDCFCE7))
-            : _ActivityStatus('dashboard.stPaymentRequired'.tr(), const Color(0xFFB45309), const Color(0xFFFEF3C7));
+            : _ActivityStatus('dashboard.stPayNow'.tr(), const Color(0xFFB91C1C), const Color(0xFFFEE2E2));
       case 'IN_PROGRESS':
         // Ordered by what the customer has to do about it: an extension needs an
         // answer, a finished job needs confirming, everything else is just news.

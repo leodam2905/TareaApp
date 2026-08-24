@@ -152,7 +152,7 @@
     "posted": "Posted",
     "stPosted": "POSTED",
     "stAwaitingPro": "AWAITING PRO",
-    "stPaymentRequired": "PAYMENT REQUIRED",
+    "stPayNow": "CARD FAILED — PAY NOW",
     "stProHired": "PRO HIRED",
     "stInProgress": "IN PROGRESS",
     "stPaused": "PAUSED",
