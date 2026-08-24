@@ -457,7 +457,10 @@
     "accept": "Aceptar",
     "startJob": "Iniciar",
     "markComplete": "Marcar completado",
-    "awaiting": "Esperando al cliente"
+    "awaiting": "Esperando al cliente",
+    "appliedSection": "POSTULADO · EN ESPERA ({})",
+    "appliedPill": "Postulado",
+    "awaitingCustomer": "Esperando al cliente"
   },
   "proEarnings": {
     "totalEarned": "Total ganado",

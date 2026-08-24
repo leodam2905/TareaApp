@@ -102,11 +102,15 @@ export async function GET() {
       ...(myCategories.length > 0
           ? { category: { in: myCategories.concat("GENERAL" as never).filter((c, n, a) => a.indexOf(c) === n) as never[] } }
         : {}),
-      applications: { none: { handymanId: profile.id } },
+      // Applied jobs are NOT excluded any more. Removing them made a job the
+      // pro had just applied to vanish from the only screen that had ever
+      // shown it, which is indistinguishable from the job being withdrawn.
+      // They stay in the feed, flagged `applied`, for the UI to show as
+      // already-applied rather than offer again.
     },
     include: {
       customer: { select: { name: true, city: true, avatarUrl: true } },
-      applications: { select: { id: true } },
+      applications: { select: { id: true, handymanId: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -124,7 +128,15 @@ export async function GET() {
           : null;
       // distanceKm stays for older app builds that read it; distanceMiles is
       // what every UI shows.
-      return { ...r, distanceKm, distanceMiles: milesFromKmOrNull(distanceKm), score: 0 };
+      return {
+        ...r,
+        distanceKm,
+        distanceMiles: milesFromKmOrNull(distanceKm),
+        // Server-owned, so the badge survives an app restart — it used to live
+        // in one screen's in-memory Set.
+        applied: r.applications.some(a => a.handymanId === profile.id),
+        score: 0,
+      };
     })
     // Same rule as the notification fan-out: the pro's own radius. If these
     // disagreed a pro would be told about a job they cannot then see.

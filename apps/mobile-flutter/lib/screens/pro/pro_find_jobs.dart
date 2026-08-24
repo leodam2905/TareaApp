@@ -232,7 +232,9 @@ class _ProFindJobsState extends State<ProFindJobs> with WidgetsBindingObserver {
     final city = (j['city'] ?? '').toString();
     final min = j['budgetMin'], max = j['budgetMax'];
     final miles = distanceMilesFrom(Map<String, dynamic>.from(j as Map));
-    final applied = _applied.contains(id);
+    // Server-owned so it survives a restart; the local set only covers the
+    // moment between tapping Apply and the list reloading.
+    final applied = _applied.contains(id) || j['applied'] == true;
     final urgent = (j['urgency'] ?? '').toString() == 'URGENT';
     final cc = _catColor(rawCat);
     return Container(

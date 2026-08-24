@@ -29,6 +29,10 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
   void onTabRefresh() => _load();
 
   List<dynamic> _bookings = [];
+  // Applications the customer has not answered yet. These are NOT bookings —
+  // a booking only exists once the pro is hired — so without this the work a
+  // pro is waiting on appeared nowhere in the app.
+  List<dynamic> _pending = [];
   bool _loading = true;
   String _filter = 'ALL';
 
@@ -41,6 +45,17 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
       if (res.statusCode == 200) {
         final d = jsonDecode(res.body);
         _bookings = d is List ? d : (d['bookings'] ?? []);
+      }
+    } catch (_) {}
+    try {
+      final res = await Api.get('/handyman/applications');
+      if (res.statusCode == 200) {
+        final d = jsonDecode(res.body);
+        final all = d is List ? d : (d['applications'] ?? []);
+        // Only what the pro is still waiting on. A rejected application, or one
+        // whose job went to somebody else, is not "pending work".
+        _pending = all.where((a) =>
+            a['status'] == 'PENDING' && a['jobRequest']?['status'] == 'OPEN').toList();
       }
     } catch (_) {}
     if (mounted) setState(() => _loading = false);
@@ -76,6 +91,9 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
   @override
   Widget build(BuildContext context) {
     final filtered = _filter == 'ALL' ? _bookings : _bookings.where((b) => b['status'] == _filter).toList();
+    // An application is not a booking status, so it belongs under ALL and under
+    // PENDING — never under CONFIRMED or COMPLETED, which are about real jobs.
+    final showPending = _filter == 'ALL' || _filter == 'PENDING' ? _pending : const [];
     return Scaffold(
       backgroundColor: C.bg,
       body: SafeArea(
@@ -88,9 +106,27 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
           Expanded(
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
-                : filtered.isEmpty
+                : (filtered.isEmpty && showPending.isEmpty)
                     ? Center(child: Text('proJobs.noJobs'.tr(), style: const TextStyle(color: C.muted)))
-                    : ListView.builder(padding: const EdgeInsets.fromLTRB(16, 0, 16, 24), itemCount: filtered.length, itemBuilder: (_, i) => _card(filtered[i])),
+                    : ListView(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                        children: [
+                          // Waiting-on-the-customer sits above confirmed work:
+                          // it is the thing a pro opens the tab to check.
+                          if (showPending.isNotEmpty) ...[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8, top: 4),
+                              child: Text(
+                                'proJobs.appliedSection'.tr(args: ['${showPending.length}']),
+                                style: const TextStyle(fontWeight: FontWeight.w900, color: C.muted, fontSize: 13, letterSpacing: 0.5),
+                              ),
+                            ),
+                            ...showPending.map(_appliedCard),
+                            const SizedBox(height: 16),
+                          ],
+                          ...filtered.map(_card),
+                        ],
+                      ),
           ),
         ]),
       ),
@@ -109,6 +145,47 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
           child: Text(label, style: TextStyle(color: sel ? Colors.white : C.ink, fontWeight: FontWeight.w700)),
         ),
       ),
+    );
+  }
+
+  /// An application the customer has not answered. Deliberately quieter than a
+  /// booking card and with no action on it: there is nothing for the pro to do
+  /// but wait, and a button that does nothing is worse than no button.
+  Widget _appliedCard(dynamic a) {
+    final jr = (a['jobRequest'] ?? {}) as Map;
+    final title = (jr['title'] ?? 'pro.jobFallback'.tr()).toString();
+    final city = (jr['city'] ?? '').toString();
+    final miles = a['distanceMiles'];
+    final budget = (jr['budgetMin'] ?? 0) as num;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: C.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: C.line),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 15))),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(20)),
+            child: Text('proJobs.appliedPill'.tr(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w800, fontSize: 12)),
+          ),
+        ]),
+        const SizedBox(height: 4),
+        Text(
+          '$city${miles is num ? ' · ${'proFind.milesAway'.tr(args: [miles.toStringAsFixed(0)])}' : ''}',
+          style: const TextStyle(color: C.muted, fontSize: 13),
+        ),
+        const SizedBox(height: 10),
+        Row(children: [
+          Text('\$${budget.round()}', style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 15)),
+          const Spacer(),
+          Text('proJobs.awaitingCustomer'.tr(), style: const TextStyle(color: C.muted, fontSize: 12, fontWeight: FontWeight.w700)),
+        ]),
+      ]),
     );
   }
 

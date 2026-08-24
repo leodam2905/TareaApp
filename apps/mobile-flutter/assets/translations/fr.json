@@ -457,7 +457,10 @@
     "accept": "Accepter",
     "startJob": "Démarrer",
     "markComplete": "Marquer terminée",
-    "awaiting": "En attente du client"
+    "awaiting": "En attente du client",
+    "appliedSection": "CANDIDATURES · EN ATTENTE ({})",
+    "appliedPill": "Candidature envoyée",
+    "awaitingCustomer": "En attente du client"
   },
   "proEarnings": {
     "totalEarned": "Total gagné",
