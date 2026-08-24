@@ -229,7 +229,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
                 ],
               ),
               const SizedBox(height: 20),
-              Text('dashboard.categories'.tr(), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: C.ink)),
+              _sectionHead('dashboard.categories'.tr(), accent: C.blue),
               const SizedBox(height: 12),
               SizedBox(
                 height: 96,
@@ -258,7 +258,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
               ),
               // Recommended near you
               if (_pros.isNotEmpty) ...[
-                _sectionHead('dashboard.recommendedNearYou'.tr(), onSeeAll: () => context.push('/browse')),
+                _sectionHead('dashboard.recommendedNearYou'.tr(), accent: C.green, onSeeAll: () => context.push('/browse')),
                 const SizedBox(height: 12),
                 SizedBox(
                   height: 150,
@@ -271,7 +271,14 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
                 ),
               ],
               // Recent activity
-              _sectionHead('dashboard.recentActivity'.tr(), onSeeAll: _recent.isEmpty ? null : () {}),
+              _sectionHead(
+                'dashboard.recentActivity'.tr(),
+                accent: C.amber,
+                // Was `() {}` — a live "See all" that did nothing when tapped.
+                onSeeAll: _recent.isEmpty
+                    ? null
+                    : () => context.push('/requests').then((_) { if (mounted) _load(); }),
+              ),
               const SizedBox(height: 12),
               if (_recent.isEmpty)
                 Container(
@@ -386,13 +393,29 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
     );
   }
 
-  Widget _sectionHead(String title, {VoidCallback? onSeeAll}) => Padding(
+  /// Section header with a coloured accent bar.
+  ///
+  /// The accent carries the colour, not the title text: a heading in brand
+  /// blue competes with "See all" beside it, which is the only thing in the row
+  /// that is actually tappable. Each section gets its own colour so the page
+  /// reads as distinct blocks while scrolling.
+  Widget _sectionHead(String title, {VoidCallback? onSeeAll, Color accent = C.blue}) => Padding(
         padding: const EdgeInsets.only(top: 24),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Flexible(child: Text(title, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink))),
+            Flexible(
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                Container(
+                  width: 4,
+                  height: 20,
+                  margin: const EdgeInsets.only(right: 10),
+                  decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(3)),
+                ),
+                Flexible(child: Text(title, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink))),
+              ]),
+            ),
             if (onSeeAll != null) ...[
               const SizedBox(width: 12),
               GestureDetector(onTap: onSeeAll, child: Text('common.seeAll'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w800))),
@@ -435,7 +458,11 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
     return GestureDetector(
       onTap: () {
         if (isReq) {
-          context.push('/requests').then((_) { if (mounted) _load(); });
+          // Open THIS job, not the list of every job. The detail screen is
+          // where the applicants are — the point of tapping a posted job is to
+          // see which pros applied to it.
+          context.push('/request-detail', extra: (b as Map).cast<String, dynamic>())
+              .then((_) { if (mounted) _load(); });
         } else {
           context.push('/booking-detail', extra: (b as Map).cast<String, dynamic>()).then((_) { if (mounted) _load(); });
         }
