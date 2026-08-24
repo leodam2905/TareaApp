@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { validateImageBuffer } from "@/lib/upload-validate";
+import { validateImageBuffer, detectImageType, ALLOWED_IMAGE_TYPES } from "@/lib/upload-validate";
 import { uploadImageToR2, uid } from "@/lib/r2";
 
 // Only these key prefixes may be targeted (prevents writing into arbitrary
@@ -10,6 +10,9 @@ const ALLOWED_FOLDERS: Record<string, string> = {
   "tarea/portfolio": "portfolio",
   "tarea/services": "services",
   "tarea/verification": "verification",
+  // A pro with no avatar cannot be booked, and the app has always asked for
+  // this folder — it silently fell through to "images" instead.
+  "tarea/avatars": "avatars",
 };
 
 export async function POST(req: NextRequest) {
@@ -22,8 +25,13 @@ export async function POST(req: NextRequest) {
   const prefix = ALLOWED_FOLDERS[requestedFolder] ?? "images";
 
   if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
-  const mimeType = file.type || "image/jpeg";
   const buffer = Buffer.from(await file.arrayBuffer());
+  // Trust the bytes over the header. Clients that omit a content type send
+  // application/octet-stream, which was rejected outright — that is why photo
+  // uploads failed from the app while document uploads (which set one) worked.
+  // The magic-byte check below still runs, so a spoofed type cannot get through.
+  const declared = file.type || "";
+  const mimeType = ALLOWED_IMAGE_TYPES[declared] ? declared : (detectImageType(buffer) ?? (declared || "image/jpeg"));
   const v = validateImageBuffer(mimeType, buffer, 10 * 1024 * 1024);
   if (!v.ok) return NextResponse.json({ error: v.error }, { status: v.status });
 

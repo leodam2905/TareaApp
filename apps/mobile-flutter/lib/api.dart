@@ -54,13 +54,29 @@ class Api {
   }
 
   // Generic image upload → { url }. Used by Portfolio.
+  // The content type is NOT optional here. MultipartFile.fromPath defaults to
+  // application/octet-stream, and the server allows only jpeg/png/webp/gif —
+  // so every photo upload failed with "Only JPEG, PNG, WebP, or GIF images
+  // allowed" while document uploads worked, because uploadDoc below always set
+  // one. That broke pro avatars (a pro with no avatar CANNOT BE BOOKED),
+  // portfolio shots, service images and job photos alike.
   static Future<http.Response> uploadImage(String filePath, {String folder = 'tarea/portfolio'}) async {
     final t = await token();
     final req = http.MultipartRequest('POST', Uri.parse('$apiBase/api/upload/image'));
     if (t != null) req.headers['Authorization'] = 'Bearer $t';
     req.fields['folder'] = folder;
-    req.files.add(await http.MultipartFile.fromPath('file', filePath));
+    req.files.add(await http.MultipartFile.fromPath('file', filePath, contentType: _imageType(filePath)));
     return http.Response.fromStream(await req.send());
+  }
+
+  /// Content type from the extension, defaulting to JPEG — what image_picker
+  /// hands back once imageQuality/maxWidth force a re-encode.
+  static MediaType _imageType(String path) {
+    final lower = path.toLowerCase();
+    if (lower.endsWith('.png')) return MediaType('image', 'png');
+    if (lower.endsWith('.webp')) return MediaType('image', 'webp');
+    if (lower.endsWith('.gif')) return MediaType('image', 'gif');
+    return MediaType('image', 'jpeg');
   }
 
   // Verification doc upload (image or PDF) → sets verificationStatus=pending.

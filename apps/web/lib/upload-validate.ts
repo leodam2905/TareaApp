@@ -27,6 +27,21 @@ export function sniffMatches(buf: Buffer, mime: string): boolean {
   }
 }
 
+/**
+ * The real image type, read from the file's leading bytes.
+ *
+ * Needed because clients lie by omission: an upload with no content type
+ * arrives as application/octet-stream, which used to be rejected outright even
+ * when the bytes were a perfectly good JPEG. Sniffing is also strictly SAFER
+ * than believing the header — the bytes are the thing that gets served.
+ */
+export function detectImageType(buf: Buffer): string | null {
+  for (const mime of Object.keys(ALLOWED_IMAGE_TYPES)) {
+    if (sniffMatches(buf, mime)) return mime;
+  }
+  return null;
+}
+
 export interface ImageValidation {
   ok: boolean;
   status?: number;
