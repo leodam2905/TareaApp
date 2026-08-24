@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { BOOKABLE_USER_WHERE } from "@/lib/pro-bookable";
+import { milesFromKmOrNull } from "@/lib/units";
 
 // Trades that legally require a license — "Licensed" badge only shows for these.
 const LICENSE_REQUIRED = new Set(["PLUMBING", "ELECTRICAL", "HVAC", "ROOFING", "GENERAL"]);
@@ -94,6 +95,8 @@ export async function GET(req: NextRequest) {
         : null;
     return {
       distanceKm,
+      // Shown to people; distanceKm is kept for older app builds.
+      distanceMiles: milesFromKmOrNull(distanceKm),
       id: h.id,
       name: h.name,
       avatarUrl: h.avatarUrl,

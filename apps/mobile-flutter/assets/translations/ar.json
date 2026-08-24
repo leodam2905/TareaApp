@@ -447,7 +447,8 @@
     "materialsEstimate": "تقدير المواد ($)",
     "materialsHint": "يُحتسب على العميل بسعر التكلفة — بدون رسوم. أنت تقدّم الإيصالات.",
     "updatedAt": "آخر تحديث {}",
-    "labourPriceFixed": "سعر العمل (تحدده Tarea)"
+    "labourPriceFixed": "سعر العمل (تحدده Tarea)",
+    "milesAway": "على بعد {} ميل"
   },
   "proJobs": {
     "noJobs": "لا أعمال هنا بعد.",

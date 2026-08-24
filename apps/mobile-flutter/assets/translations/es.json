@@ -447,7 +447,8 @@
     "materialsEstimate": "Estimación de materiales ($)",
     "materialsHint": "Se cobra al cliente al costo — sin comisión. Tú entregas los recibos.",
     "updatedAt": "Actualizado a las {}",
-    "labourPriceFixed": "Precio de mano de obra (fijado por Tarea)"
+    "labourPriceFixed": "Precio de mano de obra (fijado por Tarea)",
+    "milesAway": "a {} mi"
   },
   "proJobs": {
     "noJobs": "Aún no hay trabajos aquí.",

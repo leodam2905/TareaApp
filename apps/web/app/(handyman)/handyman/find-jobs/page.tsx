@@ -24,6 +24,7 @@ type JobRequest = {
   createdAt: string;
   imageUrls: string[];
   distanceKm: number | null;
+  distanceMiles: number | null;
   score: number;
   customer: { name: string; city: string | null; avatarUrl: string | null };
   applications: { id: string }[];
@@ -289,7 +290,7 @@ export default function FindJobsPage() {
                       <div className="flex flex-wrap gap-3 mt-3 text-xs text-gray-500">
                         <span className="flex items-center gap-1">
                           <MapPin className="w-3 h-3 text-orange-400" />
-                          {job.city}{job.distanceKm !== null && ` · ${job.distanceKm.toFixed(0)} km away`}
+                          {job.city}{job.distanceMiles !== null && ` · ${job.distanceMiles.toFixed(0)} mi away`}
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3 text-orange-400" />

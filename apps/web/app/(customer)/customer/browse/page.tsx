@@ -46,6 +46,7 @@ type Handyman = {
   companyName?: string | null;
   companyLogoUrl?: string | null;
   distanceKm: number | null;
+  distanceMiles: number | null;
   score: number;
   latitude: number | null;
   longitude: number | null;
@@ -468,7 +469,7 @@ export default function BrowsePage() {
                                 {h.city && (
                                   <span className="flex items-center gap-1 text-[var(--text-subtle)] text-xs">
                                     <MapPin className="w-3 h-3" />
-                                    {h.city}{h.distanceKm !== null && ` · ${h.distanceKm.toFixed(0)} km`}
+                                    {h.city}{h.distanceMiles !== null && ` · ${h.distanceMiles.toFixed(0)} mi`}
                                   </span>
                                 )}
                               </div>

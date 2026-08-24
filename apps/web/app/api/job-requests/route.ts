@@ -7,6 +7,7 @@ import { sendPushToUser } from "@/lib/push";
 import { sendSms } from "@/lib/sms";
 import { smsBody, createNotification } from "@/lib/notify";
 import { geocodeAddress } from "@/lib/geo/geocode";
+import { milesFromKmOrNull } from "@/lib/units";
 
 // Fallback only. Each pro sets their own serviceRadius in miles, and that is
 // what decides eligibility — this applies when a profile somehow has none.
@@ -121,7 +122,9 @@ export async function GET() {
         handymanUser?.latitude && handymanUser?.longitude && r.latitude && r.longitude
           ? haversine(handymanUser.latitude, handymanUser.longitude, r.latitude, r.longitude)
           : null;
-      return { ...r, distanceKm, score: 0 };
+      // distanceKm stays for older app builds that read it; distanceMiles is
+      // what every UI shows.
+      return { ...r, distanceKm, distanceMiles: milesFromKmOrNull(distanceKm), score: 0 };
     })
     // Same rule as the notification fan-out: the pro's own radius. If these
     // disagreed a pro would be told about a job they cannot then see.

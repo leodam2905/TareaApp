@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
+import '../../units.dart';
 import '../../widgets/urgent_badge.dart';
 
 class ProFindJobs extends StatefulWidget {
@@ -230,7 +231,7 @@ class _ProFindJobsState extends State<ProFindJobs> with WidgetsBindingObserver {
     final desc = (j['description'] ?? '').toString();
     final city = (j['city'] ?? '').toString();
     final min = j['budgetMin'], max = j['budgetMax'];
-    final km = j['distanceKm'];
+    final miles = distanceMilesFrom(Map<String, dynamic>.from(j as Map));
     final applied = _applied.contains(id);
     final urgent = (j['urgency'] ?? '').toString() == 'URGENT';
     final cc = _catColor(rawCat);
@@ -280,7 +281,10 @@ class _ProFindJobsState extends State<ProFindJobs> with WidgetsBindingObserver {
         Row(children: [
           const Icon(Icons.location_on_outlined, size: 15, color: C.muted),
           const SizedBox(width: 3),
-          Text('$city${km != null ? ' · ${(km as num).toStringAsFixed(0)} km' : ''}', style: const TextStyle(color: C.muted, fontSize: 13)),
+          Text(
+            '$city${miles != null ? ' · ${'proFind.milesAway'.tr(args: [miles.toStringAsFixed(0)])}' : ''}',
+            style: const TextStyle(color: C.muted, fontSize: 13),
+          ),
           const Spacer(),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: applied ? C.muted : C.blue, padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),

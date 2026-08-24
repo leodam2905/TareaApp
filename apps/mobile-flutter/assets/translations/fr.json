@@ -447,7 +447,8 @@
     "materialsEstimate": "Estimation des matériaux ($)",
     "materialsHint": "Facturé au client au prix coûtant — sans frais. Vous fournissez les reçus.",
     "updatedAt": "Mis à jour à {}",
-    "labourPriceFixed": "Prix de la main-d'œuvre (fixé par Tarea)"
+    "labourPriceFixed": "Prix de la main-d'œuvre (fixé par Tarea)",
+    "milesAway": "à {} mi"
   },
   "proJobs": {
     "noJobs": "Aucune mission ici pour l'instant.",

@@ -32,6 +32,7 @@ type MatchedHandyman = {
   rating: number;
   totalJobs: number;
   distanceKm: number | null;
+  distanceMiles: number | null;
   score: number;
   user: { id: string; name: string; avatarUrl: string | null; city: string | null; state: string | null };
   services: { minPrice: number; maxPrice: number }[];
@@ -82,7 +83,7 @@ function HandymanCard({
               <span className="flex items-center gap-1">
                 <MapPin className="w-3 h-3" />
                 {handyman.user.city}
-                {handyman.distanceKm !== null && ` · ${handyman.distanceKm.toFixed(0)} km`}
+                {handyman.distanceMiles !== null && ` · ${handyman.distanceMiles.toFixed(0)} mi`}
               </span>
             )}
           </div>
