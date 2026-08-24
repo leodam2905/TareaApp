@@ -845,5 +845,20 @@
     "noLocationYet": "Your pro hasn't shared a location yet. It appears here once they set off.",
     "message": "Message",
     "call": "Call"
+  },
+  "tax": {
+    "title": "Tax report",
+    "cardSubtitle": "Your earnings for tax filing",
+    "gross": "Gross earnings",
+    "platformFee": "Tarea fee",
+    "net": "Net paid to you",
+    "jobsCompleted": "{} completed job(s) in {}",
+    "jobsHeading": "Completed jobs",
+    "noJobs": "No completed jobs in {}.",
+    "emailCsv": "Email me the CSV",
+    "emailSent": "Sent to {}",
+    "emailFailed": "Could not send the report",
+    "form1099": "You were paid over $600 in {} — Tarea will issue you an IRS Form 1099-NEC.",
+    "disclaimer": "You are an independent contractor and responsible for your own taxes. This is a record of what Tarea paid you, not tax advice."
   }
 }

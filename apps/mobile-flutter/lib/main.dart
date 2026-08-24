@@ -14,6 +14,7 @@ import 'route_observer.dart';
 import 'screens/disputes_screen.dart';
 import 'screens/landing_screen.dart';
 import 'screens/pro/pro_landing.dart';
+import 'screens/pro/pro_tax_report.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/verify_otp_screen.dart';
@@ -133,6 +134,7 @@ final appRouter = GoRouter(
     GoRoute(path: '/pro/background-check', builder: (_, __) => const ProBackgroundCheck()),
     GoRoute(path: '/pro/reviews', builder: (_, __) => const ProReviews()),
     GoRoute(path: '/pro/job-detail', builder: (_, s) => ProJobDetail(booking: (s.extra as Map?)?.cast<String, dynamic>() ?? const {})),
+    GoRoute(path: '/pro/tax-report', builder: (_, __) => const ProTaxReport()),
     GoRoute(path: '/pro/payout-methods', builder: (_, __) => const ProPayoutMethods()),
     GoRoute(
       path: '/pro/incoming',

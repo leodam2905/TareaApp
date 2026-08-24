@@ -845,5 +845,20 @@
     "noLocationYet": "Tu profesional aún no ha compartido su ubicación. Aparecerá cuando salga.",
     "message": "Mensaje",
     "call": "Llamar"
+  },
+  "tax": {
+    "title": "Informe fiscal",
+    "cardSubtitle": "Tus ingresos para declarar",
+    "gross": "Ingresos brutos",
+    "platformFee": "Comisión de Tarea",
+    "net": "Neto pagado",
+    "jobsCompleted": "{} trabajo(s) completado(s) en {}",
+    "jobsHeading": "Trabajos completados",
+    "noJobs": "Sin trabajos completados en {}.",
+    "emailCsv": "Enviarme el CSV",
+    "emailSent": "Enviado a {}",
+    "emailFailed": "No se pudo enviar el informe",
+    "form1099": "Recibiste más de $600 en {}: Tarea te emitirá un formulario IRS 1099-NEC.",
+    "disclaimer": "Eres contratista independiente y responsable de tus impuestos. Este es un registro de lo que Tarea te pagó, no asesoramiento fiscal."
   }
 }

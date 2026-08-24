@@ -33,15 +33,27 @@ function baseTemplate(title: string, body: string, cta?: { label: string; url: s
 }
 
 export async function sendEmail(
-  toOrParams: string | { to: string; subject: string; html: string },
+  toOrParams:
+    | string
+    | {
+        to: string;
+        subject: string;
+        html: string;
+        // Resend takes attachments as base64 content plus a filename. Exposed
+        // here so a report can be delivered as a real file rather than pasted
+        // into the body, which is unusable to an accountant.
+        attachments?: { filename: string; content: string }[];
+      },
   subject?: string,
   title?: string,
   body?: string,
   cta?: { label: string; url: string }
 ) {
   let to: string, subj: string, html: string;
+  let attachments: { filename: string; content: string }[] | undefined;
   if (typeof toOrParams === "object") {
     ({ to, subject: subj, html } = toOrParams);
+    attachments = toOrParams.attachments;
   } else {
     to = toOrParams;
     subj = subject!;
@@ -52,7 +64,7 @@ export async function sendEmail(
     console.log(`[EMAIL → ${to}] (Resend not configured; email not sent)`);
     return;
   }
-  await resend.emails.send({ from: FROM, to, subject: subj, html });
+  await resend.emails.send({ from: FROM, to, subject: subj, html, ...(attachments ? { attachments } : {}) });
 }
 
 export async function sendInvoiceEmail(params: {

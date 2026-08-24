@@ -845,5 +845,20 @@
     "noLocationYet": "Votre pro n'a pas encore partagé sa position. Elle apparaîtra dès son départ.",
     "message": "Message",
     "call": "Appeler"
+  },
+  "tax": {
+    "title": "Rapport fiscal",
+    "cardSubtitle": "Vos revenus pour la déclaration",
+    "gross": "Revenus bruts",
+    "platformFee": "Frais Tarea",
+    "net": "Net versé",
+    "jobsCompleted": "{} mission(s) terminée(s) en {}",
+    "jobsHeading": "Missions terminées",
+    "noJobs": "Aucune mission terminée en {}.",
+    "emailCsv": "M'envoyer le CSV",
+    "emailSent": "Envoyé à {}",
+    "emailFailed": "Envoi du rapport impossible",
+    "form1099": "Vous avez reçu plus de 600 $ en {} — Tarea vous délivrera un formulaire IRS 1099-NEC.",
+    "disclaimer": "Vous êtes travailleur indépendant et responsable de vos impôts. Ceci est un relevé des paiements de Tarea, pas un conseil fiscal."
   }
 }

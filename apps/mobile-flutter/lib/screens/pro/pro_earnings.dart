@@ -80,6 +80,31 @@ class _ProEarningsState extends State<ProEarnings> {
                     ]),
                   ),
                   ),
+                  const SizedBox(height: 12),
+                  // Lives beside payouts because both answer "where is my
+                  // money" — and this one existed only on the website, which
+                  // the pros who need it never open.
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => context.push('/pro/tax-report'),
+                    child: Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
+                      child: Row(children: [
+                        Container(
+                          width: 44, height: 44,
+                          decoration: BoxDecoration(color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(22)),
+                          child: const Icon(Icons.description_outlined, color: Color(0xFFB45309)),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text('tax.title'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+                          Text('tax.cardSubtitle'.tr(), style: const TextStyle(color: C.muted, fontSize: 13)),
+                        ])),
+                        const Icon(Icons.chevron_right, color: C.muted),
+                      ]),
+                    ),
+                  ),
                 ],
               ),
       ),
