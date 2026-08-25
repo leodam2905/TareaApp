@@ -258,7 +258,9 @@
     "newJobRequests": "Nuevas solicitudes",
     "noNewRequests": "No hay nuevas solicitudes ahora.",
     "new": "NUEVO",
-    "jobFallback": "Trabajo"
+    "jobFallback": "Trabajo",
+    "licensed": "Con licencia",
+    "insured": "Asegurado"
   },
   "postjob": {
     "requestPro": "Solicitar a {}",
@@ -618,7 +620,7 @@
     "statusNotSubmitted": "No enviado",
     "license": "Licencia",
     "insurance": "Seguro",
-    "certDesc": "Sube una foto o PDF de tu licencia, seguro o identificación. Nuestro equipo revisa los documentos para verificar tu cuenta.",
+    "certDesc": "Sube una foto o PDF de tu licencia y tu certificado de seguro. Nuestro equipo revisa cada documento y te avisaremos cuando esté verificado.",
     "uploadDocument": "Subir documento",
     "docSubmitted": "Documento enviado a revisión",
     "uploadDocFailed": "Error al subir. Inténtalo de nuevo.",
@@ -631,7 +633,10 @@
     "idBack": "Identificación oficial (reverso)",
     "idLocked": "Tu identificación está registrada y no se puede cambiar aquí. Contacta con soporte si necesitas actualizarla.",
     "upload": "Subir",
-    "replace": "Reemplazar"
+    "replace": "Reemplazar",
+    "statusExpired": "Vencido — sube una renovación",
+    "credExpires": "Válido hasta el {}",
+    "credExpiresSoon": "Vence el {} — sube una renovación"
   },
   "diagnose": {
     "title": "Diagnóstico IA",

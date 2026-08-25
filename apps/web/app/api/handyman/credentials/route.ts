@@ -1,0 +1,99 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
+import {
+  CREDENTIAL_KINDS,
+  CREDENTIAL_SELECT,
+  CredentialKind,
+  credentialViews,
+  parseExpiry,
+} from "@/lib/credentials";
+
+/** The pro's own licence and insurance, with expiry already applied. */
+export async function GET() {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "HANDYMAN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const profile = await prisma.handymanProfile.findUnique({
+    where: { userId: user.id },
+    select: CREDENTIAL_SELECT,
+  });
+  if (!profile) return NextResponse.json({ error: "No handyman profile" }, { status: 404 });
+
+  return NextResponse.json(credentialViews(profile));
+}
+
+/**
+ * Submit or replace one credential.
+ *
+ * Always lands on `pending`, including on a replacement of an already-approved
+ * document: a renewed licence is a document nobody has looked at yet. The
+ * previous review note and timestamp are cleared for the same reason — they
+ * describe a decision about a file that is no longer there.
+ *
+ * Only ONE credential per call. The two are reviewed separately, so accepting
+ * both in one body would make a single request produce two decisions to make
+ * and one status to report.
+ */
+export async function POST(req: NextRequest) {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "HANDYMAN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const kind = String(body.kind ?? "") as CredentialKind;
+  if (!CREDENTIAL_KINDS.includes(kind)) {
+    return NextResponse.json({ error: `kind must be one of: ${CREDENTIAL_KINDS.join(", ")}` }, { status: 400 });
+  }
+
+  const docUrl = typeof body.docUrl === "string" ? body.docUrl.trim() : "";
+  if (!docUrl) {
+    return NextResponse.json({ error: "docUrl is required — upload the file to /api/verification first" }, { status: 400 });
+  }
+
+  const expiry = parseExpiry(body.expiresAt);
+  if (!expiry.ok) return NextResponse.json({ error: expiry.error }, { status: 400 });
+  // An already-lapsed document is a wasted round trip through the review queue.
+  if (expiry.ok && !expiry.absent && expiry.value && expiry.value.getTime() <= Date.now()) {
+    return NextResponse.json({ error: "expiresAt is in the past" }, { status: 400 });
+  }
+
+  const data: Record<string, unknown> = {};
+  if (kind === "license") {
+    data.licenseDocUrl = docUrl;
+    data.licenseStatus = "pending";
+    data.licenseReviewedAt = null;
+    data.licenseReviewNote = null;
+    if (!expiry.absent) data.licenseExpiresAt = expiry.value;
+    if (typeof body.number === "string") data.licenseNumber = body.number.trim() || null;
+    if (typeof body.issuer === "string") data.licenseIssuer = body.issuer.trim() || null;
+  } else {
+    data.insuranceDocUrl = docUrl;
+    data.insuranceStatus = "pending";
+    data.insuranceReviewedAt = null;
+    data.insuranceReviewNote = null;
+    if (!expiry.absent) data.insuranceExpiresAt = expiry.value;
+    if (typeof body.provider === "string") data.insuranceProvider = body.provider.trim() || null;
+    if (typeof body.policyNumber === "string") data.insurancePolicyNumber = body.policyNumber.trim() || null;
+  }
+
+  const profile = await prisma.handymanProfile.update({
+    where: { userId: user.id },
+    data,
+    select: CREDENTIAL_SELECT,
+  }).catch(() => null);
+
+  if (!profile) return NextResponse.json({ error: "No handyman profile" }, { status: 404 });
+
+  const views = credentialViews(profile);
+  return NextResponse.json({ ok: true, credential: views[kind], credentials: views });
+}

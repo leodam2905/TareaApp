@@ -258,7 +258,9 @@
     "newJobRequests": "New Job Requests",
     "noNewRequests": "No new requests right now.",
     "new": "NEW",
-    "jobFallback": "Job"
+    "jobFallback": "Job",
+    "licensed": "Licensed",
+    "insured": "Insured"
   },
   "postjob": {
     "requestPro": "Request {}",
@@ -618,7 +620,7 @@
     "statusNotSubmitted": "Not submitted",
     "license": "License",
     "insurance": "Insurance",
-    "certDesc": "Upload a photo or PDF of your license, insurance, or ID. Our team reviews documents to verify your account.",
+    "certDesc": "Upload a photo or PDF of your license and insurance certificate. Our team reviews each document, and you'll be notified once it's verified.",
     "uploadDocument": "Upload document",
     "docSubmitted": "Document submitted for review",
     "uploadDocFailed": "Upload failed. Please try again.",
@@ -631,7 +633,10 @@
     "idBack": "Government ID (back)",
     "idLocked": "Your ID is on file and cannot be changed here. Contact support if it needs updating.",
     "upload": "Upload",
-    "replace": "Replace"
+    "replace": "Replace",
+    "statusExpired": "Expired — upload a renewal",
+    "credExpires": "Valid until {}",
+    "credExpiresSoon": "Expires {} — upload a renewal"
   },
   "diagnose": {
     "title": "AI Diagnose",

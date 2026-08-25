@@ -62,6 +62,7 @@ npx prisma migrate diff \
 | 001 | PostGIS service points | **No** |
 | 002 | FCM outbox | **No** |
 | 003 | Job timer pause/resume | **Yes** — 2026-08-22 |
+| 004 | Licence + insurance credentials | **Yes** — 2026-08-25 |
 
 > Neither is applied. `schema.prisma` describes them, so the deploy script's
 > drift gate will **refuse all deploys** until they are applied. That is

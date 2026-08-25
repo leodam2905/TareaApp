@@ -31,6 +31,12 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
   int _pct = 0;
   /// Unread notifications, for the badge on the bell.
   int _unread = 0;
+  // Licence and insurance are separate credentials, separately reviewed with
+  // separate expiry dates. The dashboard used to show ONE hardcoded
+  // "Licensed & Insured" pill to every pro — unconditionally, whether or not
+  // either document existed, let alone had been approved.
+  bool _licensed = false;
+  bool _insured = false;
   List<dynamic> _upcoming = [];
   List<dynamic> _requests = [];
 
@@ -86,6 +92,18 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
     }
   }
 
+  /// One credential badge. Shown only when that credential is actually valid —
+  /// an absent badge is the honest state, not a gap to fill with a default.
+  Widget _credentialPill(String label, IconData icon, Color fg, Color bg) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12)),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(icon, size: 14, color: fg),
+          const SizedBox(width: 5),
+          Text(label, style: TextStyle(color: fg, fontWeight: FontWeight.w700, fontSize: 12)),
+        ]),
+      );
+
   Future<void> _fetchAll() async {
     try {
       final p = await Api.get('/profile');
@@ -94,6 +112,11 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
         _name = (pj['name'] ?? '').toString();
         _avatar = (pj['avatarUrl'] ?? '').toString();
         final hp = pj['handymanProfile'] ?? {};
+        // Server-computed (lib/credentials.ts): approved by an admin AND not
+        // past its expiry date. Never inferred from a document existing.
+        final badges = hp['badges'] ?? {};
+        _licensed = badges['licensed'] == true;
+        _insured = badges['insured'] == true;
         _rating = ((hp['rating']) as num?)?.toDouble() ?? 0;
         _available = hp['isAvailable'] == true;
         ProOnline.set(_available);
@@ -327,16 +350,14 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
                   ]),
                 ),
               ),
-              const SizedBox(width: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(color: const Color(0xFFEFF5FF), borderRadius: BorderRadius.circular(12)),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  const Icon(Icons.shield_outlined, size: 14, color: C.blue),
-                  const SizedBox(width: 5),
-                  Text('pro.licensedInsured'.tr(), style: const TextStyle(color: C.blue, fontWeight: FontWeight.w700, fontSize: 12)),
-                ]),
-              ),
+              if (_licensed) ...[
+                const SizedBox(width: 10),
+                _credentialPill('pro.licensed'.tr(), Icons.verified_outlined, C.blue, const Color(0xFFEFF5FF)),
+              ],
+              if (_insured) ...[
+                const SizedBox(width: 10),
+                _credentialPill('pro.insured'.tr(), Icons.shield_outlined, C.green, const Color(0xFFECFDF3)),
+              ],
             ]),
             const SizedBox(height: 16),
             // Stat cards 2x2

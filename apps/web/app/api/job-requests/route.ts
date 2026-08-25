@@ -8,6 +8,7 @@ import { sendSms } from "@/lib/sms";
 import { smsBody, createNotification } from "@/lib/notify";
 import { geocodeAddress } from "@/lib/geo/geocode";
 import { milesFromKmOrNull } from "@/lib/units";
+import { CREDENTIAL_SELECT, credentialBadges } from "@/lib/credentials";
 
 // Fallback only. Each pro sets their own serviceRadius in miles, and that is
 // what decides eligibility — this applies when a profile somehow has none.
@@ -89,9 +90,14 @@ export async function GET() {
   // Jobs at or over the CSLB unlicensed cap are reserved for Licensed & Insured
   // pros (license + insurance on file). See the filter below for the rule.
   const docs = await prisma.handymanProfile.findUnique({
-    where: { id: profile.id }, select: { licenseDocUrl: true, insuranceDocUrl: true },
+    where: { id: profile.id }, select: CREDENTIAL_SELECT,
   });
-  const licensedInsured = !!(docs?.licenseDocUrl && docs?.insuranceDocUrl);
+  // This gate decides who may take work at or over the CSLB $1,000 cap, so it
+  // has to mean "an admin approved these and they have not lapsed" — not "two
+  // files were uploaded". Presence of a PDF used to be enough, which let any
+  // pro who uploaded anything take jobs the law reserves for licensed pros.
+  const badges = docs ? credentialBadges(docs) : { licensed: false, insured: false };
+  const licensedInsured = badges.licensed && badges.insured;
 
   const requests = await prisma.jobRequest.findMany({
     where: {

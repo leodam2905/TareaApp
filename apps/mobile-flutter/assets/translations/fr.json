@@ -258,7 +258,9 @@
     "newJobRequests": "Nouvelles demandes",
     "noNewRequests": "Aucune nouvelle demande pour le moment.",
     "new": "NOUVEAU",
-    "jobFallback": "Mission"
+    "jobFallback": "Mission",
+    "licensed": "Licencié",
+    "insured": "Assuré"
   },
   "postjob": {
     "requestPro": "Demander à {}",
@@ -618,7 +620,7 @@
     "statusNotSubmitted": "Non soumis",
     "license": "Licence",
     "insurance": "Assurance",
-    "certDesc": "Envoyez une photo ou un PDF de votre licence, assurance ou pièce d'identité. Notre équipe vérifie les documents pour valider votre compte.",
+    "certDesc": "Envoyez une photo ou un PDF de votre licence et de votre attestation d'assurance. Notre équipe vérifie chaque document et vous serez informé une fois validé.",
     "uploadDocument": "Envoyer un document",
     "docSubmitted": "Document soumis pour examen",
     "uploadDocFailed": "Échec de l'envoi. Réessayez.",
@@ -631,7 +633,10 @@
     "idBack": "Pièce d'identité (verso)",
     "idLocked": "Votre pièce d'identité est enregistrée et ne peut pas être modifiée ici. Contactez le support si besoin.",
     "upload": "Envoyer",
-    "replace": "Remplacer"
+    "replace": "Remplacer",
+    "statusExpired": "Expiré — envoyez un renouvellement",
+    "credExpires": "Valable jusqu'au {}",
+    "credExpiresSoon": "Expire le {} — envoyez un renouvellement"
   },
   "diagnose": {
     "title": "Diagnostic IA",

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { BOOKABLE_USER_WHERE } from "@/lib/pro-bookable";
 import { milesFromKmOrNull } from "@/lib/units";
+import { credentialBadges, CREDENTIAL_SELECT } from "@/lib/credentials";
 
 // Trades that legally require a license — "Licensed" badge only shows for these.
 const LICENSE_REQUIRED = new Set(["PLUMBING", "ELECTRICAL", "HVAC", "ROOFING", "GENERAL"]);
@@ -68,8 +69,9 @@ export async function GET(req: NextRequest) {
           isPremium: true,
           yearsExperience: true,
           backgroundCheckStatus: true,
-          licenseDocUrl: true,
-          insuranceDocUrl: true,
+          // The full credential set, so the badges can mean approved + unexpired
+          // rather than "a file was uploaded". See lib/credentials.ts.
+          ...CREDENTIAL_SELECT,
           services: {
             where: { isActive: true },
             select: { title: true, category: true },
@@ -121,8 +123,11 @@ export async function GET(req: NextRequest) {
         identityVerified: h.isVerified,
         phoneVerified: !!h.phone,
         backgroundChecked: hp?.backgroundCheckStatus === "PASSED",
-        licensed: !!hp?.licenseDocUrl && (hp?.services ?? []).some(sv => LICENSE_REQUIRED.has(sv.category)),
-        insured: !!hp?.insuranceDocUrl,
+        // Approved by an admin AND unexpired — a badge shown to a customer must
+        // not be lit by the mere existence of an uploaded file.
+        licensed: (hp ? credentialBadges(hp).licensed : false)
+          && (hp?.services ?? []).some(sv => LICENSE_REQUIRED.has(sv.category)),
+        insured: hp ? credentialBadges(hp).insured : false,
         paymentVerified: h.stripeAccountStatus === "active",
         topRated: rating >= 4.8 && jobs >= 10,
         topPro: !!hp?.isPremium,

@@ -215,9 +215,31 @@ model HandymanProfile {
   icaSignedIp           String?
   idFrontUrl            String?
   idBackUrl             String?
+
+  // Renewable credentials. Each document carries its OWN decision and expiry:
+  // a current licence and a lapsed insurance certificate are two different
+  // facts, and an admin has to be able to accept one while bouncing the other.
+  // `verificationStatus` above stays what it has always been — the *identity*
+  // decision — and is not reused here.
+  //
+  // Status is `none | pending | approved | rejected`. Expiry is NOT written
+  // back into it; a document past `expiresAt` reads as expired at query time
+  // (see lib/credentials.ts) so a lapsed licence stops counting the moment it
+  // lapses, with no cron to run and nothing to keep in sync.
   licenseNumber         String?
   licenseDocUrl         String?
+  licenseIssuer         String?   // issuing authority, e.g. "CSLB" / "TX TDLR"
+  licenseStatus         String    @default("none")
+  licenseExpiresAt      DateTime?
+  licenseReviewedAt     DateTime?
+  licenseReviewNote     String?   // why it was rejected — shown to the pro
   insuranceDocUrl       String?
+  insuranceProvider     String?
+  insurancePolicyNumber String?
+  insuranceStatus       String    @default("none")
+  insuranceExpiresAt    DateTime?
+  insuranceReviewedAt   DateTime?
+  insuranceReviewNote   String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
