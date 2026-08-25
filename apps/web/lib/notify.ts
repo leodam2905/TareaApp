@@ -72,6 +72,7 @@ function ctaForType(type: string, refId?: string) {
     review:               `${APP_URL}/handyman/profile`,
     message:              refId ? `${APP_URL}/chat/${refId}` : APP_URL,
     payout:               `${APP_URL}/handyman/earnings`,
+    credential:           `${APP_URL}/handyman/profile`,
   };
   const labels: Record<string, string> = {
     booking_request:      "View Job",
@@ -84,6 +85,7 @@ function ctaForType(type: string, refId?: string) {
     review:               "View Profile",
     message:              "Open Chat",
     payout:               "View Earnings",
+    credential:           "View Credentials",
   };
   return { url: urls[type] ?? APP_URL, label: labels[type] ?? "Open Tarea" };
 }

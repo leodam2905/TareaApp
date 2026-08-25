@@ -31,6 +31,56 @@ class _ProCertificationsState extends State<ProCertifications> {
   @override
   void initState() { super.initState(); _load(); }
 
+  /// Certificate detail: who it covers, and for how much.
+  ///
+  /// Limits are entered in whole dollars as printed on the ACORD form. They are
+  /// pre-filled with the ICA minimums because that is what most policies carry
+  /// and what Tarea requires — a pro whose cover differs edits them, rather
+  /// than everyone typing seven digits twice.
+  Future<Map<String, dynamic>?> _askInsuranceDetail() async {
+    final named = TextEditingController(text: _proName);
+    final occ = TextEditingController(text: '1000000');
+    final agg = TextEditingController(text: '2000000');
+    final policy = TextEditingController();
+    return showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('proEdit.insuranceTitle'.tr()),
+        content: SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text('proEdit.insuranceHelp'.tr(), style: const TextStyle(color: C.muted, fontSize: 13)),
+            const SizedBox(height: 12),
+            TextField(controller: named, textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(labelText: 'proEdit.namedInsured'.tr())),
+            const SizedBox(height: 8),
+            TextField(controller: policy,
+                decoration: InputDecoration(labelText: 'proEdit.policyNumber'.tr())),
+            const SizedBox(height: 8),
+            TextField(controller: occ, keyboardType: TextInputType.number,
+                decoration: InputDecoration(labelText: 'proEdit.perOccurrence'.tr())),
+            const SizedBox(height: 8),
+            TextField(controller: agg, keyboardType: TextInputType.number,
+                decoration: InputDecoration(labelText: 'proEdit.aggregate'.tr())),
+          ]),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('common.cancel'.tr())),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, <String, dynamic>{
+              if (named.text.trim().isNotEmpty) 'namedInsured': named.text.trim(),
+              if (policy.text.trim().isNotEmpty) 'policyNumber': policy.text.trim(),
+              // Sent only when numeric: the server rejects junk rather than
+              // reading it as zero cover, and an empty box means "not stated".
+              if (int.tryParse(occ.text.trim()) != null) 'perOccurrence': int.parse(occ.text.trim()),
+              if (int.tryParse(agg.text.trim()) != null) 'aggregate': int.parse(agg.text.trim()),
+            }),
+            child: Text('common.continue'.tr(), style: const TextStyle(fontWeight: FontWeight.w800)),
+          ),
+        ],
+      ),
+    );
+  }
+
   /// Asks for the name printed on the licence, defaulting to the pro's own —
   /// which is the answer most of the time, and pre-filling it means the
   /// unusual case (a trade name, a company) is the one they have to type.
@@ -96,9 +146,16 @@ class _ProCertificationsState extends State<ProCertifications> {
     // ask whose licence it is. The reviewer compares this against the pro's
     // own name; without it they have a number and no way to tell.
     String? licenseeName;
+    Map<String, dynamic>? insurance;
     if (kind == 'license') {
       licenseeName = await _askLicenseeName();
       if (licenseeName == null) return; // cancelled — do not upload half a claim
+    } else {
+      // A certificate is a one-page PDF anyone can forward. These three fields
+      // are what tie it to this pro and to the cover the ICA requires, and
+      // they are checked before a human reads the document.
+      insurance = await _askInsuranceDetail();
+      if (insurance == null) return;
     }
 
     setState(() => _busyKind = kind);
@@ -117,6 +174,7 @@ class _ProCertificationsState extends State<ProCertifications> {
         'kind': kind,
         'docUrl': url,
         if (licenseeName != null && licenseeName.isNotEmpty) 'licenseeName': licenseeName,
+        if (insurance != null) ...insurance,
       });
       if (save.statusCode >= 200 && save.statusCode < 300) {
         _toast('proEdit.docSubmitted'.tr());

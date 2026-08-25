@@ -639,7 +639,13 @@
     "credExpiresSoon": "Vence el {} — sube una renovación",
     "licenseeTitle": "Nombre en la licencia",
     "licenseeHelp": "Escribe el nombre tal como aparece en la licencia. Puede ser una empresa o nombre comercial.",
-    "licenseeHint": "p. ej. Leonce Dah o Dah Plomería LLC"
+    "licenseeHint": "p. ej. Leonce Dah o Dah Plomería LLC",
+    "insuranceTitle": "Datos del certificado",
+    "insuranceHelp": "Escribe estos datos tal como aparecen en tu certificado de seguro (ACORD 25).",
+    "namedInsured": "Asegurado nombrado",
+    "policyNumber": "Número de póliza",
+    "perOccurrence": "Por siniestro (USD)",
+    "aggregate": "Agregado general (USD)"
   },
   "diagnose": {
     "title": "Diagnóstico IA",

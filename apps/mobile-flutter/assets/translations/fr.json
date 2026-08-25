@@ -639,7 +639,13 @@
     "credExpiresSoon": "Expire le {} — envoyez un renouvellement",
     "licenseeTitle": "Nom sur la licence",
     "licenseeHelp": "Saisissez le nom exactement comme il figure sur la licence. Il peut s'agir d'une société ou d'un nom commercial.",
-    "licenseeHint": "ex. Leonce Dah ou Dah Plomberie SARL"
+    "licenseeHint": "ex. Leonce Dah ou Dah Plomberie SARL",
+    "insuranceTitle": "Détails du certificat",
+    "insuranceHelp": "Saisissez ces informations exactement comme sur votre certificat d'assurance (ACORD 25).",
+    "namedInsured": "Assuré désigné",
+    "policyNumber": "Numéro de police",
+    "perOccurrence": "Par sinistre (USD)",
+    "aggregate": "Plafond global (USD)"
   },
   "diagnose": {
     "title": "Diagnostic IA",

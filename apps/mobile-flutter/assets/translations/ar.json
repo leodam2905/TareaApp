@@ -639,7 +639,13 @@
     "credExpiresSoon": "تنتهي في {} — ارفع نسخة مجددة",
     "licenseeTitle": "الاسم على الرخصة",
     "licenseeHelp": "أدخل الاسم كما يظهر تمامًا على الرخصة. يمكن أن يكون اسم شركة أو اسمًا تجاريًا.",
-    "licenseeHint": "مثال: Leonce Dah أو Dah Plumbing LLC"
+    "licenseeHint": "مثال: Leonce Dah أو Dah Plumbing LLC",
+    "insuranceTitle": "تفاصيل الشهادة",
+    "insuranceHelp": "أدخل هذه البيانات تمامًا كما تظهر في شهادة التأمين (ACORD 25).",
+    "namedInsured": "المؤمَّن له",
+    "policyNumber": "رقم البوليصة",
+    "perOccurrence": "لكل حادثة (USD)",
+    "aggregate": "الإجمالي العام (USD)"
   },
   "diagnose": {
     "title": "تشخيص بالذكاء الاصطناعي",

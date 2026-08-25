@@ -639,7 +639,13 @@
     "credExpiresSoon": "Expires {} — upload a renewal",
     "licenseeTitle": "Name on the licence",
     "licenseeHelp": "Enter the name exactly as it appears on the licence. It can be a company or trade name.",
-    "licenseeHint": "e.g. Leonce Dah or Dah Plumbing LLC"
+    "licenseeHint": "e.g. Leonce Dah or Dah Plumbing LLC",
+    "insuranceTitle": "Certificate details",
+    "insuranceHelp": "Enter these exactly as printed on your certificate of insurance (ACORD 25).",
+    "namedInsured": "Named insured",
+    "policyNumber": "Policy number",
+    "perOccurrence": "Each occurrence (USD)",
+    "aggregate": "General aggregate (USD)"
   },
   "diagnose": {
     "title": "AI Diagnose",
