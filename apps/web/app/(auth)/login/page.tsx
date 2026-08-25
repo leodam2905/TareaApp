@@ -20,8 +20,30 @@ type CredData = z.infer<typeof credSchema>;
 // ─── Step 2: OTP ───────────────────────────────────────────────────────────
 const OTP_LENGTH = 6;
 
+
+/**
+ * Where to go after signing in.
+ *
+ * `next` comes from the URL, so it is attacker-controllable: only same-origin
+ * relative paths are honoured. "//evil.com" is a protocol-relative URL that
+ * browsers treat as absolute, which is why the second character is checked too.
+ */
+function safeNext(next: string | null, role: string): string {
+  const fallback = role === "ADMIN" ? "/admin/dashboard" : role === "HANDYMAN" ? "/handyman/dashboard" : "/customer/dashboard";
+  if (!next || !next.startsWith("/") || next.startsWith("//")) return fallback;
+  // A pro sent to a customer page (or vice versa) just bounces back here.
+  if (role === "CUSTOMER" && (next.startsWith("/handyman") || next.startsWith("/admin"))) return fallback;
+  if (role === "HANDYMAN" && (next.startsWith("/customer") || next.startsWith("/admin"))) return fallback;
+  return next;
+}
+
 export default function LoginPage() {
   const router = useRouter();
+  // Read straight off the URL rather than useSearchParams(), which forces this
+  // page into a Suspense boundary and out of static generation for one string.
+  const [nextParam] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("next"),
+  );
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -62,8 +84,7 @@ export default function LoginPage() {
       }
 
       toast.success("Welcome back!");
-      const dest = body.role === "ADMIN" ? "/admin/dashboard" : body.role === "HANDYMAN" ? "/handyman/dashboard" : "/customer/dashboard";
-      router.push(dest);
+      router.push(safeNext(nextParam, body.role));
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Login failed");
     } finally {
@@ -112,8 +133,7 @@ export default function LoginPage() {
       const body = await res.json();
       if (!res.ok) throw new Error(body.error || "Verification failed");
       toast.success("Welcome back!");
-      const dest = body.role === "ADMIN" ? "/admin/dashboard" : body.role === "HANDYMAN" ? "/handyman/dashboard" : "/customer/dashboard";
-      router.push(dest);
+      router.push(safeNext(nextParam, body.role));
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Verification failed");
       setOtp(Array(OTP_LENGTH).fill(""));

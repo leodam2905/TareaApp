@@ -16,7 +16,13 @@ async function getVerifiedRole(token: string): Promise<string | null> {
 
 function redirectToLogin(req: NextRequest) {
   const url = req.nextUrl.clone();
+  // Carry the intended destination. Without it, someone who clicks "Diagnose my
+  // issue" signs in and lands on the dashboard — the thing they asked for is
+  // gone, and nothing on the page explains why.
+  const intended = req.nextUrl.pathname + req.nextUrl.search;
   url.pathname = "/login";
+  url.search = "";
+  url.searchParams.set("next", intended);
   return NextResponse.redirect(url);
 }
 
