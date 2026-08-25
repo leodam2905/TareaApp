@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
-import { normalizeLicenceNumber, lookupLicence, type LicenceIssuer } from "@/lib/license-check";
+import { normalizeLicenceNumber, lookupLicence, licenceLookupUrl, compareLicenseeName, type LicenceIssuer } from "@/lib/license-check";
 import { CREDENTIAL_SELECT, credentialViews } from "@/lib/credentials";
 
 // Checks a contractor licence number before it goes to admin review.
@@ -44,10 +44,21 @@ export async function POST(req: NextRequest) {
 
   const registry = await lookupLicence(number, issuer);
 
+  // Compared against the pro's own name — a number alone proves nothing when
+  // licence numbers are public record.
+  const nameMatch = compareLicenseeName(
+    typeof body?.licenseeName === "string" ? body.licenseeName : mine?.licenseeName,
+    user.name,
+  );
+
   return NextResponse.json({
     ok: true,
     number,
     issuer,
+    nameMatch,
+    // One click for the reviewer; retyping a number is how digits get
+    // transposed and the wrong contractor gets approved.
+    lookupUrl: licenceLookupUrl(number, issuer),
     // Our own record of THIS pro's licence.
     onFile: own
       ? { status: own.status, valid: own.valid, expiresAt: own.expiresAt, expiringSoon: own.expiringSoon }
@@ -57,7 +68,7 @@ export async function POST(req: NextRequest) {
     // is fine". Clients must not treat the two the same.
     registry,
     // What actually happens next, in one word the client can render.
-    next: claimedByOther
+    next: claimedByOther || nameMatch === "mismatch"
       ? "blocked"
       : registry.checked && registry.status && registry.status !== "active"
         ? "blocked"

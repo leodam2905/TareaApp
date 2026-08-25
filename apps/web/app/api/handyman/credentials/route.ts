@@ -75,6 +75,9 @@ export async function POST(req: NextRequest) {
     data.licenseReviewNote = null;
     if (!expiry.absent) data.licenseExpiresAt = expiry.value;
     if (typeof body.number === "string") data.licenseNumber = body.number.trim() || null;
+    // Who the licence belongs to. Without it a reviewer has a number and no way
+    // to tell whose it is — and licence numbers are public record.
+    if (typeof body.licenseeName === "string") data.licenseeName = body.licenseeName.trim() || null;
     if (typeof body.issuer === "string") data.licenseIssuer = body.issuer.trim() || null;
   } else {
     data.insuranceDocUrl = docUrl;

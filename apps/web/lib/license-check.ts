@@ -84,3 +84,53 @@ export async function lookupLicence(number: string, issuer: LicenceIssuer): Prom
     return { checked: false, error: (err as Error)?.message?.slice(0, 120) };
   }
 }
+
+/**
+ * Public lookup URL for a licence, so a reviewer can check it in one click
+ * instead of retyping a number into a search box — retyping is where digits get
+ * transposed and the wrong contractor gets approved.
+ *
+ * Overridable because CSLB has changed this path before and a dead link in the
+ * admin queue is worse than none: it looks like verification happened.
+ */
+export function licenceLookupUrl(number: string, issuer: LicenceIssuer): string | null {
+  if (issuer !== "CSLB") return null;
+  const base = process.env.CSLB_LOOKUP_PAGE
+    ?? "https://www.cslb.ca.gov/OnlineServices/CheckLicenseII/LicenseDetail.aspx";
+  return `${base}?LicNum=${encodeURIComponent(number)}`;
+}
+
+/** How a claimed licensee name compares to the pro's own name. */
+export type NameMatch = "match" | "partial" | "mismatch" | "unknown";
+
+const normalizeName = (s: string) =>
+  s.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+    // Business suffixes are noise: "Dah Plumbing LLC" and "Leonce Dah" are
+    // routinely the same person, and a licence is often held in a trade name.
+    .replace(/\b(llc|inc|corp|co|company|construction|plumbing|electric|electrical|services|service|and|&)\b/g, " ")
+    .replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+
+/**
+ * Compares the name on the licence with the pro's account name.
+ *
+ * Deliberately NOT a pass/fail gate. A licence legitimately sits in a spouse's
+ * name, a trade name, or a maiden name, so a mismatch is a prompt for the
+ * reviewer to ask — not an automatic rejection. It exists so the reviewer is
+ * told where to look, which is more than they had before.
+ */
+export function compareLicenseeName(licenseeName: string | null | undefined, proName: string | null | undefined): NameMatch {
+  if (!licenseeName?.trim() || !proName?.trim()) return "unknown";
+  const a = normalizeName(licenseeName);
+  const b = normalizeName(proName);
+  if (!a || !b) return "unknown";
+  if (a === b) return "match";
+  // Arrays rather than Sets: this file is compiled against an ES5 target and
+  // spreading a Set needs downlevelIteration.
+  const at = a.split(" ").filter((w, i, arr) => w.length > 1 && arr.indexOf(w) === i);
+  const bt = b.split(" ").filter((w, i, arr) => w.length > 1 && arr.indexOf(w) === i);
+  const shared = at.filter((w) => bt.includes(w));
+  // A shared surname is the common legitimate case; no shared token at all is
+  // the one worth flagging.
+  if (shared.length === 0) return "mismatch";
+  return shared.length >= Math.min(at.length, bt.length) ? "match" : "partial";
+}

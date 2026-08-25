@@ -18,6 +18,7 @@ export const STORED_STATUSES: StoredStatus[] = ["none", "pending", "approved", "
 /** The subset of HandymanProfile this module reads. */
 export interface CredentialFields {
   licenseNumber: string | null;
+  licenseeName: string | null;
   licenseDocUrl: string | null;
   licenseIssuer: string | null;
   licenseStatus: string;
@@ -48,6 +49,8 @@ export interface CredentialView {
   daysUntilExpiry: number | null;
   // Licence only.
   number?: string | null;
+  /** Name as printed on the licence — what a reviewer matches against. */
+  licenseeName?: string | null;
   issuer?: string | null;
   // Insurance only.
   provider?: string | null;
@@ -57,6 +60,7 @@ export interface CredentialView {
 /** Select clause so callers pull exactly these columns and nothing else. */
 export const CREDENTIAL_SELECT = {
   licenseNumber: true,
+  licenseeName: true,
   licenseDocUrl: true,
   licenseIssuer: true,
   licenseStatus: true,
@@ -132,6 +136,7 @@ export function credentialViews(p: CredentialFields, now: Date = new Date()): {
   return {
     license: view("license", p.licenseStatus, p.licenseDocUrl, p.licenseExpiresAt, p.licenseReviewedAt, p.licenseReviewNote, {
       number: p.licenseNumber,
+      licenseeName: p.licenseeName,
       issuer: p.licenseIssuer,
     }, now),
     insurance: view("insurance", p.insuranceStatus, p.insuranceDocUrl, p.insuranceExpiresAt, p.insuranceReviewedAt, p.insuranceReviewNote, {

@@ -227,6 +227,11 @@ model HandymanProfile {
   // (see lib/credentials.ts) so a lapsed licence stops counting the moment it
   // lapses, with no cron to run and nothing to keep in sync.
   licenseNumber         String?
+  // The name AS PRINTED ON THE LICENCE. Licence numbers are public record, so
+  // a number alone proves nothing — anyone can type a real contractor's. This
+  // is what a reviewer compares against the pro's own name, and it is the only
+  // thing standing between a badge and impersonation.
+  licenseeName          String?
   licenseDocUrl         String?
   licenseIssuer         String?   // issuing authority, e.g. "CSLB" / "TX TDLR"
   licenseStatus         String    @default("none")

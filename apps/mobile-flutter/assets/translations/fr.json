@@ -636,7 +636,10 @@
     "replace": "Remplacer",
     "statusExpired": "Expiré — envoyez un renouvellement",
     "credExpires": "Valable jusqu'au {}",
-    "credExpiresSoon": "Expire le {} — envoyez un renouvellement"
+    "credExpiresSoon": "Expire le {} — envoyez un renouvellement",
+    "licenseeTitle": "Nom sur la licence",
+    "licenseeHelp": "Saisissez le nom exactement comme il figure sur la licence. Il peut s'agir d'une société ou d'un nom commercial.",
+    "licenseeHint": "ex. Leonce Dah ou Dah Plomberie SARL"
   },
   "diagnose": {
     "title": "Diagnostic IA",

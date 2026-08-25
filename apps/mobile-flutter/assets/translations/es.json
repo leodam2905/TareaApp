@@ -636,7 +636,10 @@
     "replace": "Reemplazar",
     "statusExpired": "Vencido — sube una renovación",
     "credExpires": "Válido hasta el {}",
-    "credExpiresSoon": "Vence el {} — sube una renovación"
+    "credExpiresSoon": "Vence el {} — sube una renovación",
+    "licenseeTitle": "Nombre en la licencia",
+    "licenseeHelp": "Escribe el nombre tal como aparece en la licencia. Puede ser una empresa o nombre comercial.",
+    "licenseeHint": "p. ej. Leonce Dah o Dah Plomería LLC"
   },
   "diagnose": {
     "title": "Diagnóstico IA",

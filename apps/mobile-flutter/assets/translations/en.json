@@ -636,7 +636,10 @@
     "replace": "Replace",
     "statusExpired": "Expired — upload a renewal",
     "credExpires": "Valid until {}",
-    "credExpiresSoon": "Expires {} — upload a renewal"
+    "credExpiresSoon": "Expires {} — upload a renewal",
+    "licenseeTitle": "Name on the licence",
+    "licenseeHelp": "Enter the name exactly as it appears on the licence. It can be a company or trade name.",
+    "licenseeHint": "e.g. Leonce Dah or Dah Plumbing LLC"
   },
   "diagnose": {
     "title": "AI Diagnose",

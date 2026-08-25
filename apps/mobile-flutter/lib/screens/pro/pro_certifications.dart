@@ -19,6 +19,8 @@ class ProCertifications extends StatefulWidget {
 }
 
 class _ProCertificationsState extends State<ProCertifications> {
+  /// The pro's own name, used to pre-fill the licensee prompt.
+  String _proName = '';
   Map<String, dynamic> _license = const {};
   Map<String, dynamic> _insurance = const {};
   bool _loading = true;
@@ -29,8 +31,42 @@ class _ProCertificationsState extends State<ProCertifications> {
   @override
   void initState() { super.initState(); _load(); }
 
+  /// Asks for the name printed on the licence, defaulting to the pro's own —
+  /// which is the answer most of the time, and pre-filling it means the
+  /// unusual case (a trade name, a company) is the one they have to type.
+  Future<String?> _askLicenseeName() async {
+    final ctrl = TextEditingController(text: _proName);
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('proEdit.licenseeTitle'.tr()),
+        content: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text('proEdit.licenseeHelp'.tr(), style: const TextStyle(color: C.muted, fontSize: 13)),
+          const SizedBox(height: 12),
+          TextField(
+            controller: ctrl,
+            autofocus: true,
+            textCapitalization: TextCapitalization.words,
+            decoration: InputDecoration(hintText: 'proEdit.licenseeHint'.tr()),
+          ),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('common.cancel'.tr())),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
+            child: Text('common.continue'.tr(), style: const TextStyle(fontWeight: FontWeight.w800)),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _load() async {
     try {
+      final me = await Api.get('/profile');
+      if (me.statusCode == 200) {
+        _proName = ((jsonDecode(me.body) as Map)['name'] ?? '').toString();
+      }
       final res = await Api.get('/handyman/credentials');
       if (res.statusCode == 200) {
         final d = jsonDecode(res.body) as Map<String, dynamic>;
@@ -56,6 +92,15 @@ class _ProCertificationsState extends State<ProCertifications> {
     final path = result?.files.single.path;
     if (path == null) return;
 
+    // A licence number is public record, so the number alone proves nothing —
+    // ask whose licence it is. The reviewer compares this against the pro's
+    // own name; without it they have a number and no way to tell.
+    String? licenseeName;
+    if (kind == 'license') {
+      licenseeName = await _askLicenseeName();
+      if (licenseeName == null) return; // cancelled — do not upload half a claim
+    }
+
     setState(() => _busyKind = kind);
     try {
       final up = await Api.uploadDoc(path);
@@ -68,7 +113,11 @@ class _ProCertificationsState extends State<ProCertifications> {
         _toast('proEdit.uploadDocFailed'.tr());
         return;
       }
-      final save = await Api.post('/handyman/credentials', {'kind': kind, 'docUrl': url});
+      final save = await Api.post('/handyman/credentials', {
+        'kind': kind,
+        'docUrl': url,
+        if (licenseeName != null && licenseeName.isNotEmpty) 'licenseeName': licenseeName,
+      });
       if (save.statusCode >= 200 && save.statusCode < 300) {
         _toast('proEdit.docSubmitted'.tr());
         await _load();

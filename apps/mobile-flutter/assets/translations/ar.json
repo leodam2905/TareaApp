@@ -636,7 +636,10 @@
     "replace": "استبدال",
     "statusExpired": "منتهية الصلاحية — ارفع نسخة مجددة",
     "credExpires": "صالحة حتى {}",
-    "credExpiresSoon": "تنتهي في {} — ارفع نسخة مجددة"
+    "credExpiresSoon": "تنتهي في {} — ارفع نسخة مجددة",
+    "licenseeTitle": "الاسم على الرخصة",
+    "licenseeHelp": "أدخل الاسم كما يظهر تمامًا على الرخصة. يمكن أن يكون اسم شركة أو اسمًا تجاريًا.",
+    "licenseeHint": "مثال: Leonce Dah أو Dah Plumbing LLC"
   },
   "diagnose": {
     "title": "تشخيص بالذكاء الاصطناعي",
