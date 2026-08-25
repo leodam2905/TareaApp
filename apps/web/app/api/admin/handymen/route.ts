@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { credentialViews } from "@/lib/credentials";
 
 export async function GET() {
   const admin = await getCurrentUser();
@@ -35,6 +36,9 @@ export async function GET() {
     licenseNumber: h.licenseNumber,
     licenseDocUrl: h.licenseDocUrl,
     insuranceDocUrl: h.insuranceDocUrl,
+    // Per-document decisions, with expiry already applied. Kept alongside the
+    // raw URLs above because the admin page still links straight to the files.
+    credentials: credentialViews(h),
     icaSignedAt: h.icaSignedAt,
     icaSignedIp: h.icaSignedIp,
     user: h.user,

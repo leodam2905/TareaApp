@@ -22,7 +22,12 @@ class _ProProfileState extends State<ProProfile> {
   int _reviews = 0;
   int _pct = 0;
   bool _verified = false;
+  // Licence and insurance are separate credentials with separate decisions and
+  // separate expiry dates, so they get separate badges. Both used to be driven
+  // by one flag that meant "two files exist", which showed Insured to a pro who
+  // had only ever uploaded a licence.
   bool _licensed = false;
+  bool _insured = false;
   bool _available = false;
   bool _busy = false;
   List<dynamic> _services = [];
@@ -44,7 +49,12 @@ class _ProProfileState extends State<ProProfile> {
         _rating = ((hp['rating']) as num?)?.toDouble() ?? 0;
         _jobs = (hp['totalJobs'] ?? 0) as int;
         _available = hp['isAvailable'] == true;
-        _licensed = (hp['licenseDocUrl'] != null && hp['insuranceDocUrl'] != null);
+        // `badges` is computed server-side (lib/credentials.ts): approved by an
+        // admin AND not past its expiry. Reading the document URL instead lit
+        // the badge for any uploaded file, reviewed or not.
+        final badges = hp['badges'] ?? {};
+        _licensed = badges['licensed'] == true;
+        _insured = badges['insured'] == true;
         _services = (hp['services'] as List?) ?? [];
         _city = _city.isEmpty ? (hp['city'] ?? '').toString() : _city;
         _state = _state.isEmpty ? (hp['state'] ?? '').toString() : _state;
@@ -172,7 +182,7 @@ class _ProProfileState extends State<ProProfile> {
                   Container(width: 1, height: 20, color: C.line),
                   _badge(Icons.badge_outlined, C.blue, 'proProfile.licensed'.tr(), _licensed),
                   Container(width: 1, height: 20, color: C.line),
-                  _badge(Icons.shield_outlined, C.blue, 'proProfile.insured'.tr(), _licensed),
+                  _badge(Icons.shield_outlined, C.blue, 'proProfile.insured'.tr(), _insured),
                 ]),
                 const SizedBox(height: 18),
                 // Stats

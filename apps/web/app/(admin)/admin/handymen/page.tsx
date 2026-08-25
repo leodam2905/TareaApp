@@ -15,6 +15,21 @@ type Checklist = {
   stripe: boolean;
 };
 
+type Credential = {
+  kind: "license" | "insurance";
+  status: "none" | "pending" | "approved" | "rejected" | "expired";
+  docUrl: string | null;
+  expiresAt: string | null;
+  reviewNote: string | null;
+  valid: boolean;
+  expiringSoon: boolean;
+  daysUntilExpiry: number | null;
+  number?: string | null;
+  issuer?: string | null;
+  provider?: string | null;
+  policyNumber?: string | null;
+};
+
 type Handyman = {
   id: string;
   rating: number;
@@ -28,6 +43,7 @@ type Handyman = {
   licenseNumber: string | null;
   licenseDocUrl: string | null;
   insuranceDocUrl: string | null;
+  credentials: { license: Credential; insurance: Credential };
   icaSignedAt: string | null;
   icaSignedIp: string | null;
   user: { name: string; email: string; avatarUrl: string | null; isVerified: boolean; stripeAccountStatus: string | null };
@@ -52,6 +68,14 @@ const BG_COLORS: Record<string, string> = {
   FAILED:      "bg-red-500/20 text-red-400 border-red-500/30",
 };
 
+const CRED_COLORS: Record<string, string> = {
+  none:     "bg-slate-500/20 text-slate-400 border-slate-500/30",
+  pending:  "bg-amber-500/20 text-amber-400 border-amber-500/30",
+  approved: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+  rejected: "bg-red-500/20 text-red-400 border-red-500/30",
+  expired:  "bg-red-500/20 text-red-400 border-red-500/30",
+};
+
 function DocLink({ url, label }: { url: string | null; label: string }) {
   if (!url) return <span className="text-slate-600 text-xs">—</span>;
   return (
@@ -68,6 +92,10 @@ export default function AdminHandymenPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("ALL");
   const [expanded, setExpanded] = useState<string | null>(null);
+  // A rejection has to say why — the pro is shown the note — so rejecting opens
+  // an inline box rather than firing straight off the button.
+  const [rejecting, setRejecting] = useState<{ id: string; kind: "license" | "insurance" } | null>(null);
+  const [note, setNote] = useState("");
 
   useEffect(() => {
     fetch("/api/admin/handymen").then(r => r.json()).then(data => {
@@ -91,6 +119,33 @@ export default function AdminHandymenPage() {
     } else {
       toast.error("Action failed");
     }
+  };
+
+  /**
+   * Approve or reject ONE credential. Separate from verify() above, which is
+   * the identity decision — a licence says nothing about who someone is, so
+   * this grants the Licensed or Insured badge and nothing else.
+   */
+  const reviewCredential = async (
+    id: string,
+    kind: "license" | "insurance",
+    decision: "approve" | "reject",
+    reason?: string,
+  ) => {
+    const res = await fetch(`/api/admin/credentials/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ kind, decision, note: reason }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      toast.error(data.error || "Action failed");
+      return;
+    }
+    toast.success(decision === "approve" ? `${kind === "license" ? "License" : "Insurance"} approved` : "Rejected — the pro has been told why");
+    setHandymen(prev => prev.map(h => h.id !== id ? h : { ...h, credentials: data.credentials }));
+    setRejecting(null);
+    setNote("");
   };
 
   const filtered = handymen.filter(h => {
@@ -250,19 +305,86 @@ export default function AdminHandymenPage() {
                         <span className="text-slate-400">Gov ID Back</span>
                         <DocLink url={h.idBackUrl} label="View" />
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-400">License #</span>
-                        <span className="text-white text-xs font-mono">{h.licenseNumber || "—"}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-400">License Doc</span>
-                        <DocLink url={h.licenseDocUrl} label="View" />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-400">Insurance Cert</span>
-                        <DocLink url={h.insuranceDocUrl} label="View" />
-                      </div>
                     </div>
+
+                    {/* Licence and insurance — reviewed one at a time, because a
+                        current licence and a lapsed insurance certificate are
+                        two different facts about the same pro. */}
+                    <p className="text-white text-sm font-semibold pt-2">Credentials</p>
+                    {(["license", "insurance"] as const).map(kind => {
+                      const c = h.credentials?.[kind];
+                      if (!c) return null;
+                      const title = kind === "license" ? "License" : "Insurance";
+                      const isRejecting = rejecting?.id === h.id && rejecting.kind === kind;
+                      return (
+                        <div key={kind} className="rounded-xl border border-white/10 p-3 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-white text-sm font-medium">{title}</span>
+                            <span className={`px-2 py-0.5 rounded-lg border text-[11px] font-semibold ${CRED_COLORS[c.status]}`}>
+                              {c.status}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-slate-400">Document</span>
+                            <DocLink url={c.docUrl} label="View" />
+                          </div>
+                          {kind === "license" && (
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-slate-400">License #</span>
+                              <span className="text-white text-xs font-mono">{c.number || "—"}</span>
+                            </div>
+                          )}
+                          {kind === "insurance" && (
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-slate-400">Policy #</span>
+                              <span className="text-white text-xs font-mono">{c.policyNumber || "—"}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-slate-400">Expires</span>
+                            <span className={`text-xs ${c.status === "expired" || c.expiringSoon ? "text-amber-400" : "text-white"}`}>
+                              {c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : "—"}
+                            </span>
+                          </div>
+                          {c.status === "rejected" && c.reviewNote && (
+                            <p className="text-red-400 text-xs">{c.reviewNote}</p>
+                          )}
+
+                          {c.docUrl && !isRejecting && (
+                            <div className="flex gap-2 pt-1">
+                              <button onClick={() => reviewCredential(h.id, kind, "approve")}
+                                className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 text-xs font-semibold transition-all">
+                                <CheckCircle2 className="w-3.5 h-3.5" /> Approve
+                              </button>
+                              <button onClick={() => { setRejecting({ id: h.id, kind }); setNote(""); }}
+                                className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 text-xs font-semibold transition-all">
+                                <XCircle className="w-3.5 h-3.5" /> Reject
+                              </button>
+                            </div>
+                          )}
+
+                          {isRejecting && (
+                            <div className="space-y-2 pt-1">
+                              <textarea value={note} onChange={e => setNote(e.target.value)}
+                                placeholder="Why is this being rejected? The pro sees this."
+                                rows={2}
+                                className="w-full rounded-lg bg-black/30 border border-white/10 px-2.5 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-tarea-sky" />
+                              <div className="flex gap-2">
+                                <button disabled={!note.trim()}
+                                  onClick={() => reviewCredential(h.id, kind, "reject", note.trim())}
+                                  className="flex-1 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 text-xs font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+                                  Confirm rejection
+                                </button>
+                                <button onClick={() => { setRejecting(null); setNote(""); }}
+                                  className="px-3 py-1.5 rounded-lg border border-white/10 text-slate-400 hover:text-white text-xs font-semibold transition-all">
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
 
                   {/* ICA + Actions */}

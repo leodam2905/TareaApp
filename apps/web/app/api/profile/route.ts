@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { credentialBadges, credentialViews } from "@/lib/credentials";
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -11,7 +12,21 @@ export async function GET() {
     include: { handymanProfile: { include: { services: true, availability: true } } },
   });
 
-  return NextResponse.json(profile);
+  if (!profile?.handymanProfile) return NextResponse.json(profile);
+
+  // Licence and insurance carry a decision and an expiry, neither of which is
+  // readable from the raw columns — `licenseStatus: "approved"` on a document
+  // that lapsed last week is still not a licence. The clients read `badges`
+  // rather than deriving it, so expiry is applied in exactly one place.
+  const hp = profile.handymanProfile;
+  return NextResponse.json({
+    ...profile,
+    handymanProfile: {
+      ...hp,
+      credentials: credentialViews(hp),
+      badges: credentialBadges(hp),
+    },
+  });
 }
 
 export async function PATCH(req: NextRequest) {
