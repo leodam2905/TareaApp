@@ -46,7 +46,18 @@ export async function POST(req: NextRequest) {
     // reviewers can sign in without a phone). Admin and personal accounts are
     // intentionally NOT here — they must complete OTP (2FA). Set
     // DISABLE_REVIEW_OTP_BYPASS=true to turn this off entirely (no redeploy).
-    const REVIEW_ACCOUNTS = ["reviewer@taptarea.com", "test@taptarea.com", "ahissezirignon@gmail.com"];
+    // The delete-* pair exists so Guideline 5.1.1 can be demonstrated WITHOUT
+    // destroying the demo login. Account deletion here is a permanent erase, and
+    // a reviewer following the deletion instructions on the main demo account
+    // takes it with them: ahissezirignon@gmail.com was erased on 2026-07-15 and
+    // the Pro review info pointed at a ghost for six weeks afterwards.
+    const REVIEW_ACCOUNTS = [
+      "reviewer@taptarea.com",        // Tarea Home — explore the app
+      "test@taptarea.com",            // Tarea Pro — explore the app
+      "delete-me@taptarea.com",       // Tarea Home — deletion demo, expendable
+      "delete-me-pro@taptarea.com",   // Tarea Pro — deletion demo, expendable
+      "ahissezirignon@gmail.com",     // deleted 2026-07-15; kept so a recreated account still works
+    ];
     if (process.env.DISABLE_REVIEW_OTP_BYPASS !== "true" && REVIEW_ACCOUNTS.includes(user.email)) {
       const token = signToken({ userId: user.id, email: user.email, role: user.role });
       setAuthCookie(token);
