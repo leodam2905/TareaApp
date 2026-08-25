@@ -70,7 +70,13 @@
 .tareaLanding .heroShapeOne { width: 470px; height: 470px; right: 0; top: 32px; background: var(--mint-deep); }
 .tareaLanding .heroShapeTwo { width: 130px; height: 130px; left: -18px; bottom: 28px; background: rgba(239,121,95,.17); }
 .tareaLanding .imageFrame { position: absolute; inset: 24px 14px 8px 32px; overflow: hidden; border: 9px solid rgba(255,255,255,.62); border-radius: 48% 48% 28px 28px; box-shadow: var(--shadow); background: linear-gradient(145deg, #dff0e9, #f3d0bd); }
-.tareaLanding .imageFrame img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: 63% center; }
+.tareaLanding .imageFrame img, .tareaLanding .imageFrame video { width: 100%; height: 100%; display: block; object-fit: cover; object-position: 63% center; }
+/* Someone who has asked their OS to reduce motion should not be handed an
+   autoplaying loop. The poster frame stands in. */
+@media (prefers-reduced-motion: reduce) {
+  .tareaLanding .imageFrame video { display: none; }
+  .tareaLanding .imageFrame { background-image: url("/tarea-hero-poster.jpg"); background-size: cover; background-position: 63% center; }
+}
 .tareaLanding .floatCard { position: absolute; z-index: 3; display: flex; align-items: center; gap: 12px; padding: 15px 17px; border: 1px solid rgba(20,63,58,.08); border-radius: 16px; background: rgba(255,253,248,.94); box-shadow: 0 17px 38px rgba(17,66,60,.15); backdrop-filter: blur(12px); }
 .tareaLanding .floatCard small { display: block; margin-bottom: 4px; color: var(--teal); font-size: 9px; font-weight: 880; letter-spacing: .12em; }
 .tareaLanding .floatCard strong { display: block; font-size: 13px; }
@@ -321,3 +327,13 @@
 .tareaLanding *, .tareaLanding *::before, .tareaLanding *::after { transition: none !important; }
 }
 
+
+/* Legal links in the footer bar. Kept quiet but reachable: both app stores
+   require a working privacy policy link, and the ZenTarea section above makes a
+   $5,000 promise that has to lead to the document defining its limits. */
+.tareaLanding .footerLegal { display: flex; flex-wrap: wrap; gap: 18px; }
+.tareaLanding .footerLegal a { color: inherit; text-decoration: none; opacity: .85; }
+.tareaLanding .footerLegal a:hover { opacity: 1; text-decoration: underline; }
+@media (max-width: 700px) {
+  .tareaLanding .footerLegal { gap: 12px; justify-content: center; }
+}

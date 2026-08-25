@@ -126,7 +126,21 @@ export default function Home() {
           <div className="heroShape heroShapeOne" />
           <div className="heroShape heroShapeTwo" />
           <div className="imageFrame">
-            <img src="/tarea-hero.png" alt="A homeowner and local repair professional reviewing a cabinet repair together" />
+            {/* Muted + playsInline are not stylistic: browsers refuse to
+                autoplay anything with sound, and without playsInline iOS
+                Safari takes the video fullscreen the moment it starts.
+                The poster shows instantly and is what remains if the video
+                cannot play at all. */}
+            <video
+              src="/tarea-hero.mp4"
+              poster="/tarea-hero-poster.jpg"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-label="A local repair professional at work"
+            />
           </div>
           <div className="floatCard diagnosisCard">
             <span className="floatIcon">✦</span>
@@ -268,7 +282,7 @@ export default function Home() {
             <p className="sectionKicker coralKicker">FOR SKILLED PROS</p>
             <h2 id="pros-title">Local work. Clear pricing. A reputation that grows.</h2>
             <p>Receive relevant local opportunities based on your categories, service area, and availability. Tarea sets the labor price. Customers choose the Pro.</p>
-            <a className="button buttonCoral" href="#top">Become a Tarea Pro <Arrow /></a>
+            <Link className="button buttonCoral" href="/register?role=handyman">Become a Tarea Pro <Arrow /></Link>
           </div>
           <div className="proBenefits" aria-label="Benefits for Tarea Pros">
             <article className="proBenefitCard">
@@ -310,11 +324,11 @@ export default function Home() {
             <p>The Tarea app keeps your diagnosis, matched Pros, schedule, messages, and receipts close at hand.</p>
           </div>
           <div className="storeButtons" aria-label="Download the Tarea app">
-            <a className="storeBadge appleBadge" href="#top" aria-label="Download Tarea on the App Store">
+            <a className="storeBadge appleBadge" href="https://apps.apple.com/app/id6784023441" target="_blank" rel="noopener noreferrer" aria-label="Download Tarea on the App Store">
               <span className="appleMark" aria-hidden="true"></span>
               <span><small>Download on the</small><strong>App Store</strong></span>
             </a>
-            <a className="storeBadge playBadge" href="#top" aria-label="Get Tarea on Google Play">
+            <a className="storeBadge playBadge" href="https://play.google.com/store/apps/details?id=com.taptarea.customer" target="_blank" rel="noopener noreferrer" aria-label="Get Tarea on Google Play">
               <span className="playMark" aria-hidden="true"><i /></span>
               <span><small>GET IT ON</small><strong>Google Play</strong></span>
             </a>
@@ -326,10 +340,21 @@ export default function Home() {
         <div className="shell footerMain">
           <div className="footerBrand"><Logo /><p>The smarter way to get home repairs done.<br />Fixed labor prices. Qualified local Pros.<br />You&apos;re in control.</p></div>
           <div><strong>Customers</strong><a href="#diagnosis">Diagnose an issue</a><a href="#services">Browse services</a><a href="#choice">Choose a Pro</a></div>
-          <div><strong>Pros</strong><a href="#pros">Become a Pro</a><a href="#pros">How matching works</a><a href="#pros">Pro resources</a></div>
-          <div><strong>Company</strong><a href="#top">About Tarea</a><a href="#top">Trust &amp; safety</a><a href="#zentarea">Disputes &amp; resolutions</a><a href="#top">Help center</a></div>
+          <div><strong>Pros</strong><Link href="/register?role=handyman">Become a Pro</Link><a href="#pros">How matching works</a><Link href="/handyman/onboarding">Pro resources</Link></div>
+          <div><strong>Company</strong><Link href="/contact">About Tarea</Link><Link href="/guarantee">Trust &amp; safety</Link><Link href="/guarantee">Disputes &amp; resolutions</Link><Link href="/contact">Help center</Link></div>
         </div>
-        <div className="shell footerBottom"><span>© 2026 Tarea. All rights reserved.</span><span>Home repairs made simple.</span></div>
+        <div className="shell footerBottom">
+          <span>© 2026 Tarea. All rights reserved.</span>
+          {/* Both stores require a reachable privacy policy, and the guarantee
+              page is where the $5,000 cap, exclusions and claim deadline live —
+              the section above promises it, so it has to be one click away. */}
+          <span className="footerLegal">
+            <Link href="/terms">Terms</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/guarantee">ZenTarea Guarantee</Link>
+            <Link href="/contact">Contact</Link>
+          </span>
+        </div>
       </footer>
     </main>
   );
