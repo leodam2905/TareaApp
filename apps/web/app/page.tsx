@@ -271,6 +271,7 @@ export default function Home() {
             <span><i>✓</i><strong>Support-led review</strong><small>A clear path to report an issue</small></span>
             <span><i>✓</i><strong>Dispute support</strong><small>Report concerns from the job record for review</small></span>
             <span><i>✓</i><strong>Defined coverage cap</strong><small>Limits and exclusions are stated in the terms</small></span>
+            <span><i>✓</i><strong>Payments processed by Stripe</strong><small>Tarea never receives or stores your card number</small></span>
           </div>
           <p className="zenTerms">Eligibility requirements, coverage limits, exclusions, and claim deadlines apply.</p>
         </div>
@@ -345,6 +346,10 @@ export default function Home() {
         </div>
         <div className="shell footerBottom">
           <span>© 2026 Tarea. All rights reserved.</span>
+          <span className="footerTrust">
+            Payments are processed by Stripe. Tarea never receives or stores your card number,
+            and pro payouts go directly through Stripe — Tarea never sees bank details.
+          </span>
           {/* Both stores require a reachable privacy policy, and the guarantee
               page is where the $5,000 cap, exclusions and claim deadline live —
               the section above promises it, so it has to be one click away. */}

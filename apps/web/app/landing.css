@@ -337,3 +337,9 @@
 @media (max-width: 700px) {
   .tareaLanding .footerLegal { gap: 12px; justify-content: center; }
 }
+
+/* Payment trust note. Deliberately quiet: it reassures at the moment somebody
+   is deciding to type a card, and is not a selling point competing with the
+   things that actually win a booking. */
+.tareaLanding .footerTrust { flex-basis: 100%; margin-top: 6px; font-size: 12px; line-height: 1.6; opacity: .7; }
+@media (max-width: 700px) { .tareaLanding .footerTrust { text-align: center; } }
