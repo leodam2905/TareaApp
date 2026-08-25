@@ -28,6 +28,9 @@ export interface CredentialFields {
   insuranceDocUrl: string | null;
   insuranceProvider: string | null;
   insurancePolicyNumber: string | null;
+  insuranceNamedInsured: string | null;
+  insurancePerOccurrence: number | null;
+  insuranceAggregate: number | null;
   insuranceStatus: string;
   insuranceExpiresAt: Date | null;
   insuranceReviewedAt: Date | null;
@@ -51,6 +54,12 @@ export interface CredentialView {
   number?: string | null;
   /** Name as printed on the licence — what a reviewer matches against. */
   licenseeName?: string | null;
+  // Insurance only.
+  namedInsured?: string | null;
+  perOccurrence?: number | null;
+  aggregate?: number | null;
+  /** False when a stated limit is below the ICA minimum. Null when unstated. */
+  meetsMinimums?: boolean | null;
   issuer?: string | null;
   // Insurance only.
   provider?: string | null;
@@ -70,6 +79,9 @@ export const CREDENTIAL_SELECT = {
   insuranceDocUrl: true,
   insuranceProvider: true,
   insurancePolicyNumber: true,
+  insuranceNamedInsured: true,
+  insurancePerOccurrence: true,
+  insuranceAggregate: true,
   insuranceStatus: true,
   insuranceExpiresAt: true,
   insuranceReviewedAt: true,
@@ -80,6 +92,24 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** A pro is warned this many days before a credential lapses. */
 export const EXPIRY_WARNING_DAYS = 30;
+
+// Straight from the ICA: "General Liability Insurance (minimum $1,000,000 per
+// occurrence / $2,000,000 aggregate)". Kept here so the number the contract
+// promises and the number the code enforces cannot drift apart.
+export const MIN_PER_OCCURRENCE = 1_000_000;
+export const MIN_AGGREGATE = 2_000_000;
+
+/**
+ * Whether stated limits clear the ICA minimums.
+ *
+ * Null when either limit is unstated — "nobody typed it in" is not the same as
+ * "the policy is too small", and collapsing them would either block honest pros
+ * or wave through unknown ones.
+ */
+export function meetsInsuranceMinimums(perOccurrence: number | null, aggregate: number | null): boolean | null {
+  if (perOccurrence == null || aggregate == null) return null;
+  return perOccurrence >= MIN_PER_OCCURRENCE && aggregate >= MIN_AGGREGATE;
+}
 
 /**
  * An approved document whose expiry has passed is `expired`, not `approved`.
@@ -142,6 +172,10 @@ export function credentialViews(p: CredentialFields, now: Date = new Date()): {
     insurance: view("insurance", p.insuranceStatus, p.insuranceDocUrl, p.insuranceExpiresAt, p.insuranceReviewedAt, p.insuranceReviewNote, {
       provider: p.insuranceProvider,
       policyNumber: p.insurancePolicyNumber,
+      namedInsured: p.insuranceNamedInsured,
+      perOccurrence: p.insurancePerOccurrence,
+      aggregate: p.insuranceAggregate,
+      meetsMinimums: meetsInsuranceMinimums(p.insurancePerOccurrence, p.insuranceAggregate),
     }, now),
   };
 }

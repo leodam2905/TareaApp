@@ -241,6 +241,14 @@ model HandymanProfile {
   insuranceDocUrl       String?
   insuranceProvider     String?
   insurancePolicyNumber String?
+  // Name as printed on the certificate. A COI is a one-page PDF that anybody
+  // can forward, so the named insured is the only thing tying it to THIS pro.
+  insuranceNamedInsured String?
+  // Limits in whole dollars, as stated on the ACORD form. Checked against the
+  // ICA minimums ($1M per occurrence / $2M aggregate) instead of eyeballed —
+  // a certificate for $100k looks exactly like one for $1M at a glance.
+  insurancePerOccurrence Int?
+  insuranceAggregate     Int?
   insuranceStatus       String    @default("none")
   insuranceExpiresAt    DateTime?
   insuranceReviewedAt   DateTime?

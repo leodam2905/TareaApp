@@ -87,6 +87,19 @@ export async function POST(req: NextRequest) {
     if (!expiry.absent) data.insuranceExpiresAt = expiry.value;
     if (typeof body.provider === "string") data.insuranceProvider = body.provider.trim() || null;
     if (typeof body.policyNumber === "string") data.insurancePolicyNumber = body.policyNumber.trim() || null;
+    // The named insured ties a forwardable one-page PDF to THIS pro.
+    if (typeof body.namedInsured === "string") data.insuranceNamedInsured = body.namedInsured.trim() || null;
+    // Limits arrive as whole dollars. A non-numeric value is rejected rather
+    // than coerced to 0, which would read as "no coverage" and reject a pro
+    // over a typo.
+    for (const [field, column] of [["perOccurrence", "insurancePerOccurrence"], ["aggregate", "insuranceAggregate"]] as const) {
+      if (body[field] === undefined || body[field] === null || body[field] === "") continue;
+      const n = Math.round(Number(body[field]));
+      if (!Number.isFinite(n) || n < 0) {
+        return NextResponse.json({ error: `${field} must be a whole dollar amount` }, { status: 400 });
+      }
+      data[column] = n;
+    }
   }
 
   const profile = await prisma.handymanProfile.update({
