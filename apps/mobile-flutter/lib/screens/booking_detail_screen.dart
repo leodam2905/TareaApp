@@ -396,8 +396,16 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
                       const Icon(Icons.lock_outline, size: 16, color: C.blue),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text('booking.payEscrow'.tr(),
-                            style: const TextStyle(color: C.blue, fontSize: 12.5, height: 1.4, fontWeight: FontWeight.w600)),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text('booking.payEscrow'.tr(),
+                              style: const TextStyle(color: C.blue, fontSize: 12.5, height: 1.4, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 4),
+                          // Said here rather than on Stripe's own page, where it
+                          // would be self-evident: the doubt about typing a card
+                          // happens before you tap, not after.
+                          Text('booking.payStripe'.tr(),
+                              style: const TextStyle(color: C.muted, fontSize: 11.5, height: 1.4)),
+                        ]),
                       ),
                     ]),
                   ),

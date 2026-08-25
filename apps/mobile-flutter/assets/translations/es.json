@@ -734,7 +734,8 @@
     "tipPromptBody": "El 100 % de la propina es para tu profesional.",
     "notNow": "Ahora no",
     "workPaused": "TRABAJO EN PAUSA",
-    "timerPausedNote": "Tu pro pausó el cronómetro"
+    "timerPausedNote": "Tu pro pausó el cronómetro",
+    "payStripe": "Los pagos con tarjeta los procesa Stripe. Tarea nunca recibe ni almacena tu número de tarjeta."
   },
   "instantQuote": {
     "title": "Cotización al instante",

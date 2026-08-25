@@ -734,7 +734,8 @@
     "tipPromptBody": "100 % du pourboire revient à votre pro.",
     "notNow": "Pas maintenant",
     "workPaused": "TRAVAIL EN PAUSE",
-    "timerPausedNote": "Votre pro a mis le chrono en pause"
+    "timerPausedNote": "Votre pro a mis le chrono en pause",
+    "payStripe": "Les paiements par carte sont traités par Stripe. Tarea ne reçoit ni ne conserve votre numéro de carte."
   },
   "instantQuote": {
     "title": "Devis instantané",
