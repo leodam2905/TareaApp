@@ -14,6 +14,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  // Without this, Next resolves Open Graph and canonical URLs relative to
+  // localhost at build time — the share previews Google and every social
+  // platform read would point at a machine nobody can reach.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://taptarea.com"),
   title: "Tarea — Find Trusted Handymen Near You",
   description:
     "Book skilled handymen for plumbing, electrical, carpentry, cleaning, and more. Fast, reliable, and affordable home services.",
