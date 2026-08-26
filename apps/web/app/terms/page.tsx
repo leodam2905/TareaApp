@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-tarea-ink text-slate-300">
+    <div className="min-h-screen bg-tarea-cream text-tarea-ink-muted">
       <div className="max-w-3xl mx-auto px-6 py-16">
 
         {/* Header */}
@@ -18,10 +18,10 @@ export default function TermsPage() {
           </Link>
           <div className="mt-6 mb-2">
             <p className="text-tarea-sky text-xs font-semibold uppercase tracking-widest mb-2">taptarea.com</p>
-            <h1 className="text-4xl font-extrabold text-white">Terms of Service</h1>
+            <h1 className="text-4xl font-extrabold text-tarea-ink">Terms of Service</h1>
           </div>
-          <p className="text-slate-500 text-sm mt-2">Effective Date: August 19, 2026 &nbsp;|&nbsp; Version 2.1</p>
-          <p className="text-slate-500 text-sm">Governing Law: State of California</p>
+          <p className="text-tarea-ink-subtle text-sm mt-2">Effective Date: August 19, 2026 &nbsp;|&nbsp; Version 2.1</p>
+          <p className="text-tarea-ink-subtle text-sm">Governing Law: State of California</p>
           <div className="mt-4 p-4 bg-amber-400/10 border border-amber-400/20 rounded-xl">
             <p className="text-amber-300 text-xs font-semibold leading-relaxed">IMPORTANT: PLEASE READ THESE TERMS CAREFULLY BEFORE USING THE TAREA PLATFORM. BY CREATING AN ACCOUNT OR USING ANY PART OF THE PLATFORM, YOU AGREE TO BE BOUND BY THESE TERMS. IF YOU DO NOT AGREE, DO NOT USE THE PLATFORM.</p>
           </div>
@@ -160,8 +160,8 @@ export default function TermsPage() {
           </Section>
 
           <Section title="16. Disclaimers and Limitations of Liability">
-            <p className="uppercase text-xs text-slate-400 leading-relaxed">THE PLATFORM IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. TAREA DOES NOT WARRANT THAT THE PLATFORM WILL BE UNINTERRUPTED, ERROR-FREE, OR THAT PROS WILL MEET YOUR EXPECTATIONS.</p>
-            <p className="uppercase text-xs text-slate-400 leading-relaxed mt-3">TO THE MAXIMUM EXTENT PERMITTED BY CALIFORNIA LAW, TAREA'S TOTAL LIABILITY TO YOU FOR ANY CLAIM SHALL NOT EXCEED THE GREATER OF: (A) THE TOTAL FEES PAID BY YOU TO TAREA IN THE THREE (3) MONTHS PRECEDING THE CLAIM, OR (B) $100.00. TAREA SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES.</p>
+            <p className="uppercase text-xs text-tarea-ink-muted leading-relaxed">THE PLATFORM IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. TAREA DOES NOT WARRANT THAT THE PLATFORM WILL BE UNINTERRUPTED, ERROR-FREE, OR THAT PROS WILL MEET YOUR EXPECTATIONS.</p>
+            <p className="uppercase text-xs text-tarea-ink-muted leading-relaxed mt-3">TO THE MAXIMUM EXTENT PERMITTED BY CALIFORNIA LAW, TAREA'S TOTAL LIABILITY TO YOU FOR ANY CLAIM SHALL NOT EXCEED THE GREATER OF: (A) THE TOTAL FEES PAID BY YOU TO TAREA IN THE THREE (3) MONTHS PRECEDING THE CLAIM, OR (B) $100.00. TAREA SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES.</p>
           </Section>
 
           <Section title="17. Dispute Resolution, Arbitration, and PAGA Waiver">
@@ -170,7 +170,7 @@ export default function TermsPage() {
             <h3>17.2 — Binding Arbitration</h3>
             <p>If informal resolution fails, any dispute arising out of or relating to these Terms shall be resolved by final and binding individual arbitration administered by JAMS under its Streamlined Arbitration Rules, or by the AAA under its Consumer Arbitration Rules. Arbitration shall take place in Los Angeles County, California, applying California law.</p>
             <h3>17.3 — Class Action Waiver</h3>
-            <p className="uppercase text-xs text-slate-400 leading-relaxed">YOU AND TAREA EACH WAIVE THE RIGHT TO A JURY TRIAL AND TO PARTICIPATE IN A CLASS ACTION, CLASS ARBITRATION, OR REPRESENTATIVE PROCEEDING. ALL DISPUTES MUST BE BROUGHT IN YOUR INDIVIDUAL CAPACITY ONLY.</p>
+            <p className="uppercase text-xs text-tarea-ink-muted leading-relaxed">YOU AND TAREA EACH WAIVE THE RIGHT TO A JURY TRIAL AND TO PARTICIPATE IN A CLASS ACTION, CLASS ARBITRATION, OR REPRESENTATIVE PROCEEDING. ALL DISPUTES MUST BE BROUGHT IN YOUR INDIVIDUAL CAPACITY ONLY.</p>
             <h3>17.4 — PAGA Waiver (California)</h3>
             <p>To the fullest extent permitted by California law, you waive any right to bring a representative action under the California Private Attorneys General Act (Labor Code § 2698 et seq.) on behalf of other individuals. If any court determines this waiver is unenforceable, any PAGA claim shall be severed from arbitration and litigated in a California court, with all other claims remaining in arbitration.</p>
             <h3>17.5 — Injunctive Relief</h3>
@@ -204,12 +204,12 @@ export default function TermsPage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-16 pt-8 border-t border-white/10 space-y-2">
-          <p className="text-slate-600 text-xs">Company: Tarea US LLC &nbsp;|&nbsp; Principal Office: 400 N Oakland Avenue, Apt 209, Pasadena, CA 91101 &nbsp;|&nbsp; Version 2.1 — Effective August 19, 2026</p>
-          <div className="flex gap-6 text-sm text-slate-500">
-            <Link href="/guarantee" className="hover:text-white transition-colors">ZenTarea Guarantee</Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="/" className="hover:text-white transition-colors">Back to Tarea</Link>
+        <div className="mt-16 pt-8 border-t border-tarea-border space-y-2">
+          <p className="text-tarea-ink-subtle text-xs">Company: Tarea US LLC &nbsp;|&nbsp; Principal Office: 400 N Oakland Avenue, Apt 209, Pasadena, CA 91101 &nbsp;|&nbsp; Version 2.1 — Effective August 19, 2026</p>
+          <div className="flex gap-6 text-sm text-tarea-ink-subtle">
+            <Link href="/guarantee" className="hover:text-tarea-ink transition-colors">ZenTarea Guarantee</Link>
+            <Link href="/privacy" className="hover:text-tarea-ink transition-colors">Privacy Policy</Link>
+            <Link href="/" className="hover:text-tarea-ink transition-colors">Back to Tarea</Link>
           </div>
         </div>
       </div>
@@ -228,7 +228,7 @@ export default function TermsPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-lg font-bold text-white mb-3">{title}</h2>
+      <h2 className="text-lg font-bold text-tarea-ink mb-3">{title}</h2>
       <div className="prose-custom">{children}</div>
     </section>
   );

@@ -207,8 +207,8 @@ function RegisterForm() {
             <div className="w-16 h-16 bg-tarea-sky/10 border border-tarea-sky/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl">📱</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-white mb-2">Verify your account</h1>
-            <p className="text-slate-400 text-sm">We sent a 6-digit code to your phone and email. Enter it below to complete registration.</p>
+            <h1 className="text-2xl font-extrabold text-tarea-ink mb-2">Verify your account</h1>
+            <p className="text-tarea-ink-muted text-sm">We sent a 6-digit code to your phone and email. Enter it below to complete registration.</p>
           </div>
           <input
             type="text"
@@ -217,7 +217,7 @@ function RegisterForm() {
             value={otpCode}
             onChange={e => setOtpCode(e.target.value.replace(/\D/g, ""))}
             placeholder="000000"
-            className="w-full text-center text-3xl font-bold tracking-[0.5em] bg-white/5 border border-white/10 rounded-2xl px-4 py-5 text-white placeholder-slate-600 focus:outline-none focus:border-tarea-sky mb-4"
+            className="w-full text-center text-3xl font-bold tracking-[0.5em] bg-white border border-tarea-border rounded-2xl px-4 py-5 text-white placeholder-slate-600 focus:outline-none focus:border-tarea-sky mb-4"
           />
           <button
             onClick={submitOtp}
@@ -229,7 +229,7 @@ function RegisterForm() {
           <button
             onClick={resendOtp}
             disabled={resending}
-            className="w-full py-2.5 text-slate-400 text-sm hover:text-white transition-colors"
+            className="w-full py-2.5 text-tarea-ink-muted text-sm hover:text-tarea-ink transition-colors"
           >
             {resending ? "Sending…" : "Didn't receive it? Resend to phone & email"}
           </button>

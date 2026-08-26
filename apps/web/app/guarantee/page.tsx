@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function GuaranteePage() {
   return (
-    <div className="min-h-screen bg-tarea-ink text-slate-300">
+    <div className="min-h-screen bg-tarea-cream text-tarea-ink-muted">
       <div className="max-w-3xl mx-auto px-6 py-16">
 
         {/* Header */}
@@ -19,14 +19,14 @@ export default function GuaranteePage() {
           </Link>
           <div className="mt-6 mb-2">
             <p className="text-tarea-sky text-xs font-semibold uppercase tracking-widest mb-2">taptarea.com</p>
-            <h1 className="text-4xl font-extrabold text-white">The ZenTarea Guarantee</h1>
+            <h1 className="text-4xl font-extrabold text-tarea-ink">The ZenTarea Guarantee</h1>
           </div>
-          <p className="text-slate-400 mt-3 text-lg">
+          <p className="text-tarea-ink-muted mt-3 text-lg">
             Book with peace of mind. If a Pro damages your property on a job booked and paid through
-            Tarea, ZenTarea reimburses you up to <strong className="text-white">$5,000</strong>.
+            Tarea, ZenTarea reimburses you up to <strong className="text-tarea-ink">$5,000</strong>.
           </p>
-          <p className="text-slate-500 text-sm mt-4">Effective Date: August 8, 2026 &nbsp;|&nbsp; Version 1.0</p>
-          <p className="text-slate-500 text-sm">Governing Law: State of California</p>
+          <p className="text-tarea-ink-subtle text-sm mt-4">Effective Date: August 8, 2026 &nbsp;|&nbsp; Version 1.0</p>
+          <p className="text-tarea-ink-subtle text-sm">Governing Law: State of California</p>
 
           <div className="mt-6 p-4 bg-amber-400/10 border border-amber-400/20 rounded-xl">
             <p className="text-amber-300 text-xs font-semibold leading-relaxed">
@@ -156,10 +156,10 @@ export default function GuaranteePage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-16 pt-8 border-t border-white/10 flex flex-wrap gap-6 text-sm text-slate-500">
-          <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-          <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-          <Link href="/" className="hover:text-white transition-colors">Home</Link>
+        <div className="mt-16 pt-8 border-t border-tarea-border flex flex-wrap gap-6 text-sm text-tarea-ink-subtle">
+          <Link href="/terms" className="hover:text-tarea-ink transition-colors">Terms of Service</Link>
+          <Link href="/privacy" className="hover:text-tarea-ink transition-colors">Privacy Policy</Link>
+          <Link href="/" className="hover:text-tarea-ink transition-colors">Home</Link>
         </div>
       </div>
 
@@ -177,7 +177,7 @@ export default function GuaranteePage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-lg font-bold text-white mb-3">{title}</h2>
+      <h2 className="text-lg font-bold text-tarea-ink mb-3">{title}</h2>
       <div className="prose-custom">{children}</div>
     </section>
   );

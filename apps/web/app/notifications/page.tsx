@@ -31,7 +31,7 @@ const TYPE_META: Record<string, { icon: React.ReactNode; color: string; bg: stri
   job_assigned:     { icon: <Wrench className="w-4 h-4" />,        color: "text-tarea-sky",   bg: "bg-tarea-sky/15"   },
 };
 
-const DEFAULT_META = { icon: <Bell className="w-4 h-4" />, color: "text-slate-400", bg: "bg-white/10" };
+const DEFAULT_META = { icon: <Bell className="w-4 h-4" />, color: "text-tarea-ink-muted", bg: "bg-tarea-surface" };
 
 export default function NotificationsPage() {
   const [notifs, setNotifs] = useState<Notification[]>([]);

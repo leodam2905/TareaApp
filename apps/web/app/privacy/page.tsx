@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-tarea-ink text-slate-300">
+    <div className="min-h-screen bg-tarea-cream text-tarea-ink-muted">
       <div className="max-w-3xl mx-auto px-6 py-16">
 
         {/* Header */}
@@ -18,10 +18,10 @@ export default function PrivacyPage() {
           </Link>
           <div className="mt-6 mb-2">
             <p className="text-tarea-sky text-xs font-semibold uppercase tracking-widest mb-2">taptarea.com</p>
-            <h1 className="text-4xl font-extrabold text-white">Privacy Policy</h1>
+            <h1 className="text-4xl font-extrabold text-tarea-ink">Privacy Policy</h1>
           </div>
-          <p className="text-slate-500 text-sm mt-2">Effective Date: August 19, 2026 &nbsp;|&nbsp; Version 2.1</p>
-          <p className="text-slate-500 text-sm">California Consumer Privacy Act (CCPA) &amp; CPRA Compliant</p>
+          <p className="text-tarea-ink-subtle text-sm mt-2">Effective Date: August 19, 2026 &nbsp;|&nbsp; Version 2.1</p>
+          <p className="text-tarea-ink-subtle text-sm">California Consumer Privacy Act (CCPA) &amp; CPRA Compliant</p>
         </div>
 
         <div className="space-y-10 prose-custom">
@@ -205,12 +205,12 @@ export default function PrivacyPage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-16 pt-8 border-t border-white/10 space-y-2">
-          <p className="text-slate-600 text-xs">Document: Privacy Policy v2.1 &nbsp;|&nbsp; Effective: August 19, 2026 &nbsp;|&nbsp; Governed by CCPA, Cal. Civ. Code §§ 1798.100–1798.199 &nbsp;|&nbsp; Also compliant with CPRA, CalOPPA, COPPA</p>
-          <div className="flex gap-6 text-sm text-slate-500">
-            <Link href="/guarantee" className="hover:text-white transition-colors">ZenTarea Guarantee</Link>
-            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-            <Link href="/" className="hover:text-white transition-colors">Back to Tarea</Link>
+        <div className="mt-16 pt-8 border-t border-tarea-border space-y-2">
+          <p className="text-tarea-ink-subtle text-xs">Document: Privacy Policy v2.1 &nbsp;|&nbsp; Effective: August 19, 2026 &nbsp;|&nbsp; Governed by CCPA, Cal. Civ. Code §§ 1798.100–1798.199 &nbsp;|&nbsp; Also compliant with CPRA, CalOPPA, COPPA</p>
+          <div className="flex gap-6 text-sm text-tarea-ink-subtle">
+            <Link href="/guarantee" className="hover:text-tarea-ink transition-colors">ZenTarea Guarantee</Link>
+            <Link href="/terms" className="hover:text-tarea-ink transition-colors">Terms of Service</Link>
+            <Link href="/" className="hover:text-tarea-ink transition-colors">Back to Tarea</Link>
           </div>
         </div>
       </div>
@@ -229,7 +229,7 @@ export default function PrivacyPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-lg font-bold text-white mb-3">{title}</h2>
+      <h2 className="text-lg font-bold text-tarea-ink mb-3">{title}</h2>
       <div className="prose-custom">{children}</div>
     </section>
   );
