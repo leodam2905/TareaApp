@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
@@ -127,6 +128,55 @@ class _ProCertificationsState extends State<ProCertifications> {
     if (mounted) setState(() => _loading = false);
   }
 
+  /// Camera, photo library, or a PDF from Files.
+  ///
+  /// Images go through ImagePicker with a size cap: a modern phone camera
+  /// produces 4-6MB files and the upload endpoint refuses anything over 10MB,
+  /// so an uncapped photo of a certificate could fail on a good camera. PDFs
+  /// keep the FilePicker path untouched — insurance certificates arrive as
+  /// ACORD PDFs by email and must stay uploadable as-is.
+  Future<String?> _pickDocument() async {
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          ListTile(
+            leading: const Icon(Icons.camera_alt_outlined, color: C.blue),
+            title: Text('booking.takePhoto'.tr()),
+            onTap: () => Navigator.pop(context, 'camera'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_library_outlined, color: C.blue),
+            title: Text('booking.chooseGallery'.tr()),
+            onTap: () => Navigator.pop(context, 'gallery'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.picture_as_pdf_outlined, color: C.blue),
+            title: Text('proEdit.choosePdf'.tr()),
+            onTap: () => Navigator.pop(context, 'file'),
+          ),
+        ]),
+      ),
+    );
+    if (choice == null) return null;
+
+    if (choice == 'file') {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+      );
+      return result?.files.single.path;
+    }
+
+    final shot = await ImagePicker().pickImage(
+      source: choice == 'camera' ? ImageSource.camera : ImageSource.gallery,
+      imageQuality: 88,
+      maxWidth: 2000,
+      maxHeight: 2000,
+    );
+    return shot?.path;
+  }
+
   /// Upload a document and submit it as a specific credential.
   ///
   /// Two steps because they are two different things: /api/verification stores
@@ -135,11 +185,11 @@ class _ProCertificationsState extends State<ProCertifications> {
   /// to POST to /api/handyman/onboarding, which ignored the field and returned
   /// success — the toast below was the only thing that happened.
   Future<void> _uploadFor(String kind) async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
-    );
-    final path = result?.files.single.path;
+    // Most pros have the licence or certificate in their hand, not as a PDF in
+    // Files. FilePicker alone meant photographing it in the camera app, saving
+    // it, then hunting for it — while the avatar upload two screens away has
+    // offered camera-or-gallery all along.
+    final path = await _pickDocument();
     if (path == null) return;
 
     // A licence number is public record, so the number alone proves nothing —

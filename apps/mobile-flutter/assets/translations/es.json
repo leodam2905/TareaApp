@@ -648,7 +648,8 @@
     "namedInsured": "Asegurado nombrado",
     "policyNumber": "Número de póliza",
     "perOccurrence": "Por siniestro (USD)",
-    "aggregate": "Agregado general (USD)"
+    "aggregate": "Agregado general (USD)",
+    "choosePdf": "Elegir un PDF"
   },
   "diagnose": {
     "title": "Diagnóstico IA",

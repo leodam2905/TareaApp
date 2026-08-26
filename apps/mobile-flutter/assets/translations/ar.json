@@ -648,7 +648,8 @@
     "namedInsured": "المؤمَّن له",
     "policyNumber": "رقم البوليصة",
     "perOccurrence": "لكل حادثة (USD)",
-    "aggregate": "الإجمالي العام (USD)"
+    "aggregate": "الإجمالي العام (USD)",
+    "choosePdf": "اختر ملف PDF"
   },
   "diagnose": {
     "title": "تشخيص بالذكاء الاصطناعي",

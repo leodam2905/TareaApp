@@ -648,7 +648,8 @@
     "namedInsured": "Named insured",
     "policyNumber": "Policy number",
     "perOccurrence": "Each occurrence (USD)",
-    "aggregate": "General aggregate (USD)"
+    "aggregate": "General aggregate (USD)",
+    "choosePdf": "Choose a PDF"
   },
   "diagnose": {
     "title": "AI Diagnose",

@@ -648,7 +648,8 @@
     "namedInsured": "Assuré désigné",
     "policyNumber": "Numéro de police",
     "perOccurrence": "Par sinistre (USD)",
-    "aggregate": "Plafond global (USD)"
+    "aggregate": "Plafond global (USD)",
+    "choosePdf": "Choisir un PDF"
   },
   "diagnose": {
     "title": "Diagnostic IA",
