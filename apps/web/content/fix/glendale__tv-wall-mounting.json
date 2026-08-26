@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "tv-wall-mounting",
+  "problemTitle": "TV wall mounting",
+  "generatedAt": "2026-08-26T01:57:07.135Z",
+  "metaTitle": "TV Wall Mounting in Glendale, CA | $135–$205",
+  "metaDescription": "Professional TV wall mounting for Glendale homes and apartments. Flat rate $135–$205. Learn what's involved, wall types, and what a pro checks before drilling.",
+  "intro": "Mounting a TV on the wall sounds simple until you're staring at drywall, stucco, or a plaster wall in one of Glendale's older mid-century apartment buildings and realize you're not sure what's behind it. Hillside homes in areas like Verdugo Woodlands or Chevy Chase Canyon often have uneven or textured walls that make finding solid framing trickier than expected. A pro brings the right anchors, stud finder, and mount hardware to get the TV level and secure on the first try.",
+  "causes": [
+    "Many Glendale apartments built in the 1950s-60s have plaster-over-lath walls instead of standard drywall, which requires different anchors than a big-box store kit provides.",
+    "Hillside homes sometimes have furring strips or unusual stud spacing behind the walls due to older construction methods, making stud location less predictable.",
+    "Homeowners often buy a universal mount that doesn't match their TV's VESA hole pattern or weight rating, leading to a wall-mounting attempt that stalls halfway through.",
+    "Stucco exterior walls or interior accent walls with tile or brick veneer need masonry bits and specialized anchors that most homeowners don't own.",
+    "Cable management and outlet placement are frequently an afterthought, leaving cords dangling after the TV is already up."
+  ],
+  "whatProDoes": [
+    "Confirms the TV's weight and VESA pattern match the mount, and checks that the customer-supplied or provided mount is rated correctly.",
+    "Locates studs or solid backing using a stud finder and, where needed, a small inspection hole, especially important in plaster or stucco walls common in Glendale's older buildings.",
+    "Marks and drills mounting points, using appropriate anchors for the wall type (drywall, plaster, or masonry) if studs aren't in a usable position.",
+    "Attaches the mount bracket to the wall and the TV bracket to the television, then lifts and secures the TV, checking it's level and firmly attached.",
+    "Routes and conceals cables where possible, either along the wall or through a cord cover, and tests that the TV sits flush and stable."
+  ],
+  "diyOrPro": "Mounting a lightweight TV on a straightforward drywall wall with clear stud access is a reasonable DIY project if you have a stud finder and the right anchors. It's not a good idea to attempt this alone on plaster, stucco, or brick walls, on a wall you suspect has electrical or plumbing behind it, or with a TV over 50 pounds, since a fall risks both injury and damage to the television and wall.",
+  "priceNote": "This job in Glendale runs $135 to $205, based on an $87/hour rate for a typical 1-2 hour job. The time and final cost depend mainly on wall type (plaster and stucco take longer than standard drywall) and how much cable concealment or bracket assembly is needed.",
+  "faqs": [
+    {
+      "q": "Do I need to supply the TV mount myself?",
+      "a": "You can supply your own mount or ask about options when booking. The pro will check that whatever mount is used matches your TV's VESA pattern and weight before installing."
+    },
+    {
+      "q": "Can you mount a TV on a stucco or plaster wall in my Glendale apartment?",
+      "a": "Yes, this is common in Glendale's older buildings. It typically takes the same 1-2 hour window, but requires different anchors and sometimes a masonry bit, which is factored into the $135–$205 price range."
+    },
+    {
+      "q": "Will the cords be hidden after mounting?",
+      "a": "Basic cable routing along the wall or through a cord cover is included where feasible. Full in-wall cable concealment, which involves cutting into the wall, is a separate job and not part of this price."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 205,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "move-out-cleaning",
+  "problemTitle": "Move-out cleaning",
+  "generatedAt": "2026-08-26T01:54:49.421Z",
+  "metaTitle": "Move-Out Cleaning in Long Beach, CA | Cost & What's Included",
+  "metaDescription": "Move-out cleaning in Long Beach costs $255 to $480. See what's included, when to DIY, and what drives the price for duplexes, bungalows, and condos.",
+  "intro": "Moving out of a Long Beach rental means the unit has to be left clean enough to satisfy a landlord or property manager, whether that's a 1920s bungalow, a duplex unit, or a waterfront condo near Belmont Shore. Move-out cleaning covers the deep cleaning most tenants skip during regular upkeep, and it's often the difference between getting a full security deposit back or not.",
+  "causes": [
+    "Regular cleaning during a tenancy usually skips inside appliances, baseboards, and window tracks, so grease and dust build up over months or years.",
+    "Older Long Beach duplexes and bungalows often have original tile, hardwood, or single-pane windows that trap grime in grooves and corners standard cleaning misses.",
+    "Kitchens accumulate stovetop and oven residue, and bathrooms develop soap scum and hard water spots, especially in units with older plumbing.",
+    "Waterfront condos near the water can pick up salt air residue on windows, screens, and balconies that regular indoor cleaning doesn't address.",
+    "Move-out inspections check specific items like closet interiors, under sinks, and light fixtures that day-to-day cleaning generally ignores."
+  ],
+  "whatProDoes": [
+    "Cleans and degreases kitchen surfaces including inside the oven, refrigerator, and cabinets, inside and out.",
+    "Scrubs bathroom tile, grout, fixtures, and removes soap scum and mineral deposits from showers and sinks.",
+    "Vacuums and mops all flooring, including closets, and wipes down baseboards, window sills, and window tracks.",
+    "Dusts light fixtures, ceiling fans, vents, and wipes interior doors and door frames.",
+    "Does a final walkthrough to check corners, cabinet interiors, and other spots landlords commonly inspect."
+  ],
+  "diyOrPro": "If you have a few free weekends and the unit is small and in decent condition, a thorough DIY clean with the right supplies can work, especially for a studio or one-bedroom. For larger units, older properties with stubborn grime in grout or window tracks, or condos with a tight move-out deadline, a professional saves time and reduces the risk of losing part of your deposit over cleanliness disputes.",
+  "priceNote": "This job runs $255 to $480 in Long Beach, based on $56 an hour with most jobs taking 4 to 8 hours. The total depends mainly on the size of the unit, how much buildup has accumulated over the tenancy, and whether extras like inside-appliance detailing or window track cleaning are needed.",
+  "faqs": [
+    {
+      "q": "Does move-out cleaning include the inside of the oven and refrigerator?",
+      "a": "Yes, standard move-out cleaning includes degreasing the oven interior and wiping down the inside of the refrigerator, since these are common items landlords check during move-out inspections."
+    },
+    {
+      "q": "Will this guarantee I get my full security deposit back?",
+      "a": "No cleaning service can guarantee that, since deposit decisions depend on the landlord's overall inspection, including wear and damage beyond cleanliness, but a thorough clean removes cleanliness as a reason to withhold funds."
+    },
+    {
+      "q": "How long does move-out cleaning take for a typical Long Beach unit?",
+      "a": "Most jobs take 4 to 8 hours depending on the unit's size and condition, which is reflected in the $255 to $480 price range based on an hourly rate of $56."
+    }
+  ],
+  "price": {
+    "low": 255,
+    "high": 480,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

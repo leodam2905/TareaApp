@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "light-fixture-installation",
+  "problemTitle": "Light fixture installation",
+  "generatedAt": "2026-08-26T01:56:17.211Z",
+  "metaTitle": "Light Fixture Installation in Glendale, CA | Tarea",
+  "metaDescription": "Professional light fixture installation for Glendale homes, from hillside properties to mid-century apartments. Fixed pricing, $135–$235.",
+  "intro": "Swapping out an old light fixture in Glendale seems simple until you're staring at exposed wires with no idea if the power is actually off. Many Glendale homes, especially mid-century apartment buildings and hillside houses with older wiring, have quirks that make a straightforward-looking job more involved than expected.",
+  "causes": [
+    "The existing fixture is outdated or damaged and needs replacement for style or function.",
+    "A new fixture was purchased but the mounting bracket or wiring configuration doesn't match.",
+    "Old wiring in mid-century Glendale buildings may use outdated connectors or lack a ground wire.",
+    "Hillside homes sometimes have unusual ceiling heights or angled ceilings that complicate mounting.",
+    "A previous DIY installation was done incorrectly and is now sparking, flickering, or loose."
+  ],
+  "whatProDoes": [
+    "Shuts off power to the circuit at the breaker and verifies it's dead with a voltage tester.",
+    "Removes the old fixture and inspects the electrical box and wiring for damage or code issues.",
+    "Confirms the electrical box is rated to support the weight of the new fixture, which matters for heavier pieces.",
+    "Wires the new fixture, matching and capping connections correctly, including grounding where required.",
+    "Secures the fixture, restores power, and tests that it operates correctly."
+  ],
+  "diyOrPro": "If you're simply replacing a light bulb or a lampshade, that's a DIY task. But actually disconnecting and reconnecting wiring involves risk of shock or fire if done incorrectly, and older Glendale properties often have wiring that doesn't match modern expectations, so this job is best left to a licensed electrician.",
+  "priceNote": "This job runs $135 to $235 in Glendale, based on a $100 hourly rate for a typical 1 to 2 hour job. Hillside homes with tricky ceiling access or older apartment buildings with outdated wiring tend to land on the higher end of that range.",
+  "faqs": [
+    {
+      "q": "Do I need to buy the light fixture myself, or does the electrician bring one?",
+      "a": "You typically purchase the fixture yourself so you get the exact style you want; the electrician handles the installation and wiring."
+    },
+    {
+      "q": "My apartment building is from the 1950s. Will that cause problems?",
+      "a": "Older buildings sometimes have wiring or electrical boxes that don't meet current standards, which the electrician will check before installing your new fixture and address as needed."
+    },
+    {
+      "q": "Can you install a fixture on a vaulted or angled ceiling?",
+      "a": "Yes, though angled or high ceilings common in Glendale hillside homes may require extra time for safe access, which can affect where your job falls within the $135 to $235 range."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

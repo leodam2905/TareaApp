@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "drywall-hole-repair",
+  "problemTitle": "Drywall hole repair",
+  "generatedAt": "2026-08-26T02:10:33.043Z",
+  "metaTitle": "Drywall Hole Repair in Torrance, CA | $200–$365",
+  "metaDescription": "Fix drywall holes in your Torrance home. Flat-rate pricing $200–$365, based on $83/hour and typical 2-4 hour jobs. See what's involved and what drives the cost.",
+  "intro": "That hole in your wall — whether from a doorknob, a moving mishap, or an accidental elbow — isn't just cosmetic in older Torrance homes. Many houses in this area were built in the 1950s and 60s, and their original plaster-and-lath or early drywall installations often need extra care to patch cleanly. A proper repair keeps the damage from spreading and gets the wall ready for paint.",
+  "causes": [
+    "A doorknob or furniture corner punched through the drywall during everyday use.",
+    "Old drywall in a 1950s or 60s Torrance home has become brittle over decades and cracks more easily on impact.",
+    "Water damage from a slow roof or plumbing leak has softened the drywall around the hole.",
+    "A previous patch job was done poorly and is failing or crumbling at the edges.",
+    "Settling common in older slab foundations has stressed the wall and widened an existing crack or hole."
+  ],
+  "whatProDoes": [
+    "Inspects the hole and surrounding wall to check for hidden issues like moisture damage or wiring behind the surface.",
+    "Cuts back any crumbling or damaged drywall to solid material and installs a backing brace or patch piece sized to the hole.",
+    "Applies joint compound in multiple thin coats, letting each layer dry and sanding between coats for a smooth, flat surface.",
+    "Feathers the edges of the patch into the existing wall so the repair isn't visible once painted.",
+    "Does a final sanding pass and wipes down the area so it's ready for primer and paint."
+  ],
+  "diyOrPro": "A small nail hole or minor ding is reasonable to patch yourself with spackle and a putty knife. But holes larger than a fist, repairs near electrical outlets or wiring, or any spot with soft, water-damaged drywall are best left to a pro, since matching texture and getting a flush, invisible patch takes practice most homeowners don't have.",
+  "priceNote": "This job runs $200 to $365 in Torrance, based on an $83 hourly rate and jobs that typically take 2 to 4 hours. The size and number of holes, how much cutting and patching is needed, and whether the wall has any texture to match all affect where a job lands in that range.",
+  "faqs": [
+    {
+      "q": "Will the patched area match the rest of my wall?",
+      "a": "A pro blends the new patch with joint compound and feathers the edges so it's smooth and flush, but you'll likely need to prime and paint the area (and sometimes the full wall) afterward to match color and sheen exactly."
+    },
+    {
+      "q": "How long does drywall compound take to dry before painting?",
+      "a": "Each coat of joint compound typically needs several hours to dry, and most repairs require 2-3 coats, so the wall is usually ready for paint the same day or the following day, though this isn't a guaranteed timeline."
+    },
+    {
+      "q": "My house is from the 1950s — does that change the repair?",
+      "a": "Older Torrance homes sometimes have plaster over lath instead of standard drywall, or drywall that's thinner and more brittle than modern material, so the pro may need different techniques or backing materials to get a solid patch."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

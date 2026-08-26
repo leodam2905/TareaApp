@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "room-painting",
+  "problemTitle": "Room painting",
+  "generatedAt": "2026-08-26T01:45:19.001Z",
+  "metaTitle": "Room Painting in Santa Monica, CA | Tarea",
+  "metaDescription": "Interior room painting in Santa Monica, priced $345–$655. Coastal humidity affects paint adhesion — here's what a pro checks before painting.",
+  "intro": "If the paint in a room is chipped, faded, or peeling near windows, it's time for a fresh coat — but in Santa Monica, the salt-laden air that rolls in off the coast can work its way into homes and affect how well paint sticks to interior walls. A room painting job here isn't just about color; it's about prepping the surface so the new coat actually lasts.",
+  "causes": [
+    "Ordinary wear and tear from years of use, sunlight, and furniture scuffs.",
+    "Humidity and salt air seeping in through windows and doors, which can cause paint to lose adhesion near openings.",
+    "Old or low-quality paint that was never rated for a moist coastal climate.",
+    "Water stains or minor mildew on walls close to bathrooms, kitchens, or ocean-facing windows.",
+    "Previous painting done without proper primer, leading to early peeling or bubbling."
+  ],
+  "whatProDoes": [
+    "Inspects the walls for moisture damage, mildew, or peeling caused by humidity, especially near windows and corners.",
+    "Cleans, sands, and patches any cracks, holes, or flaking areas before painting.",
+    "Applies a primer suited to the room's moisture exposure, which matters more near the coast than inland.",
+    "Rolls and cuts in two coats of paint using proper technique for even coverage and clean edges.",
+    "Cleans up drop cloths, tape, and touches up trim or baseboards as needed."
+  ],
+  "diyOrPro": "Painting a room yourself is reasonable if the walls are dry, free of mold, and you're comfortable with prep work like sanding and taping. It's better to hire a pro if you notice soft or bubbling drywall, recurring mildew spots, or peeling that keeps coming back — those can point to a moisture problem behind the wall that needs more than a paint job to fix.",
+  "priceNote": "This job runs $345 to $655 in Santa Monica, based on a rate of $78 per hour and a typical job length of 4 to 8 hours. The time needed depends on room size, how much wall prep and patching is required, and whether a specialty moisture-resistant primer is needed for coastal-facing rooms.",
+  "faqs": [
+    {
+      "q": "Why does coastal air matter for painting a room inside my house?",
+      "a": "Salt-laden humid air can seep in through windows and doors, raising moisture levels inside walls near those openings. This can make regular paint peel or bubble faster than it would inland, so a pro may recommend a moisture-resistant primer in those areas."
+    },
+    {
+      "q": "Do I need to move my furniture before the painter arrives?",
+      "a": "It helps to clear small items and pull furniture away from the walls, but most pros will move larger pieces and use drop cloths to protect what's left in the room."
+    },
+    {
+      "q": "How many coats of paint will I get for this price?",
+      "a": "The $345 to $655 range covers a standard two-coat application, which is enough for most color changes and normal wall coverage."
+    }
+  ],
+  "price": {
+    "low": 345,
+    "high": 655,
+    "hourly": 78
+  },
+  "category": "PAINTING",
+  "categoryLabel": "Painting"
+}

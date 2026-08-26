@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "interior-door-repair",
+  "problemTitle": "Interior door repair",
+  "generatedAt": "2026-08-26T01:49:17.028Z",
+  "metaTitle": "Interior Door Repair in Pasadena, CA | $135–$285",
+  "metaDescription": "Sticking, sagging, or misaligned interior doors in Pasadena homes? Get repair costs, causes, and what a carpenter does. $135–$285 typical range.",
+  "intro": "If a door in your Pasadena home has started sticking, dragging on the floor, or won't latch properly, you're not alone — this is a common issue in the city's older Craftsman bungalows and Spanish-revival houses. Decades of settling, humidity swings, and original wood-frame construction all take a toll on interior doors. A carpenter can usually diagnose and fix the problem in a single visit.",
+  "causes": [
+    "Foundation settling common in Craftsman homes built in the 1900s–1930s can shift door frames out of square over time.",
+    "Original wood doors and jambs swell or shrink with seasonal humidity changes, causing sticking or gaps.",
+    "Loose, worn, or corroded hinges lose their ability to hold the door in proper alignment.",
+    "Old hardware, including mortise locksets typical of Spanish-revival homes, can wear out or become misaligned.",
+    "Layers of old paint or varnish buildup on doors and frames can prevent doors from closing smoothly."
+  ],
+  "whatProDoes": [
+    "Inspects the door, frame, and hinges to identify whether the issue is structural, hardware-related, or due to swelling wood.",
+    "Removes the door and checks for warping, then plane or sand high spots that cause sticking.",
+    "Tightens, replaces, or repositions hinges and shims the frame if it has shifted out of square.",
+    "Repairs or replaces worn hardware such as strike plates, mortise locksets, or knobs to restore proper function.",
+    "Reinstalls and tests the door to confirm it opens, closes, and latches correctly."
+  ],
+  "diyOrPro": "Tightening a loose hinge screw or sanding a small sticking spot is reasonably safe to try yourself if you're comfortable with basic tools. However, doors that are significantly out of square, warped, or tied to a shifting frame in an older Pasadena home often need a carpenter to properly assess and correct the underlying issue without damaging original woodwork.",
+  "priceNote": "This job runs $135 to $285 in Pasadena, based on an $83 per hour rate and typical job length of 1 to 3 hours. Simple fixes like hinge adjustments fall at the lower end, while doors with warping, frame misalignment, or old hardware replacement in original Craftsman or Spanish-revival woodwork take longer and land closer to the top of the range.",
+  "faqs": [
+    {
+      "q": "Why does my door only stick in certain seasons?",
+      "a": "Wood doors and frames absorb and release moisture with humidity changes, causing them to swell in wetter months and shrink in drier ones. This is especially common in older Pasadena homes with original wood doors and jambs."
+    },
+    {
+      "q": "Can you fix a door without replacing the whole thing?",
+      "a": "In most cases, yes. A carpenter can typically address sticking, misalignment, or worn hardware through adjustments, planing, or hinge repair rather than a full door replacement."
+    },
+    {
+      "q": "Will repairing my door damage the original woodwork?",
+      "a": "A carpenter experienced with older housing stock will work carefully to preserve original trim, panels, and hardware wherever possible, since Craftsman and Spanish-revival doors often have historic or decorative value."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 285,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

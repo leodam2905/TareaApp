@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "drywall-hole-repair",
+  "problemTitle": "Drywall hole repair",
+  "generatedAt": "2026-08-26T01:49:03.580Z",
+  "metaTitle": "Drywall Hole Repair in Pasadena, CA | Tarea",
+  "metaDescription": "Fix a hole in your wall in Pasadena, from $200 to $365. Learn what causes the damage, what a pro does, and when to call one.",
+  "intro": "A hole in the wall is one of the most common repair calls in Pasadena, especially in the city's older Craftsman and Spanish-revival homes where original plaster has often been patched over with drywall over the decades. Whether it's a doorknob dent, a moving mishap, or old damage that's finally bothering you, the fix depends on the wall's age and what's behind it.",
+  "causes": [
+    "A doorknob or furniture corner punches through the wall during everyday use.",
+    "Settling in a house built in the 1910s-1930s creates cracks or stress points that eventually give way.",
+    "Old plaster-over-lath sections crumble at the edges when disturbed, leaving a hole bigger than the original damage.",
+    "Water intrusion from a roof or plumbing leak softens the wall material until it collapses.",
+    "Previous patch jobs using the wrong material (like spackle over a large opening) fail and reopen the hole."
+  ],
+  "whatProDoes": [
+    "Inspects the hole and surrounding wall to determine if it's drywall, plaster, or a plaster-and-lath hybrid common in older Pasadena homes.",
+    "Cuts back damaged material to solid edges, which sometimes means locating and cutting to the nearest wall stud.",
+    "Installs a backing piece or patch (mesh, wood, or a drywall insert) so the repair has something solid to hold onto.",
+    "Applies joint compound in multiple thin coats, sanding between coats to blend the patch into the existing wall.",
+    "Matches the wall's texture, which for older homes may mean recreating a hand-troweled or skip-trowel finish rather than a smooth modern one."
+  ],
+  "diyOrPro": "A small nail hole or minor ding is reasonable to patch yourself with spackle from a hardware store. Anything larger than a fist, near electrical wiring, showing signs of water damage, or in original plaster-and-lath construction is better left to a pro, since cutting into old walls can reveal hidden wiring, mold, or structural issues you don't want to discover mid-repair.",
+  "priceNote": "This job runs $200 to $365 in Pasadena, based on a rate of $83 per hour for a typical 2 to 4 hour job. The time and cost depend on the hole's size, whether the wall is drywall or older plaster-and-lath, and how much texture matching is needed to make the patch disappear.",
+  "faqs": [
+    {
+      "q": "Can you match the texture on my old plaster walls?",
+      "a": "A pro can typically recreate common textures like skip-trowel or orange peel by hand, though matching decades-old plaster exactly can be harder than matching modern drywall texture. It's worth pointing out the surrounding texture before work starts."
+    },
+    {
+      "q": "Will the repair be invisible after painting?",
+      "a": "A well-done patch blends in once painted, but if your walls haven't been repainted in years, there may be a slight sheen or color difference between the patch area and the surrounding wall until a full repaint."
+    },
+    {
+      "q": "What if the hole reveals a bigger problem, like water damage?",
+      "a": "If the pro finds soft, discolored, or moldy material behind the hole, that's a sign of a leak that needs to be addressed separately before the wall can be properly repaired, and it may add to the scope of the job."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

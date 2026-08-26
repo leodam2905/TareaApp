@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "room-painting",
+  "problemTitle": "Room painting",
+  "generatedAt": "2026-08-26T01:49:54.441Z",
+  "metaTitle": "Room Painting in Pasadena, CA: Cost & Prep Guide",
+  "metaDescription": "Get room painting costs for Pasadena homes, from Craftsman bungalows to Spanish-revival bungalows. See what prep is involved and when to call a pro.",
+  "intro": "If the paint in a room of your Pasadena home is looking faded, cracked, or just outdated, you're not alone — many of the city's Craftsman bungalows and Spanish-revival houses still have original plaster walls and trim that need careful attention. A fresh coat can make a big difference, but getting there usually takes more prep work than people expect.",
+  "causes": [
+    "Years of sun exposure through original single-pane windows can fade paint unevenly, especially on south-facing walls.",
+    "Plaster walls common in pre-1940s Pasadena homes develop hairline cracks as the house settles, which show through new paint if not patched first.",
+    "Older layers of paint, especially in homes built before 1978, may contain lead, requiring careful handling rather than simple sanding.",
+    "High ceilings and elaborate wood trim typical of Craftsman interiors collect dust and grime that dulls the look of a room over time.",
+    "A previous quick DIY paint job may have skipped priming, causing peeling or blotchy color that needs correcting before repainting looks right."
+  ],
+  "whatProDoes": [
+    "Protects built-in bookshelves, wood beams, and other original woodwork common in Craftsman and Spanish-revival interiors with tape and drop cloths.",
+    "Inspects and patches cracks or holes in plaster walls, then sands them smooth before priming.",
+    "Tests for lead paint if the home was built before 1978 and follows proper containment steps if it's present, rather than sanding it loose.",
+    "Cuts in clean lines around crown molding, high baseboards, and window casings by hand, since these details are common in older Pasadena homes.",
+    "Applies primer where needed and rolls or brushes on the finish coats, then does a final cleanup of the work area."
+  ],
+  "diyOrPro": "Painting a room yourself is reasonable if the walls are in decent shape, the home was built after 1978, and you're comfortable with basic prep like patching small holes and taping trim. It's not a DIY job if you suspect lead paint under older layers, if plaster damage is extensive, or if the room has high ceilings that require sturdy scaffolding rather than a small stepladder.",
+  "priceNote": "Room painting in Pasadena runs $345 to $655, based on a rate of $78 per hour and jobs typically taking 4 to 8 hours. Where you land in that range depends mostly on room size, ceiling height, how much plaster repair or lead-safe prep is needed, and whether trim and closets are included.",
+  "faqs": [
+    {
+      "q": "How do I know if my Pasadena home has lead paint?",
+      "a": "If your house was built before 1978, which describes many Craftsman and Spanish-revival homes in the area, there's a real chance older paint layers contain lead. A pro can test before starting, and if it's present, extra containment steps are needed rather than standard sanding."
+    },
+    {
+      "q": "Does the price change if my ceilings are higher than average?",
+      "a": "Yes, taller ceilings and elaborate trim, both common in older Pasadena homes, add time for setup and cutting in, which is why the job can land anywhere from 4 to 8 hours within the $345 to $655 range."
+    },
+    {
+      "q": "Will the pro fix cracks in my plaster walls as part of the job?",
+      "a": "Minor cracks and small holes are typically patched and sanded as part of standard prep. If the plaster has significant damage or separation from the lath underneath, that's usually a separate repair to address before painting."
+    }
+  ],
+  "price": {
+    "low": 345,
+    "high": 655,
+    "hourly": 78
+  },
+  "category": "PAINTING",
+  "categoryLabel": "Painting"
+}

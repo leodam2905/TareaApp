@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "outlet-not-working",
+  "problemTitle": "Outlet not working",
+  "generatedAt": "2026-08-26T01:56:49.098Z",
+  "metaTitle": "Outlet Not Working in Glendale, CA | Tarea",
+  "metaDescription": "A dead outlet in your Glendale home or apartment? Learn common causes and get an electrician for $135–$235.",
+  "intro": "When an outlet in your Glendale home suddenly stops working, it's usually a sign of a tripped safety device, a loose wire, or aging electrical components common in the city's mid-century apartment buildings and hillside homes. Some causes are a quick fix, while others point to wiring that needs a closer look. Figuring out which one you have often requires opening the outlet or breaker panel, which is where a licensed electrician comes in.",
+  "causes": [
+    "A tripped GFCI outlet somewhere on the same circuit has cut power to other outlets, which is common in older kitchens and bathrooms in Glendale's mid-century units.",
+    "A breaker tripped in the electrical panel, often due to an overloaded circuit or a faulty appliance.",
+    "Loose or corroded wiring connections inside the outlet box, more frequent in hillside homes with original 1950s and 1960s wiring that has never been updated.",
+    "A worn-out outlet with internal damage from years of use or from moisture exposure in units near the hills.",
+    "A break somewhere in the wiring run itself, which can happen when houses settle on sloped Glendale lots and shift the wiring behind the walls."
+  ],
+  "whatProDoes": [
+    "Tests the outlet with a multimeter to confirm whether it's dead and checks nearby outlets to see if they're on the same circuit.",
+    "Checks the breaker panel for a tripped breaker and resets it, then checks for GFCI outlets elsewhere on the circuit that may have tripped.",
+    "Removes the outlet cover and inspects the wiring connections for looseness, corrosion, or heat damage.",
+    "Repairs or replaces the outlet itself if it's worn out or damaged, matching it to code requirements.",
+    "Traces the circuit further if the problem isn't at the outlet, checking for damaged wiring in the wall or attic space."
+  ],
+  "diyOrPro": "Resetting a tripped breaker or pressing the reset button on a nearby GFCI outlet is safe for most homeowners to try first. But if that doesn't fix it, avoid opening the outlet or touching wiring yourself — dead outlets can signal a wiring problem, and working on live circuits carries a real risk of shock or fire, especially in older Glendale properties where wiring may not meet current standards.",
+  "priceNote": "This job runs $135 to $235 in Glendale, based on a $100/hour rate and a typical job length of 1 to 2 hours. Jobs on the shorter end usually involve a simple outlet swap or loose connection, while jobs that require tracing wiring through walls or dealing with older wiring in hillside homes tend to take longer.",
+  "faqs": [
+    {
+      "q": "Why did my outlet just stop working with no warning?",
+      "a": "It's often a tripped GFCI outlet or breaker cutting power to that circuit, but it can also be a loose connection or failing outlet that finally gave out. An electrician can pinpoint the exact cause."
+    },
+    {
+      "q": "Is it dangerous to keep using other outlets on the same circuit?",
+      "a": "If the outlet is simply dead due to a tripped breaker, the rest of the circuit is fine once reset. But if the issue is damaged wiring, continuing to use that circuit could pose a fire risk, so it's best to get it checked."
+    },
+    {
+      "q": "Will this cost more if I live in an older hillside home?",
+      "a": "The price stays within the $135 to $235 range regardless, but older wiring in hillside homes can sometimes mean the job takes closer to 2 hours if the electrician needs to trace wiring behind walls."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

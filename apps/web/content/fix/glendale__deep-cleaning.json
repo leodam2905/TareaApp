@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "deep-cleaning",
+  "problemTitle": "Deep cleaning",
+  "generatedAt": "2026-08-26T01:58:30.731Z",
+  "metaTitle": "Deep Cleaning in Glendale, CA | Cost & What's Included",
+  "metaDescription": "Deep cleaning for Glendale homes and apartments costs $200 to $365. See what's included, what causes buildup, and when to call a pro.",
+  "intro": "If it's been months since every corner, baseboard, and vent got real attention, your Glendale home is probably due for a deep clean. Between hillside dust that blows in through windows and the tight layouts common in mid-century apartment buildings, grime tends to settle in spots a weekly tidy-up never reaches.",
+  "causes": [
+    "Hillside homes near dry brush and canyon roads pull in more dust and pollen through windows and vents than flatland properties.",
+    "Older mid-century apartment buildings often have original tile, grout, and window tracks that trap decades of buildup.",
+    "Kitchens accumulate grease film on cabinets and range hoods faster in units with limited ventilation.",
+    "Bathrooms in older buildings develop soap scum and mineral deposits from hard water.",
+    "Infrequent cleaning lets dust settle into baseboards, ceiling fans, and behind furniture where it's easy to overlook."
+  ],
+  "whatProDoes": [
+    "Dusts and wipes down all surfaces, including baseboards, window sills, ceiling fans, and light fixtures.",
+    "Cleans inside and outside of kitchen appliances, cabinet fronts, and range hoods.",
+    "Scrubs bathrooms thoroughly, including grout, tile, fixtures, and mirrors.",
+    "Vacuums and mops all flooring, including under furniture where possible.",
+    "Wipes down doors, door frames, and switch plates that collect handprints and grime over time."
+  ],
+  "diyOrPro": "A deep clean is safe to do yourself if you have a free weekend and don't mind moving furniture, scrubbing grout, and getting into vents and window tracks. It becomes worth hiring a pro when the buildup is heavy, you're short on time, or you're preparing a rental unit for move-in or move-out inspection.",
+  "priceNote": "Deep cleaning in Glendale runs $200 to $365, based on a $56/hour rate and jobs typically taking 3 to 6 hours. The total depends mainly on square footage, how long it's been since the last deep clean, and whether the home has extra grime from hillside dust or aging fixtures common in older buildings.",
+  "faqs": [
+    {
+      "q": "How long does a deep clean take for a typical Glendale apartment?",
+      "a": "Most jobs take 3 to 6 hours depending on the size of the unit and how much buildup has accumulated, which is reflected in the $200 to $365 price range."
+    },
+    {
+      "q": "Do I need to provide cleaning supplies?",
+      "a": "This varies by pro, so it's worth confirming ahead of time whether they bring their own equipment and products or expect you to supply them."
+    },
+    {
+      "q": "Will a deep clean remove hard water stains in older bathrooms?",
+      "a": "A thorough scrub can significantly improve mineral buildup and soap scum on tile and fixtures, though heavily etched or long-neglected surfaces may need specialized treatment beyond a standard deep clean."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "furniture-assembly",
+  "problemTitle": "Furniture assembly",
+  "generatedAt": "2026-08-26T02:10:16.959Z",
+  "metaTitle": "Furniture Assembly in Torrance, CA | $135–$295",
+  "metaDescription": "Flat-pack beds, dressers, and shelving assembled in your Torrance home. Pricing runs $135 to $295 based on $87/hour, typically 1-3 hours.",
+  "intro": "That new dresser or bed frame from an online order is still in boxes in the garage, and the instruction sheet looks more like a puzzle than a guide. In Torrance, where many homes have smaller original bedrooms from the 1950s and 60s, getting large furniture assembled and placed correctly the first time also matters for fitting it through narrow hallways and doorways.",
+  "causes": [
+    "The furniture arrived as flat-pack pieces with hardware bags, cam locks, and dowels instead of being pre-built.",
+    "Instructions are printed in multiple languages with small diagrams that are easy to misread, leading to parts installed backward or upside down.",
+    "Older Torrance homes often have narrower hallways and doorframes, making it hard to maneuver large pre-assembled pieces without taking them apart and reassembling inside the room.",
+    "Missing or duplicate hardware in the box stalls the project partway through.",
+    "Multiple pieces ordered at once (bed, nightstands, dresser) turn a quick job into a multi-hour project without an extra set of hands."
+  ],
+  "whatProDoes": [
+    "Unpacks and inventories all hardware and panels against the included parts list before starting.",
+    "Assembles the piece following manufacturer instructions, using power tools to speed up repetitive steps like driving cam locks or screws.",
+    "Checks that drawers slide evenly, doors are aligned, and shelves are level before calling the job finished.",
+    "Moves and positions the finished piece in the intended room, accounting for tight doorways or stairwells common in older Torrance layouts.",
+    "Clears away packaging, cardboard, and plastic wrap, leaving the area ready to use."
+  ],
+  "diyOrPro": "Assembling a single small item like a nightstand or bookshelf is reasonable to attempt yourself if you have basic tools and a free afternoon. Larger pieces like wardrobes, bed frames, or anything requiring two people to lift are safer left to a pro, especially if you need it carried up stairs or through a narrow older hallway without damage to walls or the furniture. There's no gas, water, or electrical risk here, so the main hazard is strained backs or scratched floors from DIY moving.",
+  "priceNote": "Pricing for furniture assembly in Torrance runs $135 to $295, based on a rate of $87 per hour with most jobs taking 1 to 3 hours. Simple items like a single nightstand fall at the lower end, while multi-piece bedroom sets or furniture requiring disassembly to fit through doorways push toward the higher end.",
+  "faqs": [
+    {
+      "q": "Do I need to buy the furniture before booking someone to assemble it?",
+      "a": "Yes, the furniture should already be purchased and, ideally, delivered to your home before the appointment. The pro brings tools and expertise but not the furniture itself."
+    },
+    {
+      "q": "What if pieces or hardware are missing from the box?",
+      "a": "The pro will flag any missing or damaged parts during the initial inventory check. You'll likely need to contact the retailer or manufacturer for replacement parts, which may pause the job until they arrive."
+    },
+    {
+      "q": "Can they take apart my old furniture too?",
+      "a": "Basic disassembly of an old piece can often be handled in the same visit, but confirm this when booking since it adds to the total hours and cost within the $135 to $295 range."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

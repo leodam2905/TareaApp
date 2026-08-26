@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "tv-wall-mounting",
+  "problemTitle": "TV wall mounting",
+  "generatedAt": "2026-08-26T02:01:11.263Z",
+  "metaTitle": "TV Wall Mounting in Burbank, CA | Tarea",
+  "metaDescription": "Professional TV wall mounting for Burbank homes, including older plaster walls. Fixed price $135–$205. See what's included and what drives the cost.",
+  "intro": "If you just bought a new TV or you're tired of it sitting on a stand in your Burbank living room, mounting it on the wall is a common next step. Many Burbank homes were built in the post-war boom and have plaster-and-lath walls or older stud framing, which changes how a TV mount actually needs to be installed compared to newer drywall construction.",
+  "causes": [
+    "The TV is currently on a stand or dresser and takes up floor space or blocks a walkway.",
+    "Glare from windows or overhead lights makes the current TV placement hard to watch from the couch.",
+    "The homeowner wants to hide cables and create a cleaner look for a media wall.",
+    "Studs in older Burbank homes are sometimes spaced or positioned differently than modern 16-inch-on-center framing, making a DIY mount job harder to get right.",
+    "Plaster-and-lath walls common in post-war construction are more brittle than drywall and can crack if anchors or screws are placed incorrectly."
+  ],
+  "whatProDoes": [
+    "Locates the studs using a stud finder rated for plaster or lath-and-plaster walls, since standard finders can give false readings on these older surfaces.",
+    "Checks the TV size and weight against the mount's rated capacity and selects appropriate hardware for the wall type.",
+    "Marks and levels the mount bracket, then drills pilot holes sized correctly for plaster, lath, or drywall to avoid cracking.",
+    "Attaches the wall bracket securely into studs (or uses appropriate heavy-duty anchors if studs aren't positioned where needed), then hangs and levels the TV.",
+    "Routes and conceals visible cables along the wall or through a cable channel, and confirms the mount is stable before finishing."
+  ],
+  "diyOrPro": "Mounting a TV on modern drywall with standard studs is a reasonable DIY project if you own a stud finder and a drill. In a post-war Burbank home with plaster-and-lath walls, though, finding solid framing is harder and mistakes can crack the plaster or leave a heavy TV hanging on a weak anchor point, so hiring a pro is the safer route if your walls are original construction.",
+  "priceNote": "This job is priced at $135 to $205 in Burbank, based on an $87 hourly rate and a typical job length of 1 to 2 hours. Jobs run longer, and cost more within that range, when the wall is plaster-and-lath rather than drywall, when studs aren't where they should be, or when cable concealment adds extra work.",
+  "faqs": [
+    {
+      "q": "Will the mount work on my home's plaster walls?",
+      "a": "Yes, but it takes different technique and hardware than drywall. A pro will identify whether you have plaster-and-lath or drywall and adjust the anchoring approach so the mount stays secure without cracking the wall."
+    },
+    {
+      "q": "Do I need to buy the TV mount myself, or does the pro bring one?",
+      "a": "This service covers the labor to mount your TV. You'll want to have the mount bracket and TV on hand, matched to your TV's size and VESA pattern, before the appointment."
+    },
+    {
+      "q": "Can cables be hidden inside the wall?",
+      "a": "Basic cable concealment along the surface or through a cable channel is part of a standard mount job. Running cables inside the wall itself is a more involved task and may affect the time and cost, so mention it upfront if that's what you want."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 205,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

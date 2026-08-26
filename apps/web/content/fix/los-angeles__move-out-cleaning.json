@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "move-out-cleaning",
+  "problemTitle": "Move-out cleaning",
+  "generatedAt": "2026-08-26T01:41:18.770Z",
+  "metaTitle": "Move-Out Cleaning in Los Angeles, CA | Cost & Guide",
+  "metaDescription": "Move-out cleaning in Los Angeles costs $255 to $480. Learn what's included, when to DIY, and how to get your deposit back.",
+  "intro": "Whether you're leaving a pre-war bungalow in Highland Park, a mid-century home in the Valley, or a new-build apartment downtown, most Los Angeles landlords expect the unit spotless before returning a security deposit. Move-out cleaning covers the deep work that regular upkeep skips, like baseboards, inside appliances, and built-up grime in older units.",
+  "causes": [
+    "Older bungalows often have original hardwood floors, window sills, and radiator covers that collect years of dust and paint residue.",
+    "Mid-century homes frequently have original tile or linoleum kitchens and bathrooms where grout and grease build up over time.",
+    "New-build apartments still need construction dust, adhesive residue, and drywall film cleaned from cabinets and vents before the final walkthrough.",
+    "Regular weekly cleaning usually skips inside ovens, refrigerators, and cabinets, so grease and food residue accumulate over months or years.",
+    "California's dry heat and dust mean window tracks, blinds, and screens need extra attention that daily cleaning routines don't cover."
+  ],
+  "whatProDoes": [
+    "Cleans and disinfects all kitchen surfaces including inside the oven, refrigerator, cabinets, and drawers.",
+    "Scrubs bathrooms top to bottom, including grout lines, showerheads, and behind toilets.",
+    "Wipes down baseboards, window sills, door frames, and light switches throughout the unit.",
+    "Vacuums and mops all flooring, including closets and any areas behind furniture that was moved out.",
+    "Cleans interior windows, tracks, and mirrors, and removes cobwebs from ceilings and corners."
+  ],
+  "diyOrPro": "If you have a small apartment and a few hours to spare, a thorough DIY clean with the right supplies can work, especially in newer units without much buildup. Older homes with grease-caked ovens, grimy grout, or years of dust in a bungalow's nooks are harder to bring up to landlord standards on your own, and a missed spot can cost you part of your deposit. There's no safety hazard here, so the decision mostly comes down to time and how particular your landlord's checklist is.",
+  "priceNote": "This job runs $255 to $480 in Los Angeles, based on a rate of $56 per hour and typically taking 4 to 8 hours total. Smaller apartments with less buildup land toward the lower end, while larger homes, homes with heavy grease or grime, or units with multiple bathrooms and appliances take longer and cost more.",
+  "faqs": [
+    {
+      "q": "Does move-out cleaning include the carpets?",
+      "a": "Standard move-out cleaning covers vacuuming carpets but not deep carpet shampooing or steam cleaning, which is usually a separate service. Ask when booking if you need carpets deep cleaned as well."
+    },
+    {
+      "q": "Will this guarantee I get my full deposit back?",
+      "a": "No cleaning service can guarantee a deposit return, since that depends on your landlord's inspection and lease terms. A thorough clean addresses the most common deduction reasons, but any damage or repairs needed are separate from cleaning."
+    },
+    {
+      "q": "How far in advance should I book before my move-out date?",
+      "a": "It's best to schedule cleaning for after all your furniture and belongings are out of the unit, ideally the same day or one day before your final walkthrough, since empty rooms clean faster and more thoroughly."
+    }
+  ],
+  "price": {
+    "low": 255,
+    "high": 480,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

@@ -1,0 +1,34 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "clogged-drain-cleaning",
+  "problemTitle": "Clogged drain cleaning",
+  "generatedAt": "2026-08-26T01:38:08.831Z",
+  "metaTitle": "Clogged Drain Cleaning in Los Angeles, CA | Pricing & Info",
+  "metaDescription": "Slow or blocked drain in your LA home? Learn common causes, what a plumber does, and the real cost ($135–$315) to get it cleared.",
+  "intro": "A slow-draining sink or tub is one of the most common plumbing complaints in Los Angeles, whether you're in a pre-war bungalow with decades-old pipes or a new-build apartment with modern plumbing that's still prone to clogs. Left alone, a partial clog usually gets worse and can lead to backups or water damage. Here's what typically causes it and what it costs to fix in LA.",
+  "causes": [
+    "Hair, soap scum, and grease build up inside pipes over time, especially in bathroom sinks and tubs.",
+    "Older homes in neighborhoods with pre-war bungalows often have original cast-iron or clay pipes that have narrowed or corroded inside.",
+    "Tree roots can infiltrate older sewer lines, particularly in areas with mature landscaping common around mid-century homes.",
+    "Food scraps, coffee grounds, or grease poured down kitchen sinks harden and trap other debris.",
+    "In newer apartment buildings, shared plumbing stacks can clog from a neighboring unit's waste, causing slow drains even if your own habits are fine."
+  ],
+  "whatProDoes": [
+    "Inspects the fixture and asks about symptoms (slow drain, gurgling, bad smell) to locate the likely clog location.",
+    "Uses a mechanical drain snake or auger to physically break up or pull out the blockage.",
+    "For tougher or deeper clogs, may use a motorized drain machine that reaches further into the pipe.",
+    "Runs water through the line afterward to confirm the clog is cleared and drainage has returned to normal.",
+    "Checks nearby fixtures or the cleanout access to rule out a larger issue further down the line, such as a main sewer blockage."
+  ],
+  "diyOrPro": "A simple slow drain in a bathroom sink or tub is often safe to try yourself with a plunger or a basic hand-held drain snake. If multiple fixtures are backing up at once, water is coming up from a floor drain, or you smell sewage, that points to a main line issue — stop and call a plumber, since forcing a clog in the wrong spot can cause a backup into your home.",
+  "priceNote": "",
+  "faqs": [],
+  "price": {
+    "low": 135,
+    "high": 315,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

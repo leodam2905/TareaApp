@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "running-toilet-repair",
+  "problemTitle": "Running toilet repair",
+  "generatedAt": "2026-08-26T01:51:19.224Z",
+  "metaTitle": "Running Toilet Repair in Long Beach, CA | $135–$220",
+  "metaDescription": "Fix a running toilet in Long Beach fast. Flat labor rate $135–$220 based on $94/hr, 1-2 hours. Common in older Long Beach bungalows and condos.",
+  "intro": "That hissing or trickling sound from your toilet tank in Long Beach isn't just annoying — it's wasting water and adding dollars to your monthly bill. Whether you're in a waterfront condo with newer fixtures or an older Long Beach bungalow or duplex with original plumbing, a running toilet almost always points to a worn part inside the tank.",
+  "causes": [
+    "The flapper (the rubber seal at the bottom of the tank) has worn out, warped, or no longer seats properly, letting water leak into the bowl.",
+    "The fill valve is misadjusted or failing, causing water to run continuously or refill more than needed.",
+    "The float is set too high, so water keeps overflowing into the overflow tube.",
+    "The chain connecting the flush handle to the flapper is tangled, too tight, or too loose.",
+    "In many of Long Beach's older duplexes and bungalows, mineral buildup or aging original tank hardware causes parts to degrade faster than in newer construction."
+  ],
+  "whatProDoes": [
+    "Removes the tank lid and flushes the toilet to observe exactly where the leak or water flow issue is occurring.",
+    "Inspects and tests the flapper, fill valve, float, and flush chain to pinpoint the failing part.",
+    "Replaces the flapper and/or fill valve if worn, and adjusts the float and chain to the correct settings.",
+    "Checks the water level against the overflow tube line to prevent future running or overflow.",
+    "Runs multiple flush cycles to confirm the toilet fills, shuts off, and stays quiet."
+  ],
+  "diyOrPro": "If you're comfortable removing a tank lid and don't mind getting your hands wet, replacing a flapper is a reasonable DIY task for many Long Beach homeowners. But if the toilet is older, parts are corroded or hard to access, or you've already tried a replacement flapper without success, it's worth calling a pro rather than guessing at fill valve adjustments that could lead to overflow or water damage.",
+  "priceNote": "This job is priced at $135 to $220 in Long Beach, based on a $94 per hour rate for a typical 1-2 hour repair. The time within that range depends on how straightforward the fix is — a simple flapper swap runs shorter, while diagnosing and replacing multiple worn parts in an older toilet, common in some of Long Beach's vintage bungalows, can take closer to the 2-hour mark.",
+  "faqs": [
+    {
+      "q": "Why is my water bill higher than usual if the toilet doesn't sound like it's running?",
+      "a": "A running toilet doesn't always make noise — sometimes the leak is silent, with water slowly seeping past a worn flapper into the bowl. If your bill has crept up, it's worth checking for this even if you haven't heard anything unusual."
+    },
+    {
+      "q": "Can a running toilet cause any real damage if I wait to fix it?",
+      "a": "A running toilet itself typically won't cause structural damage, but it wastes a significant amount of water over time and can strain the fill valve further. If the tank is overflowing into the bowl constantly, it's best to get it looked at sooner rather than later."
+    },
+    {
+      "q": "Do older toilets in Long Beach duplexes need special parts?",
+      "a": "Most running toilet repairs use standard, widely available flapper and fill valve parts that fit the vast majority of tank designs, including older models. In rare cases with unusual or vintage tank hardware, a pro may need to source a specific replacement part, which could affect the visit."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

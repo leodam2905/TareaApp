@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "leaky-faucet-repair",
+  "problemTitle": "Leaky faucet repair",
+  "generatedAt": "2026-08-26T01:41:48.671Z",
+  "metaTitle": "Leaky Faucet Repair in Santa Monica, CA | Tarea",
+  "metaDescription": "Leaky faucet in Santa Monica? Coastal air corrodes fixtures fast. Repair costs $135-$220. See causes, what a plumber does, and when to call one.",
+  "intro": "A dripping faucet in Santa Monica is rarely just annoying — it's often a sign that the salt-laden coastal air has already started corroding the internal hardware. Left alone, that drip wastes water and can lead to mineral buildup or fixture failure. Most repairs are quick, but the cause matters for how long the fix lasts.",
+  "causes": [
+    "Worn or corroded rubber washers and O-rings, sped up by the salty coastal air common near the Santa Monica shoreline",
+    "Mineral or corrosion buildup inside the valve seat, especially in older homes with original fixtures",
+    "A loose or cracked cartridge in single-handle faucets, which wears out faster in humid, salt-exposed bathrooms and kitchens",
+    "Corroded or pitted metal components in exterior or near-window faucets exposed to ocean air",
+    "Improper installation or a mismatched replacement part from a previous repair"
+  ],
+  "whatProDoes": [
+    "Shuts off the water supply to the fixture and relieves pressure in the line",
+    "Disassembles the faucet handle and spout to inspect washers, O-rings, cartridges, and valve seats for wear or corrosion",
+    "Replaces worn or corroded parts with new components matched to the faucet's make and model",
+    "Cleans mineral deposits or corrosion from the valve seat and reassembles the faucet",
+    "Tests the repaired faucet under water pressure to confirm the leak is fixed and there's no new dripping"
+  ],
+  "diyOrPro": "If you're comfortable turning off the shutoff valve and have basic tools, replacing a worn washer or O-ring can sometimes be a manageable DIY task. However, if the faucet is old, heavily corroded from coastal exposure, or you're unsure which part is failing, it's easy to strip fittings or crack a valve body, turning a small leak into a bigger water damage problem — that's when calling a plumber makes sense.",
+  "priceNote": "This repair in Santa Monica runs $135 to $220, based on a $94 hourly rate and jobs that typically take 1 to 2 hours. The time within that range depends on how corroded the internal parts are and whether replacement components need to be sourced for an older or less common faucet model.",
+  "faqs": [
+    {
+      "q": "Why does my faucet keep leaking even after a previous repair?",
+      "a": "This is common in Santa Monica because ongoing exposure to coastal air can corrode new parts faster than expected, or the earlier repair may have used a mismatched part. A plumber can identify whether it's a recurring corrosion issue or an installation problem."
+    },
+    {
+      "q": "Can I just tighten the faucet handle to stop the drip?",
+      "a": "Tightening might reduce the drip temporarily, but if the cause is a worn washer, O-ring, or corroded valve seat, the leak will return. The underlying part usually needs to be replaced."
+    },
+    {
+      "q": "Is a leaky faucet urgent, or can it wait?",
+      "a": "It's not usually dangerous, but ignoring it wastes water and can allow corrosion to spread to other parts of the fixture or the surrounding plumbing, especially given the coastal air's effect on metal hardware. It's worth addressing within a few weeks."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

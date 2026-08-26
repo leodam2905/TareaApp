@@ -1,0 +1,47 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "dishwasher-installation",
+  "problemTitle": "Dishwasher installation",
+  "generatedAt": "2026-08-26T02:07:44.984Z",
+  "metaTitle": "Dishwasher Installation in Inglewood, CA | Tarea",
+  "metaDescription": "Professional dishwasher installation in Inglewood, from $205-$295. Covers older home plumbing quirks and rental turnovers alike.",
+  "intro": "Whether you're replacing a dishwasher in an older Inglewood bungalow or installing one in a freshly renovated rental unit, the hookup often isn't as simple as it looks. Many Inglewood homes built decades ago were never plumbed for a dishwasher, and newer rental remodels sometimes have cabinetry that doesn't match standard appliance dimensions.",
+  "causes": [
+    "A new dishwasher was purchased to replace a broken or outdated unit.",
+    "The kitchen never had a dishwasher before and needs new water, drain, and electrical connections added.",
+    "A rental property renovation added cabinetry space for a dishwasher but no functioning hookup yet.",
+    "Older copper or galvanized plumbing in the home needs an adapter to connect to a modern dishwasher.",
+    "The existing dishwasher connection is outdated or corroded and can't safely support a new unit."
+  ],
+  "whatProDoes": [
+    "Shuts off the water supply and power to the kitchen before starting any work.",
+    "Removes the old dishwasher if one exists, disconnecting water, drain, and electrical lines safely.",
+    "Installs or connects the water supply line, drain line, and electrical wiring to the new dishwasher.",
+    "Slides the unit into place, levels it, and secures it to the surrounding cabinetry.",
+    "Turns the water and power back on, runs a test cycle, and checks all connections for leaks."
+  ],
+  "diyOrPro": "Swapping a dishwasher into an existing, working hookup with matching connections can sometimes be a reasonable DIY project for someone comfortable with basic plumbing. However, many Inglewood homes have older wiring or plumbing that isn't up to current code, and running new water, drain, or electrical lines involves real risk of leaks, water damage, or electrical hazards. If there's no existing hookup, or if the plumbing looks outdated, it's safer to call a pro.",
+  "priceNote": "This job is priced at $87 per hour and typically takes 2 to 3 hours, putting the total between $205 and $295. Jobs on the higher end usually involve older homes needing new water lines or electrical adapters, while installs into existing, functional hookups in renovated rentals tend to land closer to the lower end.",
+  "faqs": [
+    {
+      "q": "Do I need to buy the dishwasher before booking installation?",
+      "a": "Yes, the pro installs the dishwasher you provide. Make sure you've checked that it fits the cabinet opening before the appointment."
+    },
+    {
+      "q": "What if my kitchen has never had a dishwasher before?",
+      "a": "The pro can run new water, drain, and electrical connections, but this may take closer to the 3-hour end of the estimate depending on the layout of your kitchen."
+    },
+    {
+      "q": "Is it dangerous if my home has old plumbing or wiring?",
+      "a": "It can be. Older galvanized pipes or outdated electrical circuits increase the risk of leaks or electrical issues, so it's best to have a professional evaluate and handle the connection rather than attempting it yourself."
+    }
+  ],
+  "price": {
+    "low": 205,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "APPLIANCE_REPAIR",
+  "categoryLabel": "Appliance Repair"
+}

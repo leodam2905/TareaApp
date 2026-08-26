@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "garbage-disposal-replacement",
+  "problemTitle": "Garbage disposal replacement",
+  "generatedAt": "2026-08-26T01:42:35.786Z",
+  "metaTitle": "Garbage Disposal Replacement in Santa Monica | Tarea",
+  "metaDescription": "Garbage disposal not working in Santa Monica? Replacement runs $135–$220. Learn common causes, what a plumber does, and DIY vs pro guidance.",
+  "intro": "A garbage disposal that hums, leaks, or won't turn on anymore is one of those kitchen problems that gets worse the longer you wait. In Santa Monica, the salty coastal air can speed up corrosion on the metal housing and mounting hardware, so disposals here sometimes fail sooner than in drier inland areas.",
+  "causes": [
+    "The motor has burned out from age or years of grinding tough food scraps.",
+    "Corrosion has eaten into the housing or electrical connections, which coastal humidity and salt air make more likely.",
+    "A jam or foreign object has permanently damaged the flywheel or blades.",
+    "The unit is leaking from a cracked housing or worn seals near the sink flange.",
+    "Frequent tripping of the reset button signals internal wiring or motor failure rather than a simple fix."
+  ],
+  "whatProDoes": [
+    "Shuts off power and water to the sink, then disconnects the old disposal from the drain lines and electrical connection.",
+    "Removes the failed unit and inspects the sink flange, mounting assembly, and plumbing connections for wear or corrosion.",
+    "Installs the new disposal, connecting it to the drain trap, dishwasher line if present, and power supply.",
+    "Tests the unit for leaks, proper drainage, and secure operation before finishing up.",
+    "Cleans up the work area and hauls away the old unit."
+  ],
+  "diyOrPro": "Replacing a garbage disposal involves working with electrical wiring near water and cutting off the water and power supply correctly, so it's not a great first-time DIY project. If you're comfortable with basic plumbing and have shut off the circuit breaker, a straightforward swap of the same model can be manageable, but any signs of wiring damage, corrosion on connections, or uncertainty about the electrical setup mean it's safer to call a plumber.",
+  "priceNote": "This job runs $135 to $220 in Santa Monica, based on a $94 per hour rate for a typical 1 to 2 hour job. The exact time depends on how accessible the plumbing is under your sink and whether corrosion on old fittings, common in this coastal area, makes removal of the old unit slower than usual.",
+  "faqs": [
+    {
+      "q": "How do I know if my disposal needs replacing instead of repair?",
+      "a": "If the motor hums but doesn't spin, won't reset, or you see cracks or rust on the housing, replacement is usually more reliable than repair. A plumber can confirm during the visit whether the unit is worth fixing."
+    },
+    {
+      "q": "Will the new disposal work with my existing sink and dishwasher setup?",
+      "a": "In most cases, yes. Standard disposals fit standard sink flanges and dishwasher drain lines, and the plumber will confirm compatibility before installing."
+    },
+    {
+      "q": "Does living near the ocean actually affect how long a disposal lasts?",
+      "a": "Salt air and higher humidity can accelerate corrosion on metal components and electrical connections over time, which is why disposals in coastal Santa Monica homes sometimes fail earlier than expected."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

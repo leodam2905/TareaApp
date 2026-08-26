@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "cabinet-door-adjustment",
+  "problemTitle": "Cabinet door adjustment",
+  "generatedAt": "2026-08-26T02:11:05.838Z",
+  "metaTitle": "Cabinet Door Adjustment in Torrance, CA | Tarea",
+  "metaDescription": "Cabinet doors sagging or not closing right in your Torrance home? Get them adjusted for $135-$200. See what causes it and what a pro does.",
+  "intro": "If you've noticed a cabinet door in your Torrance kitchen or bathroom hanging crooked, sticking, or refusing to latch, you're dealing with a common issue in the city's older housing stock. Many Torrance homes were built in the 1950s and 60s, and decades of hinge wear, wood movement, and prior owners' DIY fixes can throw cabinet doors out of alignment. This is usually a straightforward fix, not a sign you need new cabinets.",
+  "causes": [
+    "Original hinges from the 1950s-60s installation have loosened or worn out over sixty-plus years of use.",
+    "Wood cabinet frames and doors have expanded or shrunk slightly due to humidity changes common near the coast.",
+    "Screws holding the hinges have stripped the surrounding wood, letting the door sag.",
+    "A previous repair or cabinet refacing job left hinges misaligned or mismatched.",
+    "The house has settled over time, subtly shifting the cabinet box out of square."
+  ],
+  "whatProDoes": [
+    "Inspects the hinges, screws, and cabinet frame to figure out exactly why the door isn't sitting right.",
+    "Tightens, repositions, or replaces worn screws and hinges as needed.",
+    "Adjusts the hinge screws to shift the door's position so it sits flush and closes evenly.",
+    "Checks that the door swings smoothly and latches without forcing.",
+    "Tests all adjustments by opening and closing the door several times to confirm the fix holds."
+  ],
+  "diyOrPro": "If a single screw is visibly loose, tightening it yourself with a screwdriver is safe and might solve the problem. But if the door is sagging badly, the wood around the screw holes is stripped, or you're unsure which of several adjustment screws to turn, it's easy to make things worse or strip the wood further, so calling a pro is the safer bet.",
+  "priceNote": "This job runs $135 to $200 in Torrance, based on an $83 hourly rate and a typical job length of 1 to 2 hours. Homes with multiple misaligned doors, stripped screw holes that need reinforcing, or older hinges that require full replacement will land toward the higher end of that range.",
+  "faqs": [
+    {
+      "q": "Why did my cabinet door suddenly start sagging after years of being fine?",
+      "a": "It's usually gradual wear on hinges and screws finally reaching a tipping point, sometimes sped up by humidity swings or a heavier load being placed on the door repeatedly."
+    },
+    {
+      "q": "Can this fix a door that won't close at all, not just one that's crooked?",
+      "a": "Yes, adjusting or replacing hinges typically resolves both alignment issues and doors that won't latch, since the two problems usually share the same cause."
+    },
+    {
+      "q": "Will the pro need to replace my cabinet doors or just the hardware?",
+      "a": "In most cases only the hinges and screws need attention. Full door replacement is rarely necessary for an alignment issue unless the wood itself is cracked or warped."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 200,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "cabinet-door-adjustment",
+  "problemTitle": "Cabinet door adjustment",
+  "generatedAt": "2026-08-26T02:06:36.076Z",
+  "metaTitle": "Cabinet Door Adjustment in Inglewood, CA | Tarea",
+  "metaDescription": "Sagging or misaligned cabinet doors in your Inglewood home? Get them adjusted for $135–$200. See what causes it and what a pro actually does.",
+  "intro": "If a kitchen or bathroom cabinet door in your Inglewood home hangs crooked, won't close flush, or sticks when you open it, the hinges or frame have likely shifted out of alignment. This is common in both older single-family homes with original wood cabinetry and in recently renovated rentals where new cabinets were installed quickly. It's usually a quick fix that doesn't require replacing anything.",
+  "causes": [
+    "Hinges have loosened over time from regular daily use.",
+    "The house has settled, which is common in older Inglewood homes, causing door frames to shift slightly.",
+    "Cabinets in newer renovations were installed with hinges that weren't fully tightened or adjusted at the time.",
+    "Humidity changes have caused wood doors to swell or shrink slightly.",
+    "A previous DIY adjustment or repair was done incorrectly."
+  ],
+  "whatProDoes": [
+    "Inspects the hinges, cabinet frame, and door to identify exactly where the misalignment is coming from.",
+    "Tightens or replaces loose or stripped screws holding the hinges in place.",
+    "Adjusts the hinge screws to shift the door up, down, left, or right so it sits flush and level.",
+    "Checks that the door closes smoothly and latches properly without rubbing against neighboring doors or the frame.",
+    "Tests all affected doors again after adjustment to confirm the fix holds under normal use."
+  ],
+  "diyOrPro": "If you're comfortable with a screwdriver, tightening an obviously loose hinge screw is a reasonable first step to try yourself. But if the door is warped, the frame is damaged, or multiple doors are misaligned across a cabinet run, it's easy to make things worse by over-tightening or stripping the screw holes, so calling a pro makes more sense at that point.",
+  "priceNote": "This job runs $135 to $200 in Inglewood, based on an $83/hour rate and jobs typically taking 1 to 2 hours. The time needed depends on how many doors need adjusting and whether the hinges or cabinet frame are damaged versus just loose.",
+  "faqs": [
+    {
+      "q": "Why does my cabinet door swing open on its own?",
+      "a": "This usually means the hinges have loosened or the door is slightly warped, causing it to lose the tension that normally holds it shut. A pro can adjust or replace the hinges to restore proper tension."
+    },
+    {
+      "q": "How many doors can be adjusted in one visit?",
+      "a": "Since the price is based on time rather than per door, a pro can typically address several doors within the 1 to 2 hour window, depending on how much adjustment each one needs."
+    },
+    {
+      "q": "Will adjusting the hinges damage my cabinets?",
+      "a": "No, a proper adjustment just involves tightening or repositioning existing hardware. If screw holes are stripped, the pro can fill and re-drill them so the hinge holds securely."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 200,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "ceiling-fan-installation",
+  "problemTitle": "Ceiling fan installation",
+  "generatedAt": "2026-08-26T01:56:33.238Z",
+  "metaTitle": "Ceiling Fan Installation in Glendale, CA | Cost & Process",
+  "metaDescription": "Ceiling fan installation in Glendale runs $235–$335. Learn what's involved, when it's safe to DIY, and what a licensed electrician actually does.",
+  "intro": "If you're staring at a bare ceiling box or a wobbly old fan in your Glendale home, you're probably wondering what it takes to get a fan installed properly. Between hillside homes with vaulted or angled ceilings and mid-century apartment buildings with older wiring, the job can look different from house to house. Getting it done right matters, since a fan that's mounted or wired incorrectly can be a fire or fall hazard.",
+  "causes": [
+    "The existing ceiling electrical box isn't rated to support a fan's weight and motion, which is common in older mid-century units.",
+    "There's no ceiling box at all, just a light fixture wired directly, which means new blocking or a fan-rated box has to be added.",
+    "Sloped or vaulted ceilings, typical in Glendale's hillside homes, require a special downrod and mounting kit that a standard flush-mount fan doesn't include.",
+    "The wall switch only has a single line, so adding separate fan and light control means running new wiring or installing a remote/wall control kit.",
+    "Aging wiring or a knob-and-tube setup found in some older Glendale apartment buildings needs to be checked before any new fixture is connected."
+  ],
+  "whatProDoes": [
+    "Turns off power at the breaker and confirms it's off with a voltage tester before touching any wiring.",
+    "Checks whether the existing electrical box is fan-rated and, if not, installs a proper fan-rated box secured to a joist or brace.",
+    "Assembles the fan per the manufacturer's instructions, including the downrod if the ceiling is sloped or vaulted.",
+    "Connects the wiring, mounts the fan securely, and tests balance, speed settings, and light function (if included).",
+    "Confirms the wall switch or remote control operates correctly and does a final safety check before closing everything up."
+  ],
+  "diyOrPro": "If you're simply swapping one fan for another identical model on a flat ceiling with an existing fan-rated box, some homeowners handle this themselves. But if there's no fan-rated box, the ceiling is vaulted, the wiring looks old or unclear, or you're not fully comfortable shutting off and testing a circuit, it's not worth the risk — a fan that isn't properly supported can fall, and improper wiring is a fire hazard. When in doubt, have a licensed electrician handle it.",
+  "priceNote": "In Glendale, ceiling fan installation runs $235 to $335, based on a $100/hour rate for a typical 2 to 3 hour job. The time and cost depend mostly on whether the existing box needs upgrading, whether a downrod kit is needed for a sloped ceiling, and how accessible the wiring is in older apartment buildings versus newer construction.",
+  "faqs": [
+    {
+      "q": "Do I need an electrician, or can a handyman install my ceiling fan?",
+      "a": "Because this job involves working with live electrical wiring and supporting a heavy, moving fixture overhead, it should be done by someone qualified to handle electrical work safely, which is why it's priced and scoped as an electrical job."
+    },
+    {
+      "q": "My apartment ceiling doesn't have a fan box, just a light. What happens then?",
+      "a": "The electrician will need to install a fan-rated ceiling box secured to a joist or add bracing, which is common in older Glendale buildings and is factored into the estimated 2-3 hour job time."
+    },
+    {
+      "q": "Can a ceiling fan be installed on my vaulted or angled ceiling?",
+      "a": "Yes, but it requires a sloped-ceiling mounting kit and often a longer downrod, which many hillside homes in Glendale need — let the electrician know about the ceiling angle when you book."
+    }
+  ],
+  "price": {
+    "low": 235,
+    "high": 335,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

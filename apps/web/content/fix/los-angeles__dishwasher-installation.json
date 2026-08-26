@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "dishwasher-installation",
+  "problemTitle": "Dishwasher installation",
+  "generatedAt": "2026-08-26T01:41:33.785Z",
+  "metaTitle": "Dishwasher Installation in Los Angeles | $205–$295",
+  "metaDescription": "Professional dishwasher installation for LA homes, from pre-war bungalows to new-build apartments. Flat labor pricing: $205 to $295.",
+  "intro": "Whether you're swapping out an old unit in a 1930s bungalow kitchen or connecting a new dishwasher in a modern LA apartment, the plumbing and electrical hookups have to be done correctly to avoid leaks or short circuits. A lot of homeowners assume it's a simple plug-and-play job, but older homes especially often have quirks that complicate the install.",
+  "causes": [
+    "The old dishwasher was removed or never installed, leaving supply lines and drain hookups exposed or capped.",
+    "A newly purchased dishwasher needs its water line, drain hose, and electrical connection set up for the first time.",
+    "Pre-war bungalow kitchens often have outdated plumbing configurations that don't match modern dishwasher connectors.",
+    "New-build apartments may have manufacturer-installed rough-ins that still require the final appliance hookup.",
+    "Cabinet or countertop layouts in mid-century homes sometimes need minor adjustments to fit a new dishwasher size."
+  ],
+  "whatProDoes": [
+    "Shuts off water and power to the work area, then removes the old unit if one is present.",
+    "Checks the space, cabinet opening, and existing water/drain lines for compatibility with the new dishwasher.",
+    "Connects the water supply line, drain hose, and electrical wiring or plug according to the manufacturer's specs.",
+    "Slides the dishwasher into place, levels it, and secures it to the countertop or cabinets.",
+    "Runs a test cycle to check for leaks, proper drainage, and correct operation before finishing up."
+  ],
+  "diyOrPro": "If you're comfortable shutting off water and power and have a straightforward setup with accessible connections, some homeowners do attempt this themselves. But dishwasher installation involves both electrical wiring and water lines, and a bad connection can lead to water damage under cabinets or flooring, or electrical hazards — problems that are common in older LA homes with outdated wiring or plumbing. If anything about the hookup looks nonstandard or you're not sure the electrical is safe, it's worth having a pro handle it.",
+  "priceNote": "This job is priced at $87 per hour and typically takes 2 to 3 hours, putting the total between $205 and $295. The time can run longer in older bungalows where plumbing or electrical connections need adjusting to fit modern appliance standards, while newer apartment installs with existing rough-ins tend to fall toward the lower end.",
+  "faqs": [
+    {
+      "q": "Do I need to buy the dishwasher myself before scheduling installation?",
+      "a": "Yes, this pricing covers labor for installing a dishwasher you already have on hand, not the appliance itself."
+    },
+    {
+      "q": "Will the pro haul away my old dishwasher?",
+      "a": "That depends on the individual pro's setup, so it's best to ask when scheduling whether removal and haul-away of the old unit is included."
+    },
+    {
+      "q": "My kitchen is older and doesn't have a dishwasher space cut out yet—can this still be done?",
+      "a": "If the job requires cutting cabinetry, extending plumbing lines, or adding new electrical circuits, that's beyond a standard installation and may need a separate quote."
+    }
+  ],
+  "price": {
+    "low": 205,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "APPLIANCE_REPAIR",
+  "categoryLabel": "Appliance Repair"
+}

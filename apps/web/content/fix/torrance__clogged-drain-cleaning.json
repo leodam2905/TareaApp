@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "clogged-drain-cleaning",
+  "problemTitle": "Clogged drain cleaning",
+  "generatedAt": "2026-08-26T02:08:33.957Z",
+  "metaTitle": "Clogged Drain Cleaning in Torrance, CA | $135-$315",
+  "metaDescription": "Slow or backed-up drain in your Torrance home? Get it cleared fast. Flat, honest pricing for 1950s-60s single-family homes. See what's included.",
+  "intro": "If water is backing up in your sink, tub, or floor drain, you're dealing with a clogged drain — a common issue in Torrance's older single-family homes. Many of these houses were built in the 1950s and 60s with original cast iron or clay sewer lines, which narrow over time and trap debris more easily than modern PVC pipe. Left alone, a slow drain can turn into a full backup that affects multiple fixtures at once.",
+  "causes": [
+    "Decades of grease, soap scum, and hair buildup inside original cast iron pipes, which corrode and roughen on the inside, giving debris more to stick to.",
+    "Tree roots intruding into aging clay or cast iron sewer laterals, common in Torrance neighborhoods with mature trees planted along the same era as the homes.",
+    "A single-fixture clog from food waste, wipes, or foreign objects lodged in the trap or branch line.",
+    "Sediment and mineral scale narrowing pipe diameter over 60-plus years, slowing drainage even without a full blockage.",
+    "A collapsed or bellied section of old pipe that traps water and solids instead of letting them flow through."
+  ],
+  "whatProDoes": [
+    "Runs a camera inspection or basic diagnostic to locate the clog and identify whether it's a fixture-level blockage or a deeper line issue.",
+    "Uses a drain snake or motorized auger to break up and clear the obstruction, working from the nearest cleanout or fixture drain.",
+    "Flushes the line with water to confirm flow is restored and checks nearby fixtures for slow drainage or gurgling.",
+    "Checks the accessible section of pipe for signs of corrosion, root intrusion, or bellying that could cause repeat clogs in an older system.",
+    "Advises on any follow-up needed, such as hydro-jetting or a sewer camera inspection, if the clog points to a larger pipe problem."
+  ],
+  "diyOrPro": "A plunger or a store-bought drain snake is fine to try first on a single slow sink or tub drain. But if multiple drains are backing up at once, water is coming up through a floor drain, or you smell sewage, that points to a main line issue in the aging pipe common to Torrance homes — call a plumber rather than pouring chemical drain cleaner into old cast iron, which can worsen corrosion and won't fix root intrusion.",
+  "priceNote": "This job runs $135 to $315 in Torrance, based on a $94 hourly rate and typical jobs taking 1 to 3 hours. A simple single-fixture clog usually falls at the lower end, while a stubborn blockage in an older cast iron or clay line — or one requiring camera inspection — takes longer and lands toward the higher end.",
+  "faqs": [
+    {
+      "q": "Why does my drain keep clogging even after I clear it?",
+      "a": "In homes from the 1950s and 60s, this often means the original cast iron or clay pipe has internal corrosion, scale buildup, or root intrusion that keeps trapping new debris. Clearing the immediate clog helps short-term, but a camera inspection can show if the pipe itself needs attention."
+    },
+    {
+      "q": "Is it safe to use liquid drain cleaner in an old house like mine?",
+      "a": "It's not recommended. Chemical drain cleaners can accelerate corrosion in aging cast iron pipe and won't clear root intrusion or a collapsed section, which are common in Torrance's older sewer lines. A mechanical snake is generally safer for these systems."
+    },
+    {
+      "q": "How do I know if it's just one drain or the whole sewer line?",
+      "a": "If only one sink or tub is slow, it's likely a localized clog in that fixture's trap or branch line. If multiple drains back up together, or you see water coming up in a shower or floor drain when you run the washing machine, that usually points to a main line blockage that needs a plumber's diagnosis."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 315,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

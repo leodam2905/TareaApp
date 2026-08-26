@@ -1,0 +1,47 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "deep-cleaning",
+  "problemTitle": "Deep cleaning",
+  "generatedAt": "2026-08-26T02:07:07.486Z",
+  "metaTitle": "Deep Cleaning in Inglewood, CA | Pricing & What's Included",
+  "metaDescription": "Deep cleaning for Inglewood homes and rentals: what's covered, what drives the cost, and the $200-$365 price range explained.",
+  "intro": "Whether it's an older single-family home in Inglewood with years of built-up grime in corners and vents, or a recently renovated rental that still has construction dust behind appliances and inside cabinets, a deep clean tackles what a regular wipe-down skips. This is the thorough, top-to-bottom service people book before move-in, after a renovation, or when a home just hasn't had one in a long time.",
+  "causes": [
+    "Older homes in Inglewood often have decades of dust and grease trapped in baseboards, window tracks, and behind appliances that never get moved during regular cleaning.",
+    "Recently renovated rentals frequently have fine drywall dust and paint residue coating surfaces, light fixtures, and inside closets even after a basic cleanup.",
+    "Kitchens accumulate grease buildup on cabinet fronts, range hoods, and backsplash tile that ordinary sponge cleaning doesn't cut through.",
+    "Bathrooms develop soap scum, hard water deposits, and grout discoloration over time, especially in homes with original tile.",
+    "Homes that have been vacant or between tenants often need extra attention to closets, vents, and baseboards that collected dust while unused."
+  ],
+  "whatProDoes": [
+    "Dusts and wipes down all surfaces including baseboards, window sills, ceiling fans, and light fixtures from top to bottom.",
+    "Cleans inside and outside of kitchen cabinets, appliances, and the range hood to remove grease and residue.",
+    "Scrubs bathrooms thoroughly, including grout lines, tile, fixtures, and inside cabinets under sinks.",
+    "Vacuums and mops all flooring, including edges and corners that regular cleaning tends to miss.",
+    "Wipes down interior windows, door frames, and switch plates, and addresses any leftover construction dust in renovated units."
+  ],
+  "diyOrPro": "A deep clean is generally safe to do yourself if you have the time and don't mind several hours of detailed scrubbing, especially for a smaller home. It's worth hiring a pro when you're dealing with a large older property, heavy grease or mineral buildup, or a post-renovation rental where dust has settled into places you can't easily reach — the job goes faster and more thoroughly with the right tools and experience.",
+  "priceNote": "This job runs $200 to $365 in Inglewood, based on a $56 hourly rate and jobs typically taking 3 to 6 hours. Smaller, well-maintained homes tend to land at the lower end, while larger older properties or rentals with heavy post-renovation dust push toward the higher end because more surfaces and detail work are involved.",
+  "faqs": [
+    {
+      "q": "How is a deep clean different from a regular cleaning?",
+      "a": "A regular cleaning covers surface-level tidying like dusting and mopping, while a deep clean goes further into details like baseboards, window tracks, inside cabinets, and grout that aren't touched during routine visits."
+    },
+    {
+      "q": "Do I need to be home during the cleaning?",
+      "a": "It's not required, but many people choose to be home or have someone available to let the cleaner in and address any specific areas of concern, especially in an older home with unique layout quirks."
+    },
+    {
+      "q": "Will a deep clean remove construction dust from a renovation?",
+      "a": "Yes, that's one of the more common reasons people book this service in recently renovated rentals, since drywall dust settles into vents, closets, and light fixtures that a basic cleanup often misses."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

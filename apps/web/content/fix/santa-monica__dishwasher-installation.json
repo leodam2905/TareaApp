@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "dishwasher-installation",
+  "problemTitle": "Dishwasher installation",
+  "generatedAt": "2026-08-26T01:46:04.170Z",
+  "metaTitle": "Dishwasher Installation in Santa Monica | Tarea",
+  "metaDescription": "Professional dishwasher installation in Santa Monica for $205-$295. Licensed pros handle water lines, electrical, and leveling. Book with Tarea today.",
+  "intro": "Installing a new dishwasher in Santa Monica involves more than sliding it into place — water supply lines, drain connections, and electrical hookups all need to be done correctly to avoid leaks or shorts. Santa Monica's coastal air can also accelerate corrosion on fittings and hardware, so getting connections tight and properly sealed matters even more here than inland.",
+  "causes": [
+    "An old dishwasher has stopped working or been removed for a kitchen remodel, leaving no appliance connected.",
+    "A newly purchased dishwasher needs its water line, drain hose, and power connection set up for the first time.",
+    "Corroded or worn shutoff valves and fittings, common near the coast, need replacing as part of the swap.",
+    "The kitchen layout has changed, requiring new plumbing or electrical routing to reach the dishwasher location.",
+    "A previous installation was done incorrectly, causing leaks, poor drainage, or an unlevel unit that needs correcting."
+  ],
+  "whatProDoes": [
+    "Shuts off the water supply and disconnects the old unit if one is present, checking for any existing leaks or damage.",
+    "Inspects and, if needed, replaces the water supply line, shutoff valve, and drain hose, using corrosion-resistant fittings suited to coastal conditions.",
+    "Positions and levels the new dishwasher, connecting the water line, drain, and electrical supply according to manufacturer specs.",
+    "Runs a test cycle to check for leaks, proper drainage, and correct operation before finishing up.",
+    "Seals and secures the unit under the counter, checks the door alignment, and cleans up the work area."
+  ],
+  "diyOrPro": "If you're comfortable working with basic hand tools and the dishwasher connects to existing, functioning water and electrical lines, some homeowners handle simple swaps themselves. However, any work involving new electrical circuits, gas lines nearby, or plumbing modifications should be left to a licensed pro, since a poor connection can cause water damage or an electrical hazard. Given Santa Monica's salty coastal air, using the wrong fittings can also lead to premature corrosion, so professional-grade parts are worth it.",
+  "priceNote": "This job runs $205 to $295 in Santa Monica, based on a rate of $87 per hour for a typical 2-3 hour job. The exact time depends on whether existing water and electrical connections are usable or need replacement or repair work first.",
+  "faqs": [
+    {
+      "q": "Do I need to buy the dishwasher myself before booking installation?",
+      "a": "Yes, the pro installs the dishwasher you provide; this price covers labor and standard connection materials, not the appliance itself."
+    },
+    {
+      "q": "What if my kitchen doesn't have existing water or electrical hookups?",
+      "a": "If new plumbing or wiring needs to be run to the dishwasher location, that's additional work beyond a standard installation and may affect the price."
+    },
+    {
+      "q": "Will the old dishwasher be removed and hauled away?",
+      "a": "Basic disconnection and removal from the space is typically included, but confirm haul-away and disposal details when you book, since that can vary."
+    }
+  ],
+  "price": {
+    "low": 205,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "APPLIANCE_REPAIR",
+  "categoryLabel": "Appliance Repair"
+}

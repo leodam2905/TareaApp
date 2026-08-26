@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "running-toilet-repair",
+  "problemTitle": "Running toilet repair",
+  "generatedAt": "2026-08-26T01:42:02.605Z",
+  "metaTitle": "Running Toilet Repair in Santa Monica, CA | Tarea",
+  "metaDescription": "Toilet won't stop running? Santa Monica plumbers fix flappers, fill valves, and flush mechanisms for $135–$220. See what's involved before you call.",
+  "intro": "A toilet that runs constantly wastes water and can quietly add real dollars to your bill each month. In Santa Monica, the salty coastal air tends to corrode the metal fittings and chains inside older tank hardware faster than in drier inland areas, which is a common reason these repairs come up again after a few years. If jiggling the handle only fixes it for a minute, the internal parts likely need replacing.",
+  "causes": [
+    "The rubber flapper has warped, cracked, or no longer seals against the flush valve seat.",
+    "The fill valve is worn out and keeps letting water trickle into the tank.",
+    "The chain connecting the flapper to the flush handle is too long, too short, or has rusted apart.",
+    "Mineral or salt-laden coastal water has left deposits on the flush valve seat, preventing a tight seal.",
+    "The float is set too high, causing water to constantly spill into the overflow tube."
+  ],
+  "whatProDoes": [
+    "Removes the tank lid and checks the flapper, chain, and flush valve seat for wear, corrosion, or misalignment.",
+    "Tests the fill valve and float to see if water level and shutoff are working correctly.",
+    "Replaces the flapper and/or fill valve if they're worn, cracked, or corroded — common in coastal humidity.",
+    "Adjusts the float height and chain length so the flush cycle shuts off properly.",
+    "Flushes the toilet several times to confirm the tank fills, seals, and stops running as expected."
+  ],
+  "diyOrPro": "Replacing a flapper or adjusting a chain is a reasonable DIY task if you're comfortable removing a tank lid and don't mind getting your hands wet — most hardware stores sell universal flapper kits. Call a pro if you've already swapped parts and it still runs, if the shutoff valve is stuck or won't turn, or if you notice water pooling around the base, since that can point to a bigger seal or supply line issue.",
+  "priceNote": "This job runs $135 to $220 in Santa Monica, based on a $94 hourly rate for a typical 1-2 hour repair. The final cost depends on how many parts need replacing and whether corrosion from coastal humidity has made the old hardware harder to remove.",
+  "faqs": [
+    {
+      "q": "Why does my toilet keep running even after I jiggle the handle?",
+      "a": "Jiggling the handle usually just repositions a worn flapper temporarily. If the flapper or chain is damaged, it will fall back out of place and the toilet will keep running until those parts are replaced."
+    },
+    {
+      "q": "Will fixing a running toilet lower my water bill?",
+      "a": "Yes, a running toilet can waste a significant amount of water per day, so fixing the leak typically shows up as a noticeable drop on your next water bill."
+    },
+    {
+      "q": "Is a running toilet ever a sign of a bigger problem?",
+      "a": "Usually it's just worn internal parts, but if you also see water leaking around the base of the toilet or hear running water when nothing has been flushed for hours, it's worth having a plumber check the supply line and wax seal too."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

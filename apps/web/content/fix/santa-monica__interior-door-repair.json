@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "interior-door-repair",
+  "problemTitle": "Interior door repair",
+  "generatedAt": "2026-08-26T01:44:48.976Z",
+  "metaTitle": "Interior Door Repair in Santa Monica, CA | Tarea",
+  "metaDescription": "Sticking, misaligned, or hard-to-close interior doors in Santa Monica? Get them fixed for $135–$285. See causes, what a pro does, and DIY limits.",
+  "intro": "If an interior door in your Santa Monica home has started sticking, dragging on the frame, or refusing to latch, you're not imagining it. The marine layer and salt-heavy coastal air common along the Westside seep into wood and metal hardware, causing swelling and hinge wear that most inland homes don't deal with as often.",
+  "causes": [
+    "Humidity from the coastal air causes the wood door slab or frame to absorb moisture and swell, making the door bind against the frame.",
+    "Hinges, especially older or lower-cost ones, corrode or loosen faster in salt-air conditions, leading to sagging or misalignment.",
+    "Foundation settling common in older Santa Monica homes can shift the door frame slightly out of square over time.",
+    "Worn or stripped screws in hinge plates let the door sag, causing it to scrape the floor or frame.",
+    "A strike plate that's shifted out of position from repeated slamming or frame movement can keep the door from latching properly."
+  ],
+  "whatProDoes": [
+    "Inspects the door, frame, and hinges to identify where the misalignment or swelling is occurring.",
+    "Tightens, shims, or replaces worn hinges and hardware showing signs of coastal corrosion.",
+    "Planes or sands down swollen edges of the door slab so it clears the frame without binding.",
+    "Realigns or repositions the strike plate so the door latches and locks correctly.",
+    "Checks that the door swings, closes, and locks smoothly before finishing the job."
+  ],
+  "diyOrPro": "Tightening a loose hinge screw or lubricating a stiff hinge is a reasonable DIY task if you're comfortable with a screwdriver. But planing a swollen door, resetting a frame, or dealing with a door that won't latch at all is better left to a pro, since removing a door incorrectly can damage the frame or make the problem worse.",
+  "priceNote": "This job is billed at $83 per hour and typically takes 1 to 3 hours depending on how many issues need fixing and how much the door has swollen or shifted. That puts the total cost for interior door repair in Santa Monica between $135 and $285.",
+  "faqs": [
+    {
+      "q": "Why does my interior door only stick during certain times of year?",
+      "a": "Humidity from the coastal air fluctuates seasonally, and wood doors absorb and release moisture accordingly, which is why sticking often gets worse during damper months near the coast."
+    },
+    {
+      "q": "Can I just sand down the door myself instead of hiring someone?",
+      "a": "You can, but removing the door, sanding it evenly, and rehanging it without throwing off the alignment takes some experience — done poorly, it can create gaps or a door that swings unevenly."
+    },
+    {
+      "q": "Will fixing the door also fix the lock if it's not catching?",
+      "a": "Often yes, since a misaligned strike plate is a common reason locks don't catch, and a pro will typically address that as part of the repair."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 285,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

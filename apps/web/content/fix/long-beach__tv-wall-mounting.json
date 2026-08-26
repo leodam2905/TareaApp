@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "tv-wall-mounting",
+  "problemTitle": "TV wall mounting",
+  "generatedAt": "2026-08-26T01:52:59.262Z",
+  "metaTitle": "TV Wall Mounting in Long Beach, CA | $135–$205",
+  "metaDescription": "Professional TV wall mounting in Long Beach for bungalows, duplexes, and condos. Fixed price $135–$205. Safe stud and wall-type assessment included.",
+  "intro": "A TV propped on a stand or leaning against a wall is a tripping and tipping hazard, and getting it mounted securely means finding the right anchor point behind drywall, plaster, or even concrete. Long Beach homes range from 1920s bungalows and duplexes with lath-and-plaster walls to newer waterfront condos with concrete or steel-stud construction, so the wall itself often determines what hardware and technique are needed. Getting this wrong risks a TV pulling loose from the wall later.",
+  "causes": [
+    "Older bungalows and duplexes often have plaster over wood lath instead of drywall, which needs different anchors and can crack if drilled incorrectly.",
+    "Waterfront condo units sometimes have concrete or steel-stud walls that require masonry bits or specialty toggle anchors instead of standard wood screws.",
+    "Stud spacing in older Long Beach construction is not always the standard 16 inches, so studs need to be located rather than assumed.",
+    "Homeowners without a stud finder or masonry tools risk mounting into drywall alone, which cannot support a TV's weight long-term.",
+    "Routing cables inside the wall for a clean look requires cutting into drywall or plaster and fishing wires safely around any hidden wiring."
+  ],
+  "whatProDoes": [
+    "Identifies the wall type (drywall, plaster and lath, concrete, or stucco over masonry) and picks the matching anchor hardware.",
+    "Locates studs or confirms a solid anchor point using a stud finder, and marks bracket placement level with the TV size and viewing height.",
+    "Drills and secures the mounting bracket, using masonry anchors or toggle bolts if studs aren't available or the wall is concrete.",
+    "Attaches the TV to the bracket, checks it's level and securely locked in place, and tests the tilt or swivel motion if the mount allows it.",
+    "Manages visible cables with clips or a cable cover along the wall, or routes them through the wall if a cable-management kit is part of the job."
+  ],
+  "diyOrPro": "Mounting a lightweight TV on standard drywall with exposed studs and basic tools is something many people can attempt themselves. It's not a DIY job if the wall is plaster, concrete, or stucco, if you're unsure where studs are, or if you need to cut into the wall to hide cables, since drilling blind into an older wall can hit wiring or plumbing.",
+  "priceNote": "This job runs $135 to $205 in Long Beach, based on a $87/hour rate for a typical 1-2 hour job. The time and cost depend mainly on wall material (plaster and concrete take longer than drywall), TV size, and whether cables are run inside the wall versus left along the surface.",
+  "faqs": [
+    {
+      "q": "Can you mount a TV on the plaster walls in my older Long Beach duplex?",
+      "a": "Yes, plaster and lath walls just require different anchors than drywall, and the pro will identify the wall type before drilling to choose the right hardware."
+    },
+    {
+      "q": "My condo has concrete walls near the waterfront — is that a problem?",
+      "a": "No, but it does require masonry drill bits and concrete-rated anchors instead of standard wood screws, which is factored into the same $135 to $205 price range."
+    },
+    {
+      "q": "Will the cables be hidden inside the wall or just clipped along the surface?",
+      "a": "That depends on what you request; surface cable management is standard, while routing cables inside the wall is more involved and should be discussed with the pro beforehand since it may affect time and materials."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 205,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "garbage-disposal-replacement",
+  "problemTitle": "Garbage disposal replacement",
+  "generatedAt": "2026-08-26T01:38:25.285Z",
+  "metaTitle": "Garbage Disposal Replacement in Los Angeles | Tarea",
+  "metaDescription": "Garbage disposal not working? Get it replaced for $135–$220 in Los Angeles. Learn causes, what a plumber does, and DIY vs. pro guidance.",
+  "intro": "A garbage disposal that hums but won't spin, leaks under the sink, or trips the breaker every time you flip the switch usually means it's time for a replacement rather than another repair. In Los Angeles, where kitchens range from tight pre-war bungalow setups to modern apartment builds with garbage disposals as standard equipment, the units themselves vary widely in age and mounting style, which affects how straightforward a swap will be.",
+  "causes": [
+    "The motor has burned out from age or repeated jamming, which is common in units over 8-10 years old.",
+    "A cracked housing or flange is letting water leak into cabinets below the sink.",
+    "The disposal jams constantly because worn-out blades or a failing reset button no longer clear food waste.",
+    "Corrosion around the electrical connections in older pre-war bungalow plumbing has damaged the unit beyond a simple fix.",
+    "The disposal was undersized for the household and has been overworked past its expected lifespan."
+  ],
+  "whatProDoes": [
+    "Shuts off power and water to the sink area and disconnects the old disposal from the sink flange and drain pipes.",
+    "Removes the old unit and inspects the sink flange, dishwasher connection, and drain trap for wear or damage.",
+    "Installs the new disposal, connects the electrical wiring, and mounts it securely to the sink flange.",
+    "Reconnects the drain lines and dishwasher hose if applicable, checking for proper alignment.",
+    "Runs water and tests the disposal under load to confirm there are no leaks and the unit runs smoothly."
+  ],
+  "diyOrPro": "Swapping a garbage disposal involves electrical wiring under a sink, often in a damp or cramped space, plus drain connections that need to seal correctly to avoid leaks into cabinets or flooring below. If you're not comfortable working with household wiring and plumbing fittings, or if your setup includes a dishwasher drain hose feeding into the disposal, this is safer left to a licensed plumber to avoid shock risk or water damage.",
+  "priceNote": "This job runs $135 to $220 in Los Angeles, based on a $94/hour rate for a typical 1-2 hour job. The time and cost depend on how accessible the plumbing is, whether the new unit matches the old mounting system, and whether any additional wear on the sink flange or drain lines needs attention during the swap.",
+  "faqs": [
+    {
+      "q": "How do I know if I need a replacement instead of a repair?",
+      "a": "If the disposal won't turn on even after resetting it, makes a burning smell, leaks from the housing itself, or is more than 8-10 years old, replacement is usually more practical than repair."
+    },
+    {
+      "q": "Can I use my old disposal's power cord or mounting ring with a new unit?",
+      "a": "Sometimes, but it depends on the brand and model. A plumber will check compatibility during the job, and in some cases the sink flange or mounting assembly needs to be replaced along with the disposal itself."
+    },
+    {
+      "q": "Will this affect my dishwasher?",
+      "a": "If your dishwasher drains through the garbage disposal, that connection gets disconnected and reattached during the swap. The plumber will confirm it's properly sealed before finishing the job."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

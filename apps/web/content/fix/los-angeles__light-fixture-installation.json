@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "light-fixture-installation",
+  "problemTitle": "Light fixture installation",
+  "generatedAt": "2026-08-26T01:38:39.766Z",
+  "metaTitle": "Light Fixture Installation in Los Angeles | $135–$235",
+  "metaDescription": "Swapping or adding a light fixture in an LA home? See what drives the $135–$235 cost, what a licensed electrician does, and when to call one.",
+  "intro": "That new pendant or ceiling fixture sitting in its box isn't going to hang itself, and in Los Angeles homes the wiring behind the wall can be anywhere from decades-old cloth-wrapped wire in a pre-war bungalow to fresh Romex in a new-build apartment. Getting the fixture mounted safely and wired correctly matters more than it looks, since a loose connection or mismatched wire can cause flickering, buzzing, or a fire hazard down the line.",
+  "causes": [
+    "An old fixture has failed or gone out of style and needs to be swapped for a new one.",
+    "A room like a nursery, dining area, or home office never had overhead lighting installed.",
+    "A mid-century home has outdated wiring or a junction box that isn't rated for the new fixture's weight.",
+    "A pre-war bungalow has old cloth wiring or no ground wire, which complicates a straightforward swap.",
+    "A new-build apartment has a fixture pre-wired but the buyer wants a different style installed."
+  ],
+  "whatProDoes": [
+    "Shuts off power to the circuit at the breaker and confirms it's dead with a voltage tester before touching any wires.",
+    "Removes the old fixture (if present) and inspects the junction box for damage, proper grounding, and weight rating.",
+    "Connects the new fixture's wires to the household wiring using wire nuts, matching hot, neutral, and ground correctly.",
+    "Secures the fixture to the junction box or ceiling brace, making sure it can support the fixture's weight long-term.",
+    "Restores power and tests the fixture, checking for flickering, buzzing, or loose connections before wrapping up."
+  ],
+  "diyOrPro": "If you're replacing a fixture with an identical mounting style and the power is confirmed off, some homeowners handle simple swaps themselves. But if your home has older wiring, no ground wire, a fixture heavier than a standard light, or you're adding a new circuit where none existed, call a licensed electrician — miswired connections or an unsupported junction box can lead to shock, fire, or a fixture falling.",
+  "priceNote": "This job runs $135 to $235 in Los Angeles, based on a $100/hour rate for a typical 1-2 hour job. Older homes with outdated wiring, hard-to-reach ceilings, or fixtures requiring a new junction box tend to land toward the higher end of that range.",
+  "faqs": [
+    {
+      "q": "Do I need an electrician for a simple fixture swap, or can I do it myself?",
+      "a": "A straightforward one-for-one swap with the power off is manageable for some homeowners, but if you're unsure about the wiring, grounding, or box rating, it's safer to have a licensed electrician handle it."
+    },
+    {
+      "q": "Will the price change if there's no existing wiring for the fixture?",
+      "a": "The $135 to $235 range covers standard installation where wiring already exists; running new wiring or adding a switch is a separate job and would be quoted differently."
+    },
+    {
+      "q": "My house is from the 1930s — is that a problem for a new fixture?",
+      "a": "Older homes sometimes have cloth wiring or ungrounded junction boxes, which an electrician needs to check before installing anything; this is common in LA's pre-war bungalows and doesn't necessarily change the price, but it does need to be inspected first."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

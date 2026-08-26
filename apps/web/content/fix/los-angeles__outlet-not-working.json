@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "outlet-not-working",
+  "problemTitle": "Outlet not working",
+  "generatedAt": "2026-08-26T01:39:14.177Z",
+  "metaTitle": "Outlet Not Working in Los Angeles? Repair Cost & Causes",
+  "metaDescription": "A dead outlet in your LA home could mean a tripped GFCI, bad wiring, or an overloaded circuit. See likely causes, what a pro does, and the real price range.",
+  "intro": "Flipping a switch and getting nothing from an outlet is one of the more common electrical complaints in Los Angeles, where pre-war bungalows, mid-century houses, and newer apartment buildings all wire things a little differently. Sometimes it's a simple reset; other times it points to aging wiring behind the wall that shouldn't be ignored.",
+  "causes": [
+    "A tripped GFCI outlet somewhere on the same circuit (often in a bathroom or kitchen) has cut power to other outlets downstream, which is common in older bungalows retrofitted with only one or two GFCI points.",
+    "A breaker has tripped in the panel, which happens more often in mid-century homes where the original electrical panel was sized for far fewer appliances than people run today.",
+    "Loose or corroded wiring connections at the outlet itself, a frequent issue in pre-war housing stock where cloth or aluminum wiring may still be present.",
+    "A worn-out outlet with broken internal contacts, which is common in rental apartments that see high tenant turnover and years of plugging and unplugging.",
+    "A break somewhere in the wiring run between the panel and the outlet, which is harder to spot and more likely in homes that have been partially remodeled over the decades."
+  ],
+  "whatProDoes": [
+    "Checks the breaker panel and any GFCI outlets on the same circuit first, since resetting one of these solves the problem in many cases.",
+    "Tests the outlet with a multimeter to confirm whether power is actually reaching it and whether the issue is the outlet or the wiring feeding it.",
+    "Opens the outlet box to inspect for loose, burnt, or corroded connections, which is especially important in older LA homes with original wiring.",
+    "Traces the circuit to locate a break or fault if the problem isn't at the outlet itself, sometimes checking other outlets on the same run.",
+    "Replaces the outlet or repairs the connection, then re-tests to confirm power is restored safely."
+  ],
+  "diyOrPro": "Checking your breaker panel and pressing the reset button on any nearby GFCI outlets is safe to try yourself and fixes the issue a fair amount of the time. Opening the outlet, touching wires, or troubleshooting anything beyond a simple reset is not something to attempt yourself, since misdiagnosing a wiring fault or working on a live circuit can cause a shock or start a fire.",
+  "priceNote": "This job runs $135 to $235 in Los Angeles, based on a $100/hour rate for a typical 1-2 hour visit. The time depends mostly on whether the fix is a quick outlet swap or a longer trace-and-repair through walls in an older property.",
+  "faqs": [
+    {
+      "q": "Why does only one outlet in the room not work while the others are fine?",
+      "a": "Outlets are often wired in a chain, so if one in the middle fails or a GFCI outlet upstream trips, everything after it on that chain loses power even though nearby outlets on a different circuit stay on."
+    },
+    {
+      "q": "Is it dangerous to leave a dead outlet alone if I don't need it?",
+      "a": "It can be. A dead outlet sometimes signals a loose connection that's overheating behind the wall, so it's worth having it checked even if you're not currently using that outlet."
+    },
+    {
+      "q": "Will resetting my breaker fix it for good?",
+      "a": "If a tripped breaker was the whole problem, resetting it can work permanently, but if it trips again soon after, that usually means there's an underlying fault that needs a professional to find and fix."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

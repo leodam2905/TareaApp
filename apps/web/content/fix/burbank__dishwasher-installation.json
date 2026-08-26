@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "dishwasher-installation",
+  "problemTitle": "Dishwasher installation",
+  "generatedAt": "2026-08-26T02:03:29.348Z",
+  "metaTitle": "Dishwasher Installation in Burbank, CA | Cost & Process",
+  "metaDescription": "Installing a dishwasher in a Burbank home? See what it costs ($205–$295), what causes delays with older plumbing, and what a pro actually does.",
+  "intro": "Burbank is full of post-war single-family homes, and many still have their original plumbing under the kitchen sink. Swapping in a new dishwasher sounds simple, but older supply lines, drain setups, and electrical connections can turn a quick job into a bigger one if they're not compatible with a modern unit.",
+  "causes": [
+    "The old dishwasher was hardwired or hooked up with fittings that don't match current codes or the new unit's connectors.",
+    "Original copper or galvanized supply lines in older Burbank homes can be corroded, undersized, or lack a proper shutoff valve.",
+    "There's no existing air gap or high-loop drain setup, which some cities and manufacturers require.",
+    "The kitchen cabinet opening or flooring height doesn't match the new dishwasher's dimensions.",
+    "There's no dedicated electrical circuit or the outlet under the sink is missing or outdated."
+  ],
+  "whatProDoes": [
+    "Shuts off water and power, then disconnects and removes the old dishwasher.",
+    "Inspects the existing supply line, drain hose, and electrical connection for compatibility with the new unit.",
+    "Installs or replaces fittings, a shutoff valve, or a high-loop/air gap as needed to meet code.",
+    "Levels and secures the new dishwasher, connects water, drain, and power, then checks for leaks.",
+    "Runs a test cycle to confirm proper drainage, water fill, and operation before finishing up."
+  ],
+  "diyOrPro": "If you're swapping a like-for-like dishwasher with modern, code-compliant connections already in place, a confident DIYer can sometimes manage it. But in a lot of Burbank homes with original plumbing, hidden corrosion, outdated wiring, or missing shutoff valves turn this into an electrical and water-damage risk — that's when it's worth having a licensed pro handle it.",
+  "priceNote": "This job runs $205 to $295 in Burbank, based on a rate of $87 per hour for a typical 2 to 3 hour installation. The time and cost mostly depend on whether the existing plumbing and electrical connections are already up to code or need modification first.",
+  "faqs": [
+    {
+      "q": "Why does my Burbank home need extra work just to install a dishwasher?",
+      "a": "Many post-war homes here still have original supply lines, missing shutoff valves, or no dedicated outlet under the sink. A pro often needs to update these to safely connect a modern dishwasher, which is factored into the $205–$295 range."
+    },
+    {
+      "q": "Do I need a permit to install a dishwasher in Burbank?",
+      "a": "A straight swap usually doesn't require a permit, but if new electrical wiring or plumbing modifications are needed, local code may require one. A licensed installer can tell you based on what they find under your sink."
+    },
+    {
+      "q": "What if my old dishwasher was hardwired instead of plugged in?",
+      "a": "This is common in older homes and means the pro will need to assess whether to keep it hardwired or add an outlet, which affects the time spent but stays within the quoted $205 to $295 range."
+    }
+  ],
+  "price": {
+    "low": 205,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "APPLIANCE_REPAIR",
+  "categoryLabel": "Appliance Repair"
+}

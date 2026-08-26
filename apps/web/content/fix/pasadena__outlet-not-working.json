@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "outlet-not-working",
+  "problemTitle": "Outlet not working",
+  "generatedAt": "2026-08-26T01:48:04.625Z",
+  "metaTitle": "Outlet Not Working in Pasadena? Causes & Cost",
+  "metaDescription": "A dead outlet in a Pasadena Craftsman or Spanish-revival home often points to old wiring. Learn causes, fixes, and the $135–$235 price range.",
+  "intro": "If an outlet suddenly stops working in a Pasadena home, especially in one of the city's many Craftsman bungalows or Spanish-revival houses, the culprit is often wiring that hasn't been updated in decades. These homes frequently mix original 1920s-era wiring with later additions, which creates weak points that fail over time. A dead outlet can be a simple fix or a sign of a bigger issue in the circuit.",
+  "causes": [
+    "A tripped GFCI outlet somewhere on the same circuit (common in older kitchens and bathrooms where only one outlet was ever upgraded to GFCI) is silently cutting power to everything downstream.",
+    "A tripped breaker or blown fuse in an original fuse box, which many unrenovated Pasadena Craftsmans still have instead of a modern panel.",
+    "Loose or deteriorated wiring connections behind the outlet, common where cloth-insulated or push-in wiring from the original construction has never been replaced.",
+    "A broken connection at a splice in the wall or attic, often found in homes with later additions where new wiring was tied into old knob-and-tube or early romex runs.",
+    "The outlet itself has simply worn out from age, since original outlets in these houses can be 40 to 90 years old."
+  ],
+  "whatProDoes": [
+    "Tests the outlet with a multimeter to confirm there's no power, then checks the breaker panel or fuse box for a tripped breaker or blown fuse.",
+    "Locates and resets any GFCI outlet on the same circuit, since one GFCI can control several standard outlets in older Pasadena homes.",
+    "Shuts off power to the circuit and removes the outlet to inspect the wiring connections, looking specifically for brittle insulation or loose connections typical of original wiring.",
+    "Traces the circuit to find breaks or bad splices, which sometimes means checking accessible points in a crawlspace or attic where old and new wiring meet.",
+    "Replaces the outlet, repairs the connection, or recommends further work if the home's original wiring or fuse panel needs broader attention."
+  ],
+  "diyOrPro": "Resetting a tripped GFCI or flipping a breaker back on is safe to try yourself before calling anyone. Anything beyond that, opening the outlet, touching wires, or working near a fuse panel, should be left to a licensed electrician, especially in a Pasadena home where the wiring behind the wall may be original cloth-insulated or knob-and-tube wiring that isn't safe to handle without proper shutoff and testing.",
+  "priceNote": "This job runs $135 to $235 in Pasadena, based on a $100 hourly rate for a typical 1 to 2 hour visit. The time on the low end covers a straightforward outlet swap or loose-connection fix, while the higher end reflects jobs where the electrician has to trace wiring through walls or deal with an older fuse box common in unrenovated Craftsman and Spanish-revival houses.",
+  "faqs": [
+    {
+      "q": "Why did only one outlet stop working while the rest of the room is fine?",
+      "a": "This is common in Pasadena homes where a single GFCI outlet protects several others on the same circuit. If that GFCI trips, every outlet wired after it loses power even though they look like separate outlets."
+    },
+    {
+      "q": "My house still has a fuse box, not breakers. Does that change the cost?",
+      "a": "It can add time if the electrician needs to check or replace a fuse and test the circuit carefully, but the job still falls within the $135 to $235 range for most single-outlet issues."
+    },
+    {
+      "q": "Is it dangerous that my walls might have old wiring?",
+      "a": "Yes, old cloth-insulated or knob-and-tube wiring can be brittle and isn't something to handle yourself. An electrician will shut off power and test before doing any work near it."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

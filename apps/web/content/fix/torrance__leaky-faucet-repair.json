@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "leaky-faucet-repair",
+  "problemTitle": "Leaky faucet repair",
+  "generatedAt": "2026-08-26T02:08:02.359Z",
+  "metaTitle": "Leaky Faucet Repair in Torrance, CA | $135-$220",
+  "metaDescription": "Fix a dripping faucet in your Torrance home. Flat-rate plumbing help for older fixtures common in 1950s-60s houses. See pricing and what's involved.",
+  "intro": "That steady drip from your kitchen or bathroom faucet isn't just annoying—it wastes water and can signal worn parts inside the fixture. In Torrance, where many homes still have their original 1950s and 60s plumbing or fixtures that were swapped in decades ago, worn washers and aging valve stems are especially common. A repair usually takes an hour or two and doesn't require tearing into walls.",
+  "causes": [
+    "A worn rubber washer or O-ring inside the faucet no longer seals properly, letting water seep past.",
+    "Mineral deposits from hard water build up on internal parts, causing them to wear out faster or stop sealing evenly.",
+    "The valve seat, where the washer presses down to stop water flow, becomes corroded or pitted over time.",
+    "Older faucet cartridges, especially in homes with original 1950s-60s fixtures, simply wear out after decades of use.",
+    "Loose or worn-out packing nuts and seals around the faucet handle allow water to drip from the base instead of the spout."
+  ],
+  "whatProDoes": [
+    "Shuts off the water supply to the faucet and checks for any additional leaks or corrosion in the supply lines.",
+    "Disassembles the faucet to inspect washers, O-rings, cartridges, or valve seats depending on the faucet type.",
+    "Cleans mineral buildup and replaces worn or damaged parts with new components matched to the fixture.",
+    "Reassembles the faucet, turns the water back on, and checks for leaks at the spout, handle, and base.",
+    "Tests hot and cold water flow and confirms the faucet operates smoothly without dripping."
+  ],
+  "diyOrPro": "If you're comfortable turning off the shutoff valve under the sink and have replaced a washer or cartridge before, this can be a manageable DIY project, especially on newer faucets with widely available parts. In older Torrance homes, though, original fixtures sometimes use obsolete parts or have corroded shutoff valves that won't turn easily, which can turn a simple fix into a bigger plumbing issue. If the shutoff valve is stuck, the faucet is unusually old, or you're unsure what type of faucet you have, it's safer to call a plumber rather than risk a stripped valve or a leak you can't stop.",
+  "priceNote": "This job runs $135 to $220 in Torrance, based on a $94 hourly rate and a typical job length of 1 to 2 hours. The final cost within that range depends on the faucet type, how corroded the internal parts are, and whether replacement parts need to be sourced for an older fixture common in this area's 1950s and 60s housing stock.",
+  "faqs": [
+    {
+      "q": "Why is my faucet still dripping after I tightened the handle?",
+      "a": "Tightening the handle won't fix worn internal parts like washers or cartridges. The leak comes from inside the faucet, not from how tightly the handle is turned, so the worn component needs to be replaced."
+    },
+    {
+      "q": "Can a leaky faucet cause damage if I wait to fix it?",
+      "a": "A slow drip mainly wastes water and adds to your bill, but if the leak is at the base or under the sink, prolonged moisture can damage cabinets or promote mold, especially in older Torrance homes where cabinetry may already show wear."
+    },
+    {
+      "q": "Will the plumber need to replace the whole faucet?",
+      "a": "Usually not. Most leaky faucet repairs involve replacing internal parts like washers, O-rings, or cartridges rather than the entire fixture, unless the faucet body itself is cracked or too corroded to repair."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

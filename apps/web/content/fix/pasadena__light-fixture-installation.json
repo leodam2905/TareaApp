@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "light-fixture-installation",
+  "problemTitle": "Light fixture installation",
+  "generatedAt": "2026-08-26T01:47:28.859Z",
+  "metaTitle": "Light Fixture Installation in Pasadena, CA | Tarea",
+  "metaDescription": "Swapping a light fixture in a Pasadena Craftsman or Spanish-revival home? Get it wired safely for $135–$235. Book a licensed electrician through Tarea.",
+  "intro": "If you just pulled down an old fixture in your Pasadena Craftsman or Spanish-revival home and found a tangle of unfamiliar wiring, you're not alone. Many homes in this area still have original electrical boxes or partial rewires from decades past, which can turn a simple swap into something that needs a licensed hand.",
+  "causes": [
+    "The home's original wiring predates modern grounding standards, so newer fixtures may not have a matching ground wire to connect to.",
+    "Ceiling electrical boxes in older Pasadena homes are often too shallow or not rated to support the weight of a new fixture.",
+    "Plaster-and-lath ceilings, common in Craftsman and Spanish-revival construction, make it harder to locate solid framing for a secure mount.",
+    "A previous owner or unlicensed handyman may have left behind wire nuts, tape splices, or mismatched wire gauges that aren't up to code.",
+    "Dimmer switches or smart fixtures being added to circuits that were never designed for them can cause flickering or tripped breakers."
+  ],
+  "whatProDoes": [
+    "Shuts off power to the circuit at the breaker and confirms it's dead with a voltage tester before touching any wires.",
+    "Removes the old fixture and inspects the electrical box for age, depth, and whether it's rated to hold the new fixture's weight.",
+    "Checks the wiring for proper grounding, correct wire connections, and any signs of old or unsafe splicing, replacing the box if needed.",
+    "Mounts the new fixture securely, matching wire connections (hot, neutral, ground) and using wire nuts rated for the gauge present.",
+    "Restores power and tests the fixture, including any dimmer or switch, to confirm it operates correctly and safely."
+  ],
+  "diyOrPro": "Installing a straightforward like-for-like fixture on a modern, grounded circuit can be a reasonable DIY project if you're comfortable shutting off breakers and working with wiring. In a Pasadena Craftsman or Spanish-revival home, though, ungrounded wiring, undersized boxes, or plaster ceilings raise the risk of a loose fixture, shock hazard, or fire — this is when it's worth having a licensed electrician take over.",
+  "priceNote": "This job runs $135 to $235 in Pasadena, based on a $100/hour rate and a typical job length of 1-2 hours. The time on the higher end usually comes from older homes where the electrician has to address outdated boxes, missing grounds, or plaster ceiling repairs before the new fixture can go up safely.",
+  "faqs": [
+    {
+      "q": "Can I just install the new fixture myself if the wiring looks fine?",
+      "a": "If the circuit is properly grounded and the electrical box is in good condition, a simple swap can be safe to DIY. In many older Pasadena homes, though, wiring issues aren't visible until someone opens up the box, so a quick pro inspection can save you from a bigger problem later."
+    },
+    {
+      "q": "Why would my ceiling need repair just to install a light fixture?",
+      "a": "Plaster-and-lath ceilings, common in Craftsman and Spanish-revival homes, can crack or crumble when an old fixture is removed or a new electrical box is installed. If that happens, the electrician will patch the area enough to safely remount the fixture, which can add to the time on the job."
+    },
+    {
+      "q": "What if my fixture doesn't have a ground wire to connect to?",
+      "a": "This is common in homes with original 1920s-1940s wiring. An electrician will assess whether the circuit needs to be grounded, whether a ground can be added, or whether a different fixture type is safer for that specific box and wiring setup."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

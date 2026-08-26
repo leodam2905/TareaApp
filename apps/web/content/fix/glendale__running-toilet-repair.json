@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "running-toilet-repair",
+  "problemTitle": "Running toilet repair",
+  "generatedAt": "2026-08-26T01:55:32.524Z",
+  "metaTitle": "Running Toilet Repair in Glendale, CA | $135–$220",
+  "metaDescription": "Fix a running toilet in Glendale, including hillside and mid-century apartment units. Flat rate $135–$220. Learn causes, fixes, and DIY vs pro guidance.",
+  "intro": "That hissing or trickling sound after a flush usually means your toilet is running long after the tank should have stopped filling. In Glendale, this shows up often in older mid-century apartment buildings with original fixtures, as well as hillside homes where water pressure swings can wear parts out faster. Left alone, it wastes water and can push up your bill noticeably.",
+  "causes": [
+    "A worn or misaligned flapper valve that no longer seals the tank properly.",
+    "A fill valve that's degraded, especially common in older units still running original 1950s-60s plumbing fixtures.",
+    "A float that's set too high, causing water to constantly spill into the overflow tube.",
+    "High or fluctuating water pressure, which is common in Glendale's hillside neighborhoods and stresses internal parts faster.",
+    "Mineral buildup from hard water clogging the fill valve or affecting the flush mechanism."
+  ],
+  "whatProDoes": [
+    "Removes the tank lid and flushes the toilet to observe exactly where and how water is leaking or running.",
+    "Inspects and tests the flapper, fill valve, float, and overflow tube to isolate the failing part.",
+    "Replaces the flapper and/or fill valve as needed, adjusting the float height to the correct water level.",
+    "Checks the flush handle and chain for proper tension and reattaches or replaces if worn.",
+    "Tests the flush cycle two or three times to confirm the toilet fully stops running and refills correctly."
+  ],
+  "diyOrPro": "If you're comfortable removing a tank lid and can identify a flapper or float, replacing these parts yourself is often doable with a $10-15 hardware store kit and no special tools. Call a pro if you've already tried a flapper swap and the toilet still runs, if the shutoff valve under the toilet is stuck or won't turn, or if you notice water pooling on the floor, since that can point to a cracked tank or a bigger issue behind the wall.",
+  "priceNote": "This job in Glendale runs $135 to $220, based on a $94 per hour rate and typical jobs taking 1 to 2 hours. Older toilets in mid-century buildings or units with corroded shutoff valves tend to take longer than newer installations, which is why the range varies.",
+  "faqs": [
+    {
+      "q": "Why does my toilet only run sometimes, not constantly?",
+      "a": "Intermittent running usually points to a flapper that seals most of the time but occasionally fails to drop fully, or a float valve with a slow leak. A pro can pinpoint which part is inconsistent during the inspection."
+    },
+    {
+      "q": "Is a running toilet actually costing me money?",
+      "a": "Yes. A running toilet can waste hundreds of gallons a day, which shows up as a higher water bill. In Glendale, where water rates have been rising, fixing this quickly often pays for itself within a few billing cycles."
+    },
+    {
+      "q": "Can hillside water pressure really cause this problem?",
+      "a": "Yes. Homes on Glendale's hillside streets often experience higher or more variable water pressure than flatland areas, which puts extra strain on fill valves and flappers and can shorten their lifespan."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

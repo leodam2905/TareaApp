@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "ceiling-fan-installation",
+  "problemTitle": "Ceiling fan installation",
+  "generatedAt": "2026-08-26T01:43:05.472Z",
+  "metaTitle": "Ceiling Fan Installation in Santa Monica, CA | Tarea",
+  "metaDescription": "Ceiling fan installation in Santa Monica costs $235–$335. Learn what drives the price, what a licensed electrician does, and when to call a pro.",
+  "intro": "If you're adding a ceiling fan or replacing an old one in Santa Monica, you're dealing with more than a simple swap. The coastal air here corrodes wiring connections and fan hardware faster than in inland areas, which makes proper installation and grounding especially important.",
+  "causes": [
+    "The existing electrical box may not be rated to support the weight and motion of a ceiling fan.",
+    "Older homes near the coast often have wiring or fixture boxes with salt-air corrosion that needs inspection before a new fan goes in.",
+    "There may be no dedicated fan switch or wiring in place, requiring new circuit runs.",
+    "The homeowner may be replacing a broken or wobbling fan rather than installing a first-time unit.",
+    "Outdoor-rated or damp-rated fans need special hardware in coastal areas like Santa Monica to resist moisture and salt exposure."
+  ],
+  "whatProDoes": [
+    "Turns off power at the breaker and confirms the circuit is dead before touching any wiring.",
+    "Inspects or replaces the electrical box with a fan-rated box that can support the fan's weight and movement.",
+    "Assembles the fan and mounting bracket according to manufacturer specs, using corrosion-resistant hardware where needed for coastal exposure.",
+    "Connects wiring, secures the fan to the ceiling, and tests balance, speed settings, and any remote or wall control.",
+    "Checks for wobble, unusual noise, or loose connections before finishing the job."
+  ],
+  "diyOrPro": "Installing a ceiling fan involves working with live electrical wiring and mounting a heavy, moving object overhead, so this is not a good candidate for DIY unless you have electrical experience. Mistakes can cause the fan to fall, create a fire hazard, or leave you with a shock risk. If your home already has a fan-rated box and working wiring, a licensed electrician can usually complete the job quickly and safely.",
+  "priceNote": "Ceiling fan installation in Santa Monica runs $235 to $335, based on a $100/hour rate and a typical job length of 2 to 3 hours. The time varies depending on whether the existing electrical box needs replacing, whether new wiring is required, and whether the fan requires damp-rated or corrosion-resistant hardware common in coastal homes.",
+  "faqs": [
+    {
+      "q": "Do I need a special fan for a home near the beach in Santa Monica?",
+      "a": "Fans installed in covered outdoor areas or spaces with high humidity should be damp-rated or wet-rated to resist corrosion from salt air. An electrician can tell you which rating fits your location."
+    },
+    {
+      "q": "Can I just replace an old fan with the same wiring and box?",
+      "a": "Sometimes, but the existing box needs to be checked first. If it's not fan-rated or shows signs of corrosion or wear, it should be replaced before the new fan goes up."
+    },
+    {
+      "q": "Why does the price range vary between $235 and $335?",
+      "a": "The final cost depends on how long the job takes, generally 2 to 3 hours at $100 per hour, which is affected by whether the electrical box needs replacing or new wiring has to be run."
+    }
+  ],
+  "price": {
+    "low": 235,
+    "high": 335,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

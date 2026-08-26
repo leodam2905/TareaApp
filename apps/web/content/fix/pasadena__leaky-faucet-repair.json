@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "leaky-faucet-repair",
+  "problemTitle": "Leaky faucet repair",
+  "generatedAt": "2026-08-26T01:46:20.757Z",
+  "metaTitle": "Leaky Faucet Repair in Pasadena, CA | $135–$220",
+  "metaDescription": "Fix a dripping faucet in your Pasadena home. Flat-rate pricing $135–$220, common in Craftsman and Spanish-revival houses with older plumbing.",
+  "intro": "That steady drip from your kitchen or bathroom faucet is usually a worn part, not a sign your whole plumbing system is failing. In Pasadena's older Craftsman and Spanish-revival homes, original fixtures and galvanized supply lines mean faucets often need repair sooner than in newer construction. Left alone, a leak can waste water and stain vintage tile or porcelain fixtures that are hard to match today.",
+  "causes": [
+    "A worn rubber washer or O-ring inside the faucet body, common after decades of use in original 1920s-1930s fixtures.",
+    "Corroded or mineral-clogged valve seats caused by Pasadena's hard water depositing scale over time.",
+    "A failing cartridge in newer replacement faucets installed inside older cabinetry.",
+    "Loose packing nuts or a worn stem, often found in homes that still have their original faucet hardware.",
+    "Old, brittle supply line connections that have degraded and start leaking at the faucet base."
+  ],
+  "whatProDoes": [
+    "Shuts off the water supply and inspects the faucet type to identify whether it's a compression, ball, cartridge, or ceramic disk design.",
+    "Disassembles the faucet handle and body to check washers, O-rings, valve seats, and cartridges for wear or mineral buildup.",
+    "Replaces the failed part with a compatible component, which can be trickier in older Pasadena homes where original fixtures use discontinued sizes.",
+    "Cleans mineral deposits from valve seats and threads to reduce future scale buildup from hard water.",
+    "Reassembles the faucet, turns the water back on, and checks for leaks at the handle, spout, and base connections."
+  ],
+  "diyOrPro": "If you're comfortable turning off the water shutoff and don't mind removing a faucet handle, replacing a simple washer can be a reasonable DIY task with the right size part. But if the faucet is original to a 1920s or 1930s Pasadena home, finding matching parts can be difficult, and forcing old, corroded fittings risks cracking porcelain or breaking a shutoff valve that then requires a bigger repair. When in doubt, or if the leak involves the supply lines rather than just the faucet handle, it's worth having a plumber take a look.",
+  "priceNote": "This repair runs $135 to $220, based on a $94 hourly rate and a typical job length of 1 to 2 hours. Faucets in Pasadena's older homes sometimes take longer because parts for original or vintage fixtures aren't always standard sizes, and mineral buildup from hard water can make disassembly slower.",
+  "faqs": [
+    {
+      "q": "Why is my faucet still dripping after I tightened the handle?",
+      "a": "Tightening the handle can temporarily slow a drip, but if the internal washer, O-ring, or cartridge is worn, the leak will return. The fix requires replacing the worn part, not just tightening what's already there."
+    },
+    {
+      "q": "Will the plumber be able to find parts for my old faucet?",
+      "a": "Many Craftsman and Spanish-revival homes in Pasadena still have original or older-style faucets, and matching replacement parts can take extra time to source or may require a compatible modern equivalent. A plumber can tell you during the visit whether an exact match is available."
+    },
+    {
+      "q": "Is a dripping faucet actually worth fixing, or can I just ignore it?",
+      "a": "A slow drip wastes water and money over time, and in older homes it can also lead to mineral staining on porcelain or tile that's difficult to remove. It's a small repair now compared to dealing with water damage or a bigger valve failure later."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

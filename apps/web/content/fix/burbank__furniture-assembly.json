@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "furniture-assembly",
+  "problemTitle": "Furniture assembly",
+  "generatedAt": "2026-08-26T02:01:26.397Z",
+  "metaTitle": "Furniture Assembly in Burbank, CA | $135–$295",
+  "metaDescription": "Flat-pack dressers, beds, and shelving assembled in your Burbank home. Fixed pricing $135–$295 based on $87/hour, typically 1-3 hours.",
+  "intro": "That flat-pack bookshelf or bed frame from the box store isn't going to build itself, and the instructions rarely match the actual hardware you got. In Burbank's older single-family homes, tight bedrooms and narrow hallways from the post-war era can make maneuvering big pieces even trickier than the manual suggests.",
+  "causes": [
+    "The instructions are translated poorly or missing a step, leaving parts unaccounted for.",
+    "Pre-drilled holes don't line up because the panels warped slightly in storage or shipping.",
+    "Cam locks and dowels are hard to seat tightly without the right tools, leading to wobbly joints.",
+    "Doorways and hallways in older Burbank homes are narrower than modern floor plans, making it hard to carry large pre-assembled sections.",
+    "Uneven original hardwood or slightly settled foundations common in post-war houses can make furniture rock even when assembly is correct."
+  ],
+  "whatProDoes": [
+    "Unboxes and inventories all hardware and panels against the instruction sheet before starting.",
+    "Assembles the frame in the order that avoids re-tightening screws later, checking square as they go.",
+    "Uses a level to compensate for uneven floors typical in older Burbank homes so the piece sits stable.",
+    "Attaches any required anti-tip hardware to the wall, especially for tall dressers or bookshelves.",
+    "Does a final wobble check and tightens every joint before clearing the packaging."
+  ],
+  "diyOrPro": "Assembling a small side table or simple shelf yourself is usually fine if you have basic tools and patience. Larger pieces like wardrobes, loft beds, or anything requiring wall anchoring are worth hiring out, especially in older homes where wall material (plaster vs. drywall) affects how anchors hold.",
+  "priceNote": "This job runs $135 to $295 in Burbank, based on an $87/hour rate for a typical 1-3 hour job. The time depends mostly on the number of pieces, whether hardware is missing or mismatched, and how much disassembly of packaging or old furniture removal is needed first.",
+  "faqs": [
+    {
+      "q": "Do I need to buy the furniture before booking, or can the pro pick it up?",
+      "a": "You'll need to have the furniture on-site already. Pros assemble what's delivered but don't typically handle store pickup or delivery."
+    },
+    {
+      "q": "What if a piece is missing hardware or a panel?",
+      "a": "The pro will let you know right away so you can contact the manufacturer for the missing part; they can't substitute hardware that isn't provided."
+    },
+    {
+      "q": "Can they mount a dresser or bookshelf to the wall for tip safety?",
+      "a": "Yes, anti-tip anchoring is usually included as part of the assembly, though wall type in older Burbank homes (plaster or lath) may affect which anchors are used."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

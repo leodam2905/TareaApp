@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "tv-wall-mounting",
+  "problemTitle": "TV wall mounting",
+  "generatedAt": "2026-08-26T02:10:00.258Z",
+  "metaTitle": "TV Wall Mounting in Torrance, CA | Tarea",
+  "metaDescription": "Professional TV wall mounting for Torrance homes, including older plaster and lath walls. Flat rate $135-$205. Book a vetted pro today.",
+  "intro": "Mounting a TV on the wall sounds simple until you're staring at a stud finder that won't cooperate with the plaster and lath walls common in Torrance's 1950s and 60s houses. Many of these homes also have brick or block accent walls in the living room, which need a completely different mounting approach than drywall. Getting it wrong means a TV that wobbles, tilts, or eventually pulls right out of the wall.",
+  "causes": [
+    "Plaster and lath walls, common in older Torrance homes, hide studs behind a layer of hardened plaster that throws off standard stud finders.",
+    "Stud spacing in houses from this era isn't always the modern 16-inch standard, so measuring from an outlet or corner can lead to a missed stud.",
+    "Brick or concrete block fireplace walls, found in many Torrance ranch-style living rooms, require masonry anchors instead of standard wood screws.",
+    "Sagging or uneven walls from decades of settling can make a mount look level on installation but drift over time.",
+    "Hidden knob-and-tube or older wiring in some unrenovated homes means extra care is needed before drilling into the wall."
+  ],
+  "whatProDoes": [
+    "Locates studs or confirms wall type (drywall, plaster and lath, brick, or block) using tools suited to older construction, not just a basic stud finder.",
+    "Checks the TV size and weight against the mount's rating to confirm it's the right hardware for the job.",
+    "Marks and drills pilot holes, using masonry anchors or toggle bolts where studs aren't available or the wall is brick or block.",
+    "Attaches the mounting bracket securely, leveling it against the actual wall surface rather than assuming it's plumb.",
+    "Hangs the TV, checks for tilt or side-to-side wobble, and routes visible cables neatly along the wall or through a cord cover."
+  ],
+  "diyOrPro": "If you have a straightforward drywall wall with easy stud access and a lightweight TV, mounting it yourself with a basic kit is reasonable if you're comfortable with a drill and a level. In Torrance's older homes, though, plaster and lath walls or brick fireplace surrounds change the tools and anchors needed, and a mistake here can mean a TV crashing off the wall or unnecessary holes in a plaster surface that's hard to patch. If you're unsure what's behind your wall or you're mounting a large TV, it's worth having a pro confirm the wall type before drilling.",
+  "priceNote": "The price for TV wall mounting in Torrance runs $135 to $205, based on a $87 hourly rate for a typical 1-2 hour job. Jobs land on the higher end when the wall is plaster, brick, or block, since those require extra time to locate solid anchor points and install specialty hardware.",
+  "faqs": [
+    {
+      "q": "Can you mount a TV on a brick or block fireplace wall?",
+      "a": "Yes, but it requires masonry anchors instead of the anchors used for drywall or studs, which is common in Torrance homes with brick fireplace walls. This is factored into the standard 1-2 hour job time and the $135-$205 price range."
+    },
+    {
+      "q": "Will you need to patch or repair my plaster walls?",
+      "a": "Mounting hardware typically leaves small holes similar to any wall type, but plaster can chip more easily than drywall during drilling. The pro will work carefully around this, though wall patching or paint touch-up isn't included in the mounting service."
+    },
+    {
+      "q": "Do I need to buy the mount myself, or does the pro bring one?",
+      "a": "You'll generally want to have the mount on hand before the appointment, since mount styles vary by TV size and viewing preference (fixed, tilting, or full-motion). The pro will confirm the TV weight and mount specs are compatible before installing."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 205,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

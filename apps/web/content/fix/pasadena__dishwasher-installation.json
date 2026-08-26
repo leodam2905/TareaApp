@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "dishwasher-installation",
+  "problemTitle": "Dishwasher installation",
+  "generatedAt": "2026-08-26T01:50:46.738Z",
+  "metaTitle": "Dishwasher Installation in Pasadena, CA | $205–$295",
+  "metaDescription": "Dishwasher installation for Pasadena homes, including older Craftsman and Spanish-revival kitchens. Fixed price $205–$295. See what's included.",
+  "intro": "If you just bought a new dishwasher for your Pasadena kitchen, getting it hooked up properly matters more than it might in a newer build. Many Craftsman and Spanish-revival homes in the area still have original plumbing, tight cabinet openings, or wiring that wasn't designed with a dishwasher in mind, so a straightforward swap can turn into extra work fast.",
+  "causes": [
+    "The old dishwasher's water and drain lines may use outdated fittings that don't match a new unit's connections.",
+    "Cabinet openings in older Pasadena homes are often narrower or shorter than modern standard sizes, requiring careful fitting or minor trimming.",
+    "Many pre-1960s houses lack a dedicated electrical circuit for the dishwasher, or have outlets that aren't up to current code.",
+    "Galvanized or copper supply lines common in older Craftsman plumbing can be brittle and prone to leaks once disturbed.",
+    "There may be no air gap or high-loop installed on the drain line, which is required in many California jurisdictions including Pasadena."
+  ],
+  "whatProDoes": [
+    "Shuts off water and power, then disconnects and removes the old dishwasher if one is present.",
+    "Inspects the existing water supply line, drain hose, and electrical connection for compatibility with the new unit.",
+    "Installs new supply lines, drain connection (with air gap or high-loop as required), and secures the dishwasher level in the cabinet opening.",
+    "Connects power, whether hardwired or via plug, and checks that the circuit is adequate for the unit.",
+    "Runs a test cycle to check for leaks, proper drainage, and correct operation before finishing up."
+  ],
+  "diyOrPro": "Installing a dishwasher is not simple plug-and-play, especially with older plumbing and electrical common in Pasadena's historic housing stock. If your home has galvanized pipes, no existing dishwasher circuit, or you're unsure about local code requirements like air gaps, it's worth having a pro handle it to avoid a leak or electrical issue. If you're just swapping a like-for-like unit with existing hookups intact and are comfortable shutting off water and power safely, a confident DIYer can sometimes manage it.",
+  "priceNote": "This job runs $205 to $295 in Pasadena, based on an $87/hour rate for a typical 2–3 hour job. The time and cost can shift toward the higher end when a technician has to deal with older fittings, tight cabinet clearances, or bringing an electrical connection up to code.",
+  "faqs": [
+    {
+      "q": "Will you need to modify my cabinets to fit the new dishwasher?",
+      "a": "Sometimes. Older Pasadena kitchens can have narrower or shorter openings than modern appliance standards, so minor trimming or adjustment may be needed. This is factored into the standard time estimate unless the modification is extensive."
+    },
+    {
+      "q": "Do I need a permit to install a dishwasher in Pasadena?",
+      "a": "A straightforward like-for-like installation typically doesn't require a permit, but if new electrical wiring or plumbing lines are involved, local code may require one. It's worth checking with the City of Pasadena Building Department if you're unsure."
+    },
+    {
+      "q": "What if my house doesn't have a dedicated circuit for the dishwasher?",
+      "a": "Many older homes in this area were never wired for a dishwasher. If that's the case, the technician will let you know your options, which may include recommending an electrician for a new circuit before installation can be completed safely."
+    }
+  ],
+  "price": {
+    "low": 205,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "APPLIANCE_REPAIR",
+  "categoryLabel": "Appliance Repair"
+}

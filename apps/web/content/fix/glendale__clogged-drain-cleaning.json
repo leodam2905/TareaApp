@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "clogged-drain-cleaning",
+  "problemTitle": "Clogged drain cleaning",
+  "generatedAt": "2026-08-26T01:55:48.903Z",
+  "metaTitle": "Clogged Drain Cleaning in Glendale, CA | Cost & Causes",
+  "metaDescription": "Slow or blocked drain in your Glendale home? Learn what causes it, what a plumber does, and the real cost ($135–$315) before you call.",
+  "intro": "A slow-draining sink or tub in Glendale often points to more than just hair or grease buildup — the city's older mid-century apartment plumbing and hillside home foundations can add extra wrinkles to a simple clog. If water is backing up, gurgling, or draining slower each day, it's worth understanding what's really going on before it turns into a bigger mess.",
+  "causes": [
+    "Hair, soap scum, and grease building up inside bathroom or kitchen drain lines over time.",
+    "Tree roots infiltrating older clay or cast-iron sewer lines, which are still common in Glendale's mid-century apartment buildings.",
+    "Ground settling or shifting on hillside properties, which can cause pipe bellies or misalignment that trap debris.",
+    "Mineral and scale buildup inside galvanized pipes found in many pre-1970s Glendale homes.",
+    "Foreign objects or excess toilet paper flushed into a line with an already narrow diameter."
+  ],
+  "whatProDoes": [
+    "Runs a camera inspection or uses a drain snake to locate the clog and identify its cause.",
+    "Clears the blockage using a motorized auger, hydro-jetting, or hand tools depending on pipe material and clog severity.",
+    "Checks nearby fixtures and cleanouts to confirm water is flowing freely through the full line.",
+    "Flags any signs of root intrusion, pipe damage, or bellying that may need further repair, especially relevant on sloped hillside lots.",
+    "Tests the drain again under normal use to make sure the clog hasn't just been pushed further down the line."
+  ],
+  "diyOrPro": "A single slow sink you can plunge or treat with a basic hand snake is reasonable to try yourself. But if multiple drains are backing up at once, water is coming up from a floor drain, or you're on a hillside lot with older sewer lines, that points to a deeper blockage or a shifted pipe — call a plumber rather than risk sewage backup or working blind on a line you can't see.",
+  "priceNote": "This job runs $135 to $315 in Glendale, based on a $94 hourly rate and jobs typically taking 1 to 3 hours. Simple fixture clogs land at the lower end, while main line blockages, root intrusion, or hard-to-reach pipes in older buildings push the job toward the higher end.",
+  "faqs": [
+    {
+      "q": "Why does my drain keep clogging even after I clear it myself?",
+      "a": "Repeat clogs often mean the blockage is further down the line than a plunger or store-bought snake can reach, or there's a structural issue like root intrusion or a pipe belly — common in Glendale's older sewer lines. A plumber with a camera can find the actual cause instead of just treating the symptom."
+    },
+    {
+      "q": "Is a clogged drain ever a sign of a bigger problem in a hillside home?",
+      "a": "Yes. Ground movement on sloped lots can shift or crack pipes over time, creating low spots where debris collects. If a drain clogs repeatedly in the same spot, it's worth having a plumber check for pipe damage rather than just clearing it again."
+    },
+    {
+      "q": "Why would a drain cleaning cost closer to $315 instead of $135?",
+      "a": "The price depends on how long the job takes. A simple sink clog might clear in about an hour, but a main line blockage, tree root intrusion, or a clog in hard-to-access older plumbing can take up to three hours to fully clear, which moves the cost toward the higher end of the range."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 315,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

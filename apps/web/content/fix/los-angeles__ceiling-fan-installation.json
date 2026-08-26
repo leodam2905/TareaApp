@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "ceiling-fan-installation",
+  "problemTitle": "Ceiling fan installation",
+  "generatedAt": "2026-08-26T01:38:58.520Z",
+  "metaTitle": "Ceiling Fan Installation in Los Angeles | Tarea",
+  "metaDescription": "Ceiling fan installation in Los Angeles runs $235 to $335. Learn what affects the price, what an electrician does, and when to call a pro.",
+  "intro": "Whether you're adding a fan to a pre-war bungalow that never had one, replacing an old fixture in a mid-century home, or wiring a new unit in a modern Los Angeles apartment, the job usually involves more than just screwing in a fan. Older LA homes often have wiring and ceiling boxes that weren't built to support a fan's weight or wobble, which is why professional installation matters.",
+  "causes": [
+    "Many pre-war bungalows in LA only have a plain light fixture box, not one rated to hold a ceiling fan's weight and motion.",
+    "Mid-century homes sometimes have outdated wiring or a lack of a neutral wire, which complicates adding fan speed and light controls.",
+    "New-build apartments may have the electrical box in place but lack the framing or blocking needed to secure a fan safely.",
+    "Homeowners often want a fan added to a room that never had overhead wiring, requiring a new circuit run from the panel or an existing junction box.",
+    "Existing fans that wobble or make noise are frequently the result of a box that was never rated for fan use in the first place."
+  ],
+  "whatProDoes": [
+    "Turns off power to the circuit at the breaker panel and confirms it's dead with a voltage tester before touching any wires.",
+    "Inspects the existing electrical box and replaces it with a fan-rated box if the current one isn't built to support a fan's weight and movement.",
+    "Assembles the fan bracket and mounts it securely to the ceiling joist or the new fan-rated box.",
+    "Connects the wiring for the fan motor, light kit, and any wall controls, matching wires correctly and capping connections safely.",
+    "Attaches the fan blades and light fixture, then tests all speeds and light functions before restoring power fully."
+  ],
+  "diyOrPro": "This is not a safe DIY project for most homeowners, especially in older LA homes where the ceiling box may not be rated for fan weight or the wiring may be outdated. Working near live electrical circuits and mounting a heavy, spinning appliance overhead carries real risk of shock, fire, or the fan falling if installed incorrectly. If you already have a fan-rated box and just need blades swapped, that's a smaller task, but anything involving the electrical box, wiring, or a first-time install should go to a licensed electrician.",
+  "priceNote": "Ceiling fan installation in Los Angeles runs $235 to $335, based on a $100/hour rate and jobs that typically take 2 to 3 hours. The time can vary depending on whether the existing box needs to be replaced with a fan-rated one, whether new wiring has to be run, and how accessible the ceiling is in your specific home.",
+  "faqs": [
+    {
+      "q": "Do I need a special electrical box for a ceiling fan?",
+      "a": "Yes. A standard light fixture box usually isn't strong enough to hold a fan's weight and handle the vibration from spinning blades. If your box isn't fan-rated, the electrician will need to replace it, which is factored into the $235 to $335 range."
+    },
+    {
+      "q": "Can I install a ceiling fan where there was no fixture before?",
+      "a": "It's possible, but it requires running new wiring back to the panel or an existing circuit, which adds time and complexity. This is more involved than a straightforward swap and should be discussed with your electrician before the job starts."
+    },
+    {
+      "q": "Why does my old ceiling fan wobble or make noise?",
+      "a": "This is often a sign that the fan was mounted to a box that isn't rated for fan use, or that the mounting bracket isn't secure. An electrician can inspect the box and reinforce or replace it as part of a reinstall."
+    }
+  ],
+  "price": {
+    "low": 235,
+    "high": 335,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "light-fixture-installation",
+  "problemTitle": "Light fixture installation",
+  "generatedAt": "2026-08-26T01:42:51.410Z",
+  "metaTitle": "Light Fixture Installation in Santa Monica, CA | Tarea",
+  "metaDescription": "Need a light fixture installed or replaced in Santa Monica? Licensed electricians handle wiring and mounting safely. $135–$235, typically 1-2 hours.",
+  "intro": "If you've bought a new light fixture in Santa Monica and it's still sitting in the box, or your old one is flickering, corroded, or hanging loose, it's time to get it wired in properly. Coastal salt air is tough on fixture hardware here, especially anything mounted outdoors or near windows that catch ocean breeze, so installations often involve dealing with rusted mounting screws or corroded wire nuts from the last install.",
+  "causes": [
+    "The existing fixture has failed due to worn-out sockets, a dead ballast, or corrosion from salt air exposure common in Santa Monica homes near the coast.",
+    "A new fixture was purchased but the homeowner isn't comfortable working with the electrical box wiring or has no ground wire to match to.",
+    "The old mounting bracket or junction box is outdated, rusted, or not rated to support a heavier new fixture.",
+    "Flickering or buzzing lights point to a loose connection or damaged wiring that needs inspection before a new fixture goes in.",
+    "Outdoor or patio fixtures near the coast often corrode faster and need full replacement rather than a simple bulb swap."
+  ],
+  "whatProDoes": [
+    "Shuts off power to the circuit at the breaker and confirms it's dead with a voltage tester before touching any wires.",
+    "Removes the old fixture and inspects the junction box, wiring, and mounting bracket for damage or corrosion.",
+    "Wires the new fixture to the existing circuit, matching hot, neutral, and ground connections correctly.",
+    "Secures the fixture to a properly rated mounting bracket, especially important for anything heavier than a standard light.",
+    "Restores power and tests the fixture, checking for flicker, buzzing, or loose connections before wrapping up."
+  ],
+  "diyOrPro": "Swapping a lamp shade or bulb is fine to do yourself, but any job involving disconnecting wires at the junction box means working with live electrical circuits, which can cause shock or fire if wired wrong. If you have an older home in Santa Monica with corroded wiring, aluminum wiring, or no ground wire, or if the fixture is heavy and needs a stronger mounting point, call a licensed electrician rather than guessing.",
+  "priceNote": "This job runs $135 to $235 in Santa Monica, based on a $100/hour rate for a typical 1-2 hour job. The lower end covers a straightforward swap where the wiring and junction box are in good shape, while the higher end applies when there's corrosion to clean up, a bracket that needs replacing, or a heavier fixture that takes more time to secure properly.",
+  "faqs": [
+    {
+      "q": "Do I need to buy the light fixture myself, or does the electrician bring one?",
+      "a": "You'll usually need to purchase and provide the fixture yourself. The price range covers the labor to remove the old one and install the new one, not the fixture itself."
+    },
+    {
+      "q": "Why does my outdoor fixture keep corroding so fast?",
+      "a": "Santa Monica's coastal air carries salt that speeds up corrosion on metal hardware, wire connectors, and screws, especially on fixtures facing the ocean side of a home. An electrician can recommend fixtures rated for coastal or marine environments to slow this down."
+    },
+    {
+      "q": "Is it dangerous if my light fixture is buzzing or flickering?",
+      "a": "It can be a sign of a loose connection, a failing fixture, or wiring damage, and it's worth having it checked rather than ignored, since faulty wiring is a fire risk. Turn off the fixture at the switch or breaker if you notice sparking, heat, or a burning smell."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

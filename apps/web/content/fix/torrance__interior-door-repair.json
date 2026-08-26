@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "interior-door-repair",
+  "problemTitle": "Interior door repair",
+  "generatedAt": "2026-08-26T02:10:50.134Z",
+  "metaTitle": "Interior Door Repair in Torrance, CA | $135–$285",
+  "metaDescription": "Sticking, misaligned, or off-track interior doors in Torrance homes? Get a flat $135–$285 repair from a local carpenter. See causes, process, and pricing.",
+  "intro": "If an interior door in your Torrance home has started sticking, dragging on the carpet, or won't latch shut, you're not imagining it. Many Torrance houses were built in the 1950s and 60s, and decades of foundation settling and dry-wet seasonal cycles have shifted door frames just enough to throw doors out of alignment. A carpenter can usually get the door swinging and latching properly again in a single visit.",
+  "causes": [
+    "Decades of minor foundation settling common in older Torrance slab-on-grade homes have pushed door frames slightly out of square.",
+    "Original hinges from the 1950s and 60s have worn loose or the wood around the hinge screws has softened, letting the door sag.",
+    "Humidity changes between coastal marine air and dry Santa Ana wind conditions cause the wood door and frame to expand and contract, leading to sticking.",
+    "Old layers of paint built up on the door edge or jamb over the years, narrowing the gap the door needs to close cleanly.",
+    "The strike plate or latch mechanism has worn out or shifted, so the door no longer catches even though it swings fine."
+  ],
+  "whatProDoes": [
+    "Inspects the door, frame, and hinges to find out whether the problem is the door itself, the frame, or the hardware.",
+    "Tightens, re-sets, or replaces worn hinge screws, sometimes drilling fresh pilot holes if the old wood has stripped out.",
+    "Plane or sand down high spots on the door edge where it's rubbing against the frame or floor.",
+    "Adjusts or replaces the strike plate so the latch catches correctly, and re-squares the frame if it's shifted.",
+    "Tests the door through several full open-close cycles to confirm it swings freely and latches without forcing it."
+  ],
+  "diyOrPro": "If a door is just dragging slightly on carpet or a hinge screw has backed out, tightening the screws or adding a shim yourself is low-risk and worth trying first. But if the door is badly warped, the frame itself looks cracked or shifted, or the door won't close at all, it's easy to make the misalignment worse by forcing it, so it's better to bring in a carpenter at that point.",
+  "priceNote": "This job runs $135 to $285 in Torrance, based on a rate of $83 an hour and jobs that typically take 1 to 3 hours. Simple fixes like re-hanging a door or adjusting a strike plate land on the lower end, while doors that need planing, frame squaring, or hardware replacement take longer and land toward the higher end.",
+  "faqs": [
+    {
+      "q": "Why is my interior door suddenly sticking when it never used to?",
+      "a": "It's usually a combination of normal wood movement from seasonal humidity changes and gradual settling that's common in Torrance homes built in the 1950s and 60s. Even small shifts in the frame can make a door that fit fine for years start dragging."
+    },
+    {
+      "q": "Can I just plane down the door myself instead of hiring someone?",
+      "a": "You can, but planing removes material permanently, and if you take off too much or plane the wrong edge, the door won't seal properly against drafts or light. A carpenter can check whether planing is even the right fix before cutting into the door."
+    },
+    {
+      "q": "Will fixing one door tell me if other doors in the house will have the same problem?",
+      "a": "Not necessarily. Each door reacts differently depending on its exact hinge wear, frame condition, and location in the house, so a sticking door in one room doesn't mean the others are headed the same way."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 285,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

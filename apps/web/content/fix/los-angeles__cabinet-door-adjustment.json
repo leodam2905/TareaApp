@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "cabinet-door-adjustment",
+  "problemTitle": "Cabinet door adjustment",
+  "generatedAt": "2026-08-26T01:40:32.460Z",
+  "metaTitle": "Cabinet Door Adjustment in Los Angeles | $135-$200",
+  "metaDescription": "Kitchen or bathroom cabinet doors sagging, misaligned, or not closing right? Los Angeles adjustment service, $135-$200. See what causes it and what's involved.",
+  "intro": "Cabinet doors that hang crooked, won't latch, or bang against their neighbors are a common complaint in Los Angeles homes, whether it's original built-ins in a pre-war bungalow, mid-century kitchen cabinetry, or freshly installed units in a new-build apartment. The fix is usually straightforward, but getting doors sitting flush and closing smoothly takes the right tools and a bit of patience.",
+  "causes": [
+    "Hinges have loosened over time from everyday opening and closing, letting the door droop.",
+    "Older homes with wood-frame cabinets can shift slightly as the house settles, throwing off alignment.",
+    "Humidity swings between coastal marine layer mornings and dry Santa Ana wind days cause wood and MDF doors to expand and contract.",
+    "Cheaper hinges on new-build apartment cabinets sometimes lose calibration faster than heavier-duty hardware.",
+    "A door was hung slightly off during a kitchen remodel or IKEA-style cabinet installation and was never fully dialed in."
+  ],
+  "whatProDoes": [
+    "Inspects the hinges, cabinet frame, and door to identify whether the issue is hinge wear, frame movement, or door warping.",
+    "Tightens or replaces loose screws and adjusts the hinge cup and mounting plate to correct depth, height, and angle.",
+    "Realigns the door so it sits flush with neighboring doors and the cabinet face, checking gaps on all sides.",
+    "Tests the door swing and latch multiple times, fine-tuning until it closes smoothly without rubbing or bouncing.",
+    "Checks nearby doors on the same run of cabinets so spacing looks even across the whole unit."
+  ],
+  "diyOrPro": "If you're comfortable with a screwdriver, many cabinet doors can be adjusted yourself since most modern hinges have visible adjustment screws for height, depth, and side-to-side position. It's not a dangerous job, but older hinges, stripped screw holes, or cabinets with structural warping can be harder to get right without stripping the wood further or making the door worse. If a quick screw tightening doesn't solve it, calling a pro avoids trial-and-error damage to the cabinet face.",
+  "priceNote": "This job in Los Angeles runs $135 to $200, based on an $83 hourly rate and jobs typically taking 1 to 2 hours. The time on-site depends on how many doors need adjusting and whether the hinges themselves need replacing rather than just realigning.",
+  "faqs": [
+    {
+      "q": "How many cabinet doors does this price cover?",
+      "a": "The $135-$200 range is based on 1-2 hours of work, which typically covers several doors in one kitchen or bathroom. A pro can give you a better sense once they see how many doors need attention and their condition."
+    },
+    {
+      "q": "Will the pro bring replacement hinges if mine are broken?",
+      "a": "Most pros carry common hinge sizes, but older or specialty cabinets sometimes need a specific part. It's worth mentioning the cabinet age or brand when booking so they can plan ahead."
+    },
+    {
+      "q": "Can this fix doors that don't close at all?",
+      "a": "In most cases yes, since misalignment is the usual reason a door won't latch. If the cabinet frame itself is warped or damaged, that may need a separate repair beyond a standard adjustment."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 200,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

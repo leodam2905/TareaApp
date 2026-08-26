@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "running-toilet-repair",
+  "problemTitle": "Running toilet repair",
+  "generatedAt": "2026-08-26T01:37:56.063Z",
+  "metaTitle": "Running Toilet Repair in Los Angeles | $135–$220",
+  "metaDescription": "Fix a running toilet in your LA home. Flat rate $135–$220 based on $94/hr, 1–2 hours. Covers flapper, fill valve, and flush valve repairs.",
+  "intro": "That hissing or trickling sound coming from your toilet tank in the middle of the night isn't just annoying — it's wasting water and adding to your bill every single day it goes unfixed. In Los Angeles, where homes range from older pre-war bungalows with original plumbing to newer apartment builds, a running toilet usually comes down to a worn part that's cheap to replace but easy to overlook.",
+  "causes": [
+    "A worn or warped flapper valve is no longer sealing the flush valve opening, letting water leak into the bowl.",
+    "The fill valve is misadjusted or failing, causing water to run continuously or shut off improperly.",
+    "The float is set too high, so water keeps flowing into the overflow tube.",
+    "Mineral buildup or sediment in the tank is preventing the flapper from sitting flat, a common issue in homes with LA's harder tap water.",
+    "The flush valve seat itself is cracked or corroded, especially in older bungalows with original toilet hardware."
+  ],
+  "whatProDoes": [
+    "Shuts off the water supply and inspects the tank to identify which component is failing.",
+    "Checks the flapper, chain, and flush valve seat for wear, warping, or mineral buildup.",
+    "Replaces the flapper, fill valve, or float assembly as needed with parts suited to your toilet model.",
+    "Adjusts water level and float height so the tank fills correctly without running or overflowing into the tube.",
+    "Tests multiple flush cycles to confirm the toilet shuts off properly and there's no lingering leak."
+  ],
+  "diyOrPro": "If you're comfortable removing the tank lid and can identify a flapper or fill valve at the hardware store, replacing a simple flapper is a reasonable DIY task and costs very little. However, if the issue involves the flush valve seat, persistent water on the floor, or you're not sure what's causing the run, it's worth calling a pro — a cracked valve seat or ongoing leak can waste hundreds of gallons and, in older homes, sometimes points to bigger issues with aging plumbing.",
+  "priceNote": "This job is priced at $135 to $220 in Los Angeles, based on a $94 per hour rate for a typical 1 to 2 hour repair. The lower end usually covers a straightforward flapper or fill valve swap, while the higher end applies to older or unusual toilet models — common in pre-war bungalows — that take more time to source parts for or adjust correctly.",
+  "faqs": [
+    {
+      "q": "How do I know if my toilet is actually running or just noisy?",
+      "a": "Put a few drops of food coloring in the tank and wait 10-15 minutes without flushing. If color shows up in the bowl, water is leaking past the flapper and the toilet is running even if you can't hear it clearly."
+    },
+    {
+      "q": "Can a running toilet actually raise my water bill that much?",
+      "a": "Yes — a continuously running toilet can waste over 100 gallons a day, which adds up quickly on an LA water bill given the area's tiered water rates."
+    },
+    {
+      "q": "Will the pro need to replace the whole toilet?",
+      "a": "Not for a running toilet issue. This repair addresses the internal tank components — flapper, fill valve, or float — and doesn't involve replacing the toilet itself."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

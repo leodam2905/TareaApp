@@ -1,0 +1,47 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "running-toilet-repair",
+  "problemTitle": "Running toilet repair",
+  "generatedAt": "2026-08-26T02:03:56.094Z",
+  "metaTitle": "Running Toilet Repair in Inglewood, CA | Tarea",
+  "metaDescription": "Fix a running toilet in Inglewood for $135–$220. Learn common causes, what a plumber does, and whether it's DIY-safe.",
+  "intro": "That hissing or trickling sound from the toilet tank usually means water is running constantly, which can quietly add gallons to your Inglewood water bill every day. This is common in both older single-family homes with original fixtures and recently renovated rentals where cheaper replacement parts were installed.",
+  "causes": [
+    "A worn flapper valve no longer seals the tank properly, letting water leak into the bowl.",
+    "The fill valve is misadjusted or failing, causing water to keep refilling past the shutoff point.",
+    "The float is set too high, triggering the fill valve to run longer than needed.",
+    "Mineral buildup or corrosion on internal parts, common in Inglewood homes with older galvanized plumbing.",
+    "A cracked overflow tube or loose water supply connection installed during a recent rental renovation."
+  ],
+  "whatProDoes": [
+    "Removes the tank lid and inspects the flapper, float, fill valve, and overflow tube for wear or misalignment.",
+    "Tests the flush mechanism and water level to identify exactly where the leak or overrun is happening.",
+    "Replaces the flapper, fill valve, or other worn components as needed with standard hardware.",
+    "Adjusts the float and water level to the correct fill line to stop overrunning.",
+    "Flushes the toilet several times to confirm the tank shuts off properly and no water continues running."
+  ],
+  "diyOrPro": "If you're comfortable removing the tank lid and can identify a visibly worn flapper, replacing it yourself with a hardware store kit is generally low-risk. But if the shutoff valve is stuck, the tank is cracked, or you're not sure which part is failing, call a plumber rather than guessing, since repeated attempts can waste water or damage the porcelain.",
+  "priceNote": "This repair runs $135 to $220 in Inglewood, based on a $94 per hour rate for a typical 1 to 2 hour job. The final cost depends on whether one part needs replacing or several components have failed, plus how accessible the shutoff valve and tank hardware are.",
+  "faqs": [
+    {
+      "q": "How do I know if my toilet is actually running or just noisy?",
+      "a": "Add a few drops of food coloring to the tank water and wait 10-15 minutes without flushing; if color shows up in the bowl, water is leaking through and the toilet needs repair."
+    },
+    {
+      "q": "Can a running toilet raise my water bill significantly?",
+      "a": "Yes, a continuously running toilet can waste hundreds of gallons a day, which shows up as a noticeable increase on your next water bill."
+    },
+    {
+      "q": "Will the plumber need to shut off water to the whole house?",
+      "a": "Usually not. Most running toilet repairs only require shutting off the small valve behind the toilet, not the main water supply to the house."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

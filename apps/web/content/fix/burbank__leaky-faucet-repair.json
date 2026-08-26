@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "leaky-faucet-repair",
+  "problemTitle": "Leaky faucet repair",
+  "generatedAt": "2026-08-26T01:59:17.010Z",
+  "metaTitle": "Leaky Faucet Repair in Burbank, CA | $135–$220",
+  "metaDescription": "Fix a dripping faucet in your Burbank home. Flat rate $135–$220 based on $94/hour, 1-2 hours. Common in homes with original plumbing.",
+  "intro": "That steady drip from your kitchen or bathroom faucet isn't just annoying — it's wasting water and money every day it goes unfixed. In Burbank, where many post-war single-family homes still have original plumbing fixtures and galvanized supply lines, worn-out internal parts are a common culprit. A leaky faucet repair typically takes 1-2 hours and addresses the issue at its source rather than just muffling the sound.",
+  "causes": [
+    "Worn rubber washers or O-rings inside the faucet body harden and crack over decades, especially in original fixtures from the 1940s-1960s era common in Burbank.",
+    "Corroded or mineral-scaled valve seats prevent the faucet from sealing fully when shut off.",
+    "A loose or degraded cartridge in newer faucet replacements can develop leaks even if the rest of the fixture is older.",
+    "High water pressure common in some Burbank neighborhoods accelerates wear on internal seals.",
+    "Loose packing nuts or a worn-out stem can let water seep past the handle even when the faucet is off."
+  ],
+  "whatProDoes": [
+    "Shuts off the water supply to the fixture and relieves pressure before opening anything up.",
+    "Disassembles the faucet handle and body to inspect washers, O-rings, cartridges, and valve seats for wear or corrosion.",
+    "Replaces the specific worn part — often a washer, cartridge, or O-ring — matching it to the faucet's make and age.",
+    "Reassembles the faucet, checks for smooth handle operation, and turns the water back on to test for leaks under pressure.",
+    "Inspects nearby shutoff valves and supply lines for the same wear pattern, since original plumbing in older Burbank homes often shows corrosion in more than one spot."
+  ],
+  "diyOrPro": "If you're comfortable turning off a shutoff valve and have replaced a washer or cartridge before, a simple drip can sometimes be a DIY fix with the right parts. But in homes with original plumbing, corroded valves or brittle old pipe threads can crack or strip when disturbed, turning a small leak into a bigger water damage problem — that's when it's worth calling a pro instead of pushing further.",
+  "priceNote": "This job runs $135 to $220 in Burbank, based on a $94/hour rate and a typical job length of 1-2 hours. The lower end usually covers a straightforward washer or O-ring swap, while the higher end reflects faucets with corroded valve seats or original hardware that takes more time to safely disassemble.",
+  "faqs": [
+    {
+      "q": "Why is my faucet still dripping right after I tightened the handle?",
+      "a": "Tightening the handle doesn't fix worn internal parts — if a washer, O-ring, or cartridge has degraded, water will keep seeping past it regardless of how tight the handle is turned."
+    },
+    {
+      "q": "Is a dripping faucet actually worth fixing, or can I just ignore it?",
+      "a": "A slow drip can waste a significant amount of water over months and, in older homes, sometimes signals a valve or seal problem that gets worse over time, so it's worth addressing rather than living with it indefinitely."
+    },
+    {
+      "q": "My home still has original plumbing from the 1950s — will that make the repair harder?",
+      "a": "It can. Original fixtures and valves in Burbank homes of that era are often more corroded or brittle, which sometimes means extra care during disassembly, but a pro will account for that when working on the fixture."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "light-fixture-installation",
+  "problemTitle": "Light fixture installation",
+  "generatedAt": "2026-08-26T02:00:17.978Z",
+  "metaTitle": "Light Fixture Installation Cost in Burbank, CA | Tarea",
+  "metaDescription": "Swapping or adding a light fixture in a Burbank home? See what's involved, what drives the price, and the fixed $135–$235 rate.",
+  "intro": "If you're staring at a wobbly old fixture or a bare wire hanging from the ceiling in your Burbank home, you're not alone — many post-war houses in the area still have their original electrical boxes and wiring from the 1940s and 50s. Swapping in a new fixture sounds simple, but older wiring and boxes can turn a quick job into something that needs an electrician's judgment.",
+  "causes": [
+    "The existing ceiling box may not be rated to support a heavier fixture, which is common in homes built before modern electrical codes.",
+    "Old wiring insulation can be brittle or cracked from decades of heat exposure, making it unsafe to simply reconnect to a new fixture.",
+    "A missing or ungrounded ground wire, typical in original 1940s-1950s wiring, can leave a new fixture without proper grounding.",
+    "The fixture itself may have failed wiring, a bad socket, or a worn-out switch that has nothing to do with the house's electrical system.",
+    "Some Burbank homes have had partial rewiring over the years, so one room may have updated wiring while another still has the original setup."
+  ],
+  "whatProDoes": [
+    "Shuts off power to the circuit at the breaker and confirms it's dead with a voltage tester before touching any wires.",
+    "Removes the old fixture and inspects the ceiling box for damage, proper rating, and grounding.",
+    "Replaces or upgrades the electrical box if it's cracked, too shallow, or not rated for the new fixture's weight.",
+    "Wires the new fixture, matching and capping connections correctly, then secures the fixture to the ceiling or wall.",
+    "Restores power and tests the fixture, checking the switch and dimmer (if any) for proper operation."
+  ],
+  "diyOrPro": "If you're doing a straight swap with the power confirmed off and the existing box in good shape, a confident DIYer can sometimes handle it. But if your Burbank home has original wiring, no ground wire, or a box that looks rusted, cracked, or undersized, call a licensed electrician — working on live circuits or ungrounded wiring is a real shock and fire hazard, not just an inconvenience.",
+  "priceNote": "This job runs $135 to $235 in Burbank, based on a $100/hour rate for a typical 1-2 hour job. The time depends mostly on whether the existing electrical box needs repair or replacement and how accessible the wiring is, which varies a lot in these older post-war homes.",
+  "faqs": [
+    {
+      "q": "Why would a simple fixture swap take two hours instead of one?",
+      "a": "In many Burbank homes, the ceiling box is original to the house and may need replacing or the wiring may need repair before the new fixture can go in safely, which adds time."
+    },
+    {
+      "q": "Do I need to buy the light fixture myself?",
+      "a": "Yes, typically you purchase the fixture and the $135-$235 fee covers the labor to remove the old one and install the new one."
+    },
+    {
+      "q": "Is it dangerous if my house doesn't have a ground wire?",
+      "a": "An ungrounded fixture isn't necessarily an emergency, but it does increase shock risk, and an electrician can tell you whether it's safe to proceed as-is or whether grounding should be added first."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

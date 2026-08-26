@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "furniture-assembly",
+  "problemTitle": "Furniture assembly",
+  "generatedAt": "2026-08-26T01:44:10.513Z",
+  "metaTitle": "Furniture Assembly in Santa Monica, CA | Tarea",
+  "metaDescription": "Flat-pack and outdoor furniture assembly in Santa Monica. Fixed pricing, no invented timelines. See what drives the $135–$295 range.",
+  "intro": "You've got a box (or three) of flat-pack furniture sitting in the living room, and the instructions look like origami diagrams. In Santa Monica, where the salt air can swell particleboard and rust cheap hardware faster than inland homes, getting assembly right the first time matters more than usual.",
+  "causes": [
+    "Multi-piece flat-pack furniture (dressers, bed frames, bookshelves) arrives with dozens of small parts and instructions that assume prior experience.",
+    "Outdoor and patio furniture common in coastal Santa Monica households often uses hardware that seizes or strips if it's already been exposed to humid air before assembly.",
+    "Missing or duplicate hardware from the manufacturer forces a stop-and-start process that eats time.",
+    "Heavy pieces like wardrobes or bed frames require two people to hold panels square while fastening, which one person alone struggles to do safely.",
+    "Wall-anchoring for tall furniture (bookcases, dressers) needs the right anchors for the wall type, which isn't always obvious to a first-time assembler."
+  ],
+  "whatProDoes": [
+    "Sorts and counts all hardware and panels against the parts list before starting, catching missing pieces early.",
+    "Assembles the frame in the manufacturer's specified sequence so panels stay square and don't warp under later stress.",
+    "Uses a driver with torque control on particleboard and MDF pieces so screws don't strip the material, which is more common in humid coastal conditions.",
+    "Attaches any required tip-over anchors or wall straps for tall furniture using anchors matched to the wall material.",
+    "Checks doors, drawers, and shelves for level and smooth operation before calling the job finished."
+  ],
+  "diyOrPro": "Basic flat-pack items like a small bookshelf or nightstand are reasonable to assemble yourself with a clear afternoon and the included tools. Larger pieces — wardrobes, bed frames, anything that needs to be anchored to a wall, or furniture with metal hardware that's been sitting in a garage near the coast — are safer with a second set of hands or a pro, since stripped screws and unsecured tall furniture are real tip-over and injury risks.",
+  "priceNote": "Furniture assembly in Santa Monica runs $135 to $295, based on an $87/hour rate for jobs that typically take 1 to 3 hours. Simple single items land at the low end, while multi-piece sets, outdoor furniture with corrosion-prone hardware, or anything needing wall anchoring pushes toward the top of that range.",
+  "faqs": [
+    {
+      "q": "Do I need to buy anything extra before the pro arrives?",
+      "a": "No. Bring the furniture in its original packaging with all hardware bags unopened if possible, and the pro will supply their own tools."
+    },
+    {
+      "q": "Can someone assemble outdoor patio furniture that's been sitting in my garage for a while?",
+      "a": "Yes, but mention this when booking. Hardware that's been exposed to coastal humidity can be corroded or seized, which sometimes adds time to the job within the standard $135–$295 range."
+    },
+    {
+      "q": "Will the assembler mount my bookshelf or dresser to the wall?",
+      "a": "If the piece includes a tip-over anchor kit, yes — that's part of a standard assembly. If you want it anchored into drywall or plaster and it didn't come with hardware, let the pro know so they bring the right anchors."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

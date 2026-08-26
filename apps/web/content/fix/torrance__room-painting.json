@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "room-painting",
+  "problemTitle": "Room painting",
+  "generatedAt": "2026-08-26T02:11:20.684Z",
+  "metaTitle": "Room Painting in Torrance, CA | Cost & What to Expect",
+  "metaDescription": "Get a single room repainted in Torrance. Fixed pricing $345-$655, what causes peeling walls in older homes, and what a pro actually does.",
+  "intro": "If the paint in a bedroom or living room is looking dingy, cracked, or just outdated, a fresh coat can make the whole room feel different. Many Torrance homes date back to the 1950s and 60s, and older plaster or drywall often needs a bit more prep before new paint goes on smoothly.",
+  "causes": [
+    "Original paint from decades ago has aged, faded, or started chalking, especially in rooms that get direct sun.",
+    "Older plaster walls common in 1950s and 60s Torrance homes develop hairline cracks over time as the house settles.",
+    "Humidity from cooking, showers, or poor ventilation causes paint to peel or bubble near kitchens and bathrooms.",
+    "Previous patch jobs or repairs were never repainted to match, leaving visible seams or color mismatches.",
+    "Smoke, cooking residue, or years of everyday wear have left walls dull or discolored."
+  ],
+  "whatProDoes": [
+    "Moves or covers furniture and lays down drop cloths to protect floors and fixtures.",
+    "Fills cracks, holes, and old nail pops, then sands the walls smooth, which takes extra time on older plaster.",
+    "Applies painter's tape along trim, ceilings, and outlets for clean, sharp lines.",
+    "Applies primer where needed, especially over patched areas or stains, then rolls on two coats of paint.",
+    "Does a final touch-up pass and removes tape once the paint has set, leaving the room ready to use."
+  ],
+  "diyOrPro": "Painting a room yourself is reasonable if the walls are already in decent shape and you're comfortable with prep work, taping, and cutting in around trim. It's worth hiring a pro if the plaster is cracked or bubbling, if there's any sign of water damage behind the paint, or if you just don't have the time to do the prep properly, since rushed prep is the main reason DIY paint jobs look uneven.",
+  "priceNote": "This job in Torrance runs $345 to $655, based on a $78 hourly rate and typically 4 to 8 hours of work. The time it takes depends mostly on room size, how much wall prep and patching is needed, and whether the existing paint requires a primer coat before the finish coats go on.",
+  "faqs": [
+    {
+      "q": "How many coats of paint are included in this price?",
+      "a": "Typically two coats of finish paint are applied after any needed primer, which is standard for even coverage and consistent color."
+    },
+    {
+      "q": "Do I need to buy the paint myself?",
+      "a": "This depends on what's arranged with your pro ahead of time; some jobs include paint in the price and others expect the homeowner to supply it, so confirm this before work starts."
+    },
+    {
+      "q": "My walls have some cracks — will that add to the cost?",
+      "a": "Minor crack repair and patching is part of normal prep work, but if there's significant plaster damage or signs of water intrusion, that may require more time and could affect where your job falls in the $345 to $655 range."
+    }
+  ],
+  "price": {
+    "low": 345,
+    "high": 655,
+    "hourly": 78
+  },
+  "category": "PAINTING",
+  "categoryLabel": "Painting"
+}

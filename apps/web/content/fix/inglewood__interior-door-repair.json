@@ -1,0 +1,48 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "interior-door-repair",
+  "problemTitle": "Interior door repair",
+  "generatedAt": "2026-08-26T02:06:22.744Z",
+  "metaTitle": "Interior Door Repair in Inglewood, CA | Tarea",
+  "metaDescription": "Sticking, misaligned, or broken interior doors in Inglewood homes? Get them fixed for $135–$285. See causes, what a pro does, and DIY tips.",
+  "intro": "If a door in your Inglewood home suddenly sticks, won't latch, or sags on its hinges, you're not alone — it's a common issue in the city's older single-family homes as wood frames shift over decades. Recently renovated rentals can have their own version of this problem, usually from doors that were rehung quickly during a flip. Either way, a misbehaving door is annoying daily and usually fixable in a single visit.",
+  "causes": [
+    "Older wood door frames in Inglewood's pre-1960s homes have settled or warped over time, throwing the door out of square.",
+    "Hinges have loosened, rusted, or been mounted with short screws that pull out of the jamb.",
+    "The door or frame has swollen from humidity or a past water leak, causing binding along one edge.",
+    "In renovated rentals, doors were sometimes rehung slightly crooked or with mismatched hardware during a quick flip.",
+    "Foundation settling, common in older Inglewood lots, can shift the frame enough to throw the latch out of alignment with the strike plate.",
+    "The door itself has developed cracks, split panels, or a damaged frame from years of slamming or minor impacts."
+  ],
+  "whatProDoes": [
+    "Inspects the door, frame, and hinges to identify exactly where the misalignment or damage is coming from.",
+    "Tightens, replaces, or repositions hinges, and may add longer screws to anchor them into solid framing.",
+    "Planes or sands down high spots on the door edge where it's rubbing against the frame.",
+    "Adjusts or relocates the strike plate so the latch catches properly.",
+    "Repairs or replaces damaged sections of the door or jamb, and checks that the door swings and closes smoothly when finished."
+  ],
+  "diyOrPro": "Tightening a loose hinge screw or trying a bit of sandpaper on a sticking edge is reasonable to attempt yourself if the door is only mildly off. But if the frame is visibly warped, the door won't latch at all, or you suspect the problem is tied to foundation movement, it's worth having a pro assess it — misdiagnosing the cause often leads to repeat problems. This job doesn't involve gas or electrical risk, so the main downside of DIY is wasted time rather than danger.",
+  "priceNote": "This job runs $135 to $285 in Inglewood, based on an $83/hour rate for a typical 1 to 3 hour job. Simple fixes like hinge adjustments or minor planing land at the lower end, while doors needing frame repair, hardware replacement, or realignment due to a shifted jamb take longer and cost more.",
+  "faqs": [
+    {
+      "q": "Why does my interior door only stick in certain weather?",
+      "a": "Wood doors and frames expand and absorb moisture in humid conditions and shrink when it's dry, which can make a door bind seasonally. If it's happening year-round, the cause is more likely a hinge or alignment issue than humidity."
+    },
+    {
+      "q": "Can this fix a door that won't close at all?",
+      "a": "Yes, a pro can usually diagnose whether it's a hinge, frame, or strike plate issue and correct it, though if the frame itself is badly warped, that may take longer within the 1 to 3 hour window."
+    },
+    {
+      "q": "Do I need to buy a new door if it's cracked?",
+      "a": "Not necessarily. Many cracks and split panels can be repaired without full replacement, but the pro will let you know during the visit if the damage is too extensive to patch."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 285,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

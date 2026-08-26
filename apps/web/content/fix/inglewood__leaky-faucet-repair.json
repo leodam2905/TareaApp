@@ -1,0 +1,47 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "leaky-faucet-repair",
+  "problemTitle": "Leaky faucet repair",
+  "generatedAt": "2026-08-26T02:03:43.554Z",
+  "metaTitle": "Leaky Faucet Repair in Inglewood, CA | Tarea",
+  "metaDescription": "Fix a dripping faucet in Inglewood for $135–$220. Learn common causes, what a plumber does, and when it's safe to DIY.",
+  "intro": "That steady drip from your kitchen or bathroom faucet is more than just annoying — it wastes water and can point to worn parts inside the fixture. In Inglewood, where many homes have original 1950s and 1960s plumbing alongside newly renovated rental units with modern fixtures, the cause of a leak can vary quite a bit depending on your home's age and setup.",
+  "causes": [
+    "Worn-out rubber washers or O-rings inside the faucet, common in older Inglewood homes that still have original hardware.",
+    "A damaged or corroded valve seat where the faucet connects to the spout, often an issue in homes built before major plumbing updates.",
+    "Loose or worn cartridge assemblies, which are typical in newer single-handle faucets installed during recent rental renovations.",
+    "Mineral buildup or sediment inside the faucet body, sometimes linked to older galvanized pipes still present in some Inglewood properties.",
+    "Improper installation or mismatched replacement parts from a previous DIY fix or quick landlord repair."
+  ],
+  "whatProDoes": [
+    "Shuts off the water supply to the fixture and confirms there's no active leak elsewhere in the line.",
+    "Disassembles the faucet to inspect washers, O-rings, cartridges, and valve seats for wear or damage.",
+    "Replaces the specific worn or damaged part with a matching component suited to the faucet's brand and age.",
+    "Reassembles the faucet, turns the water back on, and checks for leaks under normal water pressure.",
+    "Tests the handle and spout for smooth operation and confirms there's no dripping after use."
+  ],
+  "diyOrPro": "If you're comfortable turning off the water supply and have basic tools, replacing a washer or O-ring on a simple faucet can be a reasonable DIY task. However, if the leak persists after a basic fix, if you're unsure how to shut off the water, or if you notice water damage under the sink, it's safer to call a licensed plumber to avoid worsening the problem or causing water damage to cabinets and flooring.",
+  "priceNote": "This repair in Inglewood runs $135 to $220, based on a $94 per hour rate with jobs typically taking 1 to 2 hours. The exact time depends on the faucet type, how accessible the shut-off valve is, and whether matching replacement parts are readily available for older or specialty fixtures.",
+  "faqs": [
+    {
+      "q": "Why does my faucet still drip after I tightened the handle?",
+      "a": "Tightening the handle usually doesn't fix the underlying issue — a worn washer, O-ring, or cartridge inside the faucet is the more likely cause and needs to be replaced."
+    },
+    {
+      "q": "Can a leaky faucet cause bigger problems if I ignore it?",
+      "a": "Yes, a persistent leak can waste a significant amount of water over time and, in some cases, lead to water damage under the sink or around the fixture base."
+    },
+    {
+      "q": "Will the repair cost more if my faucet is an older model?",
+      "a": "It can, if a specific replacement part isn't commonly stocked, but the $135 to $220 range still applies since it's based on the time spent, not the part cost itself."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

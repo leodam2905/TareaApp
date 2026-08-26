@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "running-toilet-repair",
+  "problemTitle": "Running toilet repair",
+  "generatedAt": "2026-08-26T01:46:36.938Z",
+  "metaTitle": "Running Toilet Repair in Pasadena, CA | $135–$220",
+  "metaDescription": "Fix a running toilet in your Pasadena home. Flat rate $135–$220 based on $94/hour, 1-2 hours. Common in older Craftsman and Spanish-revival bathrooms.",
+  "intro": "That steady trickle or hiss coming from your toilet tank isn't just annoying — it's wasting water and can add real money to your bill every month. In Pasadena's older Craftsman bungalows and Spanish-revival homes, original or outdated toilet hardware often wears out faster than modern fixtures, making running toilets a frequent call.",
+  "causes": [
+    "A worn or misaligned flapper valve that no longer seals the tank properly, common in toilets that haven't been serviced in years.",
+    "A fill valve or ballcock assembly that's degraded, especially in original fixtures found in many pre-1950s Pasadena homes.",
+    "Mineral buildup from hard water coating the flush valve seat, which is common throughout the San Gabriel Valley's water supply.",
+    "A float that's set too high, causing water to constantly spill into the overflow tube.",
+    "A cracked or corroded overflow tube, more likely in older toilets that came with the home's original 1920s or 1930s plumbing."
+  ],
+  "whatProDoes": [
+    "Removes the tank lid and checks the water level, flapper seal, and flush valve seat for wear or debris.",
+    "Tests the fill valve and float mechanism, adjusting or replacing parts as needed to stop water from running past the correct level.",
+    "Inspects the flapper chain and flapper itself, replacing it if it's warped, brittle, or not sealing correctly.",
+    "Checks the overflow tube for cracks and confirms the shut-off valve underneath the toilet operates smoothly, since many original valves in older Pasadena homes have become stiff or leak-prone with age.",
+    "Flushes the toilet several times after repairs to confirm the tank fills and shuts off properly with no continued running."
+  ],
+  "diyOrPro": "If you're comfortable removing a tank lid and can identify a flapper versus a fill valve, replacing a simple flapper is a reasonable DIY task and parts cost very little. However, if your home has original 1920s-era plumbing, corroded shut-off valves, or you're unsure what's causing the issue, it's safer to call a pro — forcing a stuck or corroded shut-off valve can crack it and cause water damage inside a wall or floor.",
+  "priceNote": "This job runs $135 to $220 in Pasadena, based on a $94 hourly rate for a typical 1 to 2 hour repair. The final cost depends on how many components need replacing and whether older, harder-to-source parts are involved, which is more common in homes with original Craftsman or Spanish-revival fixtures.",
+  "faqs": [
+    {
+      "q": "Why does my toilet keep running even after I jiggle the handle?",
+      "a": "Jiggling the handle is a temporary fix for a flapper that isn't sealing correctly. If the running continues, the flapper, chain, or flush valve seat likely needs replacing rather than adjusting."
+    },
+    {
+      "q": "Is a running toilet dangerous, or just annoying?",
+      "a": "It's generally not dangerous, but it can waste a significant amount of water and increase your bill. The main risk is if a corroded shut-off valve or overflow tube fails, which could lead to water damage."
+    },
+    {
+      "q": "My house is from the 1920s — will parts be harder to find or more expensive?",
+      "a": "Older toilets sometimes use less common tank sizes or hardware, which can add a bit to the repair time, but the $135 to $220 range already accounts for typical 1 to 2 hour jobs like this."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

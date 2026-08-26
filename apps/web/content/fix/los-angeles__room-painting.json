@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "room-painting",
+  "problemTitle": "Room painting",
+  "generatedAt": "2026-08-26T01:40:45.633Z",
+  "metaTitle": "Room Painting in Los Angeles: What It Costs & Involves",
+  "metaDescription": "Planning to repaint a room in Los Angeles? See real costs ($345–$655), what a painter actually does, and when to DIY vs hire a pro.",
+  "intro": "Whether you're refreshing a bedroom in a pre-war bungalow or touching up a bedroom wall in a new-build apartment near Downtown LA, repainting a room is one of the most common home upgrades in Los Angeles. Older plaster walls, popcorn ceilings, and uneven surfaces common in the city's mid-century homes can add prep time that homeowners don't always expect.",
+  "causes": [
+    "Faded or yellowed paint from years of sun exposure through large Southern California windows.",
+    "Nail holes, scuffs, and wall damage from moving furniture or hanging décor.",
+    "Cracking or peeling paint on older plaster walls typical of pre-war LA bungalows.",
+    "A desire to update a room's color scheme before selling or renting the property.",
+    "Water staining or discoloration from a past leak that needs to be sealed before repainting."
+  ],
+  "whatProDoes": [
+    "Moves or covers furniture and lays down drop cloths to protect floors and fixtures.",
+    "Fills nail holes, sands rough patches, and repairs minor drywall or plaster cracks.",
+    "Applies painter's tape along trim, baseboards, and ceiling lines for clean edges.",
+    "Applies a primer coat if needed, especially on patched areas or drastic color changes.",
+    "Rolls and brushes on two coats of paint, then does a final touch-up pass before cleanup."
+  ],
+  "diyOrPro": "Painting a single room with good ventilation and no significant wall damage is a reasonable DIY project for someone comfortable with a ladder and basic prep work. If you're dealing with high ceilings, extensive plaster repair, mold from a past leak, or lead-based paint (a real possibility in older pre-war LA homes built before 1978), it's safer to bring in a professional.",
+  "priceNote": "This job runs $345 to $655 in Los Angeles, based on a $78/hour rate and typical completion time of 4 to 8 hours. The final cost depends on room size, how much wall repair is needed, and whether ceilings or trim are included in the job.",
+  "faqs": [
+    {
+      "q": "Does the $345–$655 price include paint and materials?",
+      "a": "This reflects labor at $78/hour for 4-8 hours of work. Ask your painter directly whether paint, primer, and supplies are included or billed separately."
+    },
+    {
+      "q": "How long does it take to paint one room?",
+      "a": "Most single rooms take 4 to 8 hours depending on size, the number of coats needed, and how much prep work (patching, sanding) is required beforehand."
+    },
+    {
+      "q": "Can a painter match my existing wall color?",
+      "a": "A professional can often match an existing color using a paint chip or sample, though exact matches depend on the paint's age and any fading from sun exposure."
+    }
+  ],
+  "price": {
+    "low": 345,
+    "high": 655,
+    "hourly": 78
+  },
+  "category": "PAINTING",
+  "categoryLabel": "Painting"
+}

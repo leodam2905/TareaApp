@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "leaky-faucet-repair",
+  "problemTitle": "Leaky faucet repair",
+  "generatedAt": "2026-08-26T01:51:03.090Z",
+  "metaTitle": "Leaky Faucet Repair in Long Beach, CA | Tarea",
+  "metaDescription": "Dripping faucet in your Long Beach home? Get it fixed for $135 to $220. See common causes, what a plumber does, and DIY vs pro guidance.",
+  "intro": "A faucet that won't stop dripping is one of the most common plumbing complaints in Long Beach, whether you're in a 1920s bungalow near Belmont Shore or a waterfront condo along Ocean Boulevard. The constant drip wastes water and can leave mineral stains in older porcelain sinks, so it's worth fixing before it gets worse.",
+  "causes": [
+    "A worn-out rubber washer or O-ring inside the faucet body no longer seals properly, which is especially common in the original faucets found in many of Long Beach's older duplexes and bungalows.",
+    "Mineral buildup from hard water deposits on internal valve seats, reducing their ability to shut off water flow completely.",
+    "A corroded or damaged valve seat, often due to age in homes with original galvanized or copper plumbing built before the 1970s.",
+    "Loose or worn-out parts inside cartridge-style or ceramic disc faucets, which are more typical in newer waterfront condo units.",
+    "High water pressure in some condo buildings that puts extra strain on faucet seals over time."
+  ],
+  "whatProDoes": [
+    "Shuts off the water supply to the fixture and checks the faucet type (compression, cartridge, ball, or ceramic disc).",
+    "Disassembles the faucet to inspect washers, O-rings, valve seats, and cartridges for wear or corrosion.",
+    "Replaces the failed parts with new washers, O-rings, or a full cartridge as needed.",
+    "Cleans mineral deposits from valve seats and checks the aerator for clogs that could affect flow.",
+    "Reassembles the faucet, turns the water back on, and tests for leaks at the handle, spout, and base."
+  ],
+  "diyOrPro": "If you're comfortable turning off the water supply and don't mind a bit of trial and error with a wrench, replacing a washer or O-ring on a simple compression faucet can be a reasonable DIY project. However, if the faucet is a newer cartridge or ceramic disc style, if you're unsure how to shut off the water, or if you notice water damage under the sink, it's safer to call a plumber to avoid making the leak worse or damaging cabinetry.",
+  "priceNote": "This job is priced between $135 and $220 in Long Beach, based on a rate of $94 per hour with most repairs taking 1 to 2 hours. The time on the low or high end depends on the faucet type, how corroded the internal parts are, and whether replacement parts are readily available or need to be sourced for an older or less common fixture.",
+  "faqs": [
+    {
+      "q": "Why does my faucet still drip after I tighten the handle?",
+      "a": "Tightening the handle harder usually doesn't fix a worn washer or O-ring; it can even damage the faucet further. The actual seal inside needs to be replaced, which is why the drip continues no matter how tight you turn it."
+    },
+    {
+      "q": "Can a leaky faucet cause bigger problems if I ignore it?",
+      "a": "Yes, a persistent drip can waste a significant amount of water over time and, in older Long Beach homes with original plumbing, can accelerate corrosion or lead to water stains on sinks and countertops."
+    },
+    {
+      "q": "Do I need to replace the whole faucet or just fix the leak?",
+      "a": "Most leaks are fixed by replacing worn internal parts like washers, O-rings, or cartridges rather than the entire faucet. A full replacement is only needed if the faucet body itself is cracked or too corroded to repair."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

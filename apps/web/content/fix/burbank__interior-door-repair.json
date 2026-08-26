@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "interior-door-repair",
+  "problemTitle": "Interior door repair",
+  "generatedAt": "2026-08-26T02:01:59.316Z",
+  "metaTitle": "Interior Door Repair in Burbank, CA | $135–$285",
+  "metaDescription": "Sticking, misaligned, or off-track interior doors in Burbank homes fixed by a carpenter. Flat rate $135–$285 based on time on site.",
+  "intro": "Many Burbank homes were built in the post-war boom of the late 1940s and 50s, and decades of foundation settling have left original door frames slightly out of square. If an interior door in your house sticks, won't latch, or drags on the floor, it's usually a fixable alignment or hardware issue rather than a sign you need a new door.",
+  "causes": [
+    "Foundation settling common in post-war Burbank homes has shifted the door frame out of square over the decades.",
+    "Old hinges have loosened or the screw holes have worn out, letting the door sag.",
+    "Humidity swings between Burbank's hot summers and cooler winters cause the original wood door to swell or shrink.",
+    "The strike plate no longer lines up with the latch because the frame has moved slightly.",
+    "Layers of old paint on the door edge or jamb are causing it to bind."
+  ],
+  "whatProDoes": [
+    "Inspects the door, frame, and hinges to find where the misalignment or binding is actually coming from.",
+    "Tightens, repositions, or replaces worn hinges and screws, sometimes using longer screws to bite into solid framing.",
+    "Planes or sands down high spots on the door edge where it's rubbing against the jamb.",
+    "Adjusts or relocates the strike plate so the latch catches properly.",
+    "Checks that the door swings, closes, and latches correctly before finishing up."
+  ],
+  "diyOrPro": "Tightening a loose hinge screw or wiping paint buildup off a door edge is reasonable to try yourself with basic tools. But if the door is significantly out of square, won't latch at all, or the frame itself looks cracked or pulled away from the wall, that points to a bigger alignment issue that's easy to make worse with amateur planing or shimming.",
+  "priceNote": "This job runs $135 to $285 in Burbank, based on a rate of $83 per hour for a typical 1 to 3 hour job. Simple hinge or strike plate fixes land at the lower end, while doors that need planing, frame adjustment, or hardware replacement due to the settling common in older Burbank homes take longer and cost more.",
+  "faqs": [
+    {
+      "q": "Why does my door only stick in the summer?",
+      "a": "Wood doors expand slightly with humidity and heat, and if the frame is already a bit out of square from foundation settling, that extra swelling is enough to make the door bind against the jamb."
+    },
+    {
+      "q": "Do I need a new door or just a repair?",
+      "a": "Most sticking, dragging, or non-latching doors in older Burbank homes can be fixed by adjusting the hinges, frame, or strike plate rather than replacing the whole door, which is why this is priced as a repair job."
+    },
+    {
+      "q": "How long does an interior door repair actually take?",
+      "a": "Most jobs take 1 to 3 hours depending on whether it's a simple hinge adjustment or a more involved fix for a frame that's shifted out of square, which is reflected in the $135 to $285 price range."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 285,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

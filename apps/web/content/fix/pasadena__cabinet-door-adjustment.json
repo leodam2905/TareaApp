@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "cabinet-door-adjustment",
+  "problemTitle": "Cabinet door adjustment",
+  "generatedAt": "2026-08-26T01:49:32.374Z",
+  "metaTitle": "Cabinet Door Adjustment in Pasadena, CA | $135-$200",
+  "metaDescription": "Sagging or misaligned cabinet doors in your Pasadena home? Get them adjusted for $135-$200. Learn causes, what a pro does, and when to DIY.",
+  "intro": "If your kitchen or bathroom cabinet doors are hanging crooked, won't close flush, or catch on the frame, you're not imagining it. This is especially common in Pasadena's older Craftsman and Spanish-revival homes, where original wood cabinetry and decades of humidity shifts have loosened hinges and warped door frames.",
+  "causes": [
+    "Original hinges from decades-old Craftsman cabinetry wear out or loosen with repeated use over the years.",
+    "Wood cabinet frames and doors expand and contract with seasonal humidity changes, common in older Pasadena homes without modern climate sealing.",
+    "Foundation settling, which is frequent in older Pasadena properties, can shift cabinet boxes slightly out of square.",
+    "Screws in hinge plates strip out over time from repeated opening and closing, especially in original softwood cabinet frames.",
+    "Previous DIY adjustments or replaced hardware that doesn't quite match the original hinge specifications."
+  ],
+  "whatProDoes": [
+    "Inspects the hinges, cabinet box, and door alignment to identify whether the issue is hardware, frame warping, or a combination.",
+    "Tightens, replaces, or repositions hinge screws, sometimes using wood filler and repositioned pilot holes if screw holes have stripped.",
+    "Adjusts the hinge cams or mounting plates to correct how the door sits vertically, horizontally, and in depth relative to the frame.",
+    "Checks that all doors in a run of cabinets are aligned evenly with each other and close without rubbing or gapping.",
+    "Tests the door swing and latch multiple times under normal use conditions before finishing the job."
+  ],
+  "diyOrPro": "If a single door is just slightly loose, you can often tighten the visible hinge screws yourself with a screwdriver, which sometimes solves the problem entirely. But if screws are stripped, the cabinet frame itself seems warped, or multiple doors are misaligned across original built-in cabinetry, it's worth hiring a pro so the fix holds and you don't damage older, harder-to-replace wood.",
+  "priceNote": "This job in Pasadena runs $135 to $200, based on an $83/hour rate for a typical 1-2 hour visit. The time needed depends on how many doors need adjusting and whether the hinges or frame require more than simple tightening.",
+  "faqs": [
+    {
+      "q": "Why do my cabinet doors keep coming loose again after I tighten them myself?",
+      "a": "If the screw holes are stripped from repeated tightening, the screws won't hold no matter how many times you retighten them. A pro can fill and re-drill the holes or use longer screws to get a lasting fix."
+    },
+    {
+      "q": "Is this something specific to older Pasadena homes?",
+      "a": "Older Craftsman and Spanish-revival homes in Pasadena often have original wood cabinetry and have gone through decades of humidity swings and foundation settling, both of which can throw doors out of alignment more than in newer construction."
+    },
+    {
+      "q": "How many cabinet doors can be adjusted in one visit for $135 to $200?",
+      "a": "That depends on how much work each door needs. A visit is typically 1-2 hours, so a pro can usually handle several doors with simple hinge adjustments, but doors needing more extensive repair may take longer."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 200,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

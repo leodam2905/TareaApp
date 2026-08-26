@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "deep-cleaning",
+  "problemTitle": "Deep cleaning",
+  "generatedAt": "2026-08-26T01:50:15.135Z",
+  "metaTitle": "Deep Cleaning in Pasadena, CA | Tarea",
+  "metaDescription": "Deep cleaning for Pasadena homes, from Craftsman bungalows to Spanish-revival details. Flat-rate pricing, $200 to $365.",
+  "intro": "If your Pasadena home hasn't had a real deep clean in a while, the original wood floors, tile counters, and built-in cabinetry common in Craftsman and Spanish-revival houses tend to show it fast. Dust settles into crown molding and window trim, and grease can build up in kitchens that still have their original tile backsplashes. A deep clean gets past the surface-level tidying to address all of that at once.",
+  "causes": [
+    "Original wood floors and baseboards in older Craftsman homes collect dust and grime in ways that regular sweeping doesn't catch.",
+    "Window units or older HVAC systems, common in these homes, circulate more dust than central air, leaving film on sills and blinds.",
+    "Spanish-revival kitchens and bathrooms often have decorative tile with grout lines that trap dirt over time.",
+    "Built-in shelving, nooks, and window seats create extra surfaces that get skipped during routine cleaning.",
+    "Infrequent cleaning behind furniture and appliances lets dust and grease accumulate unnoticed for months."
+  ],
+  "whatProDoes": [
+    "Dust and wipe down ceiling fixtures, crown molding, window trim, and baseboards throughout the home.",
+    "Clean and treat wood floors appropriate to their finish, plus vacuum and spot-clean any area rugs.",
+    "Degrease kitchen surfaces including counters, stovetop, and original tile backsplash, and clean inside the microwave.",
+    "Scrub bathroom tile, grout, fixtures, and mirrors, paying extra attention to older grout that holds buildup.",
+    "Wipe down built-in cabinetry, window seats, and other Craftsman or Spanish-revival architectural details."
+  ],
+  "diyOrPro": "Routine dusting and light surface cleaning is fine to handle yourself. A full deep clean of original wood floors, decorative tile, or built-in woodwork is worth hiring a pro for, since the wrong cleaning product can dull or damage period finishes that are hard to replace.",
+  "priceNote": "This job runs $200 to $365, based on a $56/hour rate and jobs typically taking 3 to 6 hours. Where you land in that range depends mostly on the size of the home, the number of bathrooms, and how much detailed cleaning the original tile, wood floors, and built-ins need.",
+  "faqs": [
+    {
+      "q": "Will the cleaner use products safe for original hardwood floors and tile?",
+      "a": "Pros working through Tarea use standard cleaning products suited to the surface, but it's worth mentioning any older or delicate finishes when you book so they can adjust as needed."
+    },
+    {
+      "q": "Does deep cleaning include the inside of cabinets or closets?",
+      "a": "Standard deep cleaning covers visible surfaces, floors, and fixtures. If you want cabinet interiors or closets included, mention it when booking so it's factored into the time and price."
+    },
+    {
+      "q": "How long will a deep clean take for a typical Pasadena bungalow?",
+      "a": "Most jobs take 3 to 6 hours depending on the size of the home and how much buildup there is, particularly in kitchens and bathrooms with older tile."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

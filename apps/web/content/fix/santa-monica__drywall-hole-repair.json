@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "drywall-hole-repair",
+  "problemTitle": "Drywall hole repair",
+  "generatedAt": "2026-08-26T01:44:31.317Z",
+  "metaTitle": "Drywall Hole Repair in Santa Monica, CA | Tarea",
+  "metaDescription": "Fix a punched or cracked drywall hole in Santa Monica for $200–$365. Learn common causes, what a pro does, and when to call one.",
+  "intro": "A hole in your drywall in Santa Monica can start small—a doorknob dent, a moving-day scrape—but it tends to grow if the edges crumble or moisture gets into the paper backing. Coastal humidity here softens drywall paper faster than in drier inland areas, so a patch that would hold up elsewhere can fail sooner near the beach.",
+  "causes": [
+    "A door swung too hard and the knob punched through the wall, often because a corroded or loose doorstop no longer catches it.",
+    "Furniture or luggage bumped a corner, cracking the drywall's paper face.",
+    "Salt-laden coastal air has corroded a hinge or closer, letting a door slam into the wall repeatedly until it broke through.",
+    "Moisture from ocean humidity softened the drywall paper over time, so a minor bump tore a bigger hole than it would have inland.",
+    "An old patch job used the wrong material or was never sanded flush, and it eventually cracked and fell out."
+  ],
+  "whatProDoes": [
+    "Cuts away loose or damaged drywall around the hole to reach solid material.",
+    "Installs a backing piece or patch (mesh tape for small holes, a scrap drywall piece screwed to furring strips for larger ones).",
+    "Applies joint compound in thin layers, letting each dry and sanding between coats for a flush surface.",
+    "Primes and, if requested, paints the patched area to match the surrounding wall.",
+    "Checks nearby door hardware or hinges if that's what caused the damage, so the same spot doesn't get hit again."
+  ],
+  "diyOrPro": "A small nail hole or minor dent is fine to patch yourself with spackle from a hardware store. Anything larger than a fist, anywhere near electrical wiring or plumbing behind the wall, or in a spot with visible water staining should go to a pro, since cutting into a wall blind can hit wiring or reveal hidden moisture damage that needs more than a patch.",
+  "priceNote": "In Santa Monica this job runs $200 to $365, based on an $83 hourly rate for a typical 2 to 4 hour visit. The time depends mostly on hole size and how many coats of compound and sanding passes are needed to get an invisible finish, plus whether paint-matching is part of the job.",
+  "faqs": [
+    {
+      "q": "Will the patch be invisible once it's painted?",
+      "a": "A properly sanded and primed patch should blend in closely, but exact color match depends on your existing paint's age and sheen, which can fade differently near the coast."
+    },
+    {
+      "q": "Why did my drywall hole happen in the first place?",
+      "a": "Often it's a door that swings too far because a doorstop or hinge has corroded from salt air, but it can also be simple impact damage from furniture or daily bumps."
+    },
+    {
+      "q": "Can the pro also fix the door that caused the hole?",
+      "a": "They can look at the hinge or doorstop while on site, but hardware replacement is a separate job from the drywall repair itself and would be quoted separately."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

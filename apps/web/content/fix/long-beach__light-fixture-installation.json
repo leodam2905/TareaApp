@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "light-fixture-installation",
+  "problemTitle": "Light fixture installation",
+  "generatedAt": "2026-08-26T01:52:05.667Z",
+  "metaTitle": "Light Fixture Installation in Long Beach, CA",
+  "metaDescription": "Swap out an old fixture or add a new one in Long Beach homes. Licensed electrician pricing: $135–$235. See what's involved and when to call a pro.",
+  "intro": "Whether you're updating a dated fixture in a Long Beach bungalow or hanging a new pendant in a waterfront condo, light fixture installation is one of the more common electrical requests in the area. Older duplexes and bungalows often have outdated wiring or boxes that need a second look, while newer condos may just need a straightforward swap.",
+  "causes": [
+    "An outdated or broken fixture that no longer works with a switch or dimmer.",
+    "A remodel or new light purchase that requires connecting to existing wiring.",
+    "An electrical box that's not rated to support the weight of a new fixture, common in older Long Beach bungalows.",
+    "Flickering or unreliable lighting caused by worn-out wiring connections behind the fixture.",
+    "A desire to add lighting to a space that didn't have a fixture before, such as a converted room in an older duplex."
+  ],
+  "whatProDoes": [
+    "Turns off power at the breaker and confirms it's off with a voltage tester before touching any wires.",
+    "Removes the old fixture and inspects the electrical box and wiring for damage, corrosion, or outdated materials.",
+    "Confirms the box is rated to hold the new fixture's weight, adding a support brace if needed — especially in older homes with original boxes.",
+    "Connects the new fixture's wires to the household wiring, following code for grounding and connections.",
+    "Mounts the fixture securely, restores power, and tests the switch and any dimmer function."
+  ],
+  "diyOrPro": "If you're simply changing a lightbulb-style fixture with the same footprint and the power is already off, some homeowners handle it themselves. But this job involves working with live electrical wiring, and older properties in Long Beach sometimes have outdated boxes, aluminum wiring, or grounding issues that aren't obvious until you open things up — mistakes here can cause shock, fire, or damage to the new fixture. If you're unsure about the wiring type, box condition, or how to safely kill power to the circuit, it's worth having a licensed electrician handle it.",
+  "priceNote": "This job in Long Beach runs $135 to $235, based on $100 per hour with jobs typically taking 1 to 2 hours. The time and cost depend on whether it's a simple swap or requires additional work like bracing an old box, dealing with outdated wiring found in many of the city's duplexes and bungalows, or running new cable for a fixture location that didn't have one before.",
+  "faqs": [
+    {
+      "q": "Do I need to buy the light fixture myself before booking?",
+      "a": "Yes, you'll typically purchase the fixture you want installed. The pro brings the tools and hardware needed to mount and wire it safely."
+    },
+    {
+      "q": "What if my ceiling box isn't strong enough to hold the new fixture?",
+      "a": "This is common in older Long Beach bungalows and duplexes. A pro can add a brace or replace the box to safely support heavier fixtures like chandeliers or ceiling fans with lights, which may add time to the job within the quoted range."
+    },
+    {
+      "q": "Can someone install a fixture in a condo with unusual wiring or a dimmer switch?",
+      "a": "Yes, electricians handle both standard and dimmer-compatible fixtures, and can advise if your existing dimmer switch is compatible with the new fixture's bulb type."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

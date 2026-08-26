@@ -1,0 +1,48 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "clogged-drain-cleaning",
+  "problemTitle": "Clogged drain cleaning",
+  "generatedAt": "2026-08-26T01:59:47.173Z",
+  "metaTitle": "Clogged Drain Cleaning in Burbank, CA | Tarea",
+  "metaDescription": "Slow or blocked drain in your Burbank home? Get professional drain cleaning for $135-$315. Learn causes, what a pro does, and DIY vs pro guidance.",
+  "intro": "A slow or fully blocked drain is one of the most common plumbing complaints in Burbank, especially in post-war single-family homes where the original pipes have been in the ground for 70+ years. Years of mineral buildup, root intrusion, and aging materials mean clogs here often go deeper than a simple hair snag. If plunging and store-bought drain cleaner haven't fixed it, the blockage is likely further down the line than you can reach on your own.",
+  "causes": [
+    "Grease, soap scum, and hair building up inside older cast iron or galvanized pipes common in Burbank's post-war housing stock.",
+    "Tree roots growing into aging clay sewer laterals, which were standard in this era of construction.",
+    "Mineral scale narrowing the inside diameter of original pipes that have never been replaced or relined.",
+    "Foreign objects or excess toilet paper caught in a bend, especially in bathrooms with original plumbing layouts.",
+    "Sagging or misaligned pipe sections from decades of soil shifting, which trap waste and accelerate clogging."
+  ],
+  "whatProDoes": [
+    "Inspects the fixture and asks about symptoms (slow drainage, gurgling, multiple fixtures affected) to locate the likely clog point.",
+    "Uses a drain snake or motorized auger to break up and clear the blockage inside the pipe.",
+    "Runs water through the line afterward to confirm flow is restored and check for backups.",
+    "Checks visible pipe condition for signs of corrosion, misalignment, or root intrusion that could cause repeat clogs.",
+    "Recommends a camera inspection or further repair if the clog points to a deeper issue with the original plumbing.",
+    "Cleans up the work area, since draining and snaking can bring up wastewater or debris."
+  ],
+  "diyOrPro": "A single slow sink or shower drain is reasonable to try yourself with a plunger or a hand auger before calling anyone. But if multiple fixtures are backing up at once, water is coming up from a floor drain, or you smell sewage, that points to a main line problem that can involve sewage backup into the home and should go straight to a pro rather than repeated DIY attempts.",
+  "priceNote": "This job is priced at $94 per hour and typically takes 1 to 3 hours, putting the total between $135 and $315. Older Burbank homes with original pipe layouts, tree root intrusion, or clogs located further from the access point tend to land on the higher end of that range.",
+  "faqs": [
+    {
+      "q": "Why does my drain keep clogging even after I clean it out?",
+      "a": "In homes with original plumbing, recurring clogs are often a sign of deeper issues like root intrusion, pipe scale, or sagging sections rather than a simple surface blockage, which a snake can clear temporarily but won't fully fix."
+    },
+    {
+      "q": "Is it safe to keep using chemical drain cleaner in old pipes?",
+      "a": "Repeated use of chemical cleaners can be harsh on aging cast iron or galvanized pipes and doesn't address blockages further down the line, so it's best to switch to mechanical clearing if the first attempt doesn't work."
+    },
+    {
+      "q": "How do I know if the clog is in my house or in the city sewer line?",
+      "a": "If only one fixture is slow, the clog is usually local to that line, but if multiple drains back up at once or you notice gurgling in other fixtures when you flush, the problem is likely further down and worth having a pro diagnose."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 315,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "dishwasher-installation",
+  "problemTitle": "Dishwasher installation",
+  "generatedAt": "2026-08-26T01:59:01.625Z",
+  "metaTitle": "Dishwasher Installation in Glendale, CA | Tarea",
+  "metaDescription": "Professional dishwasher installation for Glendale homes, from $205 to $295. Serving hillside houses and mid-century apartment buildings.",
+  "intro": "If you just bought a new dishwasher for your Glendale kitchen, getting it properly connected to water, drain, and power lines is the last step before it actually works. Many homes in Glendale's hillside neighborhoods and mid-century apartment buildings have older plumbing and tight cabinet spaces that make a straightforward swap trickier than it looks. A pro install helps avoid leaks, electrical issues, or a dishwasher that doesn't fit the existing cutout.",
+  "causes": [
+    "Older mid-century apartment kitchens often have narrow cabinet openings that don't match modern dishwasher dimensions.",
+    "Hillside homes may have galvanized or copper supply lines that need an adapter to connect to a new dishwasher's water inlet.",
+    "Existing electrical outlets under the sink may not be grounded or GFCI-protected as current code requires.",
+    "The drain hose may need a new air gap or high loop installed if the old unit didn't have one.",
+    "Flooring or cabinetry can shift slightly in older Glendale buildings, making the dishwasher unlevel once it's slid into place."
+  ],
+  "whatProDoes": [
+    "Shuts off water and power to the area, then removes the old dishwasher if one is present.",
+    "Checks the cabinet opening and supply lines to confirm the new unit will fit and connect properly.",
+    "Connects the water supply line, drain hose, and electrical wiring, adding an air gap or high loop if needed.",
+    "Slides the dishwasher into place, levels it, and secures it to the countertop or cabinets.",
+    "Runs a test cycle and checks under the unit for leaks before finishing the job."
+  ],
+  "diyOrPro": "If you're comfortable with basic plumbing and have a modern kitchen with standard hookups, a straightforward swap might be manageable. In Glendale's older hillside homes or mid-century buildings, though, outdated wiring, non-standard plumbing, or a mismatched cabinet cutout can turn a simple job into a bigger repair, and incorrect electrical work poses a real shock or fire risk. If you're unsure what type of connections you have, it's worth having a pro take a look first.",
+  "priceNote": "This job runs $205 to $295 in Glendale, based on a $87 hourly rate and a typical job length of 2 to 3 hours. The exact time depends on factors like whether the old unit needs removal, how accessible the water and electrical lines are, and whether any adapters or extra parts are needed for older plumbing common in Glendale's hillside and mid-century properties.",
+  "faqs": [
+    {
+      "q": "Do I need to buy any parts before the installer arrives?",
+      "a": "Usually the dishwasher itself is enough, but if your home has older or non-standard plumbing connections, the installer may need to bring adapters or fittings, which can affect the time spent on the job within the $205 to $295 range."
+    },
+    {
+      "q": "Can the dishwasher be installed in a mid-century apartment with a narrow kitchen?",
+      "a": "In many cases yes, but if the cabinet opening is smaller than standard, some cabinetry or countertop adjustment may be needed, which is worth mentioning when you book the job."
+    },
+    {
+      "q": "Is it safe to keep using my old dishwasher's outlet and hoses?",
+      "a": "Not always. Older outlets may lack proper grounding or GFCI protection, and old hoses can be prone to leaks, so a pro will typically check these components as part of the install rather than reuse them without inspection."
+    }
+  ],
+  "price": {
+    "low": 205,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "APPLIANCE_REPAIR",
+  "categoryLabel": "Appliance Repair"
+}

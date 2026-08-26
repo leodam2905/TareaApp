@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "ceiling-fan-installation",
+  "problemTitle": "Ceiling fan installation",
+  "generatedAt": "2026-08-26T01:47:45.961Z",
+  "metaTitle": "Ceiling Fan Installation in Pasadena, CA | Cost & Process",
+  "metaDescription": "Ceiling fan installation in Pasadena runs $235–$335. Learn what affects the cost in older Craftsman and Spanish-revival homes and when to hire an electrician.",
+  "intro": "If you're looking to add or replace a ceiling fan in a Pasadena home, older wiring and plaster ceilings common in Craftsman and Spanish-revival houses can make the job trickier than it looks. Many of these houses were built decades before ceiling fans were standard, so the electrical box overhead often isn't rated to hold one. Getting this wrong isn't just inconvenient — a fan that isn't properly supported can fall.",
+  "causes": [
+    "No fan-rated electrical box is currently installed, only a lighter box meant for a light fixture.",
+    "The existing ceiling box isn't securely anchored to a joist, which matters more in older homes where framing spacing can be irregular.",
+    "Plaster-and-lath ceilings, common in Pasadena's Craftsman and Spanish-revival stock, make it harder to locate solid framing without cutting test holes.",
+    "The wiring feeding the box is older cloth-insulated or knob-and-tube wiring that needs to be assessed before adding a fan with a separate light and speed control.",
+    "There's no wall switch wired for fan and light control, requiring new switch legs to be run through finished walls."
+  ],
+  "whatProDoes": [
+    "Turns off power at the breaker and confirms it's off at the fixture before touching any wiring.",
+    "Removes the old fixture or box and inspects the framing above to find or install a joist-mounted fan-rated brace.",
+    "Installs a fan-rated electrical box rated to support the weight and movement of a ceiling fan, which most existing light boxes are not.",
+    "Assembles the fan, wires it to the existing circuit (or new switch legs if needed), and secures it to the brace.",
+    "Tests the fan and light at multiple speeds and confirms there's no wobble or loose connections before finishing up."
+  ],
+  "diyOrPro": "Swapping a fan onto an existing box that's already rated for ceiling fan weight is sometimes manageable for an experienced DIYer with the power confirmed off. But in Pasadena's older homes, you often can't tell from below whether the box is rated or properly anchored to a joist, and cutting into plaster ceilings to check is not a small job. Any work involving unknown wiring, knob-and-tube circuits, or adding new switches should go to a licensed electrician.",
+  "priceNote": "Ceiling fan installation in Pasadena runs $235 to $335, based on a $100/hour rate and a typical job length of 2 to 3 hours. The time on the higher end usually reflects older homes where the electrician has to install a new fan-rated brace, work around plaster-and-lath ceilings, or address outdated wiring before the fan can go in safely.",
+  "faqs": [
+    {
+      "q": "Can I just use my existing light fixture box for a ceiling fan?",
+      "a": "Not usually. Standard light fixture boxes aren't rated to handle the weight and vibration of a running ceiling fan, and in older Pasadena homes they're often not anchored to a joist at all. An electrician will check this first and install a fan-rated box if needed, which is factored into the $235–$335 range."
+    },
+    {
+      "q": "Will the electrician need to cut into my ceiling?",
+      "a": "Sometimes, especially in homes with plaster-and-lath ceilings where the framing isn't visible from below. If a new fan-rated brace needs to be installed and the existing box isn't accessible, some small cutting may be necessary to reach a joist."
+    },
+    {
+      "q": "Is it dangerous if my house still has older wiring, like knob-and-tube?",
+      "a": "It can be. Older wiring types aren't necessarily unsafe on their own, but adding new loads or connections without understanding the existing circuit can create a fire or shock hazard. This is something a licensed electrician should evaluate before installing the fan, not something to guess at."
+    }
+  ],
+  "price": {
+    "low": 235,
+    "high": 335,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

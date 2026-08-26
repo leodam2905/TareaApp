@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "clogged-drain-cleaning",
+  "problemTitle": "Clogged drain cleaning",
+  "generatedAt": "2026-08-26T01:46:55.178Z",
+  "metaTitle": "Clogged Drain Cleaning in Pasadena, CA | Tarea",
+  "metaDescription": "Slow or blocked drain in your Pasadena home? Get it cleared by a local plumber. Flat-rate pricing, $135–$315 based on job time.",
+  "intro": "If water is backing up in a sink, tub, or floor drain in your Pasadena home, you're dealing with a clog somewhere in the drain line. This is especially common in the city's Craftsman and Spanish-revival houses, where original cast iron or clay pipes have had decades to collect scale, grease, and tree roots. A slow drain rarely fixes itself and can get worse fast if left alone.",
+  "causes": [
+    "Grease, soap scum, and hair building up inside older, narrower pipe fittings common in pre-1950s Craftsman homes",
+    "Tree roots from mature street trees and established landscaping intruding into aging clay sewer laterals",
+    "Sediment and mineral scale accumulating inside original cast iron pipes that have never been relined or replaced",
+    "Foreign objects or excess toilet paper caught in a bend, especially in bathrooms with the original narrow-radius fittings",
+    "A partially collapsed or offset pipe joint, which is more likely in homes with unreinforced masonry foundations that have shifted over the years"
+  ],
+  "whatProDoes": [
+    "Runs a camera inspection or manual assessment to locate the clog and identify the pipe material before choosing a method",
+    "Uses a motorized drain snake (auger) to break up and pull out the blockage without damaging older, more fragile pipe",
+    "Applies hydro-jetting for tougher root intrusion or grease buildup when a standard snake won't fully clear the line",
+    "Tests the drain by running water for several minutes to confirm the blockage is gone and check for slow drainage elsewhere in the line",
+    "Advises on whether the pipe itself needs further evaluation, especially if roots or corrosion suggest a recurring problem"
+  ],
+  "diyOrPro": "A plunger or a basic hand-held snake is reasonable to try first for a single slow sink or tub drain. But if multiple drains are backing up at once, water is coming up through a floor drain, or you smell sewage, that points to a main line issue that needs a professional — pushing a hand snake too hard into old cast iron or clay pipe can crack it. Any sign of standing sewage or repeated backups in Pasadena's older homes is worth having a pro look at rather than risking pipe damage or water damage to original hardwood or plaster.",
+  "priceNote": "This job runs $135 to $315 in Pasadena, based on a $94/hour rate and jobs that typically take 1 to 3 hours. Simple sink or tub clogs tend to fall at the lower end, while root intrusion in an older clay sewer line or a clog requiring hydro-jetting takes longer and lands toward the higher end.",
+  "faqs": [
+    {
+      "q": "Why do drains clog so often in older Pasadena homes?",
+      "a": "Many Craftsman and Spanish-revival homes still have original cast iron or clay pipes, which narrow with scale over time and are more vulnerable to tree root intrusion than modern PVC. This makes clogs more frequent and sometimes trickier to clear."
+    },
+    {
+      "q": "Will the plumber need to cut into a wall or the yard?",
+      "a": "Not usually for a standard clog. Most jobs are cleared through an existing cleanout or fixture drain. If the camera inspection shows a collapsed pipe or major root damage, that's a separate, larger repair the pro would discuss with you before doing any work."
+    },
+    {
+      "q": "How do I know if it's just one drain or the whole main line?",
+      "a": "If only one sink or tub is slow, it's likely isolated to that fixture's pipe. If multiple drains back up at the same time, or water backs up into a lower fixture like a floor drain or shower, that usually points to a clog in the shared main line."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 315,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

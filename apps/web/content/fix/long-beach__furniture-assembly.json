@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "furniture-assembly",
+  "problemTitle": "Furniture assembly",
+  "generatedAt": "2026-08-26T01:53:19.129Z",
+  "metaTitle": "Furniture Assembly in Long Beach, CA | Tarea",
+  "metaDescription": "Flat-pack beds, shelving, and office furniture assembled in Long Beach homes, from Belmont Shore bungalows to downtown waterfront condos. $135–$295.",
+  "intro": "Flat-pack furniture from big box stores looks simple in the store but turns into a two-hour puzzle once it's in your Long Beach bungalow, duplex unit, or high-rise condo near the water. Between missing hardware, confusing instructions, and tight rooms in older buildings, a lot of people get partway through and stop. A pro can usually finish the job in one visit.",
+  "causes": [
+    "Instructions are often translated poorly or skip steps that matter for structural pieces like beds and dressers.",
+    "Hardware bags get mixed up or short a few screws, especially on larger multi-box items.",
+    "Older Long Beach duplexes and bungalows have narrower doorways and hallways that make maneuvering large assembled pieces difficult.",
+    "Waterfront condo buildings often require furniture to be walked up in elevators or through service entrances, which slows down solo assembly.",
+    "Heavier items like wardrobes or bed frames need a second set of hands to hold pieces steady while securing joints."
+  ],
+  "whatProDoes": [
+    "Unboxes and sorts all hardware and panels, checking the parts list against what's actually in the box.",
+    "Assembles the piece following manufacturer specs, using power tools to speed up repetitive steps like drilling and driving screws.",
+    "Checks that drawers slide evenly, doors close flush, and joints are tight before calling the piece finished.",
+    "Anchors tall or top-heavy furniture to the wall when hardware is included, which matters in older buildings with less predictable wall framing.",
+    "Clears packaging materials and does a final walkthrough with you to confirm everything is stable and positioned where you want it."
+  ],
+  "diyOrPro": "Simple items like a small bookshelf or side table are reasonable to assemble yourself if you're not in a rush and have basic tools. Larger or heavier pieces, anything requiring wall anchoring, or furniture that needs to be carried through tight duplex stairwells or condo hallways is where a second person or a pro makes more sense. If a piece feels unstable once built, don't use it until it's fixed or re-anchored.",
+  "priceNote": "This job runs $135 to $295 in Long Beach, based on a $87 per hour rate for a typical 1 to 3 hour job. Simple items like nightstands or shelving units land on the lower end, while multi-piece bedroom sets, wardrobes, or furniture that has to be carried up stairs in an older duplex or through a condo's service elevator take longer and push toward the higher end.",
+  "faqs": [
+    {
+      "q": "Do I need to buy the furniture before booking?",
+      "a": "Yes, the pro assembles furniture you've already purchased and have on-site. They don't source or purchase items for you."
+    },
+    {
+      "q": "What if pieces are missing from the box?",
+      "a": "The pro will let you know right away if hardware or panels are missing so you can contact the retailer or manufacturer for replacement parts. Assembly can't be completed without all the pieces."
+    },
+    {
+      "q": "Can someone assemble furniture in a condo with strict building rules?",
+      "a": "Yes, but let the pro know in advance if your building requires elevator reservations, certificates of insurance, or specific move-in windows so the visit can be planned around those requirements."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

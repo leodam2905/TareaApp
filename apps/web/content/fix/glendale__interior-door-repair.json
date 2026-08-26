@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "interior-door-repair",
+  "problemTitle": "Interior door repair",
+  "generatedAt": "2026-08-26T01:57:50.837Z",
+  "metaTitle": "Interior Door Repair in Glendale, CA | $135–$285",
+  "metaDescription": "Sticking, sagging, or misaligned interior doors in Glendale? Get flat-rate repair pricing ($135–$285) based on $83/hour, typically 1-3 hours of work.",
+  "intro": "If an interior door in your Glendale home has started sticking, sagging, or refusing to latch, you're not imagining it. Between hillside homes settling on shifting soil and mid-century apartment buildings with decades-old frames, misaligned doors are a common complaint in this area.",
+  "causes": [
+    "Hillside foundations in Glendale can shift slightly over time, especially after rain, which pulls door frames out of square.",
+    "Mid-century apartment buildings often have original wood doors and jambs that have warped or shrunk with age.",
+    "Worn or loose hinges let the door drop, causing it to scrape the frame or floor.",
+    "Humidity changes between seasons can swell wood doors so they stick along the top or side.",
+    "Poor original installation or a frame that was never properly shimmed can cause chronic misalignment."
+  ],
+  "whatProDoes": [
+    "Inspects the door, frame, and hinges to identify where the misalignment or binding is happening.",
+    "Removes the door if needed to plane down swollen edges or repair damaged wood.",
+    "Adjusts, tightens, or replaces hinges and strike plates so the door hangs and latches correctly.",
+    "Checks the frame for square and shims it if the house or building has settled.",
+    "Tests the door through a full open-close cycle to confirm it operates smoothly before finishing up."
+  ],
+  "diyOrPro": "Tightening a loose hinge screw or sanding a slightly sticky edge is reasonable to try yourself with basic tools. But if the door is significantly out of square, the frame itself is cracked or pulling from the wall, or you suspect the building's settling is the real cause, it's worth having a carpenter assess it — forcing a misaligned door can damage the frame or hardware further.",
+  "priceNote": "This job runs $135 to $285 in Glendale, based on a rate of $83 per hour with jobs typically taking 1 to 3 hours. The time varies depending on whether the fix is a simple hinge adjustment or a more involved repair involving frame shimming or wood repair on an older door.",
+  "faqs": [
+    {
+      "q": "Why does my door only stick during certain times of year?",
+      "a": "Wood doors absorb and release moisture with seasonal humidity changes, causing them to swell and stick, then loosen again. This is common in Glendale's older wood doors and usually points to a wood or hinge adjustment rather than a structural problem."
+    },
+    {
+      "q": "Could my hillside home's foundation be causing the door problem?",
+      "a": "It's possible. Hillside homes in Glendale can experience gradual soil movement that pulls frames out of square over time. A carpenter can tell you whether the fix is a straightforward adjustment or something that needs a broader look at the foundation."
+    },
+    {
+      "q": "Is it safe to keep using a door that won't latch properly?",
+      "a": "A door that won't latch isn't dangerous on its own, but it won't provide privacy or security, and forcing it shut repeatedly can damage the frame or hardware further, so it's worth having it looked at before that happens."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 285,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "garbage-disposal-replacement",
+  "problemTitle": "Garbage disposal replacement",
+  "generatedAt": "2026-08-26T02:08:51.590Z",
+  "metaTitle": "Garbage Disposal Replacement in Torrance, CA | Tarea",
+  "metaDescription": "Garbage disposal replacement in Torrance runs $135–$220. Learn what causes disposal failure in older homes and what the job involves.",
+  "intro": "If your garbage disposal is leaking, humming without turning, or just dead, it's a common issue in Torrance's older housing stock, where many kitchens still have the original under-sink plumbing from the 1950s and 60s. Disposals typically last 10-15 years, and homes built in this era are often on their second or third unit by now. Replacing one is usually a same-day plumbing job, not a full kitchen renovation.",
+  "causes": [
+    "The motor has burned out or seized after years of use, which is common once a unit passes the 10-15 year mark.",
+    "The unit is leaking from the bottom or the seams, often from a worn gasket or a cracked housing that can't be sealed again.",
+    "Older 1950s and 60s homes sometimes have undersized or outdated electrical wiring near the sink, which can cause a disposal to trip breakers or run inconsistently.",
+    "A jam that won't clear with the reset button or an Allen wrench usually points to internal damage rather than a simple clog.",
+    "Corrosion on the mounting assembly or drain flange, common in homes with decades-old plumbing, can make the unit loose or prone to leaks even if the motor still works."
+  ],
+  "whatProDoes": [
+    "Shuts off power and water to the unit and disconnects the old disposal from the sink flange and drain pipes.",
+    "Removes the old unit and inspects the sink flange, dishwasher connection, and drain lines for wear, especially important in older Torrance homes with original plumbing.",
+    "Installs the new disposal, connects it to the drain trap and dishwasher line if present, and checks the electrical connection or dedicated outlet.",
+    "Tests the unit under running water and checks for leaks at every connection point before finishing.",
+    "Hauls away the old disposal unit."
+  ],
+  "diyOrPro": "Swapping a garbage disposal involves working with both electrical wiring and plumbing under a sink, and mistakes here can cause leaks, shorts, or damage to the drain line. If your home has the original wiring from the 1950s or 60s, there's a higher chance of complications like missing grounding or an undersized circuit, which is not something to troubleshoot yourself. This is a reasonable DIY project only if you're comfortable with basic electrical work and have already confirmed the outlet and wiring are in good shape; otherwise, it's worth having a plumber handle it.",
+  "priceNote": "Garbage disposal replacement in Torrance runs $135 to $220, based on a $94 hourly rate and a typical job length of 1 to 2 hours. The time can run longer if the mounting hardware is corroded or if the plumbing under the sink needs adjustment to fit the new unit, which is more likely in homes with original, decades-old plumbing.",
+  "faqs": [
+    {
+      "q": "How long does it take to replace a garbage disposal?",
+      "a": "Most replacements take 1 to 2 hours, though older mounting hardware or corroded pipe connections common in older Torrance homes can add time."
+    },
+    {
+      "q": "Do I need to buy the new disposal myself?",
+      "a": "This varies by provider, so confirm with your plumber whether they supply the unit or whether you should purchase one in advance."
+    },
+    {
+      "q": "Can a leaking disposal cause damage under my sink?",
+      "a": "Yes, a leaking unit can lead to water damage to the cabinet floor and nearby wood over time, so it's worth addressing once you notice moisture or dripping."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

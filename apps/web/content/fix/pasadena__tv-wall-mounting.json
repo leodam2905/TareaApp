@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "tv-wall-mounting",
+  "problemTitle": "TV wall mounting",
+  "generatedAt": "2026-08-26T01:48:23.184Z",
+  "metaTitle": "TV Wall Mounting in Pasadena, CA | $135–$205",
+  "metaDescription": "Professional TV wall mounting in Pasadena, including plaster and stucco walls common in Craftsman and Spanish-revival homes. Flat rate $135–$205.",
+  "intro": "Mounting a TV on the wall sounds simple until you realize your Pasadena home was likely built decades before flat-screen TVs existed. Many Craftsman bungalows have lath-and-plaster walls, while Spanish-revival homes often have stucco or brick veneer, and none of these surfaces behave like the drywall most mounting brackets are designed for. Getting the mount secure without cracking plaster or hitting old wiring takes the right hardware and a bit of local know-how.",
+  "causes": [
+    "The wall may be lath-and-plaster construction, common in Pasadena Craftsman homes, which crumbles if you drill into it like drywall.",
+    "Stucco exteriors and interior plaster walls in Spanish-revival houses often hide uneven furring strips or brick behind the surface, making stud location tricky.",
+    "Older homes frequently lack studs at standard 16-inch spacing, so a mount designed for modern framing may not line up correctly.",
+    "Knob-and-tube or early cloth-wrapped wiring, still present in some unrenovated Pasadena properties, can run through walls where you'd normally drill.",
+    "Homeowners sometimes buy a mount rated for the wrong TV weight or size, which is especially risky on older plaster that has less holding strength than drywall."
+  ],
+  "whatProDoes": [
+    "Locates studs or solid backing using a stud finder calibrated for plaster or stucco, since standard tools often give false readings on these surfaces.",
+    "Checks the wall composition and TV weight to choose the correct mount type and anchors, including toggle bolts or masonry anchors when studs aren't available.",
+    "Drills pilot holes carefully to avoid cracking plaster or chipping stucco, often scoring the surface first to prevent spreading.",
+    "Attaches the mounting plate securely to studs or reinforced anchors, then levels and attaches the TV bracket.",
+    "Routes and conceals cables where possible, and tests the mount's stability by checking for wobble at multiple viewing angles."
+  ],
+  "diyOrPro": "If your home has drywall over standard wood studs and you're mounting a lightweight TV low on the wall, this can be a reasonable DIY project with a stud finder and the mount's included hardware. In Pasadena's older Craftsman or Spanish-revival homes, plaster, stucco, or unknown wiring behind the wall make this a job better left to a pro, since a failed mount can mean a TV crashing to the floor or a wall that needs plaster repair.",
+  "priceNote": "This job runs $135 to $205 in Pasadena, based on an $87 hourly rate for a typical 1-2 hour job. The time and final price depend mainly on wall type, since plaster or stucco walls in older homes generally take longer to mount into safely than standard drywall over studs.",
+  "faqs": [
+    {
+      "q": "Will mounting a TV damage my plaster walls?",
+      "a": "Not if done correctly. A pro will identify solid backing and use anchors suited to plaster, minimizing cracking, though very old or already-brittle plaster can be more fragile regardless of technique."
+    },
+    {
+      "q": "Do I need to buy the wall mount myself?",
+      "a": "Yes, you'll typically need to purchase a mount rated for your TV's size and weight before the appointment, since the price range covers labor and mounting expertise, not the hardware itself."
+    },
+    {
+      "q": "Can you hide the cables inside the wall?",
+      "a": "In-wall cable concealment is possible in many cases, but on plaster or stucco walls it may not be feasible without additional repair work, so this is usually assessed on-site."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 205,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "light-fixture-installation",
+  "problemTitle": "Light fixture installation",
+  "generatedAt": "2026-08-26T02:09:12.781Z",
+  "metaTitle": "Light Fixture Installation in Torrance, CA | Tarea",
+  "metaDescription": "Swapping or adding a light fixture in a Torrance home? See what's involved, what it costs ($135–$235), and when to call a licensed electrician.",
+  "intro": "If you're replacing an old ceiling fixture or adding a new one in your Torrance home, there's more to it than just wiring up the new light. Many houses in this area were built in the 1950s and 60s, and their electrical boxes and wiring often weren't designed for today's heavier fixtures or higher-wattage LED setups. Getting it installed correctly and safely usually means bringing in a licensed electrician.",
+  "causes": [
+    "The existing ceiling box is an older, shallow style not rated to support the weight of a new fixture, especially chandeliers or larger flush-mounts.",
+    "Homes from this era sometimes have outdated wiring, including aluminum wiring in some 1960s properties, which needs special connectors when tied into a new fixture.",
+    "The old fixture has failed or the switch no longer reliably turns it on, pointing to a worn-out connection rather than just a bad bulb.",
+    "A remodel or kitchen/bathroom update calls for a new fixture location, which means running new wire to a spot that never had a ceiling box before.",
+    "The homeowner wants to switch from a single incandescent fixture to recessed lighting or a fan-light combo, which changes the electrical load and box requirements."
+  ],
+  "whatProDoes": [
+    "Shuts off power to the circuit at the breaker and confirms it's dead with a voltage tester before touching any wires.",
+    "Removes the old fixture and inspects the electrical box for damage, proper grounding, and whether it's rated to hold the new fixture's weight.",
+    "Replaces or upgrades the electrical box if it's not up to code or not rated for the new fixture, which is common in Torrance's older housing stock.",
+    "Connects the new fixture's wiring, matching and capping wires correctly, then secures the fixture to the box or ceiling joist.",
+    "Restores power and tests the fixture, checking the switch and any dimmer compatibility before finishing up."
+  ],
+  "diyOrPro": "If you're simply swapping a lightbulb or a lamp shade, that's fine to handle yourself. But actual fixture installation involves working with live wiring, ceiling boxes, and sometimes aluminum wiring found in older Torrance homes, and mistakes here can cause shorts, fire risk, or a fixture that falls out of the ceiling. This is not a job to guess your way through — call a licensed electrician.",
+  "priceNote": "This job in Torrance runs $135 to $235, based on a $100/hour rate and a typical job length of 1 to 2 hours. The time on the low end covers a straightforward swap where the existing box and wiring are already in good shape, while the higher end reflects jobs where the electrician has to replace an outdated box or deal with older wiring common in 1950s and 60s homes.",
+  "faqs": [
+    {
+      "q": "Do I need an electrician just to change a light fixture?",
+      "a": "For a straightforward swap where the wiring is in good condition, yes — a licensed electrician is still the safer choice since it involves working with live circuits and ceiling boxes, and older Torrance homes often have wiring or boxes that need a second look."
+    },
+    {
+      "q": "Why would my ceiling box need to be replaced?",
+      "a": "Many boxes installed in the 1950s and 60s weren't built to support the weight of modern fixtures like chandeliers or ceiling fans, so if the new fixture is heavier than the old one, the box may need to be swapped for a properly rated one."
+    },
+    {
+      "q": "Can this be dangerous if I try it myself?",
+      "a": "Yes — working on a light fixture means dealing with live electrical wiring, and older homes in this area sometimes have aluminum wiring or non-standard grounding that requires specific handling, so it's not a job to take on without proper training."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

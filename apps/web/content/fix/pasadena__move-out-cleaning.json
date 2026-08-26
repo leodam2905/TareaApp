@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "move-out-cleaning",
+  "problemTitle": "Move-out cleaning",
+  "generatedAt": "2026-08-26T01:50:31.183Z",
+  "metaTitle": "Move-Out Cleaning in Pasadena, CA | $255–$480",
+  "metaDescription": "Move-out cleaning for Pasadena homes, including older Craftsman and Spanish-revival properties. Fixed price range $255 to $480. See what's included.",
+  "intro": "Moving out of a Pasadena rental or sale property means passing a walkthrough, and older Craftsman bungalows and Spanish-revival units often hide extra grime in original built-ins, tile, and hardwood floors that a quick wipe-down won't fix. A move-out clean covers every room top to bottom so you can hand over keys with confidence.",
+  "causes": [
+    "Years of cooking grease and dust settle into original wood cabinetry and built-in shelving common in Craftsman kitchens.",
+    "Textured plaster walls and old stucco interiors trap dust and cobwebs in corners that standard cleaning misses.",
+    "Original hardwood or tile flooring in Spanish-revival units accumulates wax buildup and grime along baseboards and edges.",
+    "Older single-pane windows and their wood frames collect dust, dead insects, and grime in the tracks and sills.",
+    "Bathrooms with vintage tile and grout hold soap scum and mineral deposits that need more than a surface wipe."
+  ],
+  "whatProDoes": [
+    "Clean and disinfect all bathroom fixtures, tile, grout lines, and vintage fixtures common in older Pasadena homes.",
+    "Wipe down interior cabinetry, built-in shelving, and drawers inside and out, including kitchen and bathroom units.",
+    "Sweep, mop, or vacuum all flooring, paying extra attention to baseboards and transitions between original hardwood and tile.",
+    "Clean interior windows, sills, and tracks, plus wipe down window frames and screens where accessible.",
+    "Dust and wipe all surfaces, light fixtures, switch plates, and remove cobwebs from corners and ceiling edges."
+  ],
+  "diyOrPro": "A light move-out clean in a small, well-maintained unit can be handled yourself with basic supplies and a few hours of effort. Larger Craftsman or Spanish-revival homes with original finishes, deep-set grime, or landlord-required detailed checklists are better left to a pro who knows how to clean older surfaces without damaging them.",
+  "priceNote": "This job runs $255 to $480 in Pasadena, based on a $56/hour rate and typical jobs taking 4 to 8 hours. Larger homes, heavier buildup in older kitchens and bathrooms, or extra detail work on original woodwork can push the job toward the higher end of that range.",
+  "faqs": [
+    {
+      "q": "Does this include cleaning inside the oven and refrigerator?",
+      "a": "Appliance interiors are often part of a move-out clean, but confirm with your pro ahead of time since some listings price this separately depending on the home."
+    },
+    {
+      "q": "Will the cleaner handle carpet shampooing?",
+      "a": "Standard move-out cleaning covers vacuuming and surface care, not deep carpet shampooing, which is usually a separate service if your unit has carpet instead of original hardwood."
+    },
+    {
+      "q": "Can this clean get my security deposit back?",
+      "a": "A thorough move-out clean improves your chances by meeting typical landlord checklists, but final deposit decisions depend on your landlord's own inspection standards, not the cleaning service itself."
+    }
+  ],
+  "price": {
+    "low": 255,
+    "high": 480,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

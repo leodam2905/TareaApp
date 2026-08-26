@@ -1,0 +1,48 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "furniture-assembly",
+  "problemTitle": "Furniture assembly",
+  "generatedAt": "2026-08-26T02:05:51.041Z",
+  "metaTitle": "Furniture Assembly in Inglewood, CA | Pricing & Info",
+  "metaDescription": "Need furniture assembled in Inglewood? Learn what drives the $135-$295 cost, what a pro does, and when to hire help instead of going it alone.",
+  "intro": "New furniture keeps piling up in boxes because the instructions are confusing, the pieces are heavy, or you just don't have the right tools on hand. This is common in Inglewood, where recently renovated rental units often come with flat-pack furniture from the landlord or a new tenant's own IKEA haul, and older single-family homes may need extra care around original hardwood floors or narrow doorways. A professional can put together anything from a bookshelf to a bed frame without the guesswork.",
+  "causes": [
+    "The furniture arrived as a flat-pack kit with instructions that are unclear, missing, or in diagrams that don't match the actual hardware.",
+    "Large or heavy pieces like wardrobes, sectional couches, or bed frames require two people to hold, align, and secure safely.",
+    "Older Inglewood homes may have uneven floors or walls that are not perfectly square, making standard assembly steps harder to get right.",
+    "Renters in newly renovated units often need multiple pieces assembled quickly to furnish an empty space.",
+    "Missing tools, stripped screws, or mismatched hardware bags can stall a DIY attempt halfway through."
+  ],
+  "whatProDoes": [
+    "Reviews the furniture model and instructions, then sorts all hardware and panels before starting.",
+    "Assembles the frame and components in the correct sequence, checking alignment as they go.",
+    "Secures moving parts like drawers, doors, and shelves so they operate smoothly and don't stick or sag.",
+    "Anchors tall or top-heavy pieces to the wall when needed, especially in homes with children or pets.",
+    "Clears packaging materials and does a final check to confirm the piece is stable and level.",
+    "Adapts placement or minor adjustments to work with uneven floors or tight spaces common in older homes."
+  ],
+  "diyOrPro": "Simple items like a small side table or a single bookshelf are reasonable to assemble yourself if you have basic tools and the instructions are clear. Larger or heavier pieces, anything requiring wall anchoring, or furniture that involves lifting beyond what one person can safely manage are better left to a pro, especially in homes with older wall construction. If you're unsure about wall anchor points or the piece feels unstable once built, stop and get help rather than risk it tipping.",
+  "priceNote": "This job runs $135 to $295 in Inglewood, based on a rate of $87 per hour with most assemblies taking 1 to 3 hours. The exact cost depends on how many pieces you need assembled, how complex each one is, and whether wall anchoring or extra care around older flooring adds time to the job.",
+  "faqs": [
+    {
+      "q": "How long does furniture assembly usually take?",
+      "a": "Most jobs take 1 to 3 hours depending on the number of pieces and how complex each item is, which is why the price falls between $135 and $295."
+    },
+    {
+      "q": "Do I need to provide any tools?",
+      "a": "No, a pro brings their own tools. You just need to have the furniture boxes and hardware on hand and ready to go."
+    },
+    {
+      "q": "Can you assemble furniture in an older home with uneven floors?",
+      "a": "Yes, a pro can work around minor floor or wall irregularities common in older Inglewood homes, though very significant structural issues may need a separate repair first."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

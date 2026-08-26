@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "ceiling-fan-installation",
+  "problemTitle": "Ceiling fan installation",
+  "generatedAt": "2026-08-26T02:00:35.798Z",
+  "metaTitle": "Ceiling Fan Installation in Burbank, CA | Tarea",
+  "metaDescription": "Ceiling fan installation for Burbank homes, $235–$335. Learn why older electrical boxes need checking before a fan goes up safely.",
+  "intro": "If you've just bought a ceiling fan for a Burbank bedroom or living room and are staring at a plain light fixture wondering how to swap it out, you're not alone. Many of Burbank's post-war single-family homes still have their original ceiling electrical boxes, which weren't built to hold the weight and motion of a spinning fan.",
+  "causes": [
+    "The existing ceiling box is a basic light-fixture box, not a fan-rated box designed to handle vibration and weight.",
+    "There's no solid wood blocking between the joists behind the box, so the box has nothing sturdy to anchor into.",
+    "The wiring at the ceiling is original to the house's 1940s-50s construction and may be undersized or ungrounded for a fan with a light kit and remote.",
+    "The wall switch location doesn't match what a fan needs, such as separate switches for the light and fan speed.",
+    "The ceiling has no existing electrical box at all if you're adding a fan to a room that never had overhead lighting."
+  ],
+  "whatProDoes": [
+    "Turns off power to the circuit at the panel and confirms it's dead with a tester before touching any wiring.",
+    "Removes the old fixture and inspects the existing box and ceiling framing to see if it can safely support a fan.",
+    "Installs a fan-rated electrical box with proper bracing or blocking if the current one isn't adequate.",
+    "Assembles the fan bracket, wires the connections (including any separate light and fan switching), and mounts the fan securely.",
+    "Tests the fan and light at all speeds and settings before cleaning up and confirming everything runs quietly and safely."
+  ],
+  "diyOrPro": "Swapping a light fixture for a fan of similar weight on an already fan-rated box is sometimes within reach for a confident DIYer who's comfortable shutting off breakers and testing for dead wires. But in Burbank's older homes, you often can't tell whether the box is fan-rated or properly braced until it's opened up, and working with old or ungrounded wiring at the ceiling carries real shock and fire risk — that part is best left to a licensed electrician.",
+  "priceNote": "The price for ceiling fan installation in Burbank runs $235 to $335, based on a $100/hour rate for a typical 2-3 hour job. The time (and where you land in that range) depends mostly on whether the existing box needs to be replaced or braced and how much rewiring the switch setup requires.",
+  "faqs": [
+    {
+      "q": "Can I just use my existing ceiling light box for the fan?",
+      "a": "Only if it's rated for ceiling fan use, which most original boxes in Burbank's post-war homes are not. A pro will check this first, since an unrated box can crack or pull loose under a spinning fan's weight."
+    },
+    {
+      "q": "Do I need a separate switch for the fan and the light?",
+      "a": "Not necessarily — many fans come with a remote or a pull-chain that handles both. But if you want wall switches for each, that adds wiring work, which is factored into where your job falls in the $235–$335 range."
+    },
+    {
+      "q": "Is it dangerous if my house still has some old wiring?",
+      "a": "It can be. Old or ungrounded wiring at a ceiling box increases the risk of shock or fire when adding new fixtures, so this is a job to have inspected and handled by a licensed electrician rather than attempted as a DIY project."
+    }
+  ],
+  "price": {
+    "low": 235,
+    "high": 335,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

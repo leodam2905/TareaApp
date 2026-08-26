@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "garbage-disposal-replacement",
+  "problemTitle": "Garbage disposal replacement",
+  "generatedAt": "2026-08-26T01:51:50.024Z",
+  "metaTitle": "Garbage Disposal Replacement in Long Beach, CA",
+  "metaDescription": "Garbage disposal not working? Long Beach replacement costs $135-$220. Learn common causes, what a plumber does, and DIY safety tips.",
+  "intro": "If your garbage disposal in Long Beach hums but won't spin, leaks under the sink, or has stopped turning on entirely, it's likely at the end of its life. This is common in the city's older duplexes and bungalows, where original units installed decades ago finally give out, as well as in waterfront condos where compact under-sink setups take a beating from daily use.",
+  "causes": [
+    "The motor has burned out from age or years of grinding tough food scraps.",
+    "A jammed flywheel that won't reset, often from fibrous foods like celery or corn husks.",
+    "A cracked housing or worn seals causing water to leak from the bottom of the unit.",
+    "Corroded electrical connections, which show up more often in older Long Beach duplexes with outdated wiring.",
+    "Physical damage from a foreign object like a spoon or bone fragment that got past the blades."
+  ],
+  "whatProDoes": [
+    "Shuts off power and water to the sink and disconnects the old disposal from the drain lines and electrical wiring.",
+    "Removes the old unit and inspects the sink flange, plumbing connections, and outlet or wiring for any needed repairs.",
+    "Installs the new disposal, connecting it to the drain pipe, dishwasher line if applicable, and power supply.",
+    "Tests the unit for leaks, proper drainage, and correct operation under running water.",
+    "Cleans up the work area and confirms the disposal runs quietly without vibration or grinding noise."
+  ],
+  "diyOrPro": "Swapping a garbage disposal involves working with both electrical wiring and plumbing under the sink, so it's not a simple plug-and-play job. If you're comfortable with basic tools and the unit is a straightforward swap of the same size, some homeowners attempt it, but any uncertainty about wiring, especially in older Long Beach properties with aging electrical systems, means it's worth calling a plumber to avoid shock hazards or a bad connection that leaks later.",
+  "priceNote": "The price for garbage disposal replacement in Long Beach runs $135 to $220, based on a $94 hourly rate and jobs typically taking 1 to 2 hours. The time needed depends on whether the new unit matches the old mounting setup or requires adjustments to fit different plumbing configurations found in older homes versus newer condo units.",
+  "faqs": [
+    {
+      "q": "How do I know if I need a replacement instead of a repair?",
+      "a": "If the disposal won't turn on at all, makes a burning smell, or leaks from the housing itself rather than a loose connection, replacement is usually more practical than repair. A plumber can check during the visit and confirm before starting work."
+    },
+    {
+      "q": "Will a new disposal fit my existing sink setup?",
+      "a": "Most standard disposals fit common sink openings, but older Long Beach bungalows sometimes have nonstandard plumbing that needs minor adjustment. The plumber handles this as part of the installation within the quoted time range."
+    },
+    {
+      "q": "Is it dangerous to try replacing it myself?",
+      "a": "Yes, there's real risk of electric shock if the power isn't fully disconnected, and improper installation can cause leaks that damage cabinets or flooring. If you're not confident working with both wiring and plumbing, it's safer to have a professional handle it."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

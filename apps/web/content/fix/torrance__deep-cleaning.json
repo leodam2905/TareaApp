@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "deep-cleaning",
+  "problemTitle": "Deep cleaning",
+  "generatedAt": "2026-08-26T02:11:40.385Z",
+  "metaTitle": "Deep Cleaning in Torrance, CA | Pricing & What's Included",
+  "metaDescription": "Deep cleaning for Torrance homes, $200–$365. Learn what's included, how long it takes, and what drives the price for older single-family houses.",
+  "intro": "If your Torrance home hasn't had a thorough top-to-bottom cleaning in a while, dust and grime tend to build up in places a regular weekly clean skips — especially in the older 1950s and 60s houses common throughout the city. Older cabinetry, single-pane windows, and original tile in these homes can trap dirt and buildup that a quick wipe-down won't touch.",
+  "causes": [
+    "Regular cleaning routines often skip baseboards, window tracks, and behind appliances, letting dust and grease accumulate over months.",
+    "Older homes in Torrance frequently have original tile, grout, and cabinetry from the 1950s-60s that hold onto dirt more stubbornly than newer materials.",
+    "Cooking grease and airborne dust settle on kitchen cabinet tops, range hoods, and light fixtures over time.",
+    "Moving furniture rarely happens during routine cleaning, so dust and debris collect underneath and behind couches, beds, and dressers.",
+    "Bathrooms with original tile or older grout lines can develop soap scum and mineral buildup that needs more than a standard wipe to remove."
+  ],
+  "whatProDoes": [
+    "Dust and wipe down all surfaces including baseboards, window sills, door frames, and light fixtures.",
+    "Deep clean kitchen areas including inside the microwave, exterior of appliances, and grease buildup on cabinets and range hoods.",
+    "Scrub bathrooms thoroughly, including tile, grout, fixtures, and any soap scum or mineral deposits.",
+    "Vacuum and mop all floors, moving furniture where possible to clean underneath and behind it.",
+    "Clean interior windows and window tracks, which is especially useful in older homes with original single-pane windows that collect more dust."
+  ],
+  "diyOrPro": "A deep clean is generally safe to attempt yourself if you have a free weekend and don't mind the physical work of scrubbing grout, moving furniture, and reaching high or low spots. It becomes worth hiring a pro when the home hasn't been deep cleaned in a year or more, when you're dealing with older tile and grout that needs specialized cleaning products, or when you simply don't have the time. There's no safety hazard involved, so this comes down to time and effort rather than risk.",
+  "priceNote": "This job runs $200 to $365 in Torrance, based on a rate of $56 per hour and typically taking 3 to 6 hours depending on square footage and how much buildup has accumulated. Homes with more square footage, multiple bathrooms, or original 1950s-60s tile and cabinetry that need extra scrubbing tend to land toward the higher end of that range.",
+  "faqs": [
+    {
+      "q": "How long does a deep clean take for a typical Torrance home?",
+      "a": "Most jobs take 3 to 6 hours depending on the size of the home and how much buildup there is, particularly in older kitchens and bathrooms with original tile."
+    },
+    {
+      "q": "Do I need to move furniture before the cleaner arrives?",
+      "a": "No, but clearing small items off counters and floors helps the cleaner focus their time on actual cleaning rather than tidying, which can help keep the job within the estimated hours."
+    },
+    {
+      "q": "Will a deep clean remove old grout stains in my bathroom?",
+      "a": "A deep clean includes thorough scrubbing of tile and grout, which improves the appearance significantly, but decades-old staining in original grout may not come out completely without separate grout restoration work."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

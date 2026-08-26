@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "ceiling-fan-installation",
+  "problemTitle": "Ceiling fan installation",
+  "generatedAt": "2026-08-26T01:52:20.976Z",
+  "metaTitle": "Ceiling Fan Installation in Long Beach, CA | Tarea",
+  "metaDescription": "Ceiling fan installation in Long Beach costs $235–$335. Learn what affects the price, what a licensed electrician does, and DIY risks.",
+  "intro": "Adding or replacing a ceiling fan sounds simple until you're standing on a ladder staring at a tangle of wires that don't match any diagram you found online. In Long Beach, where older bungalows and duplexes often have outdated wiring and waterfront condos may have limited attic access, the job can vary more than people expect.",
+  "causes": [
+    "The existing electrical box isn't fan-rated and can't safely support the weight and motion of a ceiling fan.",
+    "There's no ceiling wiring at all, common in older Long Beach bungalows that never had overhead lighting installed.",
+    "The wall switch setup doesn't support separate fan and light control, which many buyers assume it will.",
+    "Vaulted or high ceilings, common in some remodeled Long Beach properties, require an extension downrod and extra care during mounting.",
+    "Old cloth or aluminum wiring found in some pre-1960s Long Beach duplexes needs careful handling and sometimes a junction box upgrade."
+  ],
+  "whatProDoes": [
+    "Shuts off power to the circuit at the breaker and verifies it's dead with a tester before touching any wires.",
+    "Checks whether the existing electrical box is rated for ceiling fan weight and motion, replacing it with a fan-rated box if not.",
+    "Assembles the fan per manufacturer instructions and secures it to the ceiling joist or brace.",
+    "Connects the wiring, including separate switches or a remote/wall control if the fan has one.",
+    "Tests the fan and light on all speed settings and confirms there's no wobble or wiring issue before leaving."
+  ],
+  "diyOrPro": "If you're just swapping one existing ceiling fan for a nearly identical model on the same wiring, some homeowners attempt it themselves. But if the ceiling box isn't fan-rated, the wiring looks old or undersized, or you're adding a fan where there wasn't one before, this becomes an electrical safety issue involving live circuits and structural support overhead, and it's not worth the risk. When in doubt, hire a licensed electrician.",
+  "priceNote": "In Long Beach, ceiling fan installation runs $235 to $335, based on a $100/hour rate for a typical 2-3 hour job. The time varies with ceiling height, whether new wiring or a fan-rated box needs to be installed, and how accessible the attic or ceiling cavity is in your specific building.",
+  "faqs": [
+    {
+      "q": "Can you install a ceiling fan where there's currently just a light fixture?",
+      "a": "Yes, but it depends on whether the existing electrical box is rated to support a fan's weight and motion. If not, the electrician will need to replace it with a fan-rated box, which is included in assessing your job's time and cost."
+    },
+    {
+      "q": "Do I need to buy the fan myself before booking?",
+      "a": "Yes, you'll need to purchase the ceiling fan in advance. Having it on-site (unopened is fine) lets the electrician confirm compatibility with your ceiling box and wiring before starting."
+    },
+    {
+      "q": "My condo has a vaulted ceiling — does that cost more?",
+      "a": "It can. Vaulted or unusually high ceilings often require an extension downrod and more careful mounting, which may push the job toward the higher end of the $235 to $335 range."
+    }
+  ],
+  "price": {
+    "low": 235,
+    "high": 335,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

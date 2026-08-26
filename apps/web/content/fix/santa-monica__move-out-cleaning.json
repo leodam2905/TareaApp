@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "move-out-cleaning",
+  "problemTitle": "Move-out cleaning",
+  "generatedAt": "2026-08-26T01:45:49.433Z",
+  "metaTitle": "Move-Out Cleaning in Santa Monica, CA | Tarea",
+  "metaDescription": "Move-out cleaning in Santa Monica costs $255 to $480. See what's included, what drives the price, and how to get your deposit back.",
+  "intro": "Moving out of a Santa Monica rental means passing a landlord or property manager's inspection, and coastal air tends to leave a salty film on windowsills, fixtures, and blinds that regular cleaning skips. A thorough move-out clean covers every room, appliance interior, and often overlooked hardware that shows buildup near the coast.",
+  "causes": [
+    "Salt air and ocean humidity leave a fine residue on window tracks, blinds, and metal fixtures that builds up over a tenancy.",
+    "Kitchen grease and grime accumulate inside ovens, behind stove burners, and along cabinet edges over months of daily use.",
+    "Bathroom soap scum, hard water spots, and mildew form in showers, sinks, and grout lines, worsened by coastal moisture in the air.",
+    "Dust and debris collect behind appliances, inside closets, and along baseboards where regular cleaning routines don't usually reach.",
+    "Carpet and flooring often need deep attention to remove stains and odors accumulated over the length of the lease."
+  ],
+  "whatProDoes": [
+    "Clean and disinfect all bathrooms, including toilets, showers, tubs, sinks, mirrors, and grout lines.",
+    "Deep clean the kitchen, including inside the oven, refrigerator, microwave, and cabinet interiors and exteriors.",
+    "Wipe down all windowsills, tracks, and blinds to remove the salt-air film common in Santa Monica homes.",
+    "Dust and wipe baseboards, light fixtures, switch plates, and vents throughout the unit.",
+    "Vacuum and/or mop all flooring, including closets, and spot-treat visible marks on walls where possible."
+  ],
+  "diyOrPro": "Move-out cleaning is generally safe to attempt yourself if you have a few free hours and access to basic supplies, especially for a small studio or one-bedroom. It becomes worth hiring a pro when you're short on time before a lease deadline, when coastal buildup on fixtures and blinds needs more than a quick wipe, or when the unit is large enough that doing it thoroughly yourself isn't realistic before your walkthrough.",
+  "priceNote": "This job runs $255 to $480 in Santa Monica, based on a $56/hour rate and typically 4 to 8 hours of work. Price depends mainly on the size of the unit, how much buildup has accumulated on fixtures and appliances, and whether extras like inside-window cleaning or carpet spot-treatment are needed.",
+  "faqs": [
+    {
+      "q": "Will this cleaning guarantee I get my full deposit back?",
+      "a": "No cleaning service can guarantee a deposit return, since that depends on your landlord's inspection and lease terms. A thorough move-out clean addresses the most common deduction items, like kitchen grease, bathroom grime, and window tracks, but any prior damage to the unit is separate from cleaning."
+    },
+    {
+      "q": "Do I need to be present during the cleaning?",
+      "a": "You don't need to be there the whole time, but someone should be able to grant access and do a final walkthrough afterward to confirm everything on your checklist was covered before you hand over keys."
+    },
+    {
+      "q": "Why does coastal location affect the price or work involved?",
+      "a": "Homes near the Santa Monica coast tend to have more residue on metal fixtures, window tracks, and blinds from salt air and humidity, which can add time to the cleaning compared to a similar-sized unit further inland."
+    }
+  ],
+  "price": {
+    "low": 255,
+    "high": 480,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

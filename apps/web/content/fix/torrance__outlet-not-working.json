@@ -1,0 +1,28 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "outlet-not-working",
+  "problemTitle": "Outlet not working",
+  "generatedAt": "2026-08-26T02:09:39.069Z",
+  "metaTitle": "Outlet Not Working in Torrance? Causes & Cost",
+  "metaDescription": "Dead outlet in your Torrance home? Learn why it happens in older houses and what a licensed electrician charges to fix it: $135–$235.",
+  "intro": "A dead outlet is one of the most common electrical calls in Torrance, especially in the single-family homes built through the 1950s and 60s where the wiring has never been updated. Before you assume the worst, it's worth knowing that the fix is often simpler than the wiring behind the wall suggests.",
+  "causes": [
+    "A tripped GFCI outlet somewhere else on the circuit — often in the kitchen, bathroom, or garage — can cut power to several other outlets, including ones in different rooms.",
+    "A tripped breaker in the electrical panel, which is more common in these older homes because circuits were sized for 1950s appliance loads, not today's electronics and space heaters.",
+    "Loose wire connections at the outlet itself, especially if it uses the ",
+    ",",
+    "whatProDoes"
+  ],
+  "whatProDoes": [],
+  "diyOrPro": "",
+  "priceNote": "",
+  "faqs": [],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "cabinet-door-adjustment",
+  "problemTitle": "Cabinet door adjustment",
+  "generatedAt": "2026-08-26T01:54:03.526Z",
+  "metaTitle": "Cabinet Door Adjustment in Long Beach, CA | $135–$200",
+  "metaDescription": "Kitchen or bathroom cabinet doors sagging, misaligned, or not closing right? Long Beach cabinet adjustment costs $135–$200. See what's involved.",
+  "intro": "If a cabinet door in your Long Beach home hangs crooked, won't latch, or bangs against its neighbor, you're not alone — it's a common complaint in the city's older bungalows and duplexes where cabinets have shifted with decades of settling, as well as in newer waterfront condos where humidity and daily use loosen hardware fast. The fix is usually straightforward hinge and alignment work, not a full cabinet replacement.",
+  "causes": [
+    "Hinges have loosened or stripped screws over years of opening and closing, common in older Long Beach bungalow kitchens.",
+    "The cabinet box or wall has shifted slightly due to foundation settling, which is typical in the city's older duplex construction.",
+    "Humidity and salt air near the waterfront can swell wood doors or corrode hinge hardware in condo units.",
+    "A previous DIY hinge swap or soft-close upgrade was installed slightly out of alignment.",
+    "The door itself has warped from moisture exposure near a sink, dishwasher, or beach-facing window."
+  ],
+  "whatProDoes": [
+    "Inspects the hinges, cabinet frame, and door to identify whether the issue is hardware, alignment, or warping.",
+    "Tightens, replaces, or repositions hinge screws and adjusts the hinge cams to square the door in its opening.",
+    "Shims or re-levels the cabinet box if the frame has shifted, which is more common in older Long Beach properties.",
+    "Adjusts or replaces worn hinges, including upgrading to soft-close hardware if requested.",
+    "Tests the door through multiple open-close cycles to confirm it sits flush and latches properly."
+  ],
+  "diyOrPro": "If a door is just slightly loose, tightening the visible hinge screws with a screwdriver is safe to try yourself and costs nothing. But if the door is warped, the cabinet frame has shifted, or you've already tried adjusting hinges without success, a pro can diagnose the real cause instead of you repeatedly re-tightening screws that keep backing out.",
+  "priceNote": "This job in Long Beach runs $135 to $200, based on an $83/hour rate for a typical 1-2 hour visit. The time depends on how many doors need adjusting and whether the fix is a simple hinge tightening or requires shimming an out-of-level cabinet frame, which is more likely in the city's older housing stock.",
+  "faqs": [
+    {
+      "q": "Why does my cabinet door keep coming loose after I tighten it myself?",
+      "a": "Repeated tightening on stripped screw holes usually just spins the screw without gripping wood, so the fix doesn't hold. A pro can fill and re-drill the holes or reposition the hinge so it seats properly."
+    },
+    {
+      "q": "Can this fix multiple cabinet doors in one visit?",
+      "a": "Yes, most visits fall within the 1-2 hour window and can cover several doors, especially if the cause is the same hinge issue across your kitchen or bathroom."
+    },
+    {
+      "q": "Is this the same fix for both older duplexes and newer condos?",
+      "a": "The end result is similar, but older properties more often need frame-level adjustments from settling, while condos near the water more often deal with humidity-related warping or hardware corrosion."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 200,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

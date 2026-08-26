@@ -1,0 +1,47 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "outlet-not-working",
+  "problemTitle": "Outlet not working",
+  "generatedAt": "2026-08-26T02:05:15.032Z",
+  "metaTitle": "Outlet Not Working in Inglewood, CA | Repair Cost & Fix",
+  "metaDescription": "Dead outlet in your Inglewood home or rental? Learn common causes, what an electrician checks, and the fixed $135–$235 repair cost.",
+  "intro": "A dead outlet is one of the most common electrical complaints in Inglewood, where many single-family homes still have wiring and outlets from decades ago alongside newer rental units that were rewired during a fast renovation. Either way, an outlet that suddenly stops working is usually a sign of a loose connection, a tripped safety device, or a wiring issue somewhere in the circuit rather than a problem with the outlet itself. It's worth checking before you plug anything back in, since a dead outlet can sometimes point to a larger wiring problem.",
+  "causes": [
+    "A tripped GFCI outlet or breaker somewhere on the same circuit has cut power to the outlet, which is common in older Inglewood homes with only one or two GFCI outlets protecting several rooms.",
+    "Loose or corroded wiring connections inside the outlet box, more frequent in original 1940s-1950s Inglewood homes that haven't been rewired.",
+    "A recently installed outlet in a renovated rental was wired incorrectly or left with a loose connection during a quick flip or turnover job.",
+    "A worn-out outlet with weakened internal contacts, common after years of use in older housing stock.",
+    "Damage to the wire itself from rodents, moisture, or a previous DIY repair, which is more likely in homes with older, unshielded wiring."
+  ],
+  "whatProDoes": [
+    "Tests the outlet and nearby outlets with a voltage tester to confirm whether the problem is isolated or part of a larger circuit issue.",
+    "Checks the breaker panel and any GFCI outlets upstream to rule out a simple trip before opening anything up.",
+    "Shuts off power to the circuit and removes the outlet to inspect the wiring connections, looking for looseness, corrosion, or burn marks.",
+    "Repairs or replaces the outlet and tightens or reconnects any faulty wiring found inside the box.",
+    "Retests the outlet and the rest of the circuit to confirm power is restored safely before closing everything back up."
+  ],
+  "diyOrPro": "Checking your breaker panel and pressing the reset button on any GFCI outlets is safe to do yourself and solves the problem in many cases. Do not open the outlet, remove the cover plate, or attempt any wiring work yourself, since working inside an outlet box means dealing with live household voltage that can cause shock or fire if handled incorrectly.",
+  "priceNote": "This job runs $135 to $235 in Inglewood, based on a $100 hourly rate and a typical job length of 1 to 2 hours. Older homes with outdated wiring or hard-to-access boxes tend to fall toward the higher end, while a straightforward reset or single loose connection is usually closer to the lower end.",
+  "faqs": [
+    {
+      "q": "Why did my outlet just stop working with no warning?",
+      "a": "Most sudden outlet failures come from a tripped GFCI or breaker, a loose wire connection that finally gave out, or a worn internal contact. An electrician can pinpoint the exact cause once they test the circuit."
+    },
+    {
+      "q": "Is it safe to keep using other outlets in the room?",
+      "a": "If other outlets on the same circuit are working normally, they're likely fine to use, but if you notice flickering, warm outlets, or a burning smell anywhere nearby, stop using them and call an electrician right away."
+    },
+    {
+      "q": "My rental unit was recently renovated, why is this happening already?",
+      "a": "Fast renovations sometimes involve rushed electrical work, including loose connections or incorrect wiring that doesn't show a problem until months later. It's worth having it checked rather than assuming it will resolve on its own."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

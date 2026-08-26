@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "clogged-drain-cleaning",
+  "problemTitle": "Clogged drain cleaning",
+  "generatedAt": "2026-08-26T01:51:34.447Z",
+  "metaTitle": "Clogged Drain Cleaning in Long Beach, CA | $135–$315",
+  "metaDescription": "Slow or blocked drain in your Long Beach home? Get it cleared professionally. Flat hourly rate, $135–$315 total. See what's included and when to call a pro.",
+  "intro": "A slow-draining sink or tub is one of the most common plumbing complaints in Long Beach, where older duplexes and bungalows often still have their original galvanized or cast-iron pipes. Waterfront condos aren't immune either, since sand, salt residue, and hard water buildup can clog drains just as easily as tree roots do in older neighborhoods. If water is backing up or draining slowly, it's worth addressing before it turns into a bigger blockage.",
+  "causes": [
+    "Grease, soap scum, and hair building up inside older pipe fittings common in Long Beach's pre-1960s bungalows and duplexes.",
+    "Tree roots infiltrating clay or cast-iron sewer lines, a frequent issue in the city's tree-lined older residential streets.",
+    "Mineral and scale deposits from hard water narrowing pipe diameter over time.",
+    "Sand, grit, or salt residue washed into drains near waterfront condo units.",
+    "Foreign objects or excess toilet paper lodged in the trap or branch line."
+  ],
+  "whatProDoes": [
+    "Inspects the fixture and runs water to confirm the location and severity of the clog.",
+    "Uses a hand auger or drain snake to break up and remove the blockage.",
+    "For tougher or recurring clogs, may use a motorized auger or hydro-jetting to clear the line.",
+    "Runs water again to confirm proper drainage and checks for leaks at any accessed fittings.",
+    "Advises on maintenance steps if buildup, roots, or old piping are likely to cause repeat clogs."
+  ],
+  "diyOrPro": "A plunger or a store-bought hand snake is reasonable to try first on a single slow sink or tub drain. If multiple drains are backing up at once, water is draining slowly throughout the house, or you smell sewage, that points to a main line issue and should go to a plumber rather than a DIY fix, since chemical drain cleaners can damage older pipes common in Long Beach homes and won't fix a root intrusion.",
+  "priceNote": "This job runs $135 to $315 in Long Beach, based on a $94/hour rate and typical jobs taking 1 to 3 hours. Simple single-fixture clogs tend to land at the lower end, while multi-drain backups or clogs requiring a motorized auger in older cast-iron or clay piping take longer and land toward the higher end.",
+  "faqs": [
+    {
+      "q": "Why does my drain keep clogging even after I clear it?",
+      "a": "Repeated clogs often mean the problem is farther down the line, such as tree roots in the sewer pipe or heavy buildup inside old galvanized pipe, which is common in Long Beach's older housing stock. A pro can identify whether it's a fixture-level clog or something further down the line."
+    },
+    {
+      "q": "Is it safe to use a chemical drain cleaner first?",
+      "a": "It's not recommended, especially in older Long Beach properties with aging pipes, since these chemicals can corrode fittings and make the eventual professional cleanout more difficult and potentially more expensive."
+    },
+    {
+      "q": "How long does a typical drain cleaning take?",
+      "a": "Most jobs take 1 to 3 hours depending on the type and location of the clog, which is reflected in the $135 to $315 price range for this service in Long Beach."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 315,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

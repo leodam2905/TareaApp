@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "move-out-cleaning",
+  "problemTitle": "Move-out cleaning",
+  "generatedAt": "2026-08-26T02:03:15.234Z",
+  "metaTitle": "Move-Out Cleaning in Burbank, CA | Tarea",
+  "metaDescription": "Move-out cleaning for Burbank homes, including older post-war properties with original plumbing. $255–$480, based on $56/hour for 4–8 hours of work.",
+  "intro": "Move-out cleaning covers the deep clean landlords and new buyers expect once a home is empty, and it often takes longer in Burbank because so many of its post-war single-family homes still have original bathroom and kitchen fixtures. Decades of mineral buildup, old grout, and aging cabinetry mean these cleans take real scrubbing time, not just a quick wipe-down. Getting it done properly can be the difference between a full security deposit refund and a dispute with a landlord.",
+  "causes": [
+    "Original plumbing fixtures in many Burbank homes have decades of hard-water mineral scale on faucets, showerheads, and tile that needs manual scrubbing rather than a quick spray.",
+    "Older grout and caulk lines in these homes trap soap scum and grime that has built up over many years of use.",
+    "Original cabinetry and built-ins often have layers of cooking grease or dust in corners and tracks that standard weekly cleaning never reaches.",
+    "Single-family homes from this era tend to have more square footage per room, including baseboards, window sills, and closets that all need attention at move-out.",
+    "Landlord or property management checklists for move-out cleaning are usually stricter than a typical tenant's regular cleaning routine."
+  ],
+  "whatProDoes": [
+    "Clean and disinfect all bathroom and kitchen surfaces, including scrubbing mineral deposits off original fixtures where present.",
+    "Clean inside and outside of cabinets, drawers, and closets, including any built-in shelving common in older homes.",
+    "Vacuum and mop all flooring, and clean baseboards, window sills, and interior window glass.",
+    "Clean the inside of the oven, refrigerator, and other major appliances if they are staying in the unit.",
+    "Do a final walkthrough to check for any missed spots, especially around older fixtures and tile grout lines."
+  ],
+  "diyOrPro": "Light tasks like wiping counters, vacuuming, and general tidying are safe for most people to do themselves before a move. However, deep scrubbing of decades-old grout, mineral-crusted fixtures, or greasy cabinet interiors takes more time and the right products than most tenants have on hand, and doing a rushed job risks losing part of a security deposit. If you notice signs of a plumbing leak or water staining around original fixtures, that's a separate repair issue and worth mentioning to a landlord before cleaning over it.",
+  "priceNote": "This job runs $255 to $480 in Burbank, based on a $56 per hour rate for a typical 4 to 8 hour job. Homes with more original fixtures, heavier grime buildup, or larger square footage tend to land toward the higher end of that range.",
+  "faqs": [
+    {
+      "q": "Will the cleaner remove hard-water stains from old faucets and showerheads?",
+      "a": "A pro will scrub mineral buildup with appropriate cleaning products, but some staining on original fixtures may be permanent etching in the metal or tile that cleaning alone can't fully remove."
+    },
+    {
+      "q": "Does move-out cleaning include the inside of the oven and refrigerator?",
+      "a": "Yes, cleaning the interior of major appliances that are staying in the unit is typically part of the job, as noted in the steps a pro performs."
+    },
+    {
+      "q": "How long will move-out cleaning take for my home?",
+      "a": "Most jobs take 4 to 8 hours depending on the size of the home and the condition of original fixtures and surfaces, which is reflected in the $255 to $480 price range."
+    }
+  ],
+  "price": {
+    "low": 255,
+    "high": 480,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

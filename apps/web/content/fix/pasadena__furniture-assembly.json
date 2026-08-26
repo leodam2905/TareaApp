@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "furniture-assembly",
+  "problemTitle": "Furniture assembly",
+  "generatedAt": "2026-08-26T01:48:46.759Z",
+  "metaTitle": "Furniture Assembly in Pasadena, CA | Tarea",
+  "metaDescription": "Flat-pack furniture, bed frames, or wall units to assemble in Pasadena? Get pro help for $135–$295, based on $87/hour and 1–3 hours of work.",
+  "intro": "That new dresser, bed frame, or bookshelf box in the corner isn't going to build itself, and in a lot of Pasadena's Craftsman bungalows and Spanish-revival homes, the rooms weren't designed with modern flat-pack furniture in mind. Between tight doorways, plaster walls, and furniture that needs to be anchored securely, assembly can take longer than the instructions suggest.",
+  "causes": [
+    "Flat-pack furniture from stores like IKEA often ships with dozens of small parts, cams, and dowels that are easy to misalign on a first attempt.",
+    "Missing or stripped hardware from the factory can stall assembly partway through and require a hunt for replacement screws.",
+    "Heavy or bulky pieces like wardrobes, bed frames, and bookshelves are hard for one person to hold steady while fastening panels.",
+    "Many Pasadena homes have narrow doorways, staircases, or hallways typical of older construction, so furniture sometimes has to be assembled inside the room rather than built elsewhere and carried in.",
+    "Anchoring tall furniture to a wall for tip-over safety is more involved in a Craftsman or Spanish-revival home, since plaster-and-lath walls behave differently than drywall when locating studs."
+  ],
+  "whatProDoes": [
+    "Reviews the instructions and inventories all parts and hardware before starting, flagging anything missing or damaged.",
+    "Assembles the frame and attaches panels, drawers, doors, or shelving in the sequence that avoids having to backtrack.",
+    "Locates wall studs behind plaster and lath (using a stud finder suited to denser, older wall material) and anchors tall or top-heavy pieces to reduce tip-over risk.",
+    "Levels and adjusts the finished piece so doors and drawers close evenly, then tightens all connection points.",
+    "Clears away packaging, cardboard, and packing foam before leaving."
+  ],
+  "diyOrPro": "A simple nightstand, small shelf, or single-drawer unit with basic hardware is usually fine to build yourself if you're comfortable with an Allen wrench and reading diagrams. Call a pro for anything heavy, multi-box, or top-heavy (wardrobes, bunk beds, tall bookcases) — especially if it needs to be anchored to a plaster wall, since finding solid backing behind lath-and-plaster takes different tools and technique than a standard stud finder on drywall.",
+  "priceNote": "This job runs $135 to $295 in Pasadena, based on a rate of $87 per hour and jobs that typically take 1 to 3 hours. The time varies with the number of pieces, how many parts and steps are involved, and whether wall anchoring into an older plaster wall adds extra time to locate secure backing.",
+  "faqs": [
+    {
+      "q": "Do I need to buy the furniture before booking assembly?",
+      "a": "Yes, the pro assembles furniture you've already purchased and have on hand; they don't source or deliver the pieces themselves."
+    },
+    {
+      "q": "Can the furniture be built in a different room and moved later?",
+      "a": "It depends on the doorways and hallways in your home. In older Craftsman and Spanish-revival houses with narrower openings, it's often more practical to assemble large pieces in the room where they'll stay, since a fully built dresser or bed frame may not fit through the door afterward."
+    },
+    {
+      "q": "Will the pro anchor furniture to the wall for safety?",
+      "a": "If the piece is tall or top-heavy, the pro can anchor it to a wall stud as part of the job. In homes with plaster-and-lath walls, this may take a bit more time to locate solid backing compared to standard drywall."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

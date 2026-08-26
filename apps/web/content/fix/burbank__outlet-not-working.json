@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "outlet-not-working",
+  "problemTitle": "Outlet not working",
+  "generatedAt": "2026-08-26T02:00:52.916Z",
+  "metaTitle": "Outlet Not Working in Burbank? Causes & Fix Cost",
+  "metaDescription": "Dead outlet in your Burbank home? Learn common causes in post-war wiring and what a licensed electrician charges to fix it: $135–$235.",
+  "intro": "A dead outlet in a Burbank home is often more than a fluke, especially in the post-war single-family houses common throughout the city, where original wiring and fuse-era panels are still doing daily duty. Before you assume it's the outlet itself, it helps to know what's actually failing behind the wall.",
+  "causes": [
+    "A tripped GFCI outlet elsewhere on the same circuit has cut power to this one and other outlets downstream.",
+    "A breaker or old-style fuse in the panel has tripped or blown, often from an overloaded circuit shared by too many modern appliances.",
+    "The outlet's internal wiring connections have loosened or corroded over decades of use, which is common in homes with original 1940s-1960s wiring.",
+    "A wire nut or splice in a junction box has failed, interrupting the circuit somewhere between the panel and the outlet.",
+    "The outlet itself has worn out internally after years of plugging and unplugging cords."
+  ],
+  "whatProDoes": [
+    "Tests the outlet and nearby outlets with a multimeter to confirm whether the problem is local or part of a larger circuit issue.",
+    "Checks the breaker panel or fuse box for tripped breakers, blown fuses, or signs of overheating.",
+    "Locates and resets any upstream GFCI outlets that may be cutting power to the dead outlet.",
+    "Opens the outlet box to inspect wiring connections, tightens or replaces damaged wires, and checks for old aluminum or cloth-insulated wiring common in pre-1970s homes.",
+    "Replaces the outlet if it's worn out or damaged, then retests to confirm power is restored safely."
+  ],
+  "diyOrPro": "Resetting a tripped GFCI or checking an obvious breaker is safe to try yourself. Anything involving opening the outlet box, touching bare wires, or homes with older aluminum or fuse-panel wiring should go to a licensed electrician, since incorrect connections can cause shock or fire.",
+  "priceNote": "This job in Burbank runs $135 to $235, based on a $100/hour rate with most repairs taking 1 to 2 hours. The time varies depending on whether the problem is a simple loose connection or requires tracing wiring through an older post-war electrical system.",
+  "faqs": [
+    {
+      "q": "Why did my outlet suddenly stop working with no obvious cause?",
+      "a": "In many Burbank homes, a GFCI outlet in a bathroom, kitchen, or garage protects several other outlets on the same circuit. If that GFCI trips, it can silently kill power to outlets in other rooms."
+    },
+    {
+      "q": "Is it dangerous to keep using other outlets on the same circuit?",
+      "a": "It's not inherently dangerous, but a dead outlet can signal a loose connection or overloaded circuit, and ignoring it in older wiring can eventually lead to overheating."
+    },
+    {
+      "q": "Will the electrician need to open up my wall?",
+      "a": "Usually not. Most outlet failures are diagnosed and fixed at the outlet box or breaker panel without cutting into drywall."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

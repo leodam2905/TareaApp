@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "furniture-assembly",
+  "problemTitle": "Furniture assembly",
+  "generatedAt": "2026-08-26T01:39:47.673Z",
+  "metaTitle": "Furniture Assembly in Los Angeles | $135–$295",
+  "metaDescription": "Flat-pack furniture assembly for LA homes and apartments. Fixed pricing, $135–$295. See what's included and when to hire a pro.",
+  "intro": "That flat-pack wardrobe or new sectional isn't going to build itself, and in Los Angeles the mix of tight apartment elevators, narrow bungalow hallways, and multi-box furniture shipments means assembly often takes longer than the instructions suggest. Whether you're in a new-build apartment downtown or a pre-war bungalow in Highland Park, getting furniture assembled correctly the first time saves you from wobbly shelves or stripped screws later.",
+  "causes": [
+    "Furniture kits often ship with unclear or translated instructions that skip steps.",
+    "Pre-drilled holes don't always align because panels shift slightly during shipping.",
+    "Many people don't own the right tools, like a power driver with adjustable torque, leading to stripped screws.",
+    "Multi-person items like bed frames or large wardrobes are hard to hold steady and align solo.",
+    "Older pre-war bungalows sometimes have uneven floors that make leveling large pieces tricky."
+  ],
+  "whatProDoes": [
+    "Unboxes and inventories all parts and hardware before starting, checking for shipping damage or missing pieces.",
+    "Reads the manufacturer's assembly sequence and follows torque and alignment steps to avoid stripped screws.",
+    "Assembles the piece using proper tools, including drivers and clamps for large or heavy panels.",
+    "Levels and stabilizes the finished piece, checking that drawers, doors, and shelves operate correctly.",
+    "Clears packaging materials and does a final check for loose screws or wobble."
+  ],
+  "diyOrPro": "Simple items like a small bookshelf or side table are reasonable to assemble yourself if you're comfortable with basic tools and have an hour to spare. Larger or multi-box furniture, like wardrobes, bed frames, or modular sectionals, is harder to align solo and easier to damage or misassemble, especially in tight LA apartment layouts. If a piece requires wall anchoring for stability (like a tall bookcase or dresser), that step matters for safety and is worth having done correctly.",
+  "priceNote": "This job runs $135 to $295 in Los Angeles, based on an $87/hour rate for a typical 1-3 hour job. The time it takes depends on the number of pieces, the complexity of the furniture, and how much space a pro has to work in, which varies a lot between a spacious new-build apartment and a cramped bungalow room.",
+  "faqs": [
+    {
+      "q": "Do I need to have the furniture already unboxed?",
+      "a": "No, the pro will unbox everything and check the parts against the instructions as part of the job."
+    },
+    {
+      "q": "Can one pro assemble a large piece like a bed frame or wardrobe alone?",
+      "a": "Most single items can be handled by one person, but very large or heavy pieces may take longer within the 1-3 hour range to account for maneuvering and alignment."
+    },
+    {
+      "q": "Will the pro mount furniture to the wall for tip-over safety?",
+      "a": "Basic wall anchoring for stability can often be included, but let the pro know in advance since it may require additional hardware or time."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

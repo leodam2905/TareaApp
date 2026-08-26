@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "running-toilet-repair",
+  "problemTitle": "Running toilet repair",
+  "generatedAt": "2026-08-26T02:08:16.360Z",
+  "metaTitle": "Running Toilet Repair in Torrance, CA | $135-$220",
+  "metaDescription": "Fix a running toilet in your Torrance home. Flat rate $135-$220. Common in 1950s-60s houses with original plumbing fixtures.",
+  "intro": "That constant hissing or trickling sound from your toilet tank is wasting water and driving up your bill, even when nobody's used it in hours. In Torrance, where many homes date back to the 1950s and 60s, original or aging toilet components are a frequent culprit behind this problem.",
+  "causes": [
+    "The flapper valve at the bottom of the tank has worn out or warped, letting water leak into the bowl.",
+    "The fill valve is old or misadjusted, causing water to run continuously or refill too often.",
+    "The float is set too high, so water keeps overflowing into the overflow tube.",
+    "Mineral buildup from Torrance's hard water has corroded or gunked up internal tank parts.",
+    "The flush handle or chain is bent, tangled, or disconnected, preventing the flapper from sealing properly."
+  ],
+  "whatProDoes": [
+    "Removes the tank lid and inspects the flapper, fill valve, float, and overflow tube for wear or misalignment.",
+    "Tests the water level and flush mechanism to pinpoint exactly where the leak or continuous run is happening.",
+    "Replaces the flapper, fill valve, or other worn parts as needed, often necessary in older homes with original hardware.",
+    "Adjusts the float height and chain length so the flush cycle shuts off correctly.",
+    "Flushes the toilet several times to confirm the tank refills properly and stops running."
+  ],
+  "diyOrPro": "If you're comfortable removing the tank lid and can identify a worn flapper, replacing it yourself with a $10 hardware store part is often doable and safe. But if the problem persists after a flapper swap, if the fill valve or overflow tube looks corroded, or if you're not sure what you're looking at, it's worth calling a pro, especially in older Torrance homes where original plumbing fittings can be brittle or nonstandard sizes.",
+  "priceNote": "This job runs $135 to $220 in Torrance, based on a $94/hour rate for a typical 1-2 hour repair. The exact time depends on how many components need replacing and whether hard water buildup or aging parts in a 1950s-60s bathroom make removal more difficult than a newer fixture.",
+  "faqs": [
+    {
+      "q": "Why does my toilet only run every so often instead of constantly?",
+      "a": "This usually means a slow leak past the flapper is letting the tank water level drop gradually, which then triggers the fill valve to kick on and top it off. It's still worth fixing since it wastes water over time."
+    },
+    {
+      "q": "Can a running toilet raise my water bill significantly?",
+      "a": "Yes, a running toilet can waste hundreds of gallons a day, which shows up as a noticeable increase on your water bill until it's repaired."
+    },
+    {
+      "q": "Will the pro need to replace the whole toilet?",
+      "a": "Usually not. Most running toilet issues are fixed by replacing internal tank parts like the flapper or fill valve, not the entire fixture."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "deep-cleaning",
+  "problemTitle": "Deep cleaning",
+  "generatedAt": "2026-08-26T02:02:53.084Z",
+  "metaTitle": "Deep Cleaning in Burbank, CA | Cost & What's Included",
+  "metaDescription": "Deep cleaning for Burbank homes costs $200–$365. See what's included, common trouble spots in older homes, and when to call a pro.",
+  "intro": "If your Burbank home hasn't had a thorough scrub in a while, grime tends to build up in places a weekly wipe-down never reaches. This is especially true in the city's post-war single-family homes, where original tile, older fixtures, and aging grout lines trap dirt that regular cleaning can't lift. A deep clean targets those overlooked areas and resets the whole house.",
+  "causes": [
+    "Regular cleaning routines usually skip baseboards, window tracks, and behind appliances, letting dust and grease build up over months.",
+    "Original plumbing fixtures in many Burbank homes have porous or worn finishes that hold onto soap scum and mineral deposits more than newer fixtures would.",
+    "Older grout and caulk lines in kitchens and bathrooms absorb grease and moisture, creating buildup that a surface wipe won't remove.",
+    "Pets, kids, or recent renovation dust can accelerate grime accumulation in carpets, vents, and corners.",
+    "Long gaps between move-ins, move-outs, or seasonal cleanings let dust settle into areas like ceiling fans, light fixtures, and closet shelving."
+  ],
+  "whatProDoes": [
+    "Dust and wipe down all surfaces including baseboards, window sills, ceiling fans, and light fixtures from top to bottom.",
+    "Scrub kitchen surfaces, including inside the microwave, exterior of appliances, and grease buildup around the stove and range hood.",
+    "Deep clean bathrooms, focusing on grout, tile, and around older fixtures where soap scum and mineral deposits tend to concentrate.",
+    "Vacuum and mop all flooring, including edges and corners, and clean interior windows and tracks where dust collects.",
+    "Detail hard-to-reach spots like behind furniture, inside cabinets if requested, and closet shelving."
+  ],
+  "diyOrPro": "A deep clean is generally safe to DIY if you have the time and don't mind tackling grout, appliance interiors, and high or awkward spots yourself. It becomes worth hiring a pro when the job spans multiple rooms, involves years of buildup, or you simply want a thorough result without dedicating a full weekend to it. There's no safety concern here beyond standard care with cleaning chemicals in enclosed spaces like bathrooms.",
+  "priceNote": "Deep cleaning in Burbank runs $200 to $365, based on a $56 hourly rate and jobs typically taking 3 to 6 hours. The exact time depends on the size of your home, how many rooms need attention, and how much buildup has accumulated, particularly in kitchens and bathrooms with original fixtures.",
+  "faqs": [
+    {
+      "q": "How is a deep clean different from a regular cleaning?",
+      "a": "Regular cleaning covers surface-level tidying like dusting and vacuuming, while a deep clean goes further into baseboards, grout, appliance interiors, window tracks, and other spots that get skipped week to week."
+    },
+    {
+      "q": "Will a deep clean remove mineral deposits from old fixtures?",
+      "a": "A pro can significantly reduce soap scum and mineral buildup on original fixtures using appropriate cleaning products, though heavily etched or permanently stained finishes may not come back to like-new condition."
+    },
+    {
+      "q": "Do I need to provide cleaning supplies?",
+      "a": "This depends on the specific pro or service you book through Tarea, so confirm what's included when you schedule so there are no surprises on the day of the job."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

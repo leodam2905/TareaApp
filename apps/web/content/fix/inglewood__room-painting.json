@@ -1,0 +1,47 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "room-painting",
+  "problemTitle": "Room painting",
+  "generatedAt": "2026-08-26T02:06:50.298Z",
+  "metaTitle": "Room Painting in Inglewood, CA | Cost & What to Expect",
+  "metaDescription": "Room painting in Inglewood costs $345–$655. See what affects the price, what a painter actually does, and whether it's a DIY job.",
+  "intro": "If the walls in your Inglewood home are chipped, sun-faded, or just outdated, a fresh coat of paint can make a room feel new again. This is a common request in the area, whether it's an older single-family home with decades of layered paint or a recently renovated rental that needs a quick, clean finish before new tenants move in.",
+  "causes": [
+    "Years of sun exposure through west-facing windows can fade or yellow wall paint, especially in older Inglewood homes without UV-blocking window film.",
+    "Wall damage from nail holes, scuffs, or old wallpaper glue residue often builds up over multiple tenants or owners.",
+    "Humidity from cooking or bathing near a painted room can cause peeling or bubbling, particularly in homes with older, less effective ventilation.",
+    "Landlords and property managers repainting rental units between tenants need a neutral, durable finish that holds up to wear.",
+    "Outdated paint colors or finishes from a previous renovation may no longer match a homeowner's updated furniture or flooring."
+  ],
+  "whatProDoes": [
+    "Moves or covers furniture and lays down drop cloths to protect flooring and trim.",
+    "Fills nail holes, sands rough patches, and wipes down walls to remove dust and grease before painting.",
+    "Applies painter's tape along trim, ceilings, and outlets to create clean, sharp edges.",
+    "Applies primer if needed, then rolls and brushes on two coats of paint for even coverage.",
+    "Does a final walkthrough to touch up drips, missed spots, or uneven lines before removing tape and cleanup."
+  ],
+  "diyOrPro": "Painting a single room with good ventilation and no structural issues is a reasonable DIY project if you have the time and basic tools. It becomes a job for a pro when walls have water damage, mold, or lead paint (common in older Inglewood homes built before 1978), since those require special handling and disclosure. If you're short on time or want crisp, professional-looking lines and even coverage, hiring a painter is usually worth it.",
+  "priceNote": "Room painting in Inglewood runs $345 to $655, based on a $78 hourly rate and typically 4 to 8 hours of work. The time needed depends on room size, how much wall prep is required (patching, sanding, priming), and whether the space is empty or still furnished.",
+  "faqs": [
+    {
+      "q": "How long does it take to paint one room?",
+      "a": "Most single rooms take between 4 and 8 hours, depending on the size of the room, the condition of the walls, and whether trim or ceilings are included."
+    },
+    {
+      "q": "Do I need to move my furniture before the painter arrives?",
+      "a": "It helps to move small items and clear the room as much as possible, but painters typically move larger furniture to the center of the room and cover it with drop cloths as part of the job."
+    },
+    {
+      "q": "Will the price change if my walls have a lot of damage or old wallpaper?",
+      "a": "Yes, extra prep work like sanding, patching holes, or removing old wallpaper can push the job toward the higher end of the $345 to $655 range since it adds time to the job."
+    }
+  ],
+  "price": {
+    "low": 345,
+    "high": 655,
+    "hourly": 78
+  },
+  "category": "PAINTING",
+  "categoryLabel": "Painting"
+}

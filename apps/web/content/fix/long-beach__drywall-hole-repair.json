@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "drywall-hole-repair",
+  "problemTitle": "Drywall hole repair",
+  "generatedAt": "2026-08-26T01:53:35.392Z",
+  "metaTitle": "Drywall Hole Repair in Long Beach, CA | $200–$365",
+  "metaDescription": "Fix drywall holes in Long Beach homes from doorknob dings to larger damage. Flat rate $200–$365. See what's involved and when to call a pro.",
+  "intro": "Whether it's a doorknob punch-through in a Belmont Heights bungalow or a damp patch of crumbling drywall in a waterfront condo, holes in your walls rarely fix themselves. Long Beach's mix of older wood-frame duplexes and newer condo construction means the causes—and the repair approach—can vary quite a bit from one property to the next.",
+  "causes": [
+    "A doorknob or furniture corner punches through drywall, common in older bungalows with tighter room layouts.",
+    "Moisture intrusion near bathrooms or exterior walls softens and crumbles the drywall, an issue that shows up more in waterfront condos exposed to salt air.",
+    "Settling in older duplexes creates cracks that widen into holes over time.",
+    "Accidental impact during moving furniture or home projects.",
+    "Old anchor holes or patch jobs from previous owners that were never done properly."
+  ],
+  "whatProDoes": [
+    "Inspects the hole size, wall material, and surrounding area for hidden moisture or structural issues.",
+    "Cuts a clean patch from the damaged section and fits a matching piece of drywall or a mesh patch for smaller holes.",
+    "Secures the patch with joint compound and tape, then applies additional coats to blend with the existing wall.",
+    "Sands the area smooth and feathers the edges so the repair isn't visible once painted.",
+    "Cleans up dust and debris, leaving the wall ready for primer and paint."
+  ],
+  "diyOrPro": "A small nail hole or minor ding can often be handled with a tube of spackle and some patience. But once you're dealing with a hole bigger than a fist, signs of water damage, or a patch near electrical wiring or plumbing, it's worth bringing in a pro—especially in older Long Beach duplexes where walls may hide outdated wiring or in condos where moisture issues can point to a bigger leak.",
+  "priceNote": "This job runs $200 to $365 in Long Beach, based on a $83/hour rate and typically 2 to 4 hours of work. The time and cost depend mostly on the size of the hole, how many patches are needed, and whether the wall texture requires extra matching to blend the repair.",
+  "faqs": [
+    {
+      "q": "Can you match the texture on my walls, especially in an older bungalow?",
+      "a": "Yes, pros typically match orange peel, knockdown, or smooth textures common in older Long Beach homes, though exact matches depend on how much the original texture has aged or faded."
+    },
+    {
+      "q": "Do you paint the wall after patching the hole?",
+      "a": "The price covers the drywall repair and smoothing, not painting. Many customers paint the patched area themselves or ask separately about adding paint to the job."
+    },
+    {
+      "q": "What if the hole was caused by water damage from a leak?",
+      "a": "If there's moisture behind the wall, that needs to be addressed first. A pro will flag this during the inspection since patching over an active leak just leads to the same problem again."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

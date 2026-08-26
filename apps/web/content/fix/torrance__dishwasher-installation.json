@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "dishwasher-installation",
+  "problemTitle": "Dishwasher installation",
+  "generatedAt": "2026-08-26T02:12:14.950Z",
+  "metaTitle": "Dishwasher Installation in Torrance, CA | $205–$295",
+  "metaDescription": "Get a new dishwasher installed in your Torrance home. Fixed price $205–$295. Learn what's involved, what a pro checks, and when to call one.",
+  "intro": "If you just bought a new dishwasher and it's sitting in the box in your Torrance kitchen, you still need someone to hook it up to water, drain, and power before it will run. Many homes in Torrance were built in the 1950s and 60s, and their original kitchens often weren't plumbed or wired for a dishwasher at all, which can add a few wrinkles to a straightforward swap.",
+  "causes": [
+    "The kitchen has no existing dishwasher, so new water, drain, and electrical connections have to be run from scratch.",
+    "An old dishwasher is being replaced and the existing supply line, drain hose, or power cord doesn't match the new unit's connections.",
+    "The under-sink shutoff valve or drain air gap is original to the house and corroded or missing, common in Torrance homes with 60+ year old plumbing.",
+    "The cabinet opening is a slightly different size than the new dishwasher, requiring adjustment to the surrounding cabinetry or flooring.",
+    "The existing outlet isn't grounded or isn't located within reach, which was typical wiring for homes built before modern electrical codes."
+  ],
+  "whatProDoes": [
+    "Turns off the water supply and power, then removes the old dishwasher if one is being replaced.",
+    "Checks the water shutoff valve, drain line, and electrical outlet to confirm they're in working condition and up to code.",
+    "Slides the new dishwasher into place and connects the water supply line, drain hose, and power cord or hardwiring.",
+    "Levels the unit, secures it to the countertop or cabinets so it doesn't shift, and checks the door seal.",
+    "Runs a test cycle to check for leaks at the water and drain connections and confirms the unit powers on and drains properly."
+  ],
+  "diyOrPro": "If you're simply swapping a like-for-like dishwasher with matching connections already in place, a confident DIYer can sometimes manage it. But if there's no existing dishwasher hookup, the outlet isn't grounded, or you're not sure how to shut off water and power safely, this becomes an electrical and water-damage risk that's better left to a professional, especially in older Torrance homes where original plumbing and wiring may not meet current standards.",
+  "priceNote": "This job runs $205 to $295 in Torrance, based on a rate of $87 per hour for a typical 2 to 3 hour job. The time and cost depend on whether the kitchen already has a working water line, drain, and grounded outlet for a dishwasher, or whether some of that needs to be added or repaired first.",
+  "faqs": [
+    {
+      "q": "Do I need to buy the dishwasher myself before booking installation?",
+      "a": "Yes, the $205–$295 price covers installation labor only. You'll need to purchase the dishwasher separately and have it on-site, ideally already in the kitchen, before the appointment."
+    },
+    {
+      "q": "What if my house doesn't have a dishwasher hookup at all?",
+      "a": "Since many Torrance homes date to the 1950s and 60s, some kitchens were never plumbed or wired for a dishwasher. If new water, drain, or electrical lines need to be added, that additional work falls outside the standard $205–$295 range and would be quoted separately."
+    },
+    {
+      "q": "Is it dangerous to install a dishwasher myself?",
+      "a": "It can involve real risk. Working near an electrical outlet and a water supply line means a mistake can cause a shock hazard or a slow leak that damages cabinets and flooring, especially with older plumbing and wiring that's common in Torrance's older homes."
+    }
+  ],
+  "price": {
+    "low": 205,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "APPLIANCE_REPAIR",
+  "categoryLabel": "Appliance Repair"
+}

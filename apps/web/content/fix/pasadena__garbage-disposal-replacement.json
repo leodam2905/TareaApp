@@ -1,0 +1,47 @@
+{
+  "city": "pasadena",
+  "cityName": "Pasadena",
+  "problem": "garbage-disposal-replacement",
+  "problemTitle": "Garbage disposal replacement",
+  "generatedAt": "2026-08-26T01:47:10.520Z",
+  "metaTitle": "Garbage Disposal Replacement in Pasadena, CA",
+  "metaDescription": "Garbage disposal not working? Replacement in Pasadena runs $135–$220. Learn common causes, what a plumber does, and DIY safety tips.",
+  "intro": "If your garbage disposal is humming, leaking, or dead silent, it's usually not worth repairing, especially in Pasadena's older Craftsman and Spanish-revival homes where original plumbing and outdated electrical outlets can complicate even a simple swap. A stuck flywheel, a burned-out motor, or a corroded unit under the sink are all common reasons homeowners in this area end up needing a full replacement rather than a fix.",
+  "causes": [
+    "The motor has burned out from age or overuse, which is common in units that came with the house decades ago.",
+    "A jam from utensils, bones, or fibrous food has damaged the flywheel or blades beyond a simple reset.",
+    "Corrosion or leaks have developed in the housing, often worsened by the older galvanized or mismatched plumbing found in many Pasadena Craftsman kitchens.",
+    "Electrical connections have degraded, particularly in homes with outlets or wiring that predate modern code updates.",
+    "The unit was undersized or a cheap model that has simply reached the end of its usable life."
+  ],
+  "whatProDoes": [
+    "Shuts off power and water to the unit and disconnects the old disposal from the sink flange and drain lines.",
+    "Inspects the sink flange, dishwasher connection, and existing wiring or outlet for compatibility with the new unit.",
+    "Installs and secures the new disposal, connecting it to the drain trap and, if present, the dishwasher line.",
+    "Tests the unit under running water and checks for leaks at every connection point.",
+    "Hauls away the old disposal and confirms the new one runs quietly and drains properly before finishing up."
+  ],
+  "diyOrPro": "Swapping a disposal is sometimes doable if you're comfortable with basic tools and the unit uses a standard plug-in cord, but many older Pasadena homes have hardwired connections or outdated under-sink wiring that make this an electrical job, not just a plumbing one. If you smell gas, see water damage under the cabinet, or aren't sure whether the circuit is properly grounded, call a licensed plumber or electrician rather than risk a shock or a leak that damages original cabinetry.",
+  "priceNote": "This job in Pasadena runs $135 to $220, based on a $94 per hour rate for a typical 1 to 2 hour job. The exact time depends on whether the old unit comes out easily, whether the wiring needs any adjustment, and whether the new disposal matches the existing sink flange and plumbing configuration.",
+  "faqs": [
+    {
+      "q": "How do I know if my disposal needs replacing instead of just resetting?",
+      "a": "If pressing the reset button does nothing, the unit makes a humming sound with no spinning, or you smell burning, the motor has likely failed and a reset won't help. Leaks from the bottom of the unit are also a sign it's time to replace it rather than repair it."
+    },
+    {
+      "q": "Will a new disposal fit my old Craftsman kitchen sink?",
+      "a": "Most standard disposals fit a standard 3.5-inch sink flange, but some older Pasadena homes have nonstandard sink setups or already-modified plumbing, so a plumber will check the flange and drain configuration before installing the new unit."
+    },
+    {
+      "q": "Is it dangerous to replace a garbage disposal myself?",
+      "a": "It can be, especially with older wiring or hardwired units common in Pasadena's vintage housing stock. Working near water and electrical connections carries a real risk of shock, so if you're not confident about the wiring, it's safer to hire a professional."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "furniture-assembly",
+  "problemTitle": "Furniture assembly",
+  "generatedAt": "2026-08-26T01:57:22.204Z",
+  "metaTitle": "Furniture Assembly in Glendale, CA | $135–$295",
+  "metaDescription": "Need furniture assembled in Glendale? Flat, upfront pricing from $135 to $295. Learn what drives the cost and what a pro actually does.",
+  "intro": "That flat-pack dresser or bed frame from the store looks simple in the picture, but between hillside home layouts with tight stairwells and mid-century apartment buildings with narrow hallways, getting furniture assembled correctly in Glendale often takes more time and care than expected. A pro handles the instructions, hardware, and heavy lifting so you don't end up with a wobbly bookshelf or missing screws.",
+  "causes": [
+    "The furniture arrived flat-packed with instructions that assume tools and experience most people don't have on hand.",
+    "Hillside homes in Glendale often have split-level layouts or narrow staircases that make maneuvering large pieces awkward.",
+    "Older mid-century apartment buildings may have smaller doorways or elevators that require partial disassembly and reassembly inside the unit.",
+    "Multiple pieces (like a full bedroom set) were purchased at once, adding up the assembly time.",
+    "A previous DIY attempt left a piece unstable, unlevel, or with stripped screw holes that need fixing before reassembly."
+  ],
+  "whatProDoes": [
+    "Reviews the manufacturer instructions and confirms all parts and hardware are present before starting.",
+    "Assembles the frame, panels, or components in the correct sequence, using proper tools rather than the included flimsy hex key.",
+    "Checks that drawers slide, doors align, and joints are tight and level, adjusting as needed.",
+    "Anchors tall or top-heavy pieces like bookshelves and dressers to the wall when appropriate for stability.",
+    "Clears away packaging materials and does a final walkthrough with you to confirm everything is solid."
+  ],
+  "diyOrPro": "Assembling a simple stool or small shelf yourself is generally safe if you're comfortable following instructions and have basic tools. For larger pieces like wardrobes, bed frames, or anything that needs to be carried up hillside stairs or maneuvered through a tight apartment hallway, a pro reduces the risk of injury, damaged furniture, or a piece that isn't structurally sound. Top-heavy furniture that isn't anchored can also tip, which matters more in homes with kids or pets.",
+  "priceNote": "This job runs $135 to $295 in Glendale, based on an $87/hour rate for a typical 1 to 3 hour job. The time depends on how many pieces you have, how complex the design is, and whether the location — like a hillside home with stairs or an older apartment building with tight access — adds extra time to get everything in place.",
+  "faqs": [
+    {
+      "q": "Do I need to have the furniture unboxed before the pro arrives?",
+      "a": "No, the pro can unbox it, but leaving it boxed until they arrive helps avoid confusion about missing parts and keeps the workspace clear."
+    },
+    {
+      "q": "Can someone assemble furniture in my Glendale apartment if there's no elevator?",
+      "a": "Yes, but let the provider know in advance if there are stairs or a narrow hallway, since that can affect how long the job takes, especially for large pieces."
+    },
+    {
+      "q": "Will the pro mount my bookshelf or dresser to the wall?",
+      "a": "Anchoring tall or top-heavy furniture is typically included as part of the assembly when it's appropriate for stability, but confirm this detail when booking."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

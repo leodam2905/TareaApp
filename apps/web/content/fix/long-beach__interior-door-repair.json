@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "interior-door-repair",
+  "problemTitle": "Interior door repair",
+  "generatedAt": "2026-08-26T01:53:48.492Z",
+  "metaTitle": "Interior Door Repair in Long Beach, CA | $135–$285",
+  "metaDescription": "Sticking, sagging, or misaligned interior door in Long Beach? Get it fixed for $135–$285. Learn causes, what a pro does, and DIY limits.",
+  "intro": "If a bedroom or closet door in your Long Beach home has started sticking, dragging on the floor, or won't latch shut, you're not alone. Between the older bungalows and duplexes with settled foundations and the waterfront condos exposed to salt air and humidity, interior doors here take a beating in different ways.",
+  "causes": [
+    "Foundation settling common in Long Beach's older duplexes and bungalows can shift door frames out of square over time.",
+    "Humidity and salt air near the waterfront cause wood doors to swell, warp, or stick along the edges.",
+    "Loose or worn hinges let the door drop slightly, causing it to rub against the frame or floor.",
+    "Years of paint buildup on the door edge or jamb can prevent a proper close.",
+    "A cracked or split panel from age or an accidental impact can keep the door from sitting flush."
+  ],
+  "whatProDoes": [
+    "Inspects the door, frame, and hinges to pinpoint whether the issue is alignment, swelling, or hardware.",
+    "Tightens, shims, or replaces worn hinges and screws to restore proper hang.",
+    "Planes or sands down swollen or rubbing edges so the door closes smoothly without sticking.",
+    "Adjusts the strike plate or frame alignment if the door isn't latching correctly.",
+    "Fills cracks, resets warped panels, or reinforces the door if minor structural repair is needed."
+  ],
+  "diyOrPro": "Tightening a loose hinge screw or adding a bit of lubricant to a squeaky hinge is safe to try yourself. But if the door is significantly warped, the frame has shifted from foundation movement, or the door won't close at all, it's worth calling a pro rather than forcing it, since improper planing can ruin the door.",
+  "priceNote": "This job runs $135 to $285 in Long Beach, based on an $83/hour rate for a typical 1 to 3 hour repair. Simple hinge or hardware fixes land at the lower end, while doors needing planing, frame adjustment, or panel repair take longer and cost more.",
+  "faqs": [
+    {
+      "q": "Why does my door only stick in certain weather?",
+      "a": "Wood doors absorb moisture from humid air, especially near the waterfront, causing them to swell and stick. As the air dries out, they often shrink back to normal, but repeated swelling can eventually warp the door permanently."
+    },
+    {
+      "q": "Can this fix a door that won't close at all?",
+      "a": "Yes, in most cases. A pro can determine whether it's a hinge, frame alignment, or warping issue and address it within the standard 1 to 3 hour visit reflected in the $135–$285 price range."
+    },
+    {
+      "q": "Will you need to replace my whole door?",
+      "a": "Usually not. Most interior door problems are fixed by adjusting hinges, planing edges, or realigning the frame rather than replacing the door itself."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 285,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "cabinet-door-adjustment",
+  "problemTitle": "Cabinet door adjustment",
+  "generatedAt": "2026-08-26T02:02:20.532Z",
+  "metaTitle": "Cabinet Door Adjustment in Burbank | Tarea",
+  "metaDescription": "Sagging or crooked cabinet doors in your Burbank home? A carpenter can realign hinges and doors for $135–$200. See what's involved.",
+  "intro": "If a cabinet door in your Burbank home hangs crooked, won't close flush, or sticks when you open it, the hinges or frame have likely shifted out of alignment. This is common in the city's post-war single-family homes, where original kitchen cabinetry has had seven decades to settle, swell, and wear. A carpenter can usually correct it in one visit without replacing the cabinet.",
+  "causes": [
+    "Hinge screws have loosened over years of daily use, letting the door sag on one side.",
+    "Original cabinets in older Burbank homes were often built with basic hinges that wear out or lose tension with age.",
+    "Wood swells and shrinks with seasonal humidity changes, throwing doors out of square with the frame.",
+    "The house has settled slightly over the decades, tilting cabinet boxes and door frames out of true.",
+    "A previous DIY repair or hardware swap left the hinges misaligned or the screw holes stripped."
+  ],
+  "whatProDoes": [
+    "Inspects the hinges, door, and cabinet frame to find out whether the problem is the hardware, the wood, or the house structure.",
+    "Tightens or repositions hinge screws and adjusts the three-way screws on adjustable hinges to square the door.",
+    "Repairs stripped screw holes with wood filler or plugs so the hinge has something solid to grip.",
+    "Checks that the door sits flush and closes evenly, then fine-tunes gaps and overlap.",
+    "Lubricates hinges and tests the door through several full open-close cycles before finishing up."
+  ],
+  "diyOrPro": "If a single door is just loose and the screws are still in good shape, tightening them yourself with a screwdriver is safe and low-risk. If several doors are affected, the screw holes are stripped, or the cabinet frame itself seems warped or pulled away from the wall, it's worth calling a pro rather than forcing hardware that won't hold or accidentally splitting older wood.",
+  "priceNote": "This job runs $135 to $200 in Burbank, based on an $83/hour rate and a typical job length of 1 to 2 hours. Where you land in that range depends mostly on how many doors need adjusting and whether the hinges just need tightening or actual repair work like filling stripped holes.",
+  "faqs": [
+    {
+      "q": "How long does a cabinet door adjustment take?",
+      "a": "Most jobs take 1 to 2 hours, depending on how many doors need attention and whether the hinges need repair versus a simple adjustment."
+    },
+    {
+      "q": "Why do my cabinet doors keep going crooked again after I fix them?",
+      "a": "In older homes this is often a sign of ongoing humidity swings or minor house settling, which can gradually loosen hinges even after they've been adjusted correctly."
+    },
+    {
+      "q": "Can this fix a cabinet door that won't close at all?",
+      "a": "In most cases yes, as long as the cabinet box itself isn't warped or damaged. A carpenter can tell during the inspection whether an adjustment will solve it or if something more is needed."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 200,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

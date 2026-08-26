@@ -1,0 +1,47 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "move-out-cleaning",
+  "problemTitle": "Move-out cleaning",
+  "generatedAt": "2026-08-26T02:11:55.973Z",
+  "metaTitle": "Move-Out Cleaning in Torrance, CA | Cost & What's Included",
+  "metaDescription": "Moving out of a Torrance home? Learn what move-out cleaning costs ($255–$480), what's included, and whether to DIY or hire a pro.",
+  "intro": "If you're moving out of one of Torrance's many 1950s and 60s single-family homes, your landlord or buyer's final walkthrough will likely check for grease buildup, dusty vents, and grimy baseboards that build up over decades of use. Move-out cleaning covers the deep, detailed work that regular weekly cleaning skips, the kind that gets your deposit back or gets a home ready for its next owner. Older homes in this area often have original tile, aging cabinetry, and window tracks that trap extra dust and debris.",
+  "causes": [
+    "Years of regular living leave buildup in places that don't get touched during routine cleaning, like inside ovens, behind appliances, and along baseboards.",
+    "Older Torrance homes from the 1950s and 60s often have original kitchen tile and grout that traps grease and grime over time.",
+    "Window tracks and screens in older single-family homes collect dust and pollen that regular cleaning doesn't reach.",
+    "Carpet and flooring near entryways show wear and buildup from years of foot traffic.",
+    "Bathrooms with original fixtures often have mineral deposits and soap scum that need extra scrubbing to pass a move-out inspection."
+  ],
+  "whatProDoes": [
+    "Deep-cleans kitchen surfaces including inside the oven, refrigerator, and cabinets, plus degreasing stovetops and backsplashes.",
+    "Scrubs bathrooms thoroughly, including grout, tile, fixtures, and inside cabinets and drawers.",
+    "Vacuums and mops all flooring, including edges and corners often missed in regular cleaning.",
+    "Wipes down baseboards, window sills, window tracks, and light fixtures throughout the home.",
+    "Cleans inside closets, empty cabinets, and other storage areas to leave the home ready for final inspection."
+  ],
+  "diyOrPro": "Move-out cleaning is generally safe to do yourself if you have the time and don't mind hands-and-knees scrubbing of ovens, grout, and window tracks. It becomes worth hiring a pro when you're on a tight moving timeline, dealing with years of buildup in an older home, or need the job done to a standard that satisfies a landlord or property manager. There's no safety hazard involved, just a lot of physical labor and attention to detail.",
+  "priceNote": "This job runs $255 to $480 in Torrance, based on a rate of $56 per hour and typical jobs taking 4 to 8 hours. The time needed depends mostly on the size of the home, how much buildup has accumulated over the years, and whether extras like inside-oven or inside-fridge cleaning are included.",
+  "faqs": [
+    {
+      "q": "Does move-out cleaning include carpet cleaning?",
+      "a": "Standard move-out cleaning covers vacuuming carpets thoroughly, but steam cleaning or shampooing is usually a separate service. Ask when booking if you need carpets deep-cleaned."
+    },
+    {
+      "q": "Will this guarantee I get my security deposit back?",
+      "a": "A thorough cleaning helps meet most landlords' move-out standards, but deposit decisions depend on your landlord's own inspection and any damage beyond normal wear. Cleaning alone doesn't cover repairs."
+    },
+    {
+      "q": "How long before move-out day should I schedule this?",
+      "a": "Many people schedule move-out cleaning for the same day or the day after they've moved all belongings out, since an empty home is easier and faster to clean thoroughly."
+    }
+  ],
+  "price": {
+    "low": 255,
+    "high": 480,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

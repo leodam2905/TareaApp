@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "outlet-not-working",
+  "problemTitle": "Outlet not working",
+  "generatedAt": "2026-08-26T01:43:26.917Z",
+  "metaTitle": "Outlet Not Working in Santa Monica, CA | Tarea",
+  "metaDescription": "A dead outlet in Santa Monica can mean a tripped breaker, worn wiring, or salt-air corrosion. Get it diagnosed and fixed for $135–$235.",
+  "intro": "If an outlet in your Santa Monica home suddenly stopped working, it could be something as simple as a tripped breaker or as serious as damaged wiring. Homes near the coast see extra wear on electrical fixtures because salt-laden air speeds up corrosion on metal contacts and screws inside outlets and panels. A licensed electrician can pinpoint the cause quickly and confirm the fix is safe before power is restored to that circuit.",
+  "causes": [
+    "A tripped GFCI outlet or breaker cut power to that circuit, especially common in kitchens, bathrooms, and garages.",
+    "Corrosion has built up on the outlet's internal contacts or wiring terminals, a faster process in Santa Monica's humid, salt-air environment.",
+    "A loose or burned wire connection inside the outlet box is interrupting the circuit.",
+    "The outlet itself has worn out from age or repeated plugging and unplugging and needs replacing.",
+    "A break elsewhere in the circuit, such as a damaged wire behind a wall, is cutting power to that specific outlet."
+  ],
+  "whatProDoes": [
+    "Tests the outlet with a voltage tester to confirm whether power is reaching it at all.",
+    "Checks the breaker panel and any GFCI outlets on the same circuit for trips and resets them safely.",
+    "Removes the outlet cover and inspects the wiring and terminals for corrosion, loose connections, or burn marks.",
+    "Repairs or replaces damaged wiring, corroded terminals, or the outlet itself as needed.",
+    "Retests the outlet under load to confirm it's working correctly before closing everything back up."
+  ],
+  "diyOrPro": "It's safe to check your breaker panel and reset any GFCI outlets yourself before calling anyone. Once you're past that, though, opening the outlet or touching internal wiring is not something to attempt without training — a live wire or hidden short can cause a serious shock, and coastal corrosion can make connections behave unpredictably. If resetting the breaker or GFCI doesn't bring the outlet back, it's time to call a licensed electrician.",
+  "priceNote": "This job runs $135 to $235 in Santa Monica, based on a $100 hourly rate and a typical job length of 1 to 2 hours. Straightforward fixes like a reset or a simple outlet swap land toward the low end, while jobs requiring wire repair, tracing a fault, or dealing with corroded connections take longer and push toward the high end.",
+  "faqs": [
+    {
+      "q": "Why do outlets in Santa Monica seem to fail more often than in other areas?",
+      "a": "The coastal air here carries more moisture and salt, which speeds up corrosion on metal contacts inside outlets and electrical panels. Over time this can loosen connections or cause outlets to stop conducting power reliably."
+    },
+    {
+      "q": "Can I just replace the outlet myself to save money?",
+      "a": "If you're comfortable shutting off the breaker and know how to safely wire a new outlet, some homeowners do this themselves. But if there's any sign of a deeper wiring issue, corrosion, or you're not confident working with live circuits, it's safer to have a licensed electrician handle it."
+    },
+    {
+      "q": "Is it dangerous to keep using other outlets on the same circuit?",
+      "a": "Usually it's fine to use other outlets, but if you notice burning smells, warm outlet covers, or flickering lights elsewhere on the circuit, stop using that circuit and have it inspected soon — those are signs of a wiring problem that shouldn't wait."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

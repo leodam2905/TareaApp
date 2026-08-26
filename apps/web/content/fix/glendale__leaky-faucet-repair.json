@@ -1,0 +1,48 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "leaky-faucet-repair",
+  "problemTitle": "Leaky faucet repair",
+  "generatedAt": "2026-08-26T01:55:17.634Z",
+  "metaTitle": "Leaky Faucet Repair in Glendale, CA | Cost & Fix Guide",
+  "metaDescription": "Fix a dripping faucet in Glendale for $135–$220. Learn common causes, what a plumber does, and whether it's a DIY job or not.",
+  "intro": "That steady drip from your kitchen or bathroom faucet in Glendale isn't just annoying — it's wasting water and can stain sinks in older mid-century apartment buildings. Hillside homes with older plumbing lines often see this issue sooner due to mineral buildup and water pressure quirks common in the area.",
+  "causes": [
+    "Worn-out rubber washers or O-rings inside the faucet body lose their seal over time.",
+    "Mineral deposits from Glendale's hard water can build up and prevent parts from closing fully.",
+    "A loose or corroded valve seat lets water seep past even when the faucet is off.",
+    "Cracked or degraded cartridges in newer faucets stop sealing properly.",
+    "High water pressure common in hillside properties can accelerate wear on internal parts."
+  ],
+  "whatProDoes": [
+    "Shuts off the water supply to the fixture and inspects the faucet type and brand.",
+    "Disassembles the faucet handle and body to access the washer, cartridge, or valve seat.",
+    "Replaces worn washers, O-rings, or cartridges with matching parts.",
+    "Cleans or replaces the valve seat if corrosion or mineral buildup is found.",
+    "Reassembles the faucet, turns water back on, and checks for leaks under pressure.",
+    "Tests hot and cold sides separately to confirm the drip is fully resolved."
+  ],
+  "diyOrPro": "If you're comfortable turning off the water supply and have the right size wrench, swapping a washer or O-ring on a simple faucet can be a reasonable DIY task. But older faucets in Glendale's mid-century buildings sometimes have corroded or hard-to-source parts, and forcing a stuck valve can crack pipes — at that point it's safer to call a plumber before a small drip becomes a bigger water issue.",
+  "priceNote": "This job runs $135 to $220 in Glendale, based on a $94/hour rate for a typical 1-2 hour repair. The time varies depending on faucet type, whether parts need replacing, and how accessible the shut-off valve is in older homes.",
+  "faqs": [
+    {
+      "q": "Why does my faucet keep dripping even after I tighten the handle?",
+      "a": "Tightening the handle harder won't fix a worn washer, cartridge, or valve seat — those parts need to be replaced, not just tightened, or the drip will continue."
+    },
+    {
+      "q": "Can a leaky faucet cause damage if I wait to fix it?",
+      "a": "Yes, constant dripping can stain sinks, waste water, and in some cases lead to mineral buildup or corrosion around the fixture, especially with Glendale's hard water."
+    },
+    {
+      "q": "Do I need to replace the whole faucet or just a part inside it?",
+      "a": "Most leaks are fixed by replacing an internal part like a washer, O-ring, or cartridge — a full faucet replacement is usually only needed if the fixture itself is cracked or very old."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

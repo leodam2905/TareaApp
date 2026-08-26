@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "outlet-not-working",
+  "problemTitle": "Outlet not working",
+  "generatedAt": "2026-08-26T01:52:36.146Z",
+  "metaTitle": "Outlet Not Working in Long Beach? Repair Costs & Fixes",
+  "metaDescription": "A dead outlet in your Long Beach home could be a tripped GFCI, bad wiring, or a breaker issue. Learn causes, fixes, and pricing: $135–$235.",
+  "intro": "Plugging in a lamp or phone charger and getting nothing can be more than a minor annoyance in Long Beach, where older duplexes and bungalows often still run on original wiring from decades ago. In waterfront condos, humidity and salt air can also speed up wear on outlets and connections. Either way, a dead outlet usually points to a specific, findable problem rather than a mystery.",
+  "causes": [
+    "A tripped GFCI outlet somewhere on the same circuit, common in older Long Beach bungalows where one GFCI protects several outlets in a kitchen or bathroom.",
+    "A tripped or worn-out breaker in the electrical panel, which can happen more often in duplexes with aging panels.",
+    "Loose or corroded wiring connections at the outlet itself, a frequent issue in coastal condos where salt air accelerates corrosion.",
+    "A broken outlet that has simply failed after years of use, especially in homes that haven't been rewired.",
+    "A loose connection further back in the circuit, such as at a junction box, which is more likely in houses with original 1940s or 1950s wiring."
+  ],
+  "whatProDoes": [
+    "Tests the outlet with a multimeter to confirm there's no power and rules out a simple plug or device issue.",
+    "Checks the breaker panel for a tripped or faulty breaker and resets or identifies if it needs replacement.",
+    "Locates and resets any GFCI outlets on the same circuit, since one tripped GFCI can kill power to multiple outlets.",
+    "Opens the outlet to inspect the wiring for looseness, corrosion, or damage, and repairs or replaces the outlet as needed.",
+    "Traces the circuit further if the problem isn't at the outlet itself, checking junction boxes or connections along the line."
+  ],
+  "diyOrPro": "Resetting a GFCI outlet or flipping a tripped breaker back on is safe for most homeowners to try first. But if the outlet still doesn't work after that, or if you see scorch marks, smell burning, or the outlet feels warm, stop and call an electrician — you're dealing with live wiring, and mistakes here can cause shock or fire.",
+  "priceNote": "This job runs $135 to $235 in Long Beach, based on a $100 hourly rate for typically 1 to 2 hours of work. The lower end usually covers a straightforward fix like a tripped breaker or GFCI, while the higher end applies when the electrician has to open up wiring, deal with corrosion, or trace the problem to another part of the circuit.",
+  "faqs": [
+    {
+      "q": "Why does resetting the breaker not fix it?",
+      "a": "If the breaker trips again right away, there's likely a short or overload somewhere in the circuit that needs an electrician to diagnose rather than just reset."
+    },
+    {
+      "q": "Is it dangerous to keep using other outlets on the same circuit?",
+      "a": "It can be, especially if the underlying issue is a loose connection or damaged wire. It's safer to have it checked before continuing to use that circuit."
+    },
+    {
+      "q": "Why do outlets in my Long Beach condo fail more than at my old place?",
+      "a": "Coastal humidity and salt air can corrode outlet contacts and wiring connections faster than in inland homes, which is a common issue in beachfront buildings."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

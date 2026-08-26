@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "clogged-drain-cleaning",
+  "problemTitle": "Clogged drain cleaning",
+  "generatedAt": "2026-08-26T01:42:21.780Z",
+  "metaTitle": "Clogged Drain Cleaning in Santa Monica, CA | Tarea",
+  "metaDescription": "Slow or blocked drain in Santa Monica? Get it cleared for $135–$315. Learn common causes tied to coastal conditions and what a plumber actually does.",
+  "intro": "A drain that gulps, backs up, or drains slower than it used to is one of the most common calls in Santa Monica homes, especially in older buildings near the coast where pipes take extra abuse. Left alone, a partial clog usually gets worse and can lead to standing water or a backup at the worst possible time.",
+  "causes": [
+    "Sand and fine grit tracked in from the beach and washed down showers or laundry drains, which settles and narrows pipe diameter over time.",
+    "Hair and soap scum combining into a sticky mass, especially in bathroom sinks and tub drains.",
+    "Grease, oil, and food particles solidifying inside kitchen drain lines.",
+    "Mineral buildup from hard water narrowing pipe walls, which is more noticeable in homes with older galvanized plumbing common in Santa Monica's coastal neighborhoods.",
+    "Corrosion or pitting inside older metal pipes, which salty coastal air and humidity can accelerate over the years, creating rough interior surfaces where debris catches."
+  ],
+  "whatProDoes": [
+    "Inspects the fixture and asks about recent usage to narrow down where the clog likely sits in the line.",
+    "Attempts a plunger or hand auger first for a straightforward, single-fixture clog.",
+    "Uses a motorized drain snake to break up or pull out tougher blockages further down the line.",
+    "Runs water afterward to confirm the drain flows freely and checks for leaks at any fittings that were disturbed.",
+    "Recommends a camera inspection if the clog is recurring or the pipe shows signs of significant corrosion, since coastal-area pipes can develop hidden damage."
+  ],
+  "diyOrPro": "A single slow sink with a plunger or a store-bought drain snake is reasonable to try yourself before calling anyone. But if multiple drains are backing up at once, water is coming up from a floor drain, or you smell sewage, stop — that points to a main line issue or a vent problem that needs a plumber, not more chemical drain cleaner.",
+  "priceNote": "This job runs $135 to $315 in Santa Monica, based on a $94 per hour rate and jobs typically taking 1 to 3 hours. A simple sink or tub clog usually lands at the lower end, while a stubborn clog deeper in the line, or one complicated by older or corroded pipe, takes longer and pushes toward the higher end.",
+  "faqs": [
+    {
+      "q": "Why do my drains clog more often living near the beach?",
+      "a": "Sand and grit from showers after beach trips settle in pipes more than typical household debris, and salty coastal air can speed up corrosion in older metal pipes, creating rough spots where buildup catches."
+    },
+    {
+      "q": "Should I use a liquid drain cleaner before calling a plumber?",
+      "a": "It's better to avoid it. Chemical cleaners can damage older or already-corroded pipes and make the eventual repair job messier and more dangerous for whoever works on it."
+    },
+    {
+      "q": "How do I know if it's just my drain or a bigger sewer line problem?",
+      "a": "If only one fixture is slow, it's likely a localized clog. If several drains back up together or you notice gurgling in unrelated fixtures, that suggests a main line issue that needs a proper inspection."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 315,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

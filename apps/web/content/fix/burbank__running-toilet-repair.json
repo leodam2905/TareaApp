@@ -1,0 +1,48 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "running-toilet-repair",
+  "problemTitle": "Running toilet repair",
+  "generatedAt": "2026-08-26T01:59:30.544Z",
+  "metaTitle": "Running Toilet Repair in Burbank, CA | $135–$220",
+  "metaDescription": "Toilet won't stop running? Get it fixed in Burbank for $135–$220. Common in post-war homes with original plumbing parts.",
+  "intro": "A toilet that keeps running after you flush is one of the most common plumbing complaints in Burbank, especially in the post-war single-family homes that make up much of the city's housing stock. Many of these houses still have original plumbing components or fixtures that have never been replaced, so worn-out internal parts are often the culprit. Left alone, a running toilet can waste a surprising amount of water and add up on your bill.",
+  "causes": [
+    "A worn or misaligned flapper valve that no longer seals the tank properly.",
+    "A fill valve that has degraded over time, which is common in older Burbank homes with original toilet hardware.",
+    "The float is set too high, causing water to constantly drain into the overflow tube.",
+    "Mineral buildup or sediment in the tank, which is more common in homes with older galvanized supply lines.",
+    "A cracked or corroded overflow tube that lets water leak out continuously."
+  ],
+  "whatProDoes": [
+    "Inspects the tank to identify whether the flapper, fill valve, float, or overflow tube is causing the issue.",
+    "Shuts off the water supply and drains the tank to safely access the internal components.",
+    "Replaces or adjusts the faulty part, such as swapping a worn flapper or installing a new fill valve.",
+    "Tests the flush and refill cycle several times to confirm the toilet shuts off correctly.",
+    "Checks for related issues, like slow leaks or corrosion, that are more common in homes with original plumbing.",
+    "Cleans up the work area and leaves the tank lid properly seated."
+  ],
+  "diyOrPro": "If you're comfortable removing the tank lid and can identify a simple, inexpensive part like the flapper, replacing it yourself is generally low-risk since it doesn't involve gas lines or water heaters. However, if the problem persists after a flapper swap, or if you notice corrosion, a cracked tank, or issues with the shutoff valve itself, it's worth calling a pro rather than risking a bigger leak or water damage, particularly in older homes where original valves can be brittle or hard to shut off completely.",
+  "priceNote": "This job runs $135 to $220 in Burbank, based on a $94/hour rate and a typical job length of 1 to 2 hours. The final cost within that range depends on which part needs replacing and whether the shutoff valve or supply line shows wear common in homes with original plumbing.",
+  "faqs": [
+    {
+      "q": "Why won't my toilet stop running even after I jiggle the handle?",
+      "a": "Jiggling the handle sometimes repositions a worn flapper temporarily, but if it keeps running, the flapper likely needs replacing, or the issue could be the fill valve or float instead."
+    },
+    {
+      "q": "Is a running toilet actually costing me money?",
+      "a": "Yes, a continuously running toilet can waste a significant amount of water over time, which shows up as a higher water bill even if the leak seems minor."
+    },
+    {
+      "q": "Will the plumber need to replace the whole toilet?",
+      "a": "Usually not. Most running toilet issues are fixed by replacing an internal part like the flapper, fill valve, or float, not the entire fixture."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

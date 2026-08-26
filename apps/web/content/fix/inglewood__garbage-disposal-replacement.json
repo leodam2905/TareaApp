@@ -1,0 +1,47 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "garbage-disposal-replacement",
+  "problemTitle": "Garbage disposal replacement",
+  "generatedAt": "2026-08-26T02:04:27.390Z",
+  "metaTitle": "Garbage Disposal Replacement in Inglewood, CA",
+  "metaDescription": "Garbage disposal not working? Replacement in Inglewood runs $135 to $220. See causes, what a plumber does, and DIY vs pro guidance.",
+  "intro": "If your kitchen sink hums, leaks, or stops draining, the garbage disposal underneath may have finally worn out. This is common in Inglewood's older single-family homes, where original disposals from decades past are still in service, and in recently renovated rentals, where cheap or mismatched units get swapped in during quick turnovers. Either way, replacing the unit is usually the fix once repair options are exhausted.",
+  "causes": [
+    "The motor has burned out from age or years of grinding tough food scraps.",
+    "The unit is leaking from the bottom, which usually means a cracked housing that can't be sealed.",
+    "Frequent jamming or resetting points to worn internal components rather than a simple clog.",
+    "A mismatched or undersized disposal was installed during a rental renovation and can't handle regular use.",
+    "Corrosion or rust has built up inside an original, decades-old unit typical of older Inglewood homes."
+  ],
+  "whatProDoes": [
+    "Shuts off power and water to the sink area before starting any work.",
+    "Disconnects the old disposal from the sink flange, drain pipe, and dishwasher hose.",
+    "Removes the old unit and inspects the sink flange and plumbing connections for wear or damage.",
+    "Mounts and wires the new disposal, then reconnects the drain and dishwasher lines.",
+    "Runs water and tests the disposal under load to confirm it drains and grinds properly with no leaks."
+  ],
+  "diyOrPro": "If you're comfortable shutting off the breaker and working with basic hand tools, swapping a disposal that uses the same mounting bracket can be a manageable DIY project. However, this job involves electrical wiring under the sink and, in some cases, adjusting drain plumbing, so if you're unsure about the wiring or the old unit shows signs of leaking into the cabinet below, it's safer to bring in a licensed plumber.",
+  "priceNote": "In Inglewood, garbage disposal replacement typically costs $135 to $220, based on a $94 hourly rate for a job that usually takes 1 to 2 hours. The time on the low or high end depends on whether the new unit fits the existing mount and wiring or requires extra adjustment, which is more common in older homes with outdated plumbing configurations.",
+  "faqs": [
+    {
+      "q": "Why does my new disposal need to match the old mounting system?",
+      "a": "Disposals use different mounting brackets between brands, and swapping to a different system can add extra labor time. This is factored into the 1 to 2 hour range, with older Inglewood homes sometimes needing bracket adjustments."
+    },
+    {
+      "q": "Can I just reset the disposal instead of replacing it?",
+      "a": "If the unit is jammed or tripped, resetting it can be a temporary fix, but if it's leaking, humming without turning, or has a cracked housing, replacement is the reliable solution rather than repeated resets."
+    },
+    {
+      "q": "Is it dangerous to replace a garbage disposal myself?",
+      "a": "There's real risk from electrical wiring under the sink, so the power should always be shut off at the breaker before touching any connections. If you're not confident identifying or disconnecting the wiring safely, it's best to have a licensed plumber handle it."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

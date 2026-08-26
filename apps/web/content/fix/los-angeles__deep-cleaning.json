@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "deep-cleaning",
+  "problemTitle": "Deep cleaning",
+  "generatedAt": "2026-08-26T01:41:02.846Z",
+  "metaTitle": "Deep Cleaning in Los Angeles: What It Costs & Involves",
+  "metaDescription": "Deep cleaning for LA homes runs $200 to $365. Learn what's included, when to book one, and how bungalows and new-builds differ in cleaning needs.",
+  "intro": "If your Los Angeles home hasn't had a thorough cleaning in a while, dust, grime, and buildup tend to hide in places a regular tidy-up skips — baseboards, window tracks, behind appliances. This is especially true in older pre-war bungalows with more nooks and original woodwork, but even newer apartments collect buildup fast from LA's dust and pollen. A deep clean resets the whole space rather than just surface tidying.",
+  "causes": [
+    "Regular weekly or biweekly cleanings usually skip baseboards, vents, and under furniture, letting dust accumulate over months.",
+    "Older bungalows and mid-century homes often have original hardwood floors, window sills, and trim that trap grime differently than modern surfaces.",
+    "Los Angeles dust, smog residue, and seasonal pollen settle into carpets, blinds, and air vents faster than in less arid climates.",
+    "Moving in or out of a property leaves behind buildup from the previous occupants that a standard clean won't address.",
+    "Long gaps between cleanings — after illness, travel, or a busy stretch — let grease, soap scum, and dust compound in kitchens and bathrooms."
+  ],
+  "whatProDoes": [
+    "Cleans and disinfects kitchen surfaces including inside the microwave, exterior of appliances, and behind or under movable items.",
+    "Scrubs bathrooms thoroughly — tile grout, showerheads, soap scum on glass, and often-missed spots like exhaust fans.",
+    "Dusts and wipes down baseboards, window sills, door frames, ceiling fans, and light fixtures throughout the home.",
+    "Vacuums and spot-treats carpets and rugs, and washes hard floors including corners and edges usually left untouched.",
+    "Cleans interior windows, tracks, and mirrors, and addresses cobwebs in ceiling corners and closets."
+  ],
+  "diyOrPro": "A basic deep clean of a small apartment is doable yourself with a weekend and the right supplies if you're reasonably mobile and have no major buildup like mold or pest issues. For larger homes, homes with accumulated grime from months of neglect, or situations involving mold in bathrooms, it's worth hiring a pro since they bring commercial-grade equipment and know how to handle buildup without damaging original finishes in older homes. If you notice water damage, pest droppings, or mold beyond a small spot, mention it before booking since that may need separate remediation.",
+  "priceNote": "Deep cleaning in Los Angeles runs $200 to $365, based on a $56 hourly rate for a typical 3 to 6 hour job. The exact time depends on square footage, how long it's been since the last real cleaning, and the layout — a pre-war bungalow with more rooms and trim work can take longer than an open-plan new-build apartment of the same size.",
+  "faqs": [
+    {
+      "q": "How is deep cleaning different from a regular cleaning?",
+      "a": "Regular cleaning covers visible surfaces like counters and floors, while deep cleaning goes further into baseboards, window tracks, appliance interiors, and grout — areas that build up over weeks or months."
+    },
+    {
+      "q": "Do I need to provide cleaning supplies or equipment?",
+      "a": "This varies by provider, so it's worth confirming when you book, but many bring their own supplies and equipment as part of the service."
+    },
+    {
+      "q": "How often should I schedule a deep clean?",
+      "a": "Most homes benefit from a deep clean every few months, though it depends on household size, pets, and how much regular cleaning happens in between."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

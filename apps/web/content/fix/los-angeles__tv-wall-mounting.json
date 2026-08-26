@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "tv-wall-mounting",
+  "problemTitle": "TV wall mounting",
+  "generatedAt": "2026-08-26T01:39:31.692Z",
+  "metaTitle": "TV Wall Mounting in Los Angeles | $135–$205",
+  "metaDescription": "Professional TV wall mounting for LA homes, from pre-war plaster walls to new-build apartments. Flat rate $135–$205. See what's included.",
+  "intro": "Mounting a TV sounds simple until you're staring at a wall in your Los Feliz bungalow or Koreatown apartment, unsure what's actually behind the drywall or plaster. In Los Angeles, wall construction varies a lot by building age, so the right hardware and approach depend on whether you're dealing with old lath-and-plaster, standard drywall over wood studs, or a concrete wall in a newer complex.",
+  "causes": [
+    "Homeowners in pre-war bungalows often find their walls are plaster over wooden lath, which cracks easily if drilled without locating studs precisely.",
+    "Mid-century homes usually have standard drywall over wood studs, but stud spacing can be inconsistent in additions or remodeled sections.",
+    "New-build apartments and condos frequently have concrete or steel-stud walls, which require different anchors and often a hammer drill.",
+    "Many people attempt mounting without a stud finder or with a mount rated for less weight than their TV, leading to a wall that can't safely hold it.",
+    "Hiding cables inside the wall or routing them to an outlet requires cutting drywall or fishing wire, which isn't part of a basic mount and adds complexity."
+  ],
+  "whatProDoes": [
+    "Identifies the wall type (plaster, drywall, concrete, or steel stud) and locates studs or uses appropriate anchors for the material.",
+    "Checks the TV size and weight against the mount's rating and confirms the mount is compatible with the TV's VESA pattern.",
+    "Marks and drills mounting points, then secures the bracket to studs or with heavy-duty anchors rated for masonry or concrete where needed.",
+    "Attaches the TV to the bracket, checks it's level, and tests that it holds securely at the intended viewing angle.",
+    "Does a basic cable dress along the wall or through a cord cover if requested, without opening up the wall."
+  ],
+  "diyOrPro": "If you have wood-stud drywall, a stud finder, and a TV under 40 pounds, mounting it yourself is reasonably safe if you follow the mount's weight rating. It gets riskier with plaster walls, concrete construction, TVs over 50 inches, or if you plan to conceal wiring inside the wall, since a mount that pulls loose can seriously damage a TV or injure someone nearby.",
+  "priceNote": "The $135 to $205 range reflects an $87 hourly rate for a job that typically takes 1 to 2 hours. Older plaster walls or concrete construction in newer buildings can push the job toward the higher end since they take more time and different hardware than a standard drywall mount.",
+  "faqs": [
+    {
+      "q": "Will you patch the wall if the mount doesn't line up with studs?",
+      "a": "Small anchor holes from mounting are normal, but this service doesn't include drywall or plaster patching beyond what's needed to install the bracket itself."
+    },
+    {
+      "q": "Can you hide the cables inside the wall?",
+      "a": "Basic cord covers along the surface are fine, but running cables inside the wall requires cutting into it, which isn't included in the $135–$205 range and would need to be discussed separately."
+    },
+    {
+      "q": "What if I live in a building with concrete walls?",
+      "a": "That's accounted for in the price range — concrete and steel-stud walls, common in many LA apartments and condos, need different anchors and tools, which is one reason the job can run toward $205 instead of $135."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 205,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

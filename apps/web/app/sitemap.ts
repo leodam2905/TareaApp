@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { allFixPages } from "@/lib/seo/content";
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://taptarea.com";
 
@@ -24,10 +25,22 @@ const PUBLIC_ROUTES: { path: string; priority: number; changeFrequency: Metadata
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
-  return PUBLIC_ROUTES.map((r) => ({
+  const core = PUBLIC_ROUTES.map((r) => ({
     url: `${BASE}${r.path}`,
     lastModified,
     changeFrequency: r.changeFrequency,
     priority: r.priority,
   }));
+
+  // The generated /fix pages. Read from committed JSON, so the sitemap can
+  // never advertise a page that was not built — the two come from one source.
+  // Priority 0.7: below the tools they funnel into, above the legal pages.
+  const fix = allFixPages().map((p) => ({
+    url: `${BASE}/fix/${p.city}/${p.problem}`,
+    lastModified: new Date(p.generatedAt),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  return [...core, ...fix];
 }

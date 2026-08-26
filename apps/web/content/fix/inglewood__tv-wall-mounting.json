@@ -1,0 +1,47 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "tv-wall-mounting",
+  "problemTitle": "TV wall mounting",
+  "generatedAt": "2026-08-26T02:05:35.736Z",
+  "metaTitle": "TV Wall Mounting in Inglewood, CA | $135–$205",
+  "metaDescription": "Professional TV wall mounting in Inglewood for older plaster homes and renovated rentals. Fixed price $135–$205, based on $87/hour.",
+  "intro": "Mounting a TV sounds simple until you're staring at a wall in an older Inglewood home and can't tell if you're about to drill into plaster, lath, or a stud. Many houses here were built decades ago and later updated with new drywall over the original walls, which makes finding solid backing tricky. A pro brings the right hardware and stud-finding tools to get the mount level and secure the first time.",
+  "causes": [
+    "Older Inglewood homes often have plaster-and-lath walls instead of drywall, which behave differently under a drill and can crack if you're not careful.",
+    "Recently renovated rentals sometimes have a thin layer of new drywall installed over the original wall, hiding the actual stud spacing.",
+    "Many homeowners don't own a stud finder rated for plaster or lath, so they can't locate solid backing on their own.",
+    "TVs over 50 inches need anchors rated for the wall type and weight, which not every hardware store mount includes.",
+    "Hidden electrical wiring or old knob-and-tube runs in pre-1960s Inglewood homes can sit exactly where a mount bracket needs to go."
+  ],
+  "whatProDoes": [
+    "Checks the wall type (plaster, lath, or drywall) and identifies stud locations using a stud finder suited to that surface.",
+    "Confirms the TV's weight and VESA pattern to select the correct mount hardware.",
+    "Marks and levels the bracket position, then drills pilot holes and secures the mount into studs or rated anchors.",
+    "Attaches the TV to the bracket, checks it's level and stable, and tests the tilt or swivel if the mount allows movement.",
+    "Routes visible cables neatly along the wall or through a cord cover, and cleans up any drywall or plaster dust from drilling."
+  ],
+  "diyOrPro": "If you have a newer drywall wall with easy-to-find studs and a lightweight TV (under 40 inches), mounting it yourself with a basic kit is reasonable. In an older Inglewood home with plaster or unknown wall layers, or with a larger TV, it's worth hiring a pro since a missed stud or bad anchor can mean a TV crashing to the floor, and drilling blind near old wiring is a real risk.",
+  "priceNote": "This job runs $135 to $205 in Inglewood, based on an $87 hourly rate for a typical 1 to 2 hour job. The lower end covers straightforward drywall installs with easy stud access, while the higher end reflects plaster walls, hidden wiring checks, or extra time needed for cable concealment.",
+  "faqs": [
+    {
+      "q": "Can you mount a TV on a plaster wall without cracking it?",
+      "a": "Yes, but it takes slower, more careful drilling and often different anchors than drywall requires. A pro will check the wall type first and adjust the approach before drilling."
+    },
+    {
+      "q": "Do I need to buy the mount myself?",
+      "a": "You can supply your own mount, or ask if the pro can bring one; either way, confirm the mount's weight rating matches your TV before the appointment."
+    },
+    {
+      "q": "What if there's no stud where I want the TV?",
+      "a": "The installer can either shift the position slightly to hit a stud or use heavy-duty wall anchors rated for the TV's weight, depending on what the wall allows."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 205,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

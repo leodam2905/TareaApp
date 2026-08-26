@@ -1,0 +1,48 @@
+{
+  "city": "torrance",
+  "cityName": "Torrance",
+  "problem": "ceiling-fan-installation",
+  "problemTitle": "Ceiling fan installation",
+  "generatedAt": "2026-08-26T02:09:28.796Z",
+  "metaTitle": "Ceiling Fan Installation in Torrance, CA | Cost & Info",
+  "metaDescription": "Ceiling fan installation in Torrance runs $235 to $335. See what's involved, common issues in older homes, and when to call a licensed electrician.",
+  "intro": "If you're replacing an old light fixture with a ceiling fan or adding one to a room that's never had one, Torrance's stock of 1950s and 60s homes often complicates the job. Many of these houses have outdated electrical boxes and wiring that weren't built to support the weight or wiring of a modern fan, so what looks like a simple swap can turn into more work.",
+  "causes": [
+    "The original electrical box is a plain light-fixture box, not rated to hold the weight and motion of a ceiling fan.",
+    "Older homes in this era often have wiring without a ground wire, which modern fans and switches are designed to use.",
+    "There's no existing wiring for a fan at all, meaning a new circuit or switch leg has to be run from the attic or wall.",
+    "Popcorn ceilings or plaster common in these homes make it harder to locate and cut into the right spot for a fan-rated box.",
+    "Attic access in Torrance's older single-story homes can be tight, slowing down the process of running or fishing new wire."
+  ],
+  "whatProDoes": [
+    "Shuts off power to the circuit and confirms it's dead with a tester before touching any wiring.",
+    "Removes the old fixture and inspects the existing electrical box to see if it's fan-rated or needs to be swapped out.",
+    "Installs a proper fan-rated electrical box, often bracing it to a ceiling joist for the added weight and vibration.",
+    "Runs or connects wiring, including a ground wire if the home's original wiring doesn't have one, and wires in a wall control or remote receiver if needed.",
+    "Mounts the fan bracket and motor, attaches the blades, and tests all speeds and light functions before wrapping up.",
+    "Confirms nothing wobbles and the mount is secure at working speed."
+  ],
+  "diyOrPro": "This is not a good DIY project unless you're comfortable working with live electrical circuits and know how to identify whether your ceiling box is fan-rated. Getting the electrical box wrong can lead to the fan falling over time or a fire risk from an overloaded connection, so most homeowners in older Torrance homes are better off having a licensed electrician handle it, especially if the wiring predates grounding standards.",
+  "priceNote": "The fixed range for this job in Torrance is $235 to $335, based on $100/hour and a typical job taking 2 to 3 hours. Jobs land at the higher end when the existing electrical box needs to be replaced with a fan-rated one, when new wiring has to be run through tight attic space, or when there's no existing wiring at all.",
+  "faqs": [
+    {
+      "q": "Can I just use my existing light fixture box for a ceiling fan?",
+      "a": "Not safely. Most light fixture boxes, especially in homes built in the 1950s and 60s, aren't rated to support a fan's weight or the wobble it creates over time. An electrician will check the box and replace it with a fan-rated one if needed, which is factored into the $235 to $335 range."
+    },
+    {
+      "q": "My house doesn't have a ground wire — is that a problem for a new fan?",
+      "a": "It can be. Many homes from this era in Torrance were wired without a ground, and modern fans are built to use one. An electrician can address this during installation, sometimes by running a new ground wire, which may affect how long the job takes within the quoted range."
+    },
+    {
+      "q": "Do I need to buy the fan myself, or does that cost extra?",
+      "a": "The $235 to $335 range covers labor only, based on $100/hour for a typical 2 to 3 hour installation. You'll need to purchase the ceiling fan separately before the appointment."
+    }
+  ],
+  "price": {
+    "low": 235,
+    "high": 335,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

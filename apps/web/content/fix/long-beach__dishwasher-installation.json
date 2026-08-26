@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "dishwasher-installation",
+  "problemTitle": "Dishwasher installation",
+  "generatedAt": "2026-08-26T01:55:03.999Z",
+  "metaTitle": "Dishwasher Installation in Long Beach, CA | $205–$295",
+  "metaDescription": "Get your dishwasher installed in Long Beach for $205–$295. Learn what's involved, when to DIY, and what a pro checks in older duplexes and condos.",
+  "intro": "If you just bought a new dishwasher or your old one finally gave out, getting it installed correctly matters more than it seems, especially in Long Beach's older duplexes and bungalows where under-sink plumbing and electrical setups can be outdated or cramped. Waterfront condos often have their own quirks too, like tight cabinet spacing or shared water lines. A proper install protects against leaks, electrical issues, and damage to cabinetry or flooring.",
+  "causes": [
+    "The old dishwasher was removed or never existed, leaving no dedicated connections in place.",
+    "Many Long Beach bungalows and duplexes have aging water shutoff valves or supply lines that need replacing before a new unit can connect safely.",
+    "Cabinet openings in older homes are sometimes non-standard sizes, requiring adjustments to fit a modern dishwasher.",
+    "Condo units near the waterfront may have shared electrical panels or GFCI outlet requirements that differ from single-family homes.",
+    "A previous installation may have used incorrect fittings or lacked a proper air gap, creating drainage problems for the new unit."
+  ],
+  "whatProDoes": [
+    "Shuts off water and power, then removes the old dishwasher if one is present.",
+    "Inspects and, if needed, replaces the water supply line, shutoff valve, and drain hose connections.",
+    "Checks the electrical connection or outlet for proper grounding and GFCI protection where required.",
+    "Slides the new dishwasher into place, levels it, and secures it to the countertop or cabinets.",
+    "Connects water, drain, and power lines, then runs a test cycle to check for leaks and proper function."
+  ],
+  "diyOrPro": "If you're simply swapping a plug-in dishwasher into a spot that already has all connections ready, a confident DIYer can sometimes manage it. But any job involving water line changes, hardwiring, or older electrical setups common in Long Beach's vintage housing stock should go to a licensed pro, since a bad connection can mean water damage to floors and cabinets or a fire hazard.",
+  "priceNote": "The fixed price for dishwasher installation in Long Beach is $205 to $295, based on a rate of $87 per hour for a job that typically takes 2 to 3 hours. The exact time depends on things like whether existing plumbing and electrical connections are usable as-is or need modification, which varies a lot between older properties and newer condo units.",
+  "faqs": [
+    {
+      "q": "Do I need to buy the dishwasher myself before booking installation?",
+      "a": "Yes, the installation service covers connecting and setting up a dishwasher you already own or have purchased; the pro does not supply the appliance."
+    },
+    {
+      "q": "What if my kitchen doesn't have a dishwasher hookup at all?",
+      "a": "If there's no existing water, drain, or electrical connection, that's additional work beyond a standard installation and may affect the time and scope of the job, which the pro will assess on site."
+    },
+    {
+      "q": "Is it safe to install a dishwasher myself in an older Long Beach home?",
+      "a": "It can be risky if the home has outdated wiring or worn plumbing fittings, since mistakes there can lead to leaks or electrical hazards, so it's worth having a professional check the setup even if you plan to do some of the work yourself."
+    }
+  ],
+  "price": {
+    "low": 205,
+    "high": 295,
+    "hourly": 87
+  },
+  "category": "APPLIANCE_REPAIR",
+  "categoryLabel": "Appliance Repair"
+}

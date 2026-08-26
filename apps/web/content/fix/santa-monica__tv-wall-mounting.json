@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "tv-wall-mounting",
+  "problemTitle": "TV wall mounting",
+  "generatedAt": "2026-08-26T01:43:50.519Z",
+  "metaTitle": "TV Wall Mounting in Santa Monica, CA | Tarea",
+  "metaDescription": "Professional TV wall mounting in Santa Monica, priced $135–$205. Corrosion-resistant hardware for coastal homes, secure stud anchoring, and clean cable runs.",
+  "intro": "If you've just bought a new TV or finally decided to get the cables off the floor, mounting it securely on the wall is trickier than it looks. In Santa Monica, the coastal air adds a wrinkle: metal anchors and brackets near windows, patios, or ocean-facing walls can corrode faster than they would inland, so the hardware matters as much as the mounting itself.",
+  "causes": [
+    "Many Santa Monica homes have older stucco, plaster, or lath-and-plaster walls instead of simple drywall, which need different anchors than a standard TV mount kit provides.",
+    "Studs aren't always where a stud finder suggests, especially in older beach-adjacent construction with uneven framing.",
+    "Salt-laden coastal air can corrode standard zinc-plated screws and brackets over a few years, leading to a loose or unsafe mount.",
+    "Larger or heavier TVs need anchoring rated well beyond the TV's weight, since a mount that barely holds today can fail months later.",
+    "Hidden cable runs behind the wall require careful planning to avoid electrical wiring or insulation, particularly in homes with older wiring."
+  ],
+  "whatProDoes": [
+    "Locates wall studs or, if none are usable, installs load-rated anchors suited to the wall material (drywall, plaster, or stucco).",
+    "Selects corrosion-resistant hardware appropriate for coastal exposure, especially near windows or exterior-facing walls.",
+    "Attaches the mounting bracket, checks it's level, and confirms it can support the TV's weight with a safety margin.",
+    "Hangs the TV, tests the tilt or swivel range if the mount allows it, and checks for wobble.",
+    "Runs and conceals cables along the wall or through it, keeping power and HDMI lines separated from any in-wall wiring."
+  ],
+  "diyOrPro": "Mounting a lightweight TV on plain drywall where you can clearly locate studs is a reasonable DIY project with a basic stud finder and level. It's not worth the risk on plaster, stucco, tile, or brick walls, with TVs over about 40 pounds, or when cables need to be routed inside the wall near existing wiring — a mount that pulls out of the wall can damage the TV or injure someone nearby.",
+  "priceNote": "This job in Santa Monica runs $135 to $205, based on a $87/hour rate for a typical 1 to 2 hour job. The low end covers a straightforward mount into exposed studs on drywall, while the higher end reflects stucco or plaster walls, larger TVs, or cable concealment that takes longer to route cleanly.",
+  "faqs": [
+    {
+      "q": "Do I need to buy the wall mount bracket myself, or does the pro bring one?",
+      "a": "Typically you provide the mount bracket matched to your TV's size and VESA pattern, since preferences on tilt, swivel, or fixed mounts vary. The pro brings the anchors, tools, and hardware needed for your specific wall type."
+    },
+    {
+      "q": "Will the mount hold up to Santa Monica's ocean air over time?",
+      "a": "A pro will use anchors and brackets suited to coastal exposure, which resist corrosion better than basic hardware, but any exterior-facing wall near windows or salt air will age faster than an interior wall — periodic checks are worth doing."
+    },
+    {
+      "q": "Can you hide the cables inside the wall?",
+      "a": "In most cases yes, as long as the wall material allows it and there's no electrical wiring or insulation blocking the path; this typically falls within the standard time estimate but may run toward the higher end of the price range."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 205,
+    "hourly": 87
+  },
+  "category": "ASSEMBLY_MOUNTING",
+  "categoryLabel": "Assembly & Mounting"
+}

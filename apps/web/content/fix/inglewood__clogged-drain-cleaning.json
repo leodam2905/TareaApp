@@ -1,0 +1,47 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "clogged-drain-cleaning",
+  "problemTitle": "Clogged drain cleaning",
+  "generatedAt": "2026-08-26T02:04:12.941Z",
+  "metaTitle": "Clogged Drain Cleaning in Inglewood, CA | Cost & Fixes",
+  "metaDescription": "Slow or blocked drain in your Inglewood home? Learn common causes, what a plumber does, and the real cost: $135–$315.",
+  "intro": "A slow-draining sink or tub is one of the most common plumbing complaints in Inglewood, where many homes still have their original 1940s and 1950s cast-iron or clay pipes. In recently renovated rentals, the pipes themselves may be newer, but they're often tied into older sewer lateral lines that haven't been replaced, so clogs can build up in the transition points between old and new plumbing.",
+  "causes": [
+    "Grease, soap scum, and hair buildup narrowing pipes over years of use, especially common in older Inglewood bathrooms.",
+    "Tree roots infiltrating aging clay sewer laterals, a frequent issue in neighborhoods with mature street trees.",
+    "Corroded or partially collapsed cast-iron pipe sections found in many pre-1960s homes.",
+    "Renovation debris (drywall dust, tile grout, or construction sand) left behind in newer plumbing after a remodel.",
+    "Foreign objects or excess toilet paper causing sudden blockages, common in rental units with higher tenant turnover."
+  ],
+  "whatProDoes": [
+    "Inspects the fixture and runs water to identify whether the clog is local or further down the line.",
+    "Uses a drain snake or motorized auger to break up and pull out the blockage.",
+    "For tougher or recurring clogs, may run a hydro-jetting or camera inspection to check for root intrusion or pipe damage.",
+    "Clears the line and retests water flow from multiple fixtures to confirm the clog is fully resolved.",
+    "Advises on whether older pipe sections need further repair or replacement beyond the immediate clog."
+  ],
+  "diyOrPro": "A plunger or a store-bought drain snake is reasonable for a single slow sink or shower drain that isn't backing up elsewhere in the house. If multiple fixtures are draining slowly at once, water is backing up from a floor drain, or you smell sewage, that points to a main line issue that needs a professional — pushing chemical drain cleaners into an already blocked cast-iron line can make the corrosion worse and isn't safe to handle repeatedly.",
+  "priceNote": "In Inglewood, this job runs $135 to $315, based on a $94/hour rate and jobs that typically take 1 to 3 hours. Straightforward single-fixture clogs land on the lower end, while main line clogs requiring root cutting, camera inspection, or work on older cast-iron pipe take longer and push toward the higher end.",
+  "faqs": [
+    {
+      "q": "How do I know if it's just my sink or a bigger sewer line problem?",
+      "a": "If only one fixture drains slowly, it's likely a local clog. If your toilet gurgles when you run the washing machine, or multiple drains back up together, the problem is probably further down the main line and needs a plumber to diagnose."
+    },
+    {
+      "q": "Will a plumber need to cut into my wall or floor?",
+      "a": "Usually not for a standard clogged drain — most clogs are cleared with a snake or auger through existing access points. Cutting into pipes is only needed if there's a collapsed section or persistent root damage found during inspection."
+    },
+    {
+      "q": "Is it safe to keep using chemical drain cleaners in an older Inglewood home?",
+      "a": "Repeated use of chemical cleaners can accelerate corrosion in older cast-iron or galvanized pipes, sometimes making the clog and the pipe condition worse. For homes with original plumbing, mechanical clearing by a plumber is generally the safer option."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 315,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

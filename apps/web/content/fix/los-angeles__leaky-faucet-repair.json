@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "leaky-faucet-repair",
+  "problemTitle": "Leaky faucet repair",
+  "generatedAt": "2026-08-26T01:37:41.998Z",
+  "metaTitle": "Leaky Faucet Repair in Los Angeles | $135–$220",
+  "metaDescription": "Dripping faucet in your LA home? Get it fixed for $135–$220. Learn common causes, what a plumber does, and whether it's a DIY job.",
+  "intro": "A dripping faucet is one of the most common plumbing complaints in Los Angeles, whether you're in a pre-war bungalow with original fixtures or a new-build apartment with modern hardware. Left alone, that drip wastes water and can stain sinks or cabinets over time. Fixing it is usually quick, but the parts involved vary a lot depending on the age of your home's plumbing.",
+  "causes": [
+    "A worn-out rubber washer or O-ring inside the faucet, common in older bungalows with original fixtures that haven't been serviced in years.",
+    "Corroded or mineral-clogged valve seat, which happens more often in homes with LA's harder tap water.",
+    "A loose or damaged cartridge in newer single-handle faucets, typical in mid-century remodels and newer apartment units.",
+    "Improper installation or over-tightened parts from a previous DIY fix or renovation.",
+    "General wear from age, especially in fixtures that are original to homes built decades ago."
+  ],
+  "whatProDoes": [
+    "Shuts off the water supply to the fixture and confirms the faucet type (compression, cartridge, ball, or ceramic disk).",
+    "Disassembles the faucet handle and spout to inspect washers, O-rings, seats, and cartridges for wear or damage.",
+    "Replaces the specific worn part, matching it to the faucet's make and age, which matters in older LA homes with discontinued or unusual hardware.",
+    "Reassembles the faucet, checks for leaks under the sink and at the spout, and tests hot and cold water flow.",
+    "Cleans up the work area and checks nearby shutoff valves for any related wear, since older galvanized plumbing can complicate a simple repair."
+  ],
+  "diyOrPro": "If you're comfortable turning off the water supply and the faucet is a standard, newer model, replacing a washer or O-ring can be a manageable weekend task with the right parts. In older bungalows with vintage or obscure fixtures, corroded shutoff valves, or if the leak is coming from inside the wall rather than the faucet itself, it's safer to call a plumber to avoid water damage or a stripped fitting that turns a small fix into a bigger repair.",
+  "priceNote": "This repair runs $135 to $220 in Los Angeles, based on a $94 per hour rate for a typical job lasting 1 to 2 hours. The time and cost depend on the faucet type, how accessible the shutoff valve is, and whether replacement parts are readily available or need to be sourced for an older or specialty fixture.",
+  "faqs": [
+    {
+      "q": "Why is my faucet still dripping after I tightened the handle?",
+      "a": "Tightening the handle usually doesn't fix a drip because the problem is typically a worn internal part like a washer, O-ring, or cartridge, not looseness at the handle itself. A plumber needs to open up the faucet to replace the actual failing component."
+    },
+    {
+      "q": "Can a leaky faucet cause bigger problems if I ignore it?",
+      "a": "Yes, a constant drip wastes water and can lead to mineral staining, sink or cabinet damage, and in some cases hints at corrosion in the supply line or shutoff valve, which is worth checking, especially in older Los Angeles homes."
+    },
+    {
+      "q": "Will the plumber need to replace the entire faucet?",
+      "a": "Usually not. Most leaky faucet repairs only require replacing a small internal part like a washer, O-ring, or cartridge. Full faucet replacement is only needed if the fixture itself is cracked, extremely outdated, or parts are no longer available."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

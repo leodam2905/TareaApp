@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "cabinet-door-adjustment",
+  "problemTitle": "Cabinet door adjustment",
+  "generatedAt": "2026-08-26T01:58:04.633Z",
+  "metaTitle": "Cabinet Door Adjustment in Glendale, CA | Tarea",
+  "metaDescription": "Cabinet doors sagging or misaligned in your Glendale kitchen? Get professional adjustment for $135-$200. Book a vetted carpenter today.",
+  "intro": "If your kitchen or bathroom cabinet doors in Glendale are sagging, sticking, or not closing flush, it's usually a quick fix rather than a sign you need new cabinets. This is especially common in Glendale's hillside homes, where gradual foundation settling can shift cabinet frames over the years, and in older mid-century apartment buildings where original cabinetry has seen decades of daily use.",
+  "causes": [
+    "Hinges have loosened or worn out from repeated opening and closing over time.",
+    "The house has settled on its slope, causing cabinet frames to shift slightly out of square.",
+    "Humidity changes have caused wood doors or frames to swell or shrink.",
+    "Original hardware in older mid-century units has worn down and no longer holds adjustment.",
+    "A previous DIY fix or reinstallation was done without properly leveling the door."
+  ],
+  "whatProDoes": [
+    "Inspects the hinges, cabinet frame, and door to identify the source of misalignment.",
+    "Tightens, replaces, or repositions hinges and adjusts the mounting screws.",
+    "Uses shims or adjusts hinge plates to correct doors that are out of square due to house settling.",
+    "Checks that the door closes flush and latches properly, adjusting strike plates if needed.",
+    "Tests all affected doors in the kitchen or cabinetry run to confirm even spacing and alignment."
+  ],
+  "diyOrPro": "If a single door is just slightly loose, tightening the visible hinge screws yourself is safe and often solves the problem. If doors are noticeably crooked, won't stay shut, or the issue seems tied to the house settling (common in Glendale's hillside properties), it's worth having a carpenter look at it, since forcing misaligned hardware can strip screw holes or crack older wood frames.",
+  "priceNote": "This job runs $135 to $200 in Glendale, based on a $83/hour rate for a typical 1-2 hour visit. Older cabinetry in mid-century buildings or multiple doors affected by hillside settling can take closer to the 2-hour mark, while a single door needing minor adjustment is usually on the lower end.",
+  "faqs": [
+    {
+      "q": "Why do my cabinet doors keep going crooked even after I tighten them?",
+      "a": "In hillside homes, gradual foundation settling can shift cabinet frames slightly out of square, so tightening hinges only offers a temporary fix. A carpenter can adjust the hinge plates or frame to account for the shift."
+    },
+    {
+      "q": "Can this be fixed in one visit?",
+      "a": "Most cabinet door adjustments take 1 to 2 hours and are completed in a single visit, which is reflected in the $135 to $200 price range."
+    },
+    {
+      "q": "Will the pro replace my hinges if they're too worn to adjust?",
+      "a": "If hinges are worn beyond adjustment, the carpenter will let you know and can typically replace them during the same visit, which may affect time spent within the quoted range."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 200,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "ceiling-fan-installation",
+  "problemTitle": "Ceiling fan installation",
+  "generatedAt": "2026-08-26T02:04:59.017Z",
+  "metaTitle": "Ceiling Fan Installation in Inglewood, CA | Cost & Info",
+  "metaDescription": "Ceiling fan installation in Inglewood runs $235 to $335. Learn what's involved, when to call an electrician, and what affects the price.",
+  "intro": "If you're noticing a room in your Inglewood home stays hot with no airflow, or an old fixture is on its way out, installing a ceiling fan is a common upgrade. This job is especially frequent in Inglewood's older single-family homes, where original ceiling boxes often weren't built to support a fan, and in renovated rentals where new owners want central lighting swapped out for fans.",
+  "causes": [
+    "Older homes in Inglewood often have a light fixture box in the ceiling rather than a fan-rated box, which isn't strong enough to hold a spinning fan safely.",
+    "Renovated rental units sometimes have wiring or switches updated for lighting only, without the extra wiring needed for fan speed and light controls.",
+    "Homeowners frequently want a fan added to a bedroom or living room that never had one, especially in houses built before central air conditioning was standard.",
+    "An existing fan may be worn out, wobbling, or making noise, which usually means the mounting bracket or motor needs replacing.",
+    "Some ceilings have no electrical box at all in the desired location, requiring new wiring to be run from the nearest source."
+  ],
+  "whatProDoes": [
+    "Turns off power at the breaker and confirms the circuit is dead before touching any wiring.",
+    "Inspects the existing ceiling box and replaces it with a fan-rated box if the current one isn't strong enough to support the fan's weight and movement.",
+    "Assembles the fan according to the manufacturer's instructions and mounts it securely to the ceiling joist or brace.",
+    "Connects the wiring for the fan motor, light kit, and any wall controls, then tests the fan on all speeds and the light on all settings.",
+    "Balances the fan blades if needed and cleans up the work area before leaving."
+  ],
+  "diyOrPro": "Basic fan replacement using an existing fan-rated box and matching wiring is sometimes attempted by confident homeowners, but this still involves working with live electrical circuits at height. If your home has an older, non-fan-rated ceiling box, no box at all, or unusual wiring like Inglewood's mix of original and updated systems, this becomes a job for a licensed electrician to avoid fire risk or a fan falling from the ceiling.",
+  "priceNote": "Ceiling fan installation in Inglewood costs $235 to $335, based on a $100 per hour rate for a typical 2 to 3 hour job. The time and cost depend mainly on whether the existing ceiling box needs to be replaced with a fan-rated one and how much wiring work is required, which varies a lot between Inglewood's older original homes and its recently renovated rental units.",
+  "faqs": [
+    {
+      "q": "Do I need a special ceiling box for a fan, or can it use my current light fixture box?",
+      "a": "Most standard light fixture boxes, especially in older Inglewood homes, aren't rated to hold the weight and motion of a ceiling fan. An electrician typically needs to install a fan-rated box, which is included in the estimated time and cost."
+    },
+    {
+      "q": "Can I install a ceiling fan myself to save money?",
+      "a": "It's possible if you already have a fan-rated box and matching wiring, but it involves working with live circuits overhead, and mistakes can lead to a fan falling or electrical fire. If your home is older or has been rewired during a renovation, it's safer to hire a licensed electrician."
+    },
+    {
+      "q": "Why does the price range vary between $235 and $335?",
+      "a": "The final cost depends on how long the job takes, generally 2 to 3 hours at $100 per hour. Homes needing a new fan-rated box or additional wiring take longer than a straightforward swap of one fan for another."
+    }
+  ],
+  "price": {
+    "low": 235,
+    "high": 335,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

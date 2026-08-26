@@ -1,0 +1,47 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "drywall-hole-repair",
+  "problemTitle": "Drywall hole repair",
+  "generatedAt": "2026-08-26T02:06:06.478Z",
+  "metaTitle": "Drywall Hole Repair in Inglewood, CA | Cost & Process",
+  "metaDescription": "Fixing a drywall hole in Inglewood? See what causes it, what a pro does, and the fixed $200–$365 price range for this repair.",
+  "intro": "A hole in your drywall — whether from a doorknob, a moving mishap, or old water damage — is a common sight in Inglewood's older single-family homes and in rental units that got a quick cosmetic renovation before being leased out. Left alone, small holes tend to grow, and patched areas that weren't taped or textured correctly often show through paint. Getting it repaired properly matters for both looks and, in rental cases, deposit or inspection requirements.",
+  "causes": [
+    "A doorknob or furniture corner punched through the wall during normal use",
+    "Old plumbing or roof leaks weakened the drywall paper and core, especially in homes built decades ago",
+    "A previous quick-fix patch (common in renovated rentals) was never taped or textured, so it's cracking or bulging",
+    "Settling or minor structural movement in an older Inglewood foundation opened up cracks or small holes around corners",
+    "Removal of a wall-mounted fixture, shelf, or old cable line left a gap that was never properly closed"
+  ],
+  "whatProDoes": [
+    "Inspects the hole and surrounding wall for hidden moisture, electrical wiring, or framing damage before starting",
+    "Cuts back any crumbling or water-damaged drywall to a clean, stable edge",
+    "Installs a patch — using a drywall clip, backing board, or California patch depending on hole size — and secures it",
+    "Applies joint compound in thin coats, sanding between layers to blend the patch into the existing wall",
+    "Matches existing texture (smooth, orange peel, or knockdown) and leaves the surface ready for the homeowner's own paint touch-up"
+  ],
+  "diyOrPro": "A small nail hole or minor ding is reasonable to patch yourself with spackle and a putty knife. But if the hole is larger than a fist, shows signs of water staining, sits near electrical outlets or wiring, or the wall has a texture that's hard to match, it's worth hiring a pro — a poor patch job is often more obvious and more expensive to fix later than the original hole.",
+  "priceNote": "This repair in Inglewood runs $200 to $365, based on a $83/hour rate and jobs typically taking 2 to 4 hours. The time within that range depends mainly on hole size, whether texture matching is needed, and whether hidden damage (like water staining or old wiring) is found once the wall is opened up.",
+  "faqs": [
+    {
+      "q": "Will the repaired spot be invisible after painting?",
+      "a": "A properly taped, sanded, and textured patch should blend in well once painted, though exact texture matching depends on the wall's existing finish and can vary slightly."
+    },
+    {
+      "q": "Do I need to buy the paint myself?",
+      "a": "Yes — this service covers the drywall repair and texture matching, not painting. You'll want to have matching paint on hand or plan a separate touch-up."
+    },
+    {
+      "q": "What if there's water damage behind the hole?",
+      "a": "If the pro finds soft, discolored, or moldy drywall during the repair, they'll flag it before proceeding, since that may indicate an active leak that needs separate attention beyond the drywall patch itself."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

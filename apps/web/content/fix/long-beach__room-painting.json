@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "room-painting",
+  "problemTitle": "Room painting",
+  "generatedAt": "2026-08-26T01:54:17.935Z",
+  "metaTitle": "Room Painting in Long Beach, CA | Cost & What to Expect",
+  "metaDescription": "Interior room painting in Long Beach costs $345 to $655. See what drives the price, what a pro actually does, and when to DIY vs hire out.",
+  "intro": "Whether you're touching up a bedroom in a Long Beach bungalow or refreshing a salt-worn wall in a waterfront condo, interior paint jobs wear out faster near the coast due to humidity and sun exposure. A fresh coat can hide cracked plaster in older duplexes or brighten up a condo unit before a sale or new tenant moves in.",
+  "causes": [
+    "Sun exposure through large windows in waterfront condos fades and thins paint faster than inland homes.",
+    "Older duplexes and bungalows often have original plaster walls with hairline cracks or uneven texture that show through worn paint.",
+    "Coastal humidity and salt air can cause paint to peel or bubble, especially in rooms near open windows or ocean-facing walls.",
+    "Previous paint jobs done with lower-quality paint or without primer tend to chip and stain more quickly.",
+    "Cooking, smoking, or general wear over years leaves visible grime and yellowing that a simple wipe-down won't fix."
+  ],
+  "whatProDoes": [
+    "Moves and covers furniture, then lays down drop cloths to protect floors and trim.",
+    "Fills small cracks or nail holes and sands rough patches, especially common on older plaster walls.",
+    "Applies painter's tape along trim, windows, and ceiling lines for clean edges.",
+    "Rolls and cuts in primer if needed, followed by two coats of paint for even coverage.",
+    "Removes tape, does a final touch-up pass, and cleans up drop cloths and equipment before leaving."
+  ],
+  "diyOrPro": "Painting a single room with smooth walls and no repairs needed is a reasonable DIY project if you have basic tools and time. If your walls have cracks, water stains, mold spots, or you're dealing with high ceilings and ladder work, it's safer and often faster to hire a pro, especially in older Long Beach properties where plaster repair takes more skill than it looks.",
+  "priceNote": "This job runs $345 to $655 in Long Beach, based on a rate of $78 per hour and typically takes 4 to 8 hours depending on room size and wall condition. Rooms needing crack repair, extra coats, or ceiling work will land toward the higher end of that range.",
+  "faqs": [
+    {
+      "q": "Does the price include the paint itself?",
+      "a": "That depends on the pro — some include materials in their quote, others ask you to supply or reimburse for paint separately, so confirm this before the job starts."
+    },
+    {
+      "q": "How many rooms does $345 to $655 cover?",
+      "a": "This range is for one standard-sized room. Larger rooms, higher ceilings, or multiple rooms will take more hours and cost more."
+    },
+    {
+      "q": "Can a pro paint over water stains or mold on the wall?",
+      "a": "A pro can paint over minor stains after sealing them with a stain-blocking primer, but visible mold should be addressed separately first since painting over it won't solve the underlying moisture problem."
+    }
+  ],
+  "price": {
+    "low": 345,
+    "high": 655,
+    "hourly": 78
+  },
+  "category": "PAINTING",
+  "categoryLabel": "Painting"
+}

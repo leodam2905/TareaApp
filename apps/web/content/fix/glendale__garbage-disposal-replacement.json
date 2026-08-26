@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "garbage-disposal-replacement",
+  "problemTitle": "Garbage disposal replacement",
+  "generatedAt": "2026-08-26T01:56:03.697Z",
+  "metaTitle": "Garbage Disposal Replacement in Glendale, CA | Cost & Info",
+  "metaDescription": "Garbage disposal not working in your Glendale home? Learn common causes, what a plumber does, and the fixed $135–$220 price range for replacement.",
+  "intro": "If your garbage disposal in Glendale hums but won't spin, leaks under the sink, or has just gone completely silent, it's likely at the end of its life. This is common in Glendale's mid-century apartment buildings, where original units and aging under-sink plumbing are often decades old, as well as in hillside homes where disposals see heavy use.",
+  "causes": [
+    "The motor has burned out from age or years of grinding tough food scraps.",
+    "The unit is jammed and the reset button no longer resolves the issue.",
+    "Corroded or leaking seals are letting water drip from the bottom of the disposal.",
+    "Electrical connections have degraded, common in older Glendale buildings with outdated wiring.",
+    "The disposal is undersized for the household and keeps overheating under normal use."
+  ],
+  "whatProDoes": [
+    "Shuts off power and water to the sink area before starting any work.",
+    "Disconnects the old disposal from the sink flange, drain pipes, and dishwasher line.",
+    "Removes the failed unit and inspects the mounting assembly and plumbing connections for wear.",
+    "Installs the new disposal, reconnecting drain lines, the dishwasher hose, and electrical wiring.",
+    "Runs water and tests the unit to confirm there are no leaks and the motor runs properly."
+  ],
+  "diyOrPro": "Replacing a garbage disposal involves both electrical wiring and plumbing connections, so it's not a simple swap even if you're handy. Mistakes with the electrical hookup can create a shock hazard, and a poorly sealed connection can lead to water damage under the cabinet. If you're not comfortable working with household wiring and drain plumbing together, this is worth hiring a plumber for.",
+  "priceNote": "This job in Glendale runs $135 to $220, based on a $94 hourly rate and a typical job length of 1 to 2 hours. The time needed depends on how accessible the plumbing is under your sink and whether old fittings or dishwasher connections need extra work to match the new unit.",
+  "faqs": [
+    {
+      "q": "Why did my garbage disposal suddenly stop working?",
+      "a": "Most disposals fail due to a worn-out motor, a jam that won't clear even after resetting, or a leak from corroded seals. If the unit hums but doesn't spin or has gone silent entirely, it usually needs replacement rather than repair."
+    },
+    {
+      "q": "Can I replace the disposal myself to save money?",
+      "a": "It's possible if you're experienced with both plumbing and electrical work, but the job involves handling wiring, drain connections, and dishwasher lines together. A mistake can cause a shock hazard or a leak under your cabinet, so many homeowners choose to hire a plumber."
+    },
+    {
+      "q": "Will the price change if my kitchen has unusual plumbing?",
+      "a": "The $135 to $220 range already accounts for typical variation, since it's based on the standard 1 to 2 hours most jobs take. Older Glendale buildings with outdated fittings may fall toward the higher end of that range simply due to extra time on the connections."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}

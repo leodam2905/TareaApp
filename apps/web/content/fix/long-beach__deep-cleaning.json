@@ -1,0 +1,47 @@
+{
+  "city": "long-beach",
+  "cityName": "Long Beach",
+  "problem": "deep-cleaning",
+  "problemTitle": "Deep cleaning",
+  "generatedAt": "2026-08-26T01:54:32.586Z",
+  "metaTitle": "Deep Cleaning in Long Beach, CA | Cost & What's Included",
+  "metaDescription": "Deep cleaning in Long Beach costs $200 to $365. See what's included, what drives the price, and whether to DIY or hire a pro.",
+  "intro": "If it's been months since your home in Long Beach got a real top-to-bottom scrub, regular cleaning routines start to leave buildup behind — especially in older duplexes and bungalows with original tile, baseboards, and window tracks. Deep cleaning goes past the surface to handle grime that's settled into corners, grout, appliances, and fixtures. It's a common ask before move-ins, after renovations, or just when a space needs a reset.",
+  "causes": [
+    "Dust and grease accumulate faster in older Long Beach bungalows with window units or wall heaters that recirculate air.",
+    "Salt air near waterfront condos leaves a sticky film on windows, railings, and outdoor-facing surfaces.",
+    "Kitchens and bathrooms build up grease, soap scum, and mineral deposits from hard water over time.",
+    "Duplexes with shared walls or older ventilation tend to trap odors and dust in carpets and vents.",
+    "Regular cleaning often skips baseboards, behind appliances, inside cabinets, and light fixtures, letting grime layer up."
+  ],
+  "whatProDoes": [
+    "Dusts and wipes down all surfaces including baseboards, window sills, ceiling fans, and light fixtures.",
+    "Scrubs kitchen appliances inside and out, including the oven, microwave, and refrigerator exterior.",
+    "Cleans and disinfects bathrooms thoroughly, targeting grout, tile, fixtures, and mineral buildup.",
+    "Vacuums and mops all flooring, including under furniture and in corners often missed during routine cleaning.",
+    "Wipes down cabinet fronts, door handles, switch plates, and other high-touch surfaces throughout the home."
+  ],
+  "diyOrPro": "Deep cleaning is generally safe to DIY if you have the time and don't mind tackling grease, grout, and hard-to-reach spots yourself — it's tedious but not risky. Hiring a pro makes sense if you're short on time, dealing with heavy buildup, or want a consistent, thorough result before a move-in or event. There's no safety concern here, just a matter of time and effort.",
+  "priceNote": "This job runs $200 to $365 in Long Beach, based on a $56 hourly rate and jobs typically taking 3 to 6 hours. The exact time depends on the size of the home, how long it's been since the last deep clean, and whether extras like inside-oven or inside-fridge cleaning are included.",
+  "faqs": [
+    {
+      "q": "How is deep cleaning different from a regular house cleaning?",
+      "a": "Regular cleaning covers everyday surfaces like counters and floors, while deep cleaning also tackles baseboards, grout, inside appliances, window tracks, and other spots that build up over months."
+    },
+    {
+      "q": "Do I need to be home while the cleaning happens?",
+      "a": "No, but you should arrange access and let the pro know about any specific areas of concern, like a waterfront condo's salt-film windows or a bungalow's older tile grout."
+    },
+    {
+      "q": "How long does a deep clean take for a typical Long Beach home?",
+      "a": "Most jobs take 3 to 6 hours depending on the size of the home and how much buildup has accumulated, which is reflected in the $200 to $365 price range."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

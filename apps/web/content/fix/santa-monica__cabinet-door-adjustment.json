@@ -1,0 +1,47 @@
+{
+  "city": "santa-monica",
+  "cityName": "Santa Monica",
+  "problem": "cabinet-door-adjustment",
+  "problemTitle": "Cabinet door adjustment",
+  "generatedAt": "2026-08-26T01:45:01.518Z",
+  "metaTitle": "Cabinet Door Adjustment in Santa Monica | $135–$200",
+  "metaDescription": "Cabinet doors sagging or misaligned in your Santa Monica home? Learn causes, what a pro does, and fixed pricing from $135 to $200.",
+  "intro": "If your kitchen or bathroom cabinet doors have started to sag, stick, or hang crooked, you're not imagining it — this is a common issue in Santa Monica homes. The salt-laden coastal air here accelerates wear on hinges and hardware, causing doors that once closed smoothly to drift out of alignment.",
+  "causes": [
+    "Hinges have loosened over time from repeated opening and closing.",
+    "Coastal humidity and salt air have caused corrosion or swelling on metal hinges and screws.",
+    "Wood cabinet doors have expanded or warped slightly due to moisture in the air.",
+    "The cabinet frame has shifted slightly, often from a home settling or nearby renovation work.",
+    "Cheap or worn hinge hardware has stretched past its ability to hold proper alignment."
+  ],
+  "whatProDoes": [
+    "Inspects the hinges, screws, and cabinet frame to identify the source of misalignment.",
+    "Tightens, replaces, or repositions hinges and mounting screws as needed.",
+    "Adjusts the door using hinge cams or shims to restore proper alignment and even gaps.",
+    "Checks for corrosion on hardware common in coastal environments and replaces compromised parts.",
+    "Tests the door's swing and closure to confirm it sits flush and operates smoothly."
+  ],
+  "diyOrPro": "Minor sticking or a slightly uneven door is often something a homeowner can try adjusting with a screwdriver, since most modern hinges have adjustment screws built in. If hardware is corroded, the frame itself seems warped, or multiple doors across the kitchen are affected, it's worth having a pro take a look so the fix actually holds instead of loosening again in a few weeks.",
+  "priceNote": "This job runs $135 to $200 in Santa Monica, based on a rate of $83 per hour and jobs typically taking 1 to 2 hours. The exact time depends on how many doors need adjusting and whether hardware needs to be replaced due to coastal corrosion.",
+  "faqs": [
+    {
+      "q": "Why do my cabinet doors keep going out of alignment even after I tighten them myself?",
+      "a": "In coastal areas like Santa Monica, salt air can corrode screws and hinge components over time, so a temporary tightening often loosens again. A pro can identify if the hardware itself needs replacing rather than just adjusting."
+    },
+    {
+      "q": "Can this be fixed the same day someone comes out?",
+      "a": "Most cabinet door adjustments take 1 to 2 hours and are completed in a single visit, though the exact scope depends on how many doors are affected and their condition."
+    },
+    {
+      "q": "Will I need new hinges or just an adjustment?",
+      "a": "It depends on the hinges' condition. If they're corroded or stretched out from coastal humidity, replacement may be necessary; if they're simply loose, a straightforward adjustment is usually enough."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 200,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

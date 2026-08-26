@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "drywall-hole-repair",
+  "problemTitle": "Drywall hole repair",
+  "generatedAt": "2026-08-26T01:57:35.236Z",
+  "metaTitle": "Drywall Hole Repair in Glendale, CA | $200–$365",
+  "metaDescription": "Fix drywall holes in Glendale hillside homes or mid-century apartments. Flat rate $200–$365. See what causes holes and what a pro actually does.",
+  "intro": "A hole in your drywall in Glendale might come from a doorknob punching through a bedroom wall or settling cracks common in the city's hillside homes. Left alone, small holes can widen or let moisture and pests into the wall cavity, especially in older mid-century apartment buildings with original plaster-and-drywall combinations.",
+  "causes": [
+    "A doorknob or furniture corner impacts the wall and punches through, especially in narrow hallways typical of mid-century apartment layouts.",
+    "Hillside homes settle over time on sloped lots, which stresses drywall seams and can crack or dent the surface near corners.",
+    "Old anchors, hooks, or shelving hardware get removed and leave a hole larger than the original fastener.",
+    "Plumbing or electrical work behind the wall requires cutting an access hole that needs patching afterward.",
+    "Moisture from a slow leak softens the drywall, causing it to crumble or cave in around the damaged area."
+  ],
+  "whatProDoes": [
+    "Cuts back any crumbling or water-damaged drywall to a clean, stable edge before patching.",
+    "Installs a backing piece or a self-adhesive mesh patch sized to the hole, depending on how large it is.",
+    "Applies joint compound in thin layers, letting each coat dry before sanding smooth.",
+    "Feathers the edges of the patch into the surrounding wall so the repair isn't visible once painted.",
+    "Primes the patched area and applies matching paint if requested, since Tarea pros can quote this separately."
+  ],
+  "diyOrPro": "A small nail hole or dent is reasonable to patch yourself with spackle and a putty knife. Anything larger than a fist, near plumbing or electrical lines, or showing signs of water damage or mold should go to a professional, since cutting into a wall without knowing what's behind it can be risky in older Glendale buildings with outdated wiring.",
+  "priceNote": "This job runs $200 to $365 in Glendale, based on an $83 per hour rate and typical jobs taking 2 to 4 hours. The time varies with hole size, how many patches are needed, and whether matching texture or paint is involved.",
+  "faqs": [
+    {
+      "q": "Will the patch match my wall's texture exactly?",
+      "a": "A pro will try to match existing texture, but older mid-century buildings sometimes have unique plaster textures that are hard to replicate perfectly by hand."
+    },
+    {
+      "q": "Do I need to paint after the repair?",
+      "a": "Yes, the patched area typically needs primer and paint to blend in, and this can be added to the job if you want the pro to handle it."
+    },
+    {
+      "q": "What if there's more damage once the wall is opened up?",
+      "a": "If the pro finds water damage, mold, or wiring issues behind the drywall, they'll stop and let you know before proceeding, since that may require a different type of repair."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

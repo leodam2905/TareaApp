@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "room-painting",
+  "problemTitle": "Room painting",
+  "generatedAt": "2026-08-26T02:02:36.511Z",
+  "metaTitle": "Room Painting Cost in Burbank, CA | $345–$655",
+  "metaDescription": "Interior room painting in Burbank runs $345–$655 based on $78/hour, typically 4–8 hours. See what affects cost in post-war Burbank homes.",
+  "intro": "If the paint in a room is peeling, faded, or just outdated, it's a common issue in Burbank's post-war single-family homes, many of which still have their original plaster walls. These older surfaces often need extra prep before a fresh coat will look right and last.",
+  "causes": [
+    "Original plaster walls have developed hairline cracks or uneven texture over decades of settling.",
+    "Sun exposure through older single-pane windows has faded paint unevenly on exterior-facing walls.",
+    "Moisture from bathrooms or kitchens near original plumbing lines has caused peeling or bubbling near walls and ceilings.",
+    "Previous paint jobs used lower-quality paint or skipped primer, leading to blotchy or chalky finishes.",
+    "Nicotine, cooking residue, or decades of surface grime have discolored walls in homes that haven't been repainted in years."
+  ],
+  "whatProDoes": [
+    "Inspects the walls and ceiling for cracks, moisture damage, or peeling that need repair before painting.",
+    "Patches plaster cracks, sands rough spots, and fills nail holes for a smooth, even surface.",
+    "Covers floors, trim, and fixtures, then applies painter's tape along edges and corners.",
+    "Applies primer where needed, especially over patched areas, stains, or old dark colors.",
+    "Rolls and brushes two coats of paint, checking coverage and touching up drips or thin spots before cleanup."
+  ],
+  "diyOrPro": "Painting a single room with drywall in good condition is a reasonable DIY project if you have the time and patience for prep work. If the walls are original plaster with cracks, water stains, or the home was built before 1978 and the existing paint may contain lead, hiring a pro is the safer choice, since sanding old paint can release lead dust.",
+  "priceNote": "This job in Burbank runs $345 to $655, based on a rate of $78 per hour and typical jobs taking 4 to 8 hours. Cost depends on room size, how much wall repair the original plaster needs, and how many coats it takes to cover the existing color.",
+  "faqs": [
+    {
+      "q": "Do I need to test for lead paint before repainting?",
+      "a": "If your Burbank home was built before 1978, which is common in the post-war neighborhoods, the existing paint may contain lead. A pro can advise on safe prep methods, especially if sanding is required."
+    },
+    {
+      "q": "Does the price include patching cracks in plaster walls?",
+      "a": "Minor patching and sanding are typically included as part of standard prep work within the quoted hours. Extensive plaster repair or water damage may require additional time beyond the $345–$655 range."
+    },
+    {
+      "q": "How many coats of paint are included?",
+      "a": "Two coats are standard for most rooms and are factored into the 4 to 8 hour estimate. Rooms with dark existing colors or stains may need an extra coat, which could affect the total hours."
+    }
+  ],
+  "price": {
+    "low": 345,
+    "high": 655,
+    "hourly": 78
+  },
+  "category": "PAINTING",
+  "categoryLabel": "Painting"
+}

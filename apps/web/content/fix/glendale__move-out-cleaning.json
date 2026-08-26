@@ -1,0 +1,47 @@
+{
+  "city": "glendale",
+  "cityName": "Glendale",
+  "problem": "move-out-cleaning",
+  "problemTitle": "Move-out cleaning",
+  "generatedAt": "2026-08-26T01:58:45.930Z",
+  "metaTitle": "Move-Out Cleaning in Glendale, CA | $255–$480",
+  "metaDescription": "Moving out of a Glendale hillside home or mid-century apartment? Get a deep move-out clean for $255–$480. See what's included and what drives the cost.",
+  "intro": "Moving out of a place in Glendale usually means passing a landlord or property manager's inspection, whether you're in a mid-century apartment building near downtown or a hillside home with multiple levels. Move-out cleaning covers the deep, detailed work that everyday cleaning skips, like inside appliances, cabinets, and baseboards. This is often required to get a security deposit back in full.",
+  "causes": [
+    "Regular cleaning during a tenancy usually skips inside ovens, refrigerators, and cabinets, which build up grease and grime over time.",
+    "Older mid-century apartment buildings in Glendale often have original tile, grout, and fixtures that need extra scrubbing to look presentable for the next tenant.",
+    "Hillside homes tend to accumulate more dust from open windows and canyon breezes, especially in less-used rooms.",
+    "Furniture and boxes hide dirt, scuffs, and stains on floors and walls that only become visible once a unit is emptied out.",
+    "Landlords and property managers in Glendale often use detailed move-out checklists, so areas like window tracks and closet shelving get scrutinized."
+  ],
+  "whatProDoes": [
+    "Cleans and disinfects all kitchen surfaces, including inside the oven, refrigerator, and cabinets.",
+    "Scrubs bathrooms thoroughly, including tile, grout, fixtures, and inside toilets and showers.",
+    "Vacuums and mops all flooring, including closets and areas behind where furniture used to sit.",
+    "Wipes down baseboards, window sills, window tracks, and interior window glass.",
+    "Removes cobwebs, dusts light fixtures and vents, and does a final walkthrough to check corners and edges."
+  ],
+  "diyOrPro": "If you have a small studio and a few free hours, a thorough DIY clean with the right supplies can work, especially if your landlord's checklist is short. For larger units, hillside homes with multiple bathrooms, or buildings with strict move-out inspections, a pro is worth it because missed spots can mean deposit deductions that cost more than the cleaning itself. There's no safety hazard involved, so the decision mostly comes down to time and how much is riding on the inspection.",
+  "priceNote": "This job runs $255 to $480 in Glendale, based on a rate of $56 per hour and a typical job length of 4 to 8 hours. Smaller apartments near the low end of that range typically take less time, while larger hillside homes with more rooms, bathrooms, and built-in storage push toward the higher end.",
+  "faqs": [
+    {
+      "q": "Does the $255–$480 price include carpet cleaning?",
+      "a": "No, this range covers standard move-out cleaning like kitchens, bathrooms, floors, and surfaces. Carpet shampooing or steam cleaning is typically a separate service."
+    },
+    {
+      "q": "Will this guarantee I get my full deposit back?",
+      "a": "A thorough move-out clean addresses most items on a typical checklist, but deposit decisions are made by your landlord or property manager based on their own inspection, not by the cleaning service."
+    },
+    {
+      "q": "How long does move-out cleaning take for a hillside home versus an apartment?",
+      "a": "Most jobs take 4 to 8 hours depending on size. A smaller mid-century apartment usually falls toward the lower end, while a multi-level hillside home with more bathrooms and square footage takes longer."
+    }
+  ],
+  "price": {
+    "low": 255,
+    "high": 480,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

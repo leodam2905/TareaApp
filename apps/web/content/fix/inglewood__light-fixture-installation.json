@@ -1,0 +1,47 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "light-fixture-installation",
+  "problemTitle": "Light fixture installation",
+  "generatedAt": "2026-08-26T02:04:43.357Z",
+  "metaTitle": "Light Fixture Installation in Inglewood, CA | Tarea",
+  "metaDescription": "Need a new light fixture installed in Inglewood? Licensed electricians handle old wiring and modern rewires. $135–$235, based on $100/hour.",
+  "intro": "Swapping an outdated light fixture for something new sounds simple until you're staring at mystery wiring behind the box. This is especially common in Inglewood, where older single-family homes may still have original wiring from decades ago, while recently renovated rentals sometimes have wiring that was updated quickly and not always to code. Either way, getting it installed safely means understanding what's actually behind that wall or ceiling.",
+  "causes": [
+    "The old fixture's wiring or mounting bracket doesn't match the new fixture's connectors or weight requirements.",
+    "Older homes in Inglewood may have outdated wiring, like knob-and-tube or aluminum, that isn't compatible with modern fixtures without adaptation.",
+    "The electrical box in the ceiling or wall isn't rated to support the weight of a new, heavier fixture.",
+    "In renovated rentals, wiring may have been altered during upgrades in ways that don't match standard fixture hookups.",
+    "There's no existing ground wire, which many modern fixtures require for safe operation."
+  ],
+  "whatProDoes": [
+    "Shuts off power to the circuit at the breaker and confirms it's off with a voltage tester before touching any wires.",
+    "Removes the old fixture and inspects the electrical box and wiring for damage, corrosion, or code issues.",
+    "Matches and connects the new fixture's wires to the home's wiring, adding a ground wire or junction adapter if needed.",
+    "Secures the new fixture to the electrical box, checking that the box itself can support the fixture's weight.",
+    "Restores power and tests the fixture to confirm it works correctly and there's no flickering or loose connection."
+  ],
+  "diyOrPro": "If you're simply swapping a light fixture on a working circuit with visible, modern wiring, and you're comfortable shutting off the breaker and testing for power, this can be a manageable DIY task. But in Inglewood's older homes, hidden wiring problems, ungrounded circuits, or old wiring types can turn a simple swap into a safety hazard, so if anything looks unfamiliar or the wiring doesn't match your fixture's instructions, call a licensed electrician instead.",
+  "priceNote": "This job runs $135 to $235 in Inglewood, based on $100 an hour with jobs typically taking 1 to 2 hours. The time it takes depends mostly on the condition of the existing wiring and electrical box, older homes with outdated wiring or renovated units with nonstandard setups can push the job toward the higher end.",
+  "faqs": [
+    {
+      "q": "Can I install a light fixture myself if I turn off the breaker?",
+      "a": "Turning off the breaker is a necessary first step, but it doesn't guarantee the wiring behind your fixture is straightforward. In older Inglewood homes especially, outdated wiring or missing ground wires can make what looks like a simple swap more complicated and potentially unsafe without electrical knowledge."
+    },
+    {
+      "q": "Why does my rental's wiring look different from what the new fixture's instructions describe?",
+      "a": "Recently renovated rentals sometimes have wiring that was updated during a quick turnaround and may not follow the exact configuration modern fixtures expect. A licensed electrician can identify what you're working with and adapt the connection safely."
+    },
+    {
+      "q": "Will installing a heavier fixture require any extra work?",
+      "a": "Possibly. If the existing electrical box wasn't built to support extra weight, it may need to be replaced or reinforced before the new fixture goes up, which is something a pro checks during the installation."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 235,
+    "hourly": 100
+  },
+  "category": "ELECTRICAL",
+  "categoryLabel": "Electrical"
+}

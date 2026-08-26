@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "drywall-hole-repair",
+  "problemTitle": "Drywall hole repair",
+  "generatedAt": "2026-08-26T02:01:41.384Z",
+  "metaTitle": "Drywall Hole Repair in Burbank, CA | Cost & Process",
+  "metaDescription": "Fix drywall holes in your Burbank home for $200–$365. Learn common causes in post-war houses, what a pro does, and when to call instead of DIY.",
+  "intro": "That hole in your wall — whether from a doorknob, a moving mishap, or a plumber's access cut — is more common in Burbank's post-war homes than you'd think. Many of these houses still have original plumbing, which means walls get opened up more often for repairs, leaving patches that need proper drywall work afterward.",
+  "causes": [
+    "A doorknob or furniture corner punched through the wall during everyday use.",
+    "A plumber or contractor cut an access hole to reach old pipes behind the drywall.",
+    "Water damage from an aging supply line softened and crumbled the wallboard.",
+    "Settling in older post-war framing caused cracking that widened into a hole over time.",
+    "A previous patch job was done poorly and has started to separate or crumble."
+  ],
+  "whatProDoes": [
+    "Cuts back the damaged drywall to a clean, stable edge so the patch has something solid to attach to.",
+    "Installs a backing piece or patch panel sized to the hole and secures it to the surrounding studs or framing.",
+    "Applies joint compound in multiple thin coats, sanding between layers to blend the patch into the existing wall.",
+    "Matches the existing texture (orange peel, knockdown, or smooth) so the repair isn't visible once painted.",
+    "Primes the patched area and does a final inspection to confirm the surface is flat and ready for paint."
+  ],
+  "diyOrPro": "A small nail hole or minor scuff is fine to patch yourself with spackle and a putty knife. But if the hole is larger than a fist, involves exposed wiring or plumbing, or shows signs of water damage, it's worth calling a pro — cutting into a wall near old pipes in a post-war home can turn a simple patch into a bigger plumbing problem if you're not careful.",
+  "priceNote": "This job runs $200 to $365 in Burbank, based on a rate of $83 per hour and typical jobs taking 2 to 4 hours. The time varies depending on the size of the hole, how much texture matching is needed, and whether the wall has to be opened further to check what caused the damage in the first place.",
+  "faqs": [
+    {
+      "q": "Will the repair be invisible once it's painted?",
+      "a": "A properly done patch, texture-matched and primed, should blend in well once painted, though very close inspection under certain lighting may still show a faint seam."
+    },
+    {
+      "q": "Do I need to paint the wall myself after the repair?",
+      "a": "Typically yes — drywall patching includes priming the repaired area, but full wall painting is usually a separate job unless arranged in advance."
+    },
+    {
+      "q": "What if the hole was caused by a leaking pipe?",
+      "a": "If there's any sign of water damage or an active leak, that needs to be addressed by a plumber first; patching drywall over an unresolved leak will only lead to the same damage coming back."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

@@ -1,0 +1,48 @@
+{
+  "city": "inglewood",
+  "cityName": "Inglewood",
+  "problem": "move-out-cleaning",
+  "problemTitle": "Move-out cleaning",
+  "generatedAt": "2026-08-26T02:07:26.624Z",
+  "metaTitle": "Move-Out Cleaning in Inglewood, CA | Tarea",
+  "metaDescription": "Move-out cleaning for Inglewood homes and rentals. Flat hourly pricing, $255–$480 based on 4–8 hours of work. Book a pro through Tarea.",
+  "intro": "Moving out of an Inglewood home means leaving it in the condition your lease or sale agreement requires, and that's often more work than a regular weekly clean. Older single-family homes with decades of built-up grime and recently renovated rentals with delicate new finishes both need a thorough pass before keys change hands.",
+  "causes": [
+    "Years of tenant or owner occupancy leave grease, dust, and grime built up inside cabinets, ovens, and along baseboards.",
+    "Older Inglewood homes often have original tile, wood floors, or fixtures that trap dirt in grout lines and corners standard cleaning misses.",
+    "Recently renovated rentals may have construction dust in vents, light fixtures, and window tracks left over from the remodel.",
+    "Pet stains, carpet odor, and wall marks from furniture and picture hooks are common in homes occupied for a full lease term.",
+    "Landlords and property managers in Inglewood frequently require a move-out inspection checklist, which adds detail work beyond a typical cleaning."
+  ],
+  "whatProDoes": [
+    "Deep-cleans the kitchen including inside the oven, refrigerator, cabinets, and behind appliances if they're movable.",
+    "Scrubs bathrooms top to bottom: tile, grout, tub, toilet, and fixtures, removing soap scum and hard water buildup.",
+    "Wipes down baseboards, window sills, window tracks, light switches, and door frames throughout the home.",
+    "Vacuums and spot-treats carpets, and mops or cleans hard flooring depending on the surface.",
+    "Cleans interior windows and closets, and does a final walkthrough to check against a standard move-out checklist.",
+    "dummy"
+  ],
+  "diyOrPro": "A light move-out clean in a small, well-kept unit can be done yourself with a weekend and standard supplies if you're comfortable with detail work like grout and oven interiors. For older Inglewood homes with years of buildup, or renovated rentals where the landlord will inspect closely against a deposit, hiring a pro reduces the risk of losing part of your security deposit over missed spots. There's no safety hazard in this job itself, but budget realistic time — most homeowners underestimate how long a full deep clean actually takes.",
+  "priceNote": "Pricing for this job in Inglewood runs $255 to $480, based on a $56 hourly rate and typical jobs taking 4 to 8 hours. Where you land in that range depends mainly on square footage, how many bathrooms and kitchens need attention, and how much buildup or post-renovation dust has to be cleaned before the walkthrough.",
+  "faqs": [
+    {
+      "q": "Do I need to be home during the move-out cleaning?",
+      "a": "No, as long as the pro has access to the property, such as a lockbox code or key arrangement, you don't need to be present."
+    },
+    {
+      "q": "Will this cleaning guarantee I get my full deposit back?",
+      "a": "A thorough move-out clean addresses the cleaning portion of most inspection checklists, but deposit return also depends on wear and damage beyond cleaning, which is decided by your landlord or property manager."
+    },
+    {
+      "q": "What's not included in a standard move-out clean?",
+      "a": "Carpet steam cleaning, wall painting, and repairs are usually separate services. Ask when booking if you need any of these added, since they affect the total hours and price."
+    }
+  ],
+  "price": {
+    "low": 255,
+    "high": 480,
+    "hourly": 56
+  },
+  "category": "CLEANING",
+  "categoryLabel": "Cleaning"
+}

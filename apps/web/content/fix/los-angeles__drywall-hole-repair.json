@@ -1,0 +1,47 @@
+{
+  "city": "los-angeles",
+  "cityName": "Los Angeles",
+  "problem": "drywall-hole-repair",
+  "problemTitle": "Drywall hole repair",
+  "generatedAt": "2026-08-26T01:40:03.941Z",
+  "metaTitle": "Drywall Hole Repair in Los Angeles, CA | Cost & Process",
+  "metaDescription": "Fix a drywall hole in your Los Angeles home for $200–$365. Learn common causes, what a pro does, and when to DIY versus call a carpenter.",
+  "intro": "A hole in your drywall is more than an eyesore in Los Angeles homes, whether it's plaster cracking in a pre-war bungalow, a doorknob dent in a mid-century property, or a scuff in a new-build apartment. Left alone, holes can widen, let in dust and pests, and make it harder to match texture later. Most Los Angeles homeowners get this patched before it grows or affects a wall they plan to paint.",
+  "causes": [
+    "A doorknob or furniture corner punched through the wall during moving or daily use.",
+    "Old plaster over wood lath in pre-war bungalows cracking and crumbling with age or settling.",
+    "Water damage from a roof leak or plumbing issue softening the drywall from behind.",
+    "Removed shelving, TV mounts, or anchors left oversized holes that need patching before repainting.",
+    "Settling in mid-century slab-on-grade homes creating stress cracks that widen into holes over time."
+  ],
+  "whatProDoes": [
+    "Inspects the hole and surrounding wall to check for hidden damage, moisture, or electrical wiring nearby.",
+    "Cuts back damaged drywall or plaster to a clean edge and installs a backing piece or patch material sized to the hole.",
+    "Applies joint compound in layers, letting each coat dry and sanding between coats for a smooth, flush surface.",
+    "Matches existing texture, whether smooth, orange peel, or knockdown, so the repair blends with the rest of the wall.",
+    "Cleans up dust and debris, leaving the area ready for the homeowner to prime and paint."
+  ],
+  "diyOrPro": "Small nail holes or minor dings under an inch are usually fine to patch yourself with spackle from a hardware store. Anything larger than a fist, near plumbing or electrical lines, or showing signs of water staining should go to a pro, since cutting into a wall blind can hit wiring or hidden moisture damage. If you're unsure what's behind the drywall, especially in older Los Angeles homes with unpredictable wiring layouts, it's safer to have someone assess it first.",
+  "priceNote": "This job runs $200 to $365 in Los Angeles, based on a rate of $83 per hour and typical jobs taking 2 to 4 hours. Smaller single-hole repairs in newer apartment drywall tend to land at the lower end, while multiple holes, plaster-and-lath walls in older bungalows, or texture-matching work push toward the higher end.",
+  "faqs": [
+    {
+      "q": "How long does drywall hole repair take?",
+      "a": "Most single-hole repairs take 2 to 4 hours of work, though the compound needs drying time between coats. The pro will let you know how many visits or hours your specific job requires."
+    },
+    {
+      "q": "Will the repair be invisible after painting?",
+      "a": "A skilled repair matches the existing texture closely, but you'll still need to prime and paint the patched area, ideally the whole wall, for the best color match since older paint can fade unevenly."
+    },
+    {
+      "q": "What if the hole is from a water leak?",
+      "a": "If water caused the damage, mention this when booking. The pro will check for ongoing moisture or mold before patching, since sealing over a wet area can cause bigger problems later."
+    }
+  ],
+  "price": {
+    "low": 200,
+    "high": 365,
+    "hourly": 83
+  },
+  "category": "CARPENTRY",
+  "categoryLabel": "Carpentry"
+}

@@ -1,0 +1,47 @@
+{
+  "city": "burbank",
+  "cityName": "Burbank",
+  "problem": "garbage-disposal-replacement",
+  "problemTitle": "Garbage disposal replacement",
+  "generatedAt": "2026-08-26T02:00:01.342Z",
+  "metaTitle": "Garbage Disposal Replacement in Burbank, CA",
+  "metaDescription": "Garbage disposal not working? Burbank replacement costs $135–$220. Learn common causes, what a plumber does, and DIY vs pro guidance.",
+  "intro": "If your garbage disposal in Burbank has stopped grinding, leaks under the sink, or hums without spinning, it's likely at the end of its life. Many Burbank homes were built in the post-war era, and their original under-sink plumbing and electrical setups can make even a simple disposal swap more involved than expected.",
+  "causes": [
+    "The motor has burned out from age or overuse, which is common in units original to older Burbank homes.",
+    "A jammed impeller from fibrous food waste like celery or corn husks has stalled the disposal permanently.",
+    "Corroded or leaking seals have let water seep into the motor housing, especially in units over 8-10 years old.",
+    "Old, unlabeled electrical wiring from a mid-century remodel doesn't match current disposal wiring requirements.",
+    "Cracked or worn-out mounting assembly no longer holds the disposal securely to the sink flange."
+  ],
+  "whatProDoes": [
+    "Shuts off power and water supply to the unit, then disconnects the old disposal from the sink flange and drain lines.",
+    "Inspects the sink flange, mounting assembly, and electrical connections for wear, replacing them if needed given the home's older plumbing.",
+    "Installs the new disposal unit, ensuring proper alignment with existing drain pipes and dishwasher connection if present.",
+    "Wires the unit safely, checking for compatibility with the home's existing electrical setup, which may be original to the house.",
+    "Tests the disposal for leaks, proper grinding function, and secure operation before finishing the job."
+  ],
+  "diyOrPro": "Replacing a garbage disposal involves working with both plumbing and electrical connections, so it's not a simple swap for most homeowners. In Burbank's post-war homes, original wiring or outdated plumbing configurations can complicate installation and create safety risks, including electrical shock or water damage if connections aren't sealed correctly. Unless you're experienced with both electrical and plumbing work, this is a job better left to a licensed plumber.",
+  "priceNote": "Garbage disposal replacement in Burbank runs $135 to $220, based on a $94/hour rate and a typical job length of 1-2 hours. The final cost within that range depends on how straightforward the swap is, since older homes sometimes need extra time for mounting hardware or wiring adjustments.",
+  "faqs": [
+    {
+      "q": "How do I know if my disposal needs replacing instead of repair?",
+      "a": "If the motor hums but doesn't spin, makes grinding noises without processing food, or leaks from the bottom of the unit, replacement is usually more practical than repair, especially for units over 8-10 years old."
+    },
+    {
+      "q": "Will the plumber match the same disposal brand or size?",
+      "a": "A plumber can install a comparable unit that fits your existing sink flange and drain setup, but exact brand matching depends on availability and your preference."
+    },
+    {
+      "q": "Is it dangerous to replace a garbage disposal myself?",
+      "a": "Yes, it can be. Disposals involve both electrical wiring and plumbing connections, and mistakes can lead to shock hazards or water leaks, particularly in homes with original, unlabeled wiring."
+    }
+  ],
+  "price": {
+    "low": 135,
+    "high": 220,
+    "hourly": 94
+  },
+  "category": "PLUMBING",
+  "categoryLabel": "Plumbing"
+}
