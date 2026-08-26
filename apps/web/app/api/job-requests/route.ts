@@ -9,6 +9,7 @@ import { smsBody, createNotification } from "@/lib/notify";
 import { geocodeAddress } from "@/lib/geo/geocode";
 import { milesFromKmOrNull } from "@/lib/units";
 import { CREDENTIAL_SELECT, credentialBadges } from "@/lib/credentials";
+import { grossMinimum } from "@/lib/pricing-config";
 
 // Fallback only. Each pro sets their own serviceRadius in miles, and that is
 // what decides eligibility — this applies when a profile somehow has none.
@@ -188,6 +189,35 @@ export async function POST(req: NextRequest) {
 
   if (!category || !title || !description || !address || !city || !scheduledAt) {
     return NextResponse.json({ error: "All fields are required" }, { status: 400 });
+  }
+
+  // The floor is enforced HERE, not just in the quoting routes.
+  //
+  // /api/ai/price-estimate and /api/ai/instant-quote both apply
+  // grossMinimum(), and the app always posts the figure they returned — so in
+  // normal use a job never lands below it. But this endpoint took budgetMin at
+  // face value, which means the rule lived in the client. A $50 job created
+  // straight against the API was accepted, hired and paid: the pro netted $45
+  // against a $120 minimum that exists precisely because a job worth less than
+  // the trip is one nobody accepts.
+  //
+  // REJECTED, not silently raised. Quietly changing the number would show the
+  // customer one price and charge another, which is the same class of problem
+  // from the other direction.
+  // Rounded DOWN to cents: grossMinimum() is 120 / 0.9 = 133.333…, which cannot
+  // be expressed in money. Comparing against the raw value rejected $133.33 —
+  // the exact figure the UI displays as the minimum — for being a third of a
+  // cent short.
+  const floor = Math.floor(grossMinimum() * 100) / 100;
+  const labour = budgetMin ? parseFloat(budgetMin) : 0;
+  if (!Number.isFinite(labour)) {
+    return NextResponse.json({ error: "Budget must be a number." }, { status: 400 });
+  }
+  if (labour > 0 && labour < floor) {
+    return NextResponse.json(
+      { error: `The minimum for a job is $${floor.toFixed(2)} of labour — below that a pro will not accept the call-out.`, minimum: floor },
+      { status: 400 },
+    );
   }
 
   // Geocode what the customer actually typed.
