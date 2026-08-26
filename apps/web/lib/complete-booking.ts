@@ -73,11 +73,37 @@ export async function completeBooking(bookingId: string, opts?: { receiptUrl?: s
       });
     } else {
       try {
+        // source_transaction ties the payout to the charge that funded it.
+        //
+        // Without it a transfer draws the platform's AVAILABLE balance, and a
+        // card charge sits in PENDING for about two business days — so a job
+        // completed the same day it was paid failed its payout with
+        // balance_insufficient and waited for the weekly cron. With it, Stripe
+        // accepts the transfer immediately and releases it when the charge
+        // settles: the pro sees the money owed to them straight away instead of
+        // nothing at all.
+        //
+        // The charge id is looked up rather than stored — completeBooking
+        // already talks to Stripe here, and a nullable column would be one more
+        // thing to keep in sync. If the lookup fails the transfer still goes
+        // ahead against the platform balance, which is the previous behaviour.
+        let sourceTransaction: string | undefined;
+        if (booking.stripePaymentIntentId) {
+          try {
+            const pi = await stripe.paymentIntents.retrieve(booking.stripePaymentIntentId);
+            const charge = typeof pi.latest_charge === "string" ? pi.latest_charge : pi.latest_charge?.id;
+            if (charge) sourceTransaction = charge;
+          } catch (err) {
+            console.warn("[completeBooking] could not resolve charge for source_transaction:", err);
+          }
+        }
+
         await stripe.transfers.create({
           amount: Math.round(payout * 100),
           currency: "usd",
           destination: handymanUser!.stripeAccountId!,
           transfer_group: booking.id,
+          ...(sourceTransaction ? { source_transaction: sourceTransaction } : {}),
         });
         await prisma.booking.update({
           where: { id: bookingId },
