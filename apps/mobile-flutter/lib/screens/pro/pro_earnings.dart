@@ -14,6 +14,11 @@ class ProEarnings extends StatefulWidget {
 class _ProEarningsState extends State<ProEarnings> {
   num _total = 0;
   num _pending = 0;
+  // Straight from Stripe. null means the lookup failed — shown differently
+  // from zero, because "we don't know" and "you have nothing" are not the same
+  // thing to somebody deciding whether to cash out.
+  num? _withdrawable;
+  num? _clearing;
   int _jobs = 0;
   String _stripe = '';
   bool _loading = true;
@@ -30,6 +35,8 @@ class _ProEarningsState extends State<ProEarnings> {
         _pending = (d['pendingEarnings'] ?? 0) as num;
         _jobs = (d['totalJobs'] ?? 0) as int;
         _stripe = (d['stripeAccountStatus'] ?? '').toString();
+        _withdrawable = d['withdrawableNow'] as num?;
+        _clearing = d['clearingSoon'] as num?;
       }
     } catch (_) {}
     if (mounted) setState(() => _loading = false);
@@ -62,6 +69,42 @@ class _ProEarningsState extends State<ProEarnings> {
                     _stat('\$${_pending.round()}', 'proEarnings.pendingPayout'.tr(), C.amber),
                     _stat('$_jobs', 'proEarnings.jobsCompleted'.tr(), C.blue),
                   ]),
+                  // What Stripe will actually release, and what is still
+                  // settling. Card money takes about two business days to
+                  // clear, and a pro told "available" for funds that cannot be
+                  // withdrawn reads as a broken promise rather than a bank
+                  // delay.
+                  if (_withdrawable != null || _clearing != null) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
+                      child: Column(children: [
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Text('proEarnings.readyToCashOut'.tr(),
+                              style: const TextStyle(color: C.muted, fontSize: 14)),
+                          Text('\$${(_withdrawable ?? 0).toStringAsFixed(2)}',
+                              style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 18)),
+                        ]),
+                        if ((_clearing ?? 0) > 0) ...[
+                          const SizedBox(height: 8),
+                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                            Text('proEarnings.clearing'.tr(),
+                                style: const TextStyle(color: C.muted, fontSize: 14)),
+                            Text('\$${_clearing!.toStringAsFixed(2)}',
+                                style: const TextStyle(fontWeight: FontWeight.w700, color: C.amber, fontSize: 16)),
+                          ]),
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('proEarnings.clearingNote'.tr(),
+                                style: const TextStyle(color: C.muted, fontSize: 12, height: 1.5)),
+                          ),
+                        ],
+                      ]),
+                    ),
+                  ],
                   const SizedBox(height: 20),
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,

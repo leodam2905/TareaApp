@@ -480,7 +480,10 @@
     "jobsCompleted": "Missions terminées",
     "payoutMethod": "Mode de paiement",
     "connected": "Connecté — paiements instantanés activés",
-    "setupBank": "Configurez votre banque pour être payé"
+    "setupBank": "Configurez votre banque pour être payé",
+    "readyToCashOut": "Disponible au retrait",
+    "clearing": "En cours de compensation",
+    "clearingNote": "Les paiements par carte mettent environ 2 jours ouvrés à être compensés. Vous pourrez retirer ensuite."
   },
   "jobDetail": {
     "title": "Détail de la mission",

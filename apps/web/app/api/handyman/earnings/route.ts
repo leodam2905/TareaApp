@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { proOwedForAll } from "@/lib/pro-payout";
+import { stripe } from "@/lib/stripe";
 
 // The pro app's earnings summary.
 //
@@ -36,6 +37,32 @@ export async function GET() {
   });
   const tipTotal = Math.round(tips.reduce((s, t) => s + t.amount, 0) * 100) / 100;
 
+  // What Stripe will ACTUALLY let them withdraw right now.
+  //
+  // Earnings computed from completed bookings are what the pro has EARNED; that
+  // is not the same as money they can take out. A card charge settles in about
+  // two business days and a payout cannot draw on unsettled funds — so a screen
+  // showing one number and calling it "available" promises a cash-out Stripe
+  // will refuse. Reporting both is the difference between a pro feeling misled
+  // and a pro reading a normal bank delay.
+  //
+  // The connected account is addressed through request options (Stripe-Account
+  // header), not a body parameter.
+  let withdrawableNow: number | null = null;
+  let clearingSoon: number | null = null;
+  if (user.stripeAccountId) {
+    try {
+      const balance = await stripe.balance.retrieve({}, { stripeAccount: user.stripeAccountId });
+      const sum = (rows: { amount: number }[]) => Math.round(rows.reduce((t, r) => t + r.amount, 0)) / 100;
+      withdrawableNow = sum(balance.available);
+      clearingSoon = sum(balance.pending);
+    } catch (err) {
+      // A failed lookup must not blank the screen — null means "unknown", which
+      // the client renders differently from zero.
+      console.warn("[handyman/earnings] balance lookup failed:", err);
+    }
+  }
+
   const paidOut = completed.filter((b) => b.handymanPaidOut);
   const awaiting = completed.filter((b) => !b.handymanPaidOut);
 
@@ -49,5 +76,8 @@ export async function GET() {
     totalJobs: completed.length,
     // The app shows "Connected" vs "Set up bank" from this.
     stripeAccountStatus: user.stripeAccountStatus ?? "",
+    // Straight from Stripe. null when unknown — never conflated with zero.
+    withdrawableNow,
+    clearingSoon,
   });
 }
