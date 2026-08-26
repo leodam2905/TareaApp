@@ -288,7 +288,7 @@ export default function Home() {
           <div className="proBenefits" aria-label="Benefits for Tarea Pros">
             <article className="proBenefitCard">
               <span className="proBenefitIcon"><ProBenefitIcon name="payouts" /></span>
-              <div><h3>Instant payouts</h3><p>Cash out your earnings quickly after a completed job.</p></div>
+              <div><h3>Fast payouts</h3><p>Cash out as soon as the customer&apos;s payment clears — usually about two business days.</p></div>
             </article>
             <article className="proBenefitCard">
               <span className="proBenefitIcon"><ProBenefitIcon name="flow" /></span>
