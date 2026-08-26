@@ -128,7 +128,7 @@ export default function HandymanSchedulePage() {
                     className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-tarea-sky"
                   >
                     {HOURS.slice(0, 22).map(h => (
-                      <option key={h} value={h} className="bg-[#0F172A]">{fmt(h)}</option>
+                      <option key={h} value={h} className="bg-tarea-dark">{fmt(h)}</option>
                     ))}
                   </select>
                 </div>
@@ -141,7 +141,7 @@ export default function HandymanSchedulePage() {
                     className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-tarea-sky"
                   >
                     {HOURS.slice(1).map(h => (
-                      <option key={h} value={h} disabled={h <= slot.startHour} className="bg-[#0F172A]">
+                      <option key={h} value={h} disabled={h <= slot.startHour} className="bg-tarea-dark">
                         {fmt(h)}
                       </option>
                     ))}

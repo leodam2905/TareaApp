@@ -230,7 +230,7 @@ export default async function AdminDashboard() {
                       i === 0
                         ? "bg-amber-400/20 text-amber-400"
                         : i === 1
-                        ? "bg-slate-400/20 text-slate-400"
+                        ? "bg-tarea-ink-subtle/20 text-slate-400"
                         : i === 2
                         ? "bg-orange-400/20 text-orange-400"
                         : "bg-white/5 text-slate-600"

@@ -54,19 +54,20 @@ button:focus-visible,
 
 /* ── Theme variables ────────────────────────────────────────────────────── */
 :root {
-  /* Day (default) */
-  --app-bg:        #FED7AA;
-  --app-bg-body:   #FED7AA;
-  --card-bg:       #FFFFFF;
-  --card-bg-alt:   #FFF7ED;
-  --card-border:   #FFEDD5;
-  --card-border-2: #FED7AA;
-  --text-primary:  #0F172A;
-  --text-muted:    #334155;
-  --text-subtle:   #64748B;
+  /* Day (default) — the landing page's palette, so signing in does not feel
+     like arriving at a different product. */
+  --app-bg:        #FBF6EC;
+  --app-bg-body:   #FBF6EC;
+  --card-bg:       #FFFDF8;
+  --card-bg-alt:   #F4FAF6;
+  --card-border:   #DBE7E2;
+  --card-border-2: #C5E7DC;
+  --text-primary:  #143F3A;
+  --text-muted:    #54706C;
+  --text-subtle:   #7B938F;
   --input-bg:      #FFFFFF;
-  --scrollbar-track: #FED7AA;
-  --scrollbar-thumb: #FB923C;
+  --scrollbar-track: #DFF2E9;
+  --scrollbar-thumb: #0D746B;
 }
 
 html.dark {

@@ -39,9 +39,10 @@ export const metadata: Metadata = {
   },
 };
 
+// Day by default — ThemeContext adds .dark for anyone who picks night.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body>
         <ThemeProvider>
         <LanguageProvider>

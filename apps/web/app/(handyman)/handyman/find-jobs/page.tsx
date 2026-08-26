@@ -151,7 +151,7 @@ function SetupChecklist({ checklist }: { checklist: Checklist }) {
           </div>
           <span className="text-2xl font-black text-gray-900">{completed}<span className="text-gray-400 text-lg font-normal">/{total}</span></span>
         </div>
-        <div className="w-full bg-gray-100 rounded-full h-2.5">
+        <div className="w-full bg-tarea-surface rounded-full h-2.5">
           <div
             className="h-2.5 rounded-full transition-all duration-700"
             style={{ width: `${pct}%`, background: pct === 100 ? "#10B981" : "#F97316" }}
@@ -169,14 +169,14 @@ function SetupChecklist({ checklist }: { checklist: Checklist }) {
               key={step.key}
               className={`flex items-center gap-4 p-4 rounded-2xl border transition-all ${
                 done    ? "bg-emerald-50 border-emerald-200" :
-                locked  ? "bg-gray-50 border-gray-100 opacity-50" :
+                locked  ? "bg-tarea-paper border-gray-100 opacity-50" :
                           "bg-white border-orange-200 shadow-sm"
               }`}
             >
               {/* Step number / icon */}
               <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold ${
                 done   ? "bg-emerald-500 text-white" :
-                locked ? "bg-gray-200 text-gray-400" :
+                locked ? "bg-tarea-border text-gray-400" :
                          "bg-orange-500 text-white"
               }`}>
                 {done ? <CheckCircle2 className="w-4 h-4" /> : locked ? <Lock className="w-3.5 h-3.5" /> : index + 1}
@@ -192,7 +192,7 @@ function SetupChecklist({ checklist }: { checklist: Checklist }) {
               {done ? (
                 <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2.5 py-1 rounded-full flex-shrink-0">Done</span>
               ) : locked ? (
-                <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full flex-shrink-0">Locked</span>
+                <span className="text-xs font-bold text-gray-400 bg-tarea-surface px-2.5 py-1 rounded-full flex-shrink-0">Locked</span>
               ) : (
                 <Link
                   href={step.href}

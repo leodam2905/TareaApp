@@ -320,7 +320,7 @@ export default function BookingDetailPage() {
   }
   if (!booking) return null;
 
-  const cfg = STATUS_CONFIG[booking.status] ?? { label: booking.status, color: "text-slate-400 bg-slate-400/10 border-slate-400/30" };
+  const cfg = STATUS_CONFIG[booking.status] ?? { label: booking.status, color: "text-slate-400 bg-tarea-ink-subtle/10 border-slate-400/30" };
   const isActive = ["PENDING", "ACCEPTED", "IN_PROGRESS"].includes(booking.status);
   const canCancel = ["PENDING", "ACCEPTED"].includes(booking.status);
 
@@ -571,7 +571,7 @@ export default function BookingDetailPage() {
                 <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${
                   disputeAnalysis.priority === "high" ? "bg-red-400/20 text-red-400" :
                   disputeAnalysis.priority === "medium" ? "bg-amber-400/20 text-amber-400" :
-                  "bg-slate-400/20 text-slate-400"
+                  "bg-tarea-ink-subtle/20 text-slate-400"
                 }`}>
                   {disputeAnalysis.priority.toUpperCase()} PRIORITY
                 </span>

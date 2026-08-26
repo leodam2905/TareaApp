@@ -60,7 +60,7 @@ const STEPS: { key: keyof Checklist; label: string }[] = [
 ];
 
 const BG_COLORS: Record<string, string> = {
-  PENDING:     "bg-slate-500/20 text-slate-400 border-slate-500/30",
+  PENDING:     "bg-tarea-ink-muted/20 text-slate-400 border-slate-500/30",
   PAID:        "bg-blue-500/20 text-blue-400 border-blue-500/30",
   IN_PROGRESS: "bg-amber-500/20 text-amber-400 border-amber-500/30",
   DEFERRED:    "bg-purple-500/20 text-purple-400 border-purple-500/30",
@@ -69,7 +69,7 @@ const BG_COLORS: Record<string, string> = {
 };
 
 const CRED_COLORS: Record<string, string> = {
-  none:     "bg-slate-500/20 text-slate-400 border-slate-500/30",
+  none:     "bg-tarea-ink-muted/20 text-slate-400 border-slate-500/30",
   pending:  "bg-amber-500/20 text-amber-400 border-amber-500/30",
   approved: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
   rejected: "bg-red-500/20 text-red-400 border-red-500/30",
@@ -279,7 +279,7 @@ export default function AdminHandymenPage() {
                   className={`text-xs font-semibold px-2.5 py-1 rounded-full border cursor-pointer flex-shrink-0 ${BG_COLORS[h.backgroundCheckStatus] ?? BG_COLORS.PENDING} bg-transparent`}
                 >
                   {["PENDING","DEFERRED","PAID","IN_PROGRESS","PASSED","FAILED"].map(s => (
-                    <option key={s} value={s} className="bg-slate-900 text-white">{s}</option>
+                    <option key={s} value={s} className="bg-tarea-dark text-white">{s}</option>
                   ))}
                 </select>
 

@@ -89,7 +89,7 @@ export default function AdminUsersPage() {
       {/* Delete confirmation modal */}
       {confirmId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+          <div className="bg-tarea-dark border border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
             <div className="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center mx-auto mb-4">
               <Trash2 className="w-6 h-6 text-red-400" />
             </div>

@@ -105,7 +105,7 @@ export default function InvoicePrint({
           {/* Service details */}
           <div className="mb-8">
             <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Service Details</p>
-            <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-700 grid grid-cols-2 gap-x-8 gap-y-2">
+            <div className="bg-tarea-paper rounded-xl p-4 text-sm text-gray-700 grid grid-cols-2 gap-x-8 gap-y-2">
               <div>
                 <span className="text-gray-400">Service: </span>
                 <span className="font-semibold text-gray-900">{booking.service.title}</span>

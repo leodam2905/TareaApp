@@ -38,7 +38,7 @@ type JobRequest = {
 const STATUS_STYLE: Record<string, string> = {
   OPEN: "bg-orange-100 text-orange-600",
   ASSIGNED: "bg-emerald-100 text-emerald-600",
-  CLOSED: "bg-gray-100 text-gray-500",
+  CLOSED: "bg-tarea-surface text-gray-500",
 };
 
 function timeAgo(dateStr: string) {

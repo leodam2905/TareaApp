@@ -10,18 +10,26 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // The landing page's palette, so the marketing site and the three
+        // dashboards are recognisably one product. Names are kept — `sky` is
+        // the primary accent, whatever colour that accent happens to be — so
+        // this is a token change, not a rename across 394 usages.
         tarea: {
-          sky: "#FDBA74",
-          "sky-light": "#FED7AA",
-          "sky-dark": "#FB923C",
-          dark: "#1E3A8A",
-          "dark-deeper": "#0F2560",
+          sky: "#EF795F",           // coral — the action colour on the landing page
+          "sky-light": "#F8B9A9",
+          "sky-dark": "#DC654C",
+          dark: "#143F3A",          // deep green: headers, dark buttons
+          "dark-deeper": "#0B2A26",
           white: "#FFFFFF",
-          ink: "#0F172A",
-          "ink-muted": "#334155",
-          "ink-subtle": "#64748B",
-          surface: "#FED7AA",
-          border: "#FFEDD5",
+          ink: "#143F3A",
+          "ink-muted": "#54706C",
+          "ink-subtle": "#7B938F",  // derived: the landing has no third tone
+          surface: "#DFF2E9",       // mint
+          border: "#DBE7E2",        // line
+          teal: "#0D746B",          // the landing's brand green, for accents
+          "teal-dark": "#075D56",
+          cream: "#FBF6EC",
+          paper: "#FFFDF8",
         },
       },
       fontFamily: {
@@ -29,13 +37,13 @@ const config: Config = {
         serif: ["Instrument Serif", "Georgia", "Times New Roman", "serif"],
       },
       backgroundImage: {
-        "hero-gradient": "linear-gradient(135deg, #7C2D12 0%, #C2410C 50%, #FB923C 100%)",
-        "card-gradient": "linear-gradient(180deg, #FED7AA 0%, #FFFFFF 100%)",
+        "hero-gradient": "linear-gradient(135deg, #075D56 0%, #0D746B 55%, #EF795F 100%)",
+        "card-gradient": "linear-gradient(180deg, #DFF2E9 0%, #FFFDF8 100%)",
       },
       boxShadow: {
-        card: "0 4px 24px rgba(251, 146, 60, 0.15)",
-        "card-hover": "0 8px 32px rgba(251, 146, 60, 0.25)",
-        nav: "0 2px 16px rgba(67, 20, 7, 0.15)",
+        card: "0 4px 24px rgba(17, 66, 60, 0.10)",
+        "card-hover": "0 8px 32px rgba(17, 66, 60, 0.16)",
+        nav: "0 2px 16px rgba(17, 66, 60, 0.12)",
       },
     },
   },

@@ -10,14 +10,16 @@ const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("night");
+  const [theme, setTheme] = useState<Theme>("day");
 
   useEffect(() => {
     const saved = localStorage.getItem("tarea-theme-v2") as Theme | null;
     if (saved === "day" || saved === "night") {
       setTheme(saved);
     } else {
-      setTheme("night");
+      // No stored preference: match the landing page rather than the old
+      // default. Anyone who has already chosen night keeps it.
+      setTheme("day");
     }
   }, []);
 
