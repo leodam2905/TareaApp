@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
+import { PAYOUT_SCHEDULE } from "@/lib/payout-schedule";
 import { getCurrentUser } from "@/lib/auth";
 import { checkPayoutAccount, stripeMode, syncPayoutStatus } from "@/lib/payout-account";
 import { accountLinkUrls, returnTarget } from "@/lib/stripe-return-urls";
@@ -39,6 +40,7 @@ export async function POST(req: NextRequest) {
         email: user.email,
         capabilities: { transfers: { requested: true } },
         metadata: { userId: user.id },
+        settings: { payouts: { schedule: PAYOUT_SCHEDULE } },
       });
       accountId = account.id;
       await prisma.user.update({
