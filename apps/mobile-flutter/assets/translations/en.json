@@ -473,7 +473,9 @@
     "awaiting": "Awaiting customer",
     "appliedSection": "APPLIED · WAITING ({})",
     "appliedPill": "Applied",
-    "awaitingCustomer": "Waiting for the customer"
+    "awaitingCustomer": "Waiting for the customer",
+    "receiptPrompt": "Attach the materials receipt?",
+    "receiptSkip": "Skip — no receipt"
   },
   "proEarnings": {
     "totalEarned": "Total earned",

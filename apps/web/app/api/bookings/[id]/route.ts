@@ -124,15 +124,38 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (workDone === true) {
     if (!isHandyman) return NextResponse.json({ error: "Only the pro can mark work done." }, { status: 403 });
     if (booking.status !== "IN_PROGRESS") return NextResponse.json({ error: "Job is not in progress." }, { status: 409 });
-    await prisma.booking.update({ where: { id: params.id }, data: { workDoneAt: new Date() } });
+
+    // The materials receipt belongs HERE, with the pro.
+    //
+    // It was only accepted on the customer's completion PATCH — described in
+    // the schema as "the receipt the customer attaches" — but the pro is the
+    // one who bought the materials and holds the receipt. The customer cannot
+    // attach what they do not have, so the field was unreachable in practice.
+    //
+    // Attaching it at work-done also puts it in front of the customer BEFORE
+    // they confirm and release payment, which is the only moment checking it
+    // can change anything. Materials are prepaid from the pro's estimate at
+    // application, so this is the customer's one chance to see what was
+    // actually bought.
+    const proReceipt = typeof receiptUrl === "string" && receiptUrl ? receiptUrl : undefined;
+
+    await prisma.booking.update({
+      where: { id: params.id },
+      data: {
+        workDoneAt: new Date(),
+        ...(proReceipt ? { receiptUrl: proReceipt, receiptUploadedAt: new Date() } : {}),
+      },
+    });
     await createNotification({
       userId: booking.customerId,
       title: "Work finished — please confirm",
-      body: `${booking.handyman.name} marked "${booking.service.title}" as done. Confirm to release payment — it auto-confirms in 3 days.`,
+      body: proReceipt
+        ? `${booking.handyman.name} marked "${booking.service.title}" as done and attached a materials receipt. Confirm to release payment — it auto-confirms in 3 days.`
+        : `${booking.handyman.name} marked "${booking.service.title}" as done. Confirm to release payment — it auto-confirms in 3 days.`,
       type: "booking_accepted",
       refId: booking.id,
     });
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, receiptUrl: proReceipt ?? booking.receiptUrl ?? null });
   }
 
   const ALLOWED_TRANSITIONS: Record<string, Record<string, Array<"CUSTOMER" | "HANDYMAN">>> = {

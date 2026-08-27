@@ -473,7 +473,9 @@
     "awaiting": "بانتظار العميل",
     "appliedSection": "تم التقديم · في الانتظار ({})",
     "appliedPill": "تم التقديم",
-    "awaitingCustomer": "في انتظار العميل"
+    "awaitingCustomer": "في انتظار العميل",
+    "receiptPrompt": "إرفاق إيصال المواد؟",
+    "receiptSkip": "تخطٍّ — بدون إيصال"
   },
   "proEarnings": {
     "totalEarned": "إجمالي الأرباح",

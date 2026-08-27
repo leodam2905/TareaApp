@@ -350,7 +350,11 @@ model Booking {
   pausedAt         DateTime?      // non-null = paused right now
   pausedSeconds    Int            @default(0) // accumulated paused time
   workDoneAt       DateTime?      // pro marked work finished — starts the 3-day auto-release clock
-  receiptUrl       String?        // optional materials receipt the customer attaches on completion
+  // Materials receipt, attached by the PRO when marking work done — they are
+  // the one who bought the materials. The customer sees it before confirming
+  // completion, which is the only point at which checking it can change
+  // anything: materials are prepaid from the estimate given at application.
+  receiptUrl       String?
   receiptUploadedAt DateTime?
   handymanPaidOut  Boolean       @default(false)
   paidOutAt        DateTime?

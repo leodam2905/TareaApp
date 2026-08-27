@@ -473,7 +473,9 @@
     "awaiting": "En attente du client",
     "appliedSection": "CANDIDATURES · EN ATTENTE ({})",
     "appliedPill": "Candidature envoyée",
-    "awaitingCustomer": "En attente du client"
+    "awaitingCustomer": "En attente du client",
+    "receiptPrompt": "Joindre le reçu des matériaux ?",
+    "receiptSkip": "Passer — pas de reçu"
   },
   "proEarnings": {
     "totalEarned": "Total gagné",

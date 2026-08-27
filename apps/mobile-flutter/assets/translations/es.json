@@ -473,7 +473,9 @@
     "awaiting": "Esperando al cliente",
     "appliedSection": "POSTULADO · EN ESPERA ({})",
     "appliedPill": "Postulado",
-    "awaitingCustomer": "Esperando al cliente"
+    "awaitingCustomer": "Esperando al cliente",
+    "receiptPrompt": "¿Adjuntar el recibo de materiales?",
+    "receiptSkip": "Omitir — sin recibo"
   },
   "proEarnings": {
     "totalEarned": "Total ganado",

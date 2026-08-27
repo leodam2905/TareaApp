@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../api.dart';
 
 // [translation key, textColor, bgColor]
@@ -74,10 +75,77 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
     }
   }
 
+  /// Photograph the materials receipt, or skip it.
+  ///
+  /// The customer prepaid materials from the estimate given at application, so
+  /// this is their one chance to see what was actually bought — and it has to
+  /// reach them BEFORE they confirm and release payment, which is why it is
+  /// asked for here rather than after.
+  ///
+  /// Returns a URL, 'skip' to carry on without one, or 'cancelled' to abandon.
+  Future<String?> _attachReceipt() async {
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 6),
+            child: Text('proJobs.receiptPrompt'.tr(),
+                style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink)),
+          ),
+          ListTile(
+            leading: const Icon(Icons.camera_alt_outlined, color: C.blue),
+            title: Text('booking.takePhoto'.tr()),
+            onTap: () => Navigator.pop(context, 'camera'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_library_outlined, color: C.blue),
+            title: Text('booking.chooseGallery'.tr()),
+            onTap: () => Navigator.pop(context, 'gallery'),
+          ),
+          ListTile(
+            leading: const Icon(Icons.skip_next_outlined, color: C.muted),
+            title: Text('proJobs.receiptSkip'.tr(), style: const TextStyle(color: C.muted)),
+            onTap: () => Navigator.pop(context, 'skip'),
+          ),
+        ]),
+      ),
+    );
+    if (choice == null) return 'cancelled';
+    if (choice == 'skip') return 'skip';
+
+    final shot = await ImagePicker().pickImage(
+      source: choice == 'camera' ? ImageSource.camera : ImageSource.gallery,
+      imageQuality: 85,
+      maxWidth: 1600,
+      maxHeight: 1600,
+    );
+    if (shot == null) return 'skip';
+    final up = await Api.uploadImage(shot.path, folder: 'tarea/images');
+    if (up.statusCode < 200 || up.statusCode >= 300) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('booking.uploadFailed'.tr())));
+      return 'skip';
+    }
+    return (jsonDecode(up.body)['url'] ?? '').toString();
+  }
+
   // Pro signals work finished — the customer then confirms + releases payment.
   Future<void> _markWorkDone(dynamic b) async {
+    // Offer to attach the materials receipt, but only when there were
+    // materials. Asking for a receipt on a job with none is a question with no
+    // right answer, and the pro learns to dismiss the prompt.
+    String? receiptUrl;
+    if (((b['materialsEstimate'] ?? 0) as num) > 0) {
+      receiptUrl = await _attachReceipt();
+      if (receiptUrl == 'cancelled') return;
+      if (receiptUrl == 'skip') receiptUrl = null;
+    }
+
     try {
-      final res = await Api.patch('/bookings/${b['id']}', {'workDone': true});
+      final res = await Api.patch('/bookings/${b['id']}', {
+        'workDone': true,
+        if (receiptUrl != null) 'receiptUrl': receiptUrl,
+      });
       if (res.statusCode >= 200 && res.statusCode < 300) {
         setState(() => b['workDoneAt'] = DateTime.now().toIso8601String());
       } else if (mounted) {
