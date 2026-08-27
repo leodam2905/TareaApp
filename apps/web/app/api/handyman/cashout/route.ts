@@ -5,6 +5,7 @@ import { stripe } from "@/lib/stripe";
 import { proOwedFor, proOwedForAll, payoutIdempotencyKey } from "@/lib/pro-payout";
 import { createNotification } from "@/lib/notify";
 import { BACKGROUND_CHECK_FEE, bgCheckDeductionFor } from "@/lib/background-check";
+import { checkInstantEligibility, instantBlockedMessage } from "@/lib/instant-payout";
 
 export const MIN_CASHOUT = 10;
 
@@ -43,12 +44,22 @@ export async function GET() {
   const tipEarnings = pendingTips.reduce((s, t) => s + t.amount, 0);
   const available = bookingEarnings + tipEarnings;
 
+  // Asked BEFORE the pro commits to anything. Offering instant cash-out and
+  // discovering at the last step that their card cannot take it wastes the one
+  // moment they actually wanted the money quickly.
+  const instant = await checkInstantEligibility(user.stripeAccountId);
+
   return NextResponse.json({
     available,
     tipEarnings,
     activeDisputes,
     minCashout: MIN_CASHOUT,
     instantFee: calcInstantFee(available),
+    instantAvailable: instant.eligible,
+    instantCardLast4: instant.cardLast4 ?? null,
+    // Null when eligible — the app shows the button instead of a reason.
+    instantBlockedReason: instant.eligible ? null : instant.reason ?? null,
+    instantBlockedMessage: instant.eligible ? null : instantBlockedMessage(instant.reason),
     stripeStatus: user.stripeAccountStatus ?? "not_connected",
     pendingBookings: unpaid.map(b => ({
       id: b.id,
@@ -145,6 +156,22 @@ export async function POST(_req: NextRequest) {
   //
   // The 1% instant fee IS still transferred: it stays in the connected balance
   // on purpose, because that is where Stripe charges its own instant-payout fee.
+  // Refused here, before anything moves.
+  //
+  // Falling through to the transfer would mark these jobs paid and sweep the
+  // earnings into the pro's balance, where the weekly payout collects them —
+  // so a pro who asked for instant, and could have had it by adding a debit
+  // card, would instead lose the option on those earnings permanently. A
+  // lookup failure is deliberately NOT treated as ineligible: unknown means
+  // let them try, and the payout leg below fails safely if it cannot run.
+  const instant = await checkInstantEligibility(user.stripeAccountId);
+  if (!instant.eligible && instant.reason !== "lookup_failed") {
+    return NextResponse.json(
+      { error: instantBlockedMessage(instant.reason), reason: instant.reason },
+      { status: 400 },
+    );
+  }
+
   const bookingIds = pending.map(b => b.id);
   await stripe.transfers.create(
     {
