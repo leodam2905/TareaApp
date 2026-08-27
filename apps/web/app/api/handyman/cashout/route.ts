@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
-import { proOwedFor, proOwedForAll } from "@/lib/pro-payout";
+import { proOwedFor, proOwedForAll, payoutIdempotencyKey } from "@/lib/pro-payout";
 import { createNotification } from "@/lib/notify";
 import { BACKGROUND_CHECK_FEE, bgCheckDeductionFor } from "@/lib/background-check";
 
@@ -145,31 +145,54 @@ export async function POST(_req: NextRequest) {
   //
   // The 1% instant fee IS still transferred: it stays in the connected balance
   // on purpose, because that is where Stripe charges its own instant-payout fee.
-  await stripe.transfers.create({
-    amount: Math.round((gross - bgCheckDeduction) * 100),
-    currency: "usd",
-    destination: user.stripeAccountId,
-    description: `Tarea instant cashout — ${pending.length} job${pending.length > 1 ? "s" : ""}`,
-    metadata: { handymanId: user.id },
-  });
-
-  // Push net (after fee) from connected account balance → debit card instantly
-  await stripe.payouts.create(
+  const bookingIds = pending.map(b => b.id);
+  await stripe.transfers.create(
     {
-      amount: Math.round(net * 100),
+      amount: Math.round((gross - bgCheckDeduction) * 100),
       currency: "usd",
-      method: "instant",
-      description: "Tarea instant cashout",
+      destination: user.stripeAccountId,
+      description: `Tarea instant cashout — ${pending.length} job${pending.length > 1 ? "s" : ""}`,
       metadata: { handymanId: user.id },
     },
-    { stripeAccount: user.stripeAccountId }
+    { idempotencyKey: payoutIdempotencyKey(bookingIds, "instant") },
   );
 
+  // Marked paid HERE, on the transfer, not after the payout below.
+  //
+  // These ran back to back with no error handling at all: an instant payout
+  // that threw — no debit card on file, funds not yet in the available
+  // balance, instant not supported for the account, all routine — became a 500
+  // AFTER the transfer had already landed. The bookings stayed flagged unpaid,
+  // so the same jobs could be cashed out again and transferred twice. The
+  // transfer is what moves Tarea's money; that is what the flag records.
   const now = new Date();
   await prisma.booking.updateMany({
-    where: { id: { in: pending.map(b => b.id) } },
+    where: { id: { in: bookingIds } },
     data: { handymanPaidOut: true, paidOutAt: now },
   });
+
+  // Push net (after fee) from connected account balance → debit card instantly.
+  // Non-fatal: the money is already the pro's inside Stripe, so a failure here
+  // means it arrives on their normal payout schedule instead of in minutes.
+  let instantSent = true;
+  try {
+    await stripe.payouts.create(
+      {
+        amount: Math.round(net * 100),
+        currency: "usd",
+        method: "instant",
+        description: "Tarea instant cashout",
+        metadata: { handymanId: user.id },
+      },
+      {
+        stripeAccount: user.stripeAccountId,
+        idempotencyKey: payoutIdempotencyKey(bookingIds, "instant-payout"),
+      },
+    );
+  } catch (err) {
+    instantSent = false;
+    console.warn(`[cashout] instant payout failed for ${user.id}:`, err);
+  }
 
   // Mark background check as paid if it was deferred
   if (bgCheckDeduction > 0) {
@@ -182,10 +205,25 @@ export async function POST(_req: NextRequest) {
   const bgNote = bgCheckDeduction > 0 ? ` (includes $${bgCheckDeduction.toFixed(2)} background check deduction)` : "";
   await createNotification({
     userId: user.id,
-    title: "Instant Payout Sent",
-    body: `$${net.toFixed(2)} is on its way to your debit card — arrives within 30 minutes. ($${fee.toFixed(2)} instant fee${bgNote})`,
+    // A pro who is told "arrives within 30 minutes" and sees nothing has been
+    // lied to about their own money — and the instant leg is the one that
+    // routinely fails. Say which of the two actually happened.
+    title: instantSent ? "Instant Payout Sent" : "Earnings Released",
+    body: instantSent
+      ? `$${net.toFixed(2)} is on its way to your debit card — arrives within 30 minutes. ($${fee.toFixed(2)} instant fee${bgNote})`
+      : `$${net.toFixed(2)} has been released to your Tarea balance${bgNote}. The instant transfer to your debit card did not go through, so it will arrive on your next scheduled payout. You were not charged the instant fee.`,
     type: "payout",
   });
 
-  return NextResponse.json({ success: true, gross, fee, bgCheckDeduction, net, count: pending.length });
+  return NextResponse.json({
+    success: true,
+    instant: instantSent,
+    gross,
+    // The instant fee is only earned if the instant leg ran. Reporting it when
+    // the payout failed would show a charge for a service not delivered.
+    fee: instantSent ? fee : 0,
+    bgCheckDeduction,
+    net: instantSent ? net : net + fee,
+    count: pending.length,
+  });
 }

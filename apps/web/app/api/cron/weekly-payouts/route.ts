@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { proOwedForAll } from "@/lib/pro-payout";
+import { proOwedForAll, payoutIdempotencyKey } from "@/lib/pro-payout";
 import { checkPayoutAccount, alertPayoutFailure } from "@/lib/payout-account";
 import { createNotification } from "@/lib/notify";
 import { isAuthorizedCron } from "@/lib/cron-auth";
@@ -70,34 +70,35 @@ export async function GET(_req: NextRequest) {
     );
     const payable = total - bg.amount;
 
+    const bookingIds = bookings.map(b => b.id);
     try {
-      // Transfer from platform → connected account.
+      // STEP 1 — transfer, platform → connected account. This is the step that
+      // discharges Tarea's obligation: once it lands, the money is the pro's.
       //
       // The deduction is retained by NOT sending it. Transferring the full
       // amount and paying out less would leave the fee sitting in the pro's own
       // Stripe balance, where their next payout hands it straight back.
-      await stripe.transfers.create({
-        amount: Math.round(payable * 100),
-        currency: "usd",
-        destination: handyman.stripeAccountId,
-        description: `Tarea weekly payout — ${bookings.length} job${bookings.length > 1 ? "s" : ""}`,
-        metadata: { handymanId: handyman.id },
-      });
-
-      // Standard payout from connected account → bank account (free, 1–2 days)
-      await stripe.payouts.create(
+      await stripe.transfers.create(
         {
           amount: Math.round(payable * 100),
           currency: "usd",
-          method: "standard",
-          description: "Tarea weekly payout",
+          destination: handyman.stripeAccountId,
+          description: `Tarea weekly payout — ${bookings.length} job${bookings.length > 1 ? "s" : ""}`,
           metadata: { handymanId: handyman.id },
         },
-        { stripeAccount: handyman.stripeAccountId }
+        { idempotencyKey: payoutIdempotencyKey(bookingIds, "weekly") },
       );
 
+      // Recorded IMMEDIATELY, before the payout is attempted.
+      //
+      // These two used to share one try block with the flag written last, so a
+      // payout failure — which is routine, the funds may not have cleared into
+      // the available balance yet — unwound into the catch with the transfer
+      // already done and the bookings still marked unpaid. The following Monday
+      // swept the same jobs and transferred a SECOND time. The flag belongs to
+      // the transfer, because the transfer is what moved the money.
       await prisma.booking.updateMany({
-        where: { id: { in: bookings.map(b => b.id) } },
+        where: { id: { in: bookingIds } },
         data: { handymanPaidOut: true, paidOutAt: now },
       });
 
@@ -110,13 +111,40 @@ export async function GET(_req: NextRequest) {
         });
       }
 
+      // STEP 2 — payout, connected account → the pro's bank. Separate and
+      // non-fatal on purpose: the pro already has the money in Stripe, and
+      // Express accounts are on Stripe's own payout schedule anyway, so a
+      // failure here delays the bank arrival rather than losing anything. It
+      // must never unwind step 1.
+      let payoutSent = true;
+      try {
+        await stripe.payouts.create(
+          {
+            amount: Math.round(payable * 100),
+            currency: "usd",
+            method: "standard",
+            description: "Tarea weekly payout",
+            metadata: { handymanId: handyman.id },
+          },
+          {
+            stripeAccount: handyman.stripeAccountId,
+            idempotencyKey: payoutIdempotencyKey(bookingIds, "weekly-payout"),
+          },
+        );
+      } catch (err) {
+        payoutSent = false;
+        console.warn(`[weekly-payouts] payout failed for ${handyman.id}:`, err);
+      }
+
       const bgNote = bg.amount > 0
         ? ` (includes a $${bg.amount.toFixed(2)} background check deduction)`
         : "";
       await createNotification({
         userId: handyman.id,
         title: "Weekly Payout Sent",
-        body: `$${payable.toFixed(2)} is on its way to your bank account. It arrives in 1–2 business days.${bgNote}`,
+        body: payoutSent
+          ? `$${payable.toFixed(2)} is on its way to your bank account. It arrives in 1–2 business days.${bgNote}`
+          : `$${payable.toFixed(2)} has been added to your Tarea balance.${bgNote} It will reach your bank on your next scheduled payout.`,
         type: "payout",
       });
 

@@ -229,6 +229,18 @@ BEFORE_REVISION="$(gcloud run services describe "$SERVICE" \
 echo "Current live revision: ${BEFORE_REVISION:-<none>}"
 
 if [[ $ASSUME_YES -ne 1 ]]; then
+  # Run without a terminal (Claude Code's `!` prefix, CI, `sh -c`), `read` gets
+  # EOF immediately, $reply stays empty and this aborts — which looked exactly
+  # like the schema gate or gcloud failing. Say what actually happened.
+  if [[ ! -t 0 ]]; then
+    echo ""
+    echo "No terminal attached, so there is nobody to answer the prompt."
+    echo "Re-run with --yes to deploy without confirming:"
+    echo ""
+    echo "    scripts/deploy-web.sh --yes"
+    echo ""
+    exit 1
+  fi
   read -r -p $'\nProceed with deploy? [y/N] ' reply
   [[ "$reply" == "y" || "$reply" == "Y" ]] || { echo "Aborted."; exit 1; }
 fi

@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 // What a pro is owed for a completed booking. ONE DEFINITION.
 //
 // This was computed independently at five call sites and they did not agree.
@@ -53,4 +54,23 @@ export function proOwedFor(b: PayableBooking): number {
 /** Total owed across several bookings, rounded to cents once at the end. */
 export function proOwedForAll(bookings: PayableBooking[]): number {
   return Math.round(bookings.reduce((s, b) => s + proOwedFor(b), 0) * 100) / 100;
+}
+
+/**
+ * A stable Stripe idempotency key for paying out a specific set of bookings.
+ *
+ * The durable guard against double-paying is booking.handymanPaidOut, but there
+ * is a window between the transfer landing and that flag being written: if the
+ * process dies, or a later step in the same handler throws, the money has moved
+ * and nothing recorded it. A retry then transfers a second time.
+ *
+ * Keying on the booking ids closes that window from Stripe's side — the same
+ * set of jobs cannot be transferred twice, whichever path asks (weekly cron,
+ * instant cashout, or completion), because Stripe returns the original transfer
+ * instead of creating another. Stripe retains these keys for 24 hours, which
+ * covers the retry window; the database flag covers everything after it.
+ */
+export function payoutIdempotencyKey(bookingIds: string[], purpose: string): string {
+  const digest = createHash("sha256").update([...bookingIds].sort().join(",")).digest("hex");
+  return `tarea-${purpose}-${digest.slice(0, 32)}`;
 }

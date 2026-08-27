@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { handymanNet } from "@/lib/fees";
-import { proOwedFor, materialsRefundDue } from "@/lib/pro-payout";
+import { proOwedFor, materialsRefundDue, payoutIdempotencyKey } from "@/lib/pro-payout";
 import { checkPayoutAccount, alertPayoutFailure } from "@/lib/payout-account";
 import { sendInvoiceEmail } from "@/lib/email";
 import { releaseProxySessions } from "@/lib/voice";
@@ -145,13 +145,19 @@ export async function completeBooking(bookingId: string, opts?: { receiptUrl?: s
           }
         }
 
-        await stripe.transfers.create({
-          amount: Math.round(payout * 100),
-          currency: "usd",
-          destination: handymanUser!.stripeAccountId!,
-          transfer_group: booking.id,
-          ...(sourceTransaction ? { source_transaction: sourceTransaction } : {}),
-        });
+        // Keyed on the booking so a retried completion — a duplicated webhook,
+        // a crash between this line and the flag below — returns the original
+        // transfer instead of sending the pro's money a second time.
+        await stripe.transfers.create(
+          {
+            amount: Math.round(payout * 100),
+            currency: "usd",
+            destination: handymanUser!.stripeAccountId!,
+            transfer_group: booking.id,
+            ...(sourceTransaction ? { source_transaction: sourceTransaction } : {}),
+          },
+          { idempotencyKey: payoutIdempotencyKey([booking.id], "completion") },
+        );
         await prisma.booking.update({
           where: { id: bookingId },
           data: { handymanPaidOut: true, paidOutAt: new Date() },
