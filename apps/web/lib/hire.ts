@@ -114,6 +114,8 @@ export async function materializeHire(opts: {
       customerId: jobRequest.customerId,
       handymanId: application.user.id,
       serviceId: service.id,
+      // So completion can close the request this job came from.
+      jobRequestId: jobRequest.id,
       // Paid before it existed — the pro applied, the customer hired and paid,
       // so there is nobody left to wait for.
       status: "ACCEPTED",

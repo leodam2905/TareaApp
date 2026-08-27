@@ -52,6 +52,20 @@ export async function completeBooking(bookingId: string, opts?: { receiptUrl?: s
   } catch (err) {
     console.error("[completeBooking] invoice email failed:", err);
   }
+  // Close the job request this booking came from.
+  //
+  // The request went ASSIGNED when the pro was hired and stayed there for ever:
+  // a customer who had the work done, paid for it and reviewed it still saw the
+  // request sitting open in their list, with no way to tell it apart from one
+  // nobody had taken. CLOSED is the terminal state the schema already defines.
+  //
+  // Directed bookings have no jobRequestId and skip this entirely.
+  if (booking.jobRequestId) {
+    await prisma.jobRequest
+      .update({ where: { id: booking.jobRequestId }, data: { status: "CLOSED" } })
+      .catch((err) => console.error("[completeBooking] could not close job request:", err));
+  }
+
 
   // Release escrow: labor net + full materials.
   //

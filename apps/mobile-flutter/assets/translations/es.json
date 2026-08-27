@@ -359,7 +359,8 @@
     "titleFallback": "Chat",
     "noMessages": "Aún no hay mensajes. Saluda",
     "messageHint": "Mensaje…",
-    "sendFailed": "No se pudo enviar. Inténtalo de nuevo."
+    "sendFailed": "No se pudo enviar. Inténtalo de nuevo.",
+    "closed": "Este trabajo está cerrado. La mensajería ya no está disponible."
   },
   "editProfile": {
     "title": "Editar perfil",

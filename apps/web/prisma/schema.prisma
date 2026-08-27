@@ -304,6 +304,11 @@ model Booking {
   customerId   String
   handymanId   String
   serviceId    String
+  // The job request this booking came from, when it came from one. Without it
+  // a completed booking could not close the request that produced it, so a
+  // customer saw a job they had already had done still sitting as ASSIGNED.
+  // Null for directed bookings, which never had a request.
+  jobRequestId String?
   promoCodeId  String?
   status       BookingStatus @default(PENDING)
   scheduledAt  DateTime

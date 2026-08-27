@@ -35,6 +35,18 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   const booking = await prisma.booking.findUnique({ where: { id: params.id } });
   if (!booking) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  // A finished engagement is finished. Calls already stop at completion
+  // (canCall returns false for COMPLETED and CANCELLED); messages did not, so
+  // the two halves of the same conversation had different rules. Reading the
+  // history stays allowed — it is the record of a job somebody paid for, and
+  // the evidence in a dispute.
+  if (booking.status === "COMPLETED" || booking.status === "CANCELLED") {
+    return NextResponse.json(
+      { error: "This job is closed. Messaging is no longer available — contact support@taptarea.com if you need help." },
+      { status: 409 },
+    );
+  }
   if (booking.customerId !== user.id && booking.handymanId !== user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
@@ -56,7 +68,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     userId: notifyId,
     title: "New message",
     body: `${user.name}: ${content.trim().slice(0, 60)}`,
-    type: "booking_request",
+    // Its own type, so a client can open the CHAT rather than the booking.
+    // It used to share "booking_request" with job phases and new-service
+    // announcements, which is why a customer tapping "New message" got nothing:
+    // the app had no safe destination for a type that meant three things.
+    type: "chat_message",
     refId: params.id,
   });
 

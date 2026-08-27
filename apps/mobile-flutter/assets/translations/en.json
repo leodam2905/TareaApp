@@ -359,7 +359,8 @@
     "titleFallback": "Chat",
     "noMessages": "No messages yet. Say hello",
     "messageHint": "Message…",
-    "sendFailed": "Could not send. Try again."
+    "sendFailed": "Could not send. Try again.",
+    "closed": "This job is closed. Messaging is no longer available."
   },
   "editProfile": {
     "title": "Edit Profile",

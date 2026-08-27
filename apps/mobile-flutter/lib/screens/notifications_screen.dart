@@ -89,10 +89,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       case 'booking_reminder':
       case 'tip':
         return refId.isEmpty ? null : toBooking;
+      // Chat has its own type now. It used to arrive as booking_request, which
+      // also meant "a pro applied", "a phase started" and "a new service exists"
+      // — four meanings, no safe destination, so a customer tapping
+      // "New message" got nothing at all.
+      case 'chat_message':
+        return refId.isEmpty ? null : () => context.push('/chat', extra: {'bookingId': refId});
+      // Older builds sent job phases and new-service notices under this type
+      // with a bookingId attached; open the booking rather than doing nothing.
+      case 'booking_request' when !isPro && refId.isNotEmpty:
+        return toBooking;
       case 'booking_disputed':
         return () => context.push('/disputes');
       case 'booking_request':
-        return isPro ? () => toProTab(1) : null;      // Find Jobs
+        return isPro ? () => toProTab(1) : null;      // Find Jobs (pro only)
       case 'application_accepted':
         return isPro ? () => toProTab(2) : null;      // My Jobs
       case 'payout':

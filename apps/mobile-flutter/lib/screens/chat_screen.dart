@@ -13,6 +13,8 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  /// Job finished or cancelled: history stays, sending stops.
+  bool _closed = false;
   List<dynamic> _messages = [];
   bool _loading = true;
   bool _sending = false;
@@ -43,6 +45,15 @@ class _ChatScreenState extends State<ChatScreen> {
       if (res.statusCode == 200) {
         final d = jsonDecode(res.body);
         _messages = d is List ? d : (d['messages'] ?? []);
+      }
+    } catch (_) {}
+    // Reading history stays open on a finished job — it is the record of work
+    // somebody paid for. Only sending stops.
+    try {
+      final b = await Api.get('/bookings/$_bookingId');
+      if (b.statusCode == 200) {
+        final st = (jsonDecode(b.body)['status'] ?? '').toString();
+        _closed = st == 'COMPLETED' || st == 'CANCELLED';
       }
     } catch (_) {}
     if (mounted) setState(() => _loading = false);
@@ -131,7 +142,22 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _composer() => SafeArea(
+  Widget _composer() => _closed
+      ? SafeArea(
+          top: false,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+            decoration: const BoxDecoration(color: C.surface, border: Border(top: BorderSide(color: C.line))),
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              const Icon(Icons.lock_outline, size: 15, color: C.muted),
+              const SizedBox(width: 8),
+              Flexible(child: Text('chat.closed'.tr(), textAlign: TextAlign.center,
+                  style: const TextStyle(color: C.muted, fontSize: 13))),
+            ]),
+          ),
+        )
+      : SafeArea(
         top: false,
         child: Container(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),

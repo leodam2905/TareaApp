@@ -359,7 +359,8 @@
     "titleFallback": "Discussion",
     "noMessages": "Aucun message. Dites bonjour",
     "messageHint": "Message…",
-    "sendFailed": "Envoi impossible. Réessayez."
+    "sendFailed": "Envoi impossible. Réessayez.",
+    "closed": "Cette mission est terminée. La messagerie n'est plus disponible."
   },
   "editProfile": {
     "title": "Modifier le profil",

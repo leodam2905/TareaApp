@@ -65,6 +65,7 @@ npx prisma migrate diff \
 | 004 | Licence + insurance credentials | **Yes** — 2026-08-25 |
 | 005 | Name on the licence | **Yes** — 2026-08-25 |
 | 006 | Insurance certificate detail | **Yes** — 2026-08-25 |
+| 007 | Booking → job request link | **Yes** — 2026-08-26 |
 
 > Neither is applied. `schema.prisma` describes them, so the deploy script's
 > drift gate will **refuse all deploys** until they are applied. That is
