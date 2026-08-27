@@ -87,6 +87,38 @@ export async function reconcile(opts: { since?: Date } = {}) {
   const sum = (fn: (r: BookingLedgerRow) => number) =>
     Math.round(rows.reduce((t, r) => t + fn(r), 0) * 100) / 100;
 
+  // Stripe Climate contributions.
+  //
+  // These do NOT appear in a charge's fee or net — they are separate balance
+  // transactions, debited from the platform balance after the fact. So a report
+  // built from payment intents alone reports a margin Tarea does not have, and
+  // by a fixed percentage of every charge: on the first live booking it was the
+  // difference between the $10.53 this file computed and the $9.95 actually
+  // sitting in the balance.
+  //
+  // Summed for the period rather than attributed per booking. Stripe does not
+  // link the contribution back to the charge in a way that survives partial
+  // refunds, and inventing an attribution would make the per-row numbers look
+  // more precise than they are.
+  let climateContributions = 0;
+  try {
+    const since = opts.since ? Math.floor(opts.since.getTime() / 1000) : undefined;
+    for await (const txn of stripe.balanceTransactions.list({
+      // Not in the SDK's union in every version; the API accepts it.
+      type: "climate_order_purchase" as never,
+      ...(since ? { created: { gte: since } } : {}),
+      limit: 100,
+    })) {
+      // Debits arrive negative — count them as a positive cost.
+      climateContributions += Math.abs(txn.amount);
+    }
+    climateContributions = Math.round(climateContributions) / 100;
+  } catch (err) {
+    // Never block the report on it; a zero here is visibly different from a
+    // wrong total, and the caller can see the warning.
+    console.warn("[reconcile] climate contribution lookup failed:", err);
+  }
+
   return {
     rows,
     totals: {
@@ -97,6 +129,10 @@ export async function reconcile(opts: { since?: Date } = {}) {
       proOwed: sum((r) => r.proOwed),
       proPaid: sum((r) => r.proPaid),
       tareaKeeps: sum((r) => r.tareaKeeps),
+      // What Stripe Climate took out of that margin over the period.
+      climateContributions,
+      // The number that should match the platform balance.
+      tareaKeepsNet: Math.round((sum((r) => r.tareaKeeps) - climateContributions) * 100) / 100,
       // Completed work not yet transferred — the liability side.
       outstandingToPros: sum((r) => (r.paidOut ? 0 : r.proOwed)),
     },
