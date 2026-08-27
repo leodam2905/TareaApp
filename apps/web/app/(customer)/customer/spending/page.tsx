@@ -11,6 +11,10 @@ const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.07 } } };
 
 type SpendingData = {
   totalSpent: number;
+  breakdown?: {
+    labour: number; serviceFee: number; materials: number;
+    extensions: number; tips: number; discounts: number;
+  };
   bookingCount: number;
   byCategory: Record<string, number>;
   months: { label: string; amount: number }[];
@@ -51,6 +55,41 @@ export default function SpendingPage() {
         <h1 className="text-3xl font-extrabold text-white">Spending Report</h1>
         <p className="text-slate-400 mt-1">Your complete spending history on Tarea</p>
       </motion.div>
+
+      {/* What makes up the total.
+          The headline figure is what left the customer's card, so the parts
+          have to be visible — a total that cannot be reconciled against a card
+          statement is the first thing somebody opens a support ticket about,
+          and the 15% fee is better read here than discovered later. */}
+      {data.breakdown && (
+        <motion.div variants={fadeUp} className="bg-white/5 border border-white/10 rounded-2xl p-5">
+          <h2 className="text-sm font-bold text-tarea-ink-muted mb-3">What you paid for</h2>
+          <div className="space-y-2 text-sm">
+            {[
+              ["Labour", data.breakdown.labour],
+              ["Service fee (15%)", data.breakdown.serviceFee],
+              ["Materials", data.breakdown.materials],
+              ["Extra time approved", data.breakdown.extensions],
+              ["Tips", data.breakdown.tips],
+            ].filter(([, v]) => (v as number) > 0).map(([label, v]) => (
+              <div key={label as string} className="flex justify-between">
+                <span className="text-tarea-ink-muted">{label as string}</span>
+                <span className="font-semibold">{formatCurrency(v as number)}</span>
+              </div>
+            ))}
+            {data.breakdown.discounts > 0 && (
+              <div className="flex justify-between text-emerald-600">
+                <span>Discounts</span>
+                <span className="font-semibold">−{formatCurrency(data.breakdown.discounts)}</span>
+              </div>
+            )}
+            <div className="flex justify-between pt-2 border-t border-white/10 font-bold">
+              <span>Total paid</span>
+              <span>{formatCurrency(data.totalSpent)}</span>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Summary cards */}
       <motion.div variants={stagger} className="grid grid-cols-3 gap-4">
