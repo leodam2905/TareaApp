@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { unmetSteps, unmetStepsMessage } from "@/lib/pro-bookable";
 import { syncPayoutStatus } from "@/lib/payout-account";
+import { validateMaterials, materialsTier } from "@/lib/materials-policy";
+import { credentialBadges, CREDENTIAL_SELECT } from "@/lib/credentials";
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
@@ -57,6 +59,26 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   const { message, proposedPrice, materialsEstimate } = await req.json();
 
+  // The materials tier is checked HERE, not only on the browse list. A pro can
+  // reach this route with a job id they were shown before their credentials
+  // lapsed, or straight from the API — and this is the point where a number the
+  // customer will be charged actually enters the system.
+  const materials = validateMaterials(materialsEstimate);
+  if (!materials.ok) return NextResponse.json({ error: materials.error }, { status: 400 });
+
+  if (materialsTier(materials.value) === "licensed_only") {
+    const docs = await prisma.handymanProfile.findUnique({
+      where: { id: profile.id }, select: CREDENTIAL_SELECT,
+    });
+    const badges = docs ? credentialBadges(docs) : { licensed: false, insured: false };
+    if (!badges.licensed || !badges.insured) {
+      return NextResponse.json({
+        error: "Quotes over $300 in materials are open to Licensed & Insured pros only. "
+             + "Add an approved licence and insurance certificate, or quote materials at $300 or under.",
+      }, { status: 403 });
+    }
+  }
+
   const application = await prisma.jobApplication.create({
     data: {
       jobRequestId: params.id,
@@ -64,7 +86,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       userId: user.id,
       message: message?.trim() || null,
       proposedPrice: proposedPrice ? parseFloat(proposedPrice) : null,
-      materialsEstimate: materialsEstimate ? parseFloat(materialsEstimate) : null,
+      materialsEstimate: materials.value || null,
     },
   });
 

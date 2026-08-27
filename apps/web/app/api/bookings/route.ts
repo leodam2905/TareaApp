@@ -1,6 +1,7 @@
 import { createNotification } from "@/lib/notify";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { MATERIALS_MAX } from "@/lib/materials-policy";
 import { prisma } from "@/lib/prisma";
 import { responseDeadlineFromNow } from "@/lib/booking-deadlines";
 import { getCurrentUser } from "@/lib/auth";
@@ -16,7 +17,7 @@ const createSchema = z.object({
   city: z.string().min(2),
   notes: z.string().optional(),
   totalPrice: z.number().positive(),
-  materialsEstimate: z.number().min(0).optional(),
+  materialsEstimate: z.number().min(0).max(MATERIALS_MAX).optional(),
   promoCode: z.string().optional(),
 });
 

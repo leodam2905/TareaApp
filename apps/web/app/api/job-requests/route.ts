@@ -9,6 +9,7 @@ import { smsBody, createNotification } from "@/lib/notify";
 import { geocodeAddress } from "@/lib/geo/geocode";
 import { milesFromKmOrNull } from "@/lib/units";
 import { CREDENTIAL_SELECT, credentialBadges } from "@/lib/credentials";
+import { materialsTier, validateMaterials } from "@/lib/materials-policy";
 import { grossMinimum } from "@/lib/pricing-config";
 
 // Fallback only. Each pro sets their own serviceRadius in miles, and that is
@@ -160,7 +161,15 @@ export async function GET() {
     // is a floor on exposure rather than a guarantee.
     .filter(r => {
       const total = r.budgetMax * (1 + CUSTOMER_FEE_RATE) + (r.materialsCost ?? 0);
-      return licensedInsured || total <= CSLB_UNLICENSED_CAP;
+      if (total > CSLB_UNLICENSED_CAP && !licensedInsured) return false;
+      // Second, independent reason to reserve a job: the parts bill alone.
+      //
+      // A job can sit well under the aggregate cap and still ask a pro to front
+      // several hundred dollars. Filtering it out here rather than letting the
+      // pro apply and be refused matters — the apply route rejects it too, but
+      // a pro who has already written a quote and been turned away learns the
+      // rule the expensive way.
+      return licensedInsured || materialsTier(r.materialsCost) === "open";
     })
     // Newest first.
     //
@@ -190,6 +199,9 @@ export async function POST(req: NextRequest) {
   if (!category || !title || !description || !address || !city || !scheduledAt) {
     return NextResponse.json({ error: "All fields are required" }, { status: 400 });
   }
+
+  const materials = validateMaterials(materialsCost);
+  if (!materials.ok) return NextResponse.json({ error: materials.error }, { status: 400 });
 
   // The floor is enforced HERE, not just in the quoting routes.
   //
@@ -249,7 +261,7 @@ export async function POST(req: NextRequest) {
       scheduledAt: new Date(scheduledAt),
       budgetMin: budgetMin ? parseFloat(budgetMin) : 0,
       budgetMax: budgetMax ? parseFloat(budgetMax) : 0,
-      materialsCost: materialsCost ? parseFloat(materialsCost) : 0,
+      materialsCost: materials.value,
       urgency: ["STANDARD", "SOON", "URGENT"].includes(urgency) ? urgency : "STANDARD",
       imageUrls: Array.isArray(imageUrls) ? imageUrls : [],
     },

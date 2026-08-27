@@ -117,7 +117,14 @@ class _ProFindJobsState extends State<ProFindJobs> with WidgetsBindingObserver {
     final labour = _numText(job['budgetMin']);
     final ok = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (_) => StatefulBuilder(builder: (ctx, setDialog) {
+      // Tiers mirror lib/materials-policy.ts on the server. The server is the
+      // authority and rejects either way; this exists so a pro finds out before
+      // writing a quote rather than after submitting one.
+      final typed = double.tryParse(matCtl.text.trim()) ?? 0;
+      final overMax = typed > 1000;
+      final needsCredentials = typed > 300 && !overMax;
+      return AlertDialog(
         title: Text('proFind.applyTitle'.tr()),
         content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           // Read-only on purpose: shown so the pro knows what they are accepting.
@@ -134,14 +141,35 @@ class _ProFindJobsState extends State<ProFindJobs> with WidgetsBindingObserver {
             ]),
           ),
           const SizedBox(height: 14),
-          TextField(controller: matCtl, keyboardType: TextInputType.number,
+          TextField(controller: matCtl,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              onChanged: (_) => setDialog(() {}),
               decoration: InputDecoration(labelText: 'proFind.materialsEstimate'.tr(), helperText: 'proFind.materialsHint'.tr(), helperMaxLines: 3)),
+          if (overMax || needsCredentials) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: overMax ? const Color(0xFFFEE2E2) : const Color(0xFFFEF3C7),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                overMax ? 'proFind.materialsOverMax'.tr() : 'proFind.materialsLicensedOnly'.tr(),
+                style: TextStyle(
+                    fontSize: 12, height: 1.45, fontWeight: FontWeight.w600,
+                    color: overMax ? const Color(0xFFB91C1C) : const Color(0xFFB45309)),
+              ),
+            ),
+          ],
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('common.cancel'.tr())),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text('proFind.apply'.tr())),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('common.cancel'.tr())),
+          FilledButton(
+              onPressed: overMax ? null : () => Navigator.pop(ctx, true),
+              child: Text('proFind.apply'.tr())),
         ],
-      ),
+      );
+      }),
     );
     if (ok == true) await _apply(id, materials: matCtl.text.trim());
   }
