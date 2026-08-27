@@ -320,7 +320,7 @@
     "rushFee": "Frais d'urgence",
     "serviceFee": "Frais de service",
     "total": "Total",
-    "materialsNote": "Le coût des matériaux est une estimation — votre pro confirme le montant réel (avec reçus) lorsqu’il postule.",
+    "materialsNote": "Le montant des matériaux est une estimation — le pro fixe le montant final lors de sa candidature, et c'est ce que vous payez.",
     "estimateFailed": "Impossible de calculer un prix pour le moment. Réessayez — vos informations sont conservées.",
     "estimatePending": "Calcul de votre prix…",
     "retryEstimate": "Réessayer l'estimation",
@@ -458,7 +458,7 @@
     "apply": "Postuler",
     "applyTitle": "Postuler à ce travail",
     "materialsEstimate": "Estimation des matériaux ($)",
-    "materialsHint": "Facturé au client au prix coûtant — sans frais. Vous fournissez les reçus.",
+    "materialsHint": "Le client paie ce montant au prix coûtant, sans commission. Il est fixé dès qu'il vous engage : estimez soigneusement et joignez le reçu à la fin.",
     "updatedAt": "Mis à jour à {}",
     "labourPriceFixed": "Prix de la main-d'œuvre (fixé par Tarea)",
     "milesAway": "à {} mi"

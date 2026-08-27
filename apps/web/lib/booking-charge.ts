@@ -88,8 +88,8 @@ export function bookingLineItems(
         currency: "usd" as const,
         unit_amount: Math.round(amounts.materials * 100),
         product_data: {
-          name: "Materials (estimated)",
-          description: "Cost of materials required to complete the job. Handyman will provide receipts.",
+          name: "Materials",
+          description: "Materials for this job, quoted by your pro and charged at cost with no service fee.",
         },
       },
       quantity: 1,

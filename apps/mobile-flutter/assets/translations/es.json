@@ -320,7 +320,7 @@
     "rushFee": "Recargo por urgencia",
     "serviceFee": "Tarifa de servicio",
     "total": "Total",
-    "materialsNote": "El costo de materiales es una estimación — tu profesional confirma el importe real (con recibos) al postularse.",
+    "materialsNote": "Los materiales son una estimación — el pro fija el importe final al postularse, y eso es lo que pagas.",
     "estimateFailed": "No pudimos calcular un precio ahora mismo. Reintenta — tus datos se han guardado.",
     "estimatePending": "Calculando tu precio…",
     "retryEstimate": "Reintentar estimación",
@@ -458,7 +458,7 @@
     "apply": "Aplicar",
     "applyTitle": "Postularse a este trabajo",
     "materialsEstimate": "Estimación de materiales ($)",
-    "materialsHint": "Se cobra al cliente al costo — sin comisión. Tú entregas los recibos.",
+    "materialsHint": "El cliente paga esto a precio de costo, sin comisión. Queda fijado cuando te contrata, así que estima con cuidado y adjunta el recibo al terminar.",
     "updatedAt": "Actualizado a las {}",
     "labourPriceFixed": "Precio de mano de obra (fijado por Tarea)",
     "milesAway": "a {} mi"
