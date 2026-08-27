@@ -475,7 +475,11 @@
     "appliedPill": "Applied",
     "awaitingCustomer": "Waiting for the customer",
     "receiptPrompt": "Attach the materials receipt?",
-    "receiptSkip": "Skip — no receipt"
+    "materialsTitle": "Materials for this job",
+    "materialsNote": "You quoted ${}. Enter what you actually spent — if it is less, the difference goes back to the customer. Spending more is on you.",
+    "materialsSpent": "Actually spent",
+    "receiptAttached": "Receipt attached",
+    "finishJob": "Finish job"
   },
   "proEarnings": {
     "totalEarned": "Total earned",

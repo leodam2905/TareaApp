@@ -17,6 +17,10 @@ import { proOwedFor } from "@/lib/pro-payout";
 export interface BookingLedgerRow {
   bookingId: string;
   customerCharged: number;
+  /** Given back to the customer — today, materials they were quoted but the pro
+   *  did not spend. Stripe does NOT return its fee on a refund, so this reduces
+   *  what Tarea keeps by the full amount and the fee stays paid. */
+  refunded: number;
   stripeFee: number;
   netReceived: number;
   proOwed: number;
@@ -33,26 +37,29 @@ export async function reconcile(opts: { since?: Date } = {}) {
       ...(opts.since ? { createdAt: { gte: opts.since } } : {}),
     },
     select: {
-      id: true, totalPrice: true, materialsEstimate: true,
+      id: true, totalPrice: true, materialsEstimate: true, materialsActual: true, materialsRefunded: true,
       handymanPaidOut: true, stripePaymentIntentId: true, status: true,
     },
   });
 
   const rows: BookingLedgerRow[] = [];
   for (const b of bookings) {
-    let customerCharged = 0, stripeFee = 0, netReceived = 0;
+    let customerCharged = 0, refunded = 0, stripeFee = 0, netReceived = 0;
     try {
       const pi = await stripe.paymentIntents.retrieve(b.stripePaymentIntentId!, {
         expand: ["latest_charge.balance_transaction"],
       });
       customerCharged = (pi.amount_received ?? 0) / 100;
       const charge = typeof pi.latest_charge === "string" ? null : pi.latest_charge;
+      // From Stripe, not from booking.materialsRefunded: the DB records what we
+      // asked for, this records what actually left the account.
+      refunded = (charge?.amount_refunded ?? 0) / 100;
       const txn = charge && typeof charge.balance_transaction !== "string"
         ? charge.balance_transaction
         : null;
       if (txn) {
         stripeFee = txn.fee / 100;
-        netReceived = txn.net / 100;
+        netReceived = (txn.net - (charge?.amount_refunded ?? 0)) / 100;
       }
     } catch {
       // A lookup failure leaves zeros rather than inventing numbers — an
@@ -67,6 +74,7 @@ export async function reconcile(opts: { since?: Date } = {}) {
     rows.push({
       bookingId: b.id,
       customerCharged,
+      refunded,
       stripeFee,
       netReceived,
       proOwed: proOwedFor(b),
@@ -83,6 +91,7 @@ export async function reconcile(opts: { since?: Date } = {}) {
     rows,
     totals: {
       customerCharged: sum((r) => r.customerCharged),
+      refunded: sum((r) => r.refunded),
       stripeFees: sum((r) => r.stripeFee),
       netReceived: sum((r) => r.netReceived),
       proOwed: sum((r) => r.proOwed),

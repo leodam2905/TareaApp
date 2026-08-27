@@ -21,12 +21,12 @@ export async function GET() {
   const [unpaid, paid, pendingTips, activeDisputes] = await Promise.all([
     prisma.booking.findMany({
       where: { handymanId: user.id, status: "COMPLETED", isPaid: true, handymanPaidOut: false },
-      select: { id: true, totalPrice: true, materialsEstimate: true, completedAt: true, service: { select: { title: true } } },
+      select: { id: true, totalPrice: true, materialsEstimate: true, materialsActual: true, completedAt: true, service: { select: { title: true } } },
       orderBy: { completedAt: "desc" },
     }),
     prisma.booking.findMany({
       where: { handymanId: user.id, status: "COMPLETED", handymanPaidOut: true },
-      select: { id: true, totalPrice: true, materialsEstimate: true, paidOutAt: true, service: { select: { title: true } } },
+      select: { id: true, totalPrice: true, materialsEstimate: true, materialsActual: true, paidOutAt: true, service: { select: { title: true } } },
       orderBy: { paidOutAt: "desc" },
       take: 20,
     }),

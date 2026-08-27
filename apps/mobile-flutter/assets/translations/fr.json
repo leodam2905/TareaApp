@@ -475,7 +475,11 @@
     "appliedPill": "Candidature envoyée",
     "awaitingCustomer": "En attente du client",
     "receiptPrompt": "Joindre le reçu des matériaux ?",
-    "receiptSkip": "Passer — pas de reçu"
+    "materialsTitle": "Matériaux pour cette mission",
+    "materialsNote": "Vous aviez indiqué {} $. Saisissez la dépense réelle — si elle est inférieure, la différence est remboursée au client. Un dépassement est à votre charge.",
+    "materialsSpent": "Dépense réelle",
+    "receiptAttached": "Reçu joint",
+    "finishJob": "Terminer"
   },
   "proEarnings": {
     "totalEarned": "Total gagné",

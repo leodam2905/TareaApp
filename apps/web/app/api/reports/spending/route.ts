@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
 import { assertPromoUsable } from "@/lib/promo";
+import { materialsOwed } from "@/lib/pro-payout";
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -28,7 +29,7 @@ export async function GET() {
   /**
    * What the customer actually paid for this job.
    *
-   *   labour − discount, + 15% fee on that, + materials at cost,
+   *   labour − discount, + 15% fee on that, + materials actually spent,
    *   + approved time extensions, + tips.
    *
    * The three additions matter for different reasons. A promo means they paid
@@ -36,6 +37,12 @@ export async function GET() {
    * approved extension is a second charge on the same job. A tip is money they
    * chose to add — 100% of it goes to the pro, so it is not revenue, but it is
    * unquestionably spending.
+   *
+   * Materials are what the pro RECEIPTED, not what they quoted. A pro who
+   * quoted $100 and spent $45 has already had the $55 refunded, so a report
+   * counting the estimate tells the customer they spent money that is back on
+   * their card — and the total would not match their bank statement, which is
+   * the one thing a spending report has to do.
    *
    * The discount is recomputed rather than stored: booking.totalPrice is the
    * pre-discount labour on both paths, and re-deriving it from the code that
@@ -50,7 +57,7 @@ export async function GET() {
     const labour = b.totalPrice - discount;
     const extensions = b.extensions.reduce((t, e) => t + (e.extraAmount ?? 0), 0);
     const tips = b.tips.reduce((t, x) => t + x.amount, 0);
-    return labour * (1 + CUSTOMER_FEE_RATE) + (b.materialsEstimate ?? 0) + extensions + tips;
+    return labour * (1 + CUSTOMER_FEE_RATE) + materialsOwed(b) + extensions + tips;
   };
 
   const round2 = (n: number) => Math.round(n * 100) / 100;
@@ -93,7 +100,7 @@ export async function GET() {
     breakdown: {
       labour: sum((b) => b.totalPrice - discountFor(b)),
       serviceFee: sum((b) => (b.totalPrice - discountFor(b)) * CUSTOMER_FEE_RATE),
-      materials: sum((b) => b.materialsEstimate ?? 0),
+      materials: sum(materialsOwed),
       extensions: sum((b) => b.extensions.reduce((t, e) => t + (e.extraAmount ?? 0), 0)),
       tips: sum((b) => b.tips.reduce((t, x) => t + x.amount, 0)),
       discounts: sum(discountFor),

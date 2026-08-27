@@ -26,7 +26,7 @@ export async function GET() {
 
   const completed = await prisma.booking.findMany({
     where: { handymanId: user.id, status: "COMPLETED" },
-    select: { totalPrice: true, materialsEstimate: true, handymanPaidOut: true },
+    select: { totalPrice: true, materialsEstimate: true, materialsActual: true, handymanPaidOut: true },
   });
 
   // Tips carry no commission — 100% goes to the pro — so they are added whole

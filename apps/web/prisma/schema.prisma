@@ -337,6 +337,13 @@ model Booking {
   resolutionNote   String?
   resolvedAt       DateTime?
   materialsEstimate Float         @default(0)
+  // What the materials actually cost, entered by the pro at work-done with the
+  // receipt. Materials are charged at cost CAPPED AT THE ESTIMATE: spend less
+  // and the difference is refunded to the customer; spend more and the pro
+  // absorbs it, because the customer agreed to a number before the job.
+  // Null means no figure was given, and the estimate stands.
+  materialsActual   Float?
+  materialsRefunded Float?        // what was actually returned, once refunded
   jobStartedAt     DateTime?
   // The on-site timer is informational — the price is fixed before the pro is
   // chosen, so pausing never changes what anyone is paid. It exists so both

@@ -22,11 +22,13 @@ export default function InvoicePrint({
   booking,
   serviceFee,
   materials = 0,
+  materialsRefunded = 0,
   total,
 }: {
   booking: Booking;
   serviceFee: number;
   materials?: number;
+  materialsRefunded?: number;
   total: number;
 }) {
   const fmt = (n: number) =>
@@ -161,10 +163,19 @@ export default function InvoicePrint({
                   <td className="py-3 text-right font-semibold text-gray-900">{fmt(materials)}</td>
                 </tr>
               )}
+              {materialsRefunded > 0 && (
+                <tr className="border-b border-gray-100">
+                  <td className="py-3">
+                    <p className="font-semibold text-gray-900">Materials Refunded</p>
+                    <p className="text-xs text-gray-500">Quoted but not spent — returned to your card</p>
+                  </td>
+                  <td className="py-3 text-right font-semibold text-emerald-700">−{fmt(materialsRefunded)}</td>
+                </tr>
+              )}
             </tbody>
             <tfoot>
               <tr>
-                <td className="pt-4 font-bold text-gray-900">Total Charged</td>
+                <td className="pt-4 font-bold text-gray-900">{materialsRefunded > 0 ? "Total Paid (after refund)" : "Total Charged"}</td>
                 <td className="pt-4 text-right font-extrabold text-xl text-gray-900">{fmt(total)}</td>
               </tr>
             </tfoot>

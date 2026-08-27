@@ -475,7 +475,11 @@
     "appliedPill": "Postulado",
     "awaitingCustomer": "Esperando al cliente",
     "receiptPrompt": "¿Adjuntar el recibo de materiales?",
-    "receiptSkip": "Omitir — sin recibo"
+    "materialsTitle": "Materiales de este trabajo",
+    "materialsNote": "Cotizaste ${}. Indica lo que gastaste realmente — si es menos, la diferencia vuelve al cliente. Gastar de más corre por tu cuenta.",
+    "materialsSpent": "Gasto real",
+    "receiptAttached": "Recibo adjunto",
+    "finishJob": "Finalizar"
   },
   "proEarnings": {
     "totalEarned": "Total ganado",

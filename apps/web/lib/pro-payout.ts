@@ -19,11 +19,35 @@ import { handymanNet } from "./fees";
 export interface PayableBooking {
   totalPrice: number;
   materialsEstimate?: number | null;
+  /** What the receipt said, when the pro gave a figure. */
+  materialsActual?: number | null;
+}
+
+/**
+ * Materials the pro is reimbursed for: at cost, CAPPED AT THE ESTIMATE.
+ *
+ * Spend less than quoted and only the real spend is reimbursed — the rest goes
+ * back to the customer, who should not pay for materials nobody bought. Spend
+ * MORE and the estimate is the ceiling: the pro chose that number, the customer
+ * agreed to it before the job, and only the pro can control the overrun.
+ *
+ * No figure given means the estimate stands — there is nothing to reconcile
+ * against, and withholding a pro's money on an absence would be worse.
+ */
+export function materialsOwed(b: PayableBooking): number {
+  const estimate = b.materialsEstimate ?? 0;
+  if (b.materialsActual === null || b.materialsActual === undefined) return estimate;
+  return Math.min(Math.max(0, b.materialsActual), estimate);
+}
+
+/** What goes back to the customer: the part of the estimate nobody spent. */
+export function materialsRefundDue(b: PayableBooking): number {
+  return Math.round(((b.materialsEstimate ?? 0) - materialsOwed(b)) * 100) / 100;
 }
 
 /** Labour net of the platform fee, plus materials reimbursed at cost. */
 export function proOwedFor(b: PayableBooking): number {
-  return handymanNet(b.totalPrice) + (b.materialsEstimate ?? 0);
+  return handymanNet(b.totalPrice) + materialsOwed(b);
 }
 
 /** Total owed across several bookings, rounded to cents once at the end. */

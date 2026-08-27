@@ -75,24 +75,78 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
     }
   }
 
-  /// Photograph the materials receipt, or skip it.
+  /// What the materials actually cost, plus the receipt.
   ///
-  /// The customer prepaid materials from the estimate given at application, so
-  /// this is their one chance to see what was actually bought — and it has to
-  /// reach them BEFORE they confirm and release payment, which is why it is
-  /// asked for here rather than after.
+  /// The amount is what moves money: materials are reimbursed at cost capped at
+  /// the estimate, so spending less returns the difference to the customer. It
+  /// is pre-filled with the estimate, because that is the answer most of the
+  /// time and a pro who spent exactly what they quoted should not have to type.
   ///
-  /// Returns a URL, 'skip' to carry on without one, or 'cancelled' to abandon.
-  Future<String?> _attachReceipt() async {
+  /// Returns null if cancelled.
+  Future<Map<String, dynamic>?> _materialsAtFinish(num estimate) async {
+    final amount = TextEditingController(text: estimate.toStringAsFixed(2));
+    String? uploadedUrl;
+
+    return showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) => Padding(
+          padding: EdgeInsets.fromLTRB(20, 18, 20, MediaQuery.of(ctx).viewInsets.bottom + 18),
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('proJobs.materialsTitle'.tr(),
+                style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 17)),
+            const SizedBox(height: 6),
+            Text('proJobs.materialsNote'.tr(args: [estimate.toStringAsFixed(2)]),
+                style: const TextStyle(color: C.muted, fontSize: 13, height: 1.5)),
+            const SizedBox(height: 14),
+            TextField(
+              controller: amount,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(
+                labelText: 'proJobs.materialsSpent'.tr(),
+                prefixText: '\$ ',
+              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(46)),
+              onPressed: () async {
+                final url = await _pickReceipt();
+                if (url != null) setSheet(() => uploadedUrl = url);
+              },
+              icon: Icon(uploadedUrl == null ? Icons.camera_alt_outlined : Icons.check_circle, size: 18),
+              label: Text(uploadedUrl == null ? 'proJobs.receiptPrompt'.tr() : 'proJobs.receiptAttached'.tr()),
+            ),
+            const SizedBox(height: 12),
+            Row(children: [
+              Expanded(child: TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text('common.cancel'.tr()),
+              )),
+              Expanded(child: FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: C.blue),
+                onPressed: () => Navigator.pop(ctx, <String, dynamic>{
+                  'receiptUrl': uploadedUrl,
+                  // Left out entirely when unparseable, so the server keeps the
+                  // estimate rather than reading a typo as "spent nothing".
+                  'materialsActual': num.tryParse(amount.text.trim()),
+                }),
+                child: Text('proJobs.finishJob'.tr(), style: const TextStyle(fontWeight: FontWeight.w800)),
+              )),
+            ]),
+          ]),
+        ),
+      ),
+    );
+  }
+
+  /// Camera or gallery, uploaded; null if the pro backed out.
+  Future<String?> _pickReceipt() async {
     final choice = await showModalBottomSheet<String>(
       context: context,
       builder: (_) => SafeArea(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 6),
-            child: Text('proJobs.receiptPrompt'.tr(),
-                style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink)),
-          ),
           ListTile(
             leading: const Icon(Icons.camera_alt_outlined, color: C.blue),
             title: Text('booking.takePhoto'.tr()),
@@ -103,28 +157,19 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
             title: Text('booking.chooseGallery'.tr()),
             onTap: () => Navigator.pop(context, 'gallery'),
           ),
-          ListTile(
-            leading: const Icon(Icons.skip_next_outlined, color: C.muted),
-            title: Text('proJobs.receiptSkip'.tr(), style: const TextStyle(color: C.muted)),
-            onTap: () => Navigator.pop(context, 'skip'),
-          ),
         ]),
       ),
     );
-    if (choice == null) return 'cancelled';
-    if (choice == 'skip') return 'skip';
-
+    if (choice == null) return null;
     final shot = await ImagePicker().pickImage(
       source: choice == 'camera' ? ImageSource.camera : ImageSource.gallery,
-      imageQuality: 85,
-      maxWidth: 1600,
-      maxHeight: 1600,
+      imageQuality: 85, maxWidth: 1600, maxHeight: 1600,
     );
-    if (shot == null) return 'skip';
+    if (shot == null) return null;
     final up = await Api.uploadImage(shot.path, folder: 'tarea/images');
     if (up.statusCode < 200 || up.statusCode >= 300) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('booking.uploadFailed'.tr())));
-      return 'skip';
+      return null;
     }
     return (jsonDecode(up.body)['url'] ?? '').toString();
   }
@@ -135,16 +180,20 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
     // materials. Asking for a receipt on a job with none is a question with no
     // right answer, and the pro learns to dismiss the prompt.
     String? receiptUrl;
-    if (((b['materialsEstimate'] ?? 0) as num) > 0) {
-      receiptUrl = await _attachReceipt();
-      if (receiptUrl == 'cancelled') return;
-      if (receiptUrl == 'skip') receiptUrl = null;
+    num? materialsActual;
+    final estimate = (b['materialsEstimate'] ?? 0) as num;
+    if (estimate > 0) {
+      final out = await _materialsAtFinish(estimate);
+      if (out == null) return; // cancelled — do not finish the job half-reported
+      receiptUrl = out['receiptUrl'] as String?;
+      materialsActual = out['materialsActual'] as num?;
     }
 
     try {
       final res = await Api.patch('/bookings/${b['id']}', {
         'workDone': true,
         if (receiptUrl != null) 'receiptUrl': receiptUrl,
+        if (materialsActual != null) 'materialsActual': materialsActual,
       });
       if (res.statusCode >= 200 && res.statusCode < 300) {
         setState(() => b['workDoneAt'] = DateTime.now().toIso8601String());

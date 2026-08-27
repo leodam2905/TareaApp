@@ -51,7 +51,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { status, cancelReason, receiptUrl, workDone, timer } = await req.json();
+  const { status, cancelReason, receiptUrl, workDone, timer, materialsActual } = await req.json();
   const booking = await prisma.booking.findUnique({
     where: { id: params.id },
     include: {
@@ -139,11 +139,25 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     // actually bought.
     const proReceipt = typeof receiptUrl === "string" && receiptUrl ? receiptUrl : undefined;
 
+    // What the materials actually cost. Charged at cost CAPPED AT THE ESTIMATE:
+    // under it and the difference goes back to the customer at completion; over
+    // it and the pro absorbs it, because the customer agreed to a number before
+    // the job and only the pro controls the overrun.
+    let actual: number | undefined;
+    if (materialsActual !== undefined && materialsActual !== null && materialsActual !== "") {
+      const n = Math.round(Number(materialsActual) * 100) / 100;
+      if (!Number.isFinite(n) || n < 0) {
+        return NextResponse.json({ error: "Materials spend must be a positive amount." }, { status: 400 });
+      }
+      actual = n;
+    }
+
     await prisma.booking.update({
       where: { id: params.id },
       data: {
         workDoneAt: new Date(),
         ...(proReceipt ? { receiptUrl: proReceipt, receiptUploadedAt: new Date() } : {}),
+        ...(actual !== undefined ? { materialsActual: actual } : {}),
       },
     });
     await createNotification({

@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { handymanNet } from "@/lib/fees";
-import { proOwedFor } from "@/lib/pro-payout";
+import { proOwedFor, materialsRefundDue } from "@/lib/pro-payout";
 import { checkPayoutAccount, alertPayoutFailure } from "@/lib/payout-account";
 import { sendInvoiceEmail } from "@/lib/email";
 import { releaseProxySessions } from "@/lib/voice";
+import { createNotification } from "@/lib/notify";
 
 // Completes a paid, in-progress booking and releases escrow to the pro. Used by
 // both the customer's "Confirm completion" (bookings PATCH) and the 3-day
@@ -52,6 +53,38 @@ export async function completeBooking(bookingId: string, opts?: { receiptUrl?: s
   } catch (err) {
     console.error("[completeBooking] invoice email failed:", err);
   }
+  // Refund the materials the pro did not spend.
+  //
+  // Materials are prepaid from the estimate given at application and reimbursed
+  // at cost capped at that estimate, so an underspend is the customer's money.
+  // Refunded BEFORE the transfer, so the platform balance still holds the funds
+  // — and recorded, so a retry after a Stripe failure cannot refund twice. No
+  // service fee is charged on materials, so the difference is refunded whole.
+  if (booking.isPaid && booking.stripePaymentIntentId && booking.materialsRefunded == null) {
+    const due = materialsRefundDue(booking);
+    if (due > 0) {
+      try {
+        await stripe.refunds.create({
+          payment_intent: booking.stripePaymentIntentId,
+          amount: Math.round(due * 100),
+          metadata: { reason: "materials_underspend", bookingId },
+        });
+        await prisma.booking.update({ where: { id: bookingId }, data: { materialsRefunded: due } });
+        await createNotification({
+          userId: booking.customerId,
+          title: `Materials refund — $${due.toFixed(2)}`,
+          body: `Your pro spent less on materials than quoted for "${booking.service.title}". $${due.toFixed(2)} is on its way back to your card, usually within 5-10 days.`,
+          type: "booking_accepted",
+          refId: bookingId,
+        });
+      } catch (err) {
+        // A failed refund must not block completion or the pro's payout — the
+        // customer is owed money either way, and an admin can see it unrefunded.
+        console.error("[completeBooking] materials refund failed:", err);
+      }
+    }
+  }
+
   // Close the job request this booking came from.
   //
   // The request went ASSIGNED when the pro was hired and stayed there for ever:

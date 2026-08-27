@@ -42,6 +42,7 @@ type Booking = {
   notes: string | null;
   totalPrice: number;
   materialsEstimate: number;
+  materialsRefunded?: number | null;
   cancelReason: string | null;
   isPaid: boolean;
   workDoneAt: string | null;
@@ -371,7 +372,9 @@ export default function BookingDetailPage() {
           </div>
           <div className="text-right">
             <p className="text-tarea-sky font-bold text-xl">
-              {formatCurrency(booking.totalPrice * 1.15 + (booking.materialsEstimate ?? 0))}
+              {formatCurrency(
+                booking.totalPrice * 1.15 + (booking.materialsEstimate ?? 0) - (booking.materialsRefunded ?? 0),
+              )}
             </p>
             <p className="text-slate-500 text-xs mt-0.5">
               Labor {formatCurrency(booking.totalPrice)} + 15% fee
@@ -379,6 +382,11 @@ export default function BookingDetailPage() {
             {(booking.materialsEstimate ?? 0) > 0 && (
               <p className="text-slate-500 text-xs">
                 🔩 Materials ~{formatCurrency(booking.materialsEstimate)}
+              </p>
+            )}
+            {(booking.materialsRefunded ?? 0) > 0 && (
+              <p className="text-emerald-400 text-xs">
+                ↩ {formatCurrency(booking.materialsRefunded!)} materials refunded
               </p>
             )}
             {booking.isPaid ? (

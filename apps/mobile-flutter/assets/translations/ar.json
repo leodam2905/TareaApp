@@ -475,7 +475,11 @@
     "appliedPill": "تم التقديم",
     "awaitingCustomer": "في انتظار العميل",
     "receiptPrompt": "إرفاق إيصال المواد؟",
-    "receiptSkip": "تخطٍّ — بدون إيصال"
+    "materialsTitle": "مواد هذه المهمة",
+    "materialsNote": "قدّرت {} دولارًا. أدخل ما أنفقته فعليًا — إن كان أقل، يُعاد الفرق إلى العميل. أما الزيادة فهي على حسابك.",
+    "materialsSpent": "المبلغ المنفق فعليًا",
+    "receiptAttached": "تم إرفاق الإيصال",
+    "finishJob": "إنهاء المهمة"
   },
   "proEarnings": {
     "totalEarned": "إجمالي الأرباح",
