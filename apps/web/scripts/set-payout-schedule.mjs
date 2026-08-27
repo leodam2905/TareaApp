@@ -20,6 +20,22 @@ if (!key) {
   console.error("STRIPE_SECRET_KEY is not set.");
   process.exit(1);
 }
+// A test key here is the quiet failure mode: apps/web/.env holds rk_test_, so
+// running this without thinking lists Stripe's TEST connected accounts, changes
+// nothing that matters, and prints a reassuring summary. Real pros stay on
+// daily. Refuse unless a test run is what was actually meant.
+if (key.includes("_test_") && !process.argv.includes("--test")) {
+  console.error(
+    "This is a TEST-mode key, so it would operate on test connected accounts,\n" +
+    "not your real pros - and report success either way.\n\n" +
+    "For the live accounts:\n" +
+    '  STRIPE_SECRET_KEY="$(gcloud secrets versions access latest --secret=STRIPE_SECRET_KEY)" \\\n' +
+    "    node scripts/set-payout-schedule.mjs --dry-run\n\n" +
+    "To run against test mode deliberately, pass --test.",
+  );
+  process.exit(1);
+}
+
 const stripe = new Stripe(key);
 
 const TARGET = { interval: "weekly", weekly_anchor: "monday" };
