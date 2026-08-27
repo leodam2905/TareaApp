@@ -163,7 +163,10 @@ export async function POST(req: NextRequest) {
       if (session.metadata?.type === "hire") {
         const { jobRequestId, applicationId } = session.metadata;
         if (jobRequestId && applicationId) {
-          await materializeHire({ jobRequestId, applicationId, paymentIntentId, sessionId: session.id });
+          await materializeHire({
+            jobRequestId, applicationId, paymentIntentId, sessionId: session.id,
+            promoCodeId: session.metadata?.promoCodeId ?? null,
+          });
         }
         return NextResponse.json({ ok: true });
       }

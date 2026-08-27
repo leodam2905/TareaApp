@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { unmetSteps } from "@/lib/pro-bookable";
 import { stripe } from "@/lib/stripe";
 import { hireAmounts } from "@/lib/hire";
+import { assertPromoUsable, hasPriorPaidOrder } from "@/lib/promo";
 import { hireReturnUrls, returnTarget } from "@/lib/stripe-return-urls";
 
 export async function PATCH(
@@ -107,9 +108,37 @@ export async function PATCH(
     // request stays OPEN and the pro is told nothing. Hiring is paying, so a
     // customer who closes the payment page has simply not hired anybody.
     // The booking itself is created from the webhook (see lib/hire.ts).
-    const { labour, serviceFee, materials } = hireAmounts(
+    // A promo code sent with the hire. TAREA20 — 20% off a first order — was
+    // advertised on the home screen and in the store listing but could never be
+    // redeemed on this path: hiring computed its own totals and never looked at
+    // a code, and the only place promos applied was the directed-booking
+    // checkout. The rules come from assertPromoUsable, the same function
+    // checkout uses, so a code cannot be valid on one path and not the other.
+    let promoCodeId: string | null = null;
+    let discount = 0;
+    if (typeof body?.promoCode === "string" && body.promoCode.trim()) {
+      const promo = await prisma.promoCode.findUnique({
+        where: { code: body.promoCode.trim().toUpperCase() },
+      });
+      if (promo) {
+        const prior = await hasPriorPaidOrder(user.id);
+        const check = assertPromoUsable(promo, user.id, jobRequest.budgetMin ?? 0, prior);
+        if (!check.ok) {
+          // Told, not swallowed: a customer who typed a code deserves to know
+          // why it did not apply rather than seeing an unchanged total.
+          return NextResponse.json({ error: check.error ?? "That promo code cannot be used." }, { status: 400 });
+        }
+        discount = check.discountAmount;
+        promoCodeId = promo.id;
+      } else {
+        return NextResponse.json({ error: "Invalid promo code" }, { status: 400 });
+      }
+    }
+
+    const { labour, serviceFee, materials, discount: applied } = hireAmounts(
       jobRequest.budgetMin ?? 0,
       application.materialsEstimate ?? jobRequest.materialsCost ?? 0,
+      discount,
     );
     if (labour <= 0) {
       return NextResponse.json({ error: "This job has no price set and cannot be paid for." }, { status: 400 });
@@ -129,7 +158,9 @@ export async function PATCH(
             unit_amount: Math.round(labour * 100),
             product_data: {
               name: `${jobRequest.title} (Labor)`,
-              description: `${application.user.name} — ${jobRequest.city}`,
+              description: applied > 0
+                ? `${application.user.name} — ${jobRequest.city} · Promo applied: -$${applied.toFixed(2)}`
+                : `${application.user.name} — ${jobRequest.city}`,
             },
           },
           quantity: 1,
@@ -161,6 +192,7 @@ export async function PATCH(
         jobRequestId: params.id,
         applicationId: params.appId,
         userId: user.id,
+        ...(promoCodeId ? { promoCodeId } : {}),
       },
       payment_intent_data: {
         metadata: { type: "hire", jobRequestId: params.id, applicationId: params.appId },

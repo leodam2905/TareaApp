@@ -14,14 +14,31 @@ import { CUSTOMER_FEE_RATE } from "@/lib/fees";
 // leaves the request open, every applicant still in the running, and the pro
 // none the wiser.
 
-/** What the customer is charged to hire an applicant: labour + fee, materials at cost. */
-export function hireAmounts(budgetMin: number, materials: number): {
+/** What the customer is charged to hire an applicant: labour + fee, materials at cost.
+ *
+ * The discount comes off LABOUR before the service fee is computed, matching
+ * bookingAmounts() in lib/booking-charge. Applying it after the fee would charge
+ * 15% on money the customer never pays, and the two paths would quietly disagree
+ * about what a promo is worth.
+ *
+ * Materials are never discounted — they are a pass-through at cost, and a promo
+ * that ate into them would take the difference out of the pro's reimbursement.
+ */
+export function hireAmounts(budgetMin: number, materials: number, discount = 0): {
   labour: number;
   serviceFee: number;
   materials: number;
+  discount: number;
 } {
-  const labour = Math.max(0, budgetMin);
-  return { labour, serviceFee: labour * CUSTOMER_FEE_RATE, materials: Math.max(0, materials) };
+  const full = Math.max(0, budgetMin);
+  const applied = Math.min(Math.max(0, discount), full);
+  const labour = full - applied;
+  return {
+    labour,
+    serviceFee: labour * CUSTOMER_FEE_RATE,
+    materials: Math.max(0, materials),
+    discount: applied,
+  };
 }
 
 /**
@@ -35,8 +52,9 @@ export async function materializeHire(opts: {
   applicationId: string;
   paymentIntentId: string | null;
   sessionId: string | null;
+  promoCodeId?: string | null;
 }) {
-  const { jobRequestId, applicationId, paymentIntentId, sessionId } = opts;
+  const { jobRequestId, applicationId, paymentIntentId, sessionId, promoCodeId } = opts;
 
   if (paymentIntentId) {
     const existing = await prisma.booking.findFirst({ where: { stripePaymentIntentId: paymentIntentId } });
@@ -127,9 +145,23 @@ export async function materializeHire(opts: {
       city: jobRequest.city,
       // Tarea sets the labour price; a pro cannot bid it up or change it.
       totalPrice: price,
+      ...(promoCodeId ? { promoCodeId } : {}),
       materialsEstimate: application.materialsEstimate ?? jobRequest.materialsCost ?? 0,
     },
   });
+
+  // Count the redemption HERE, not when the checkout opened.
+  //
+  // A promo is spent when money moves. Counting it at checkout creation would
+  // let an abandoned payment burn a use — and referral codes are issued with a
+  // maxUses limit, so a customer could lose their 10% by opening a payment page
+  // and closing it. (The directed-booking path still counts at booking
+  // creation; worth aligning, but that is a separate change.)
+  if (promoCodeId) {
+    await prisma.promoCode
+      .update({ where: { id: promoCodeId }, data: { usesCount: { increment: 1 } } })
+      .catch((err) => console.error("[hire] could not record promo use:", err));
+  }
 
   await Promise.all([
     createNotification({
