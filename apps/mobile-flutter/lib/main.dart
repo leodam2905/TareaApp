@@ -90,7 +90,14 @@ Future<void> bootstrap(Flavor flavor) async {
 
   // Init push AFTER the first frame so a slow/failed Firebase init on any
   // platform can never block the UI from rendering (white screen).
-  PushService.initFirebase().then((_) => PushService.registerToken());
+  //
+  // Skipped during automated App Store screenshot capture: the iOS push
+  // permission alert is a native dialog, so it sits on top of every frame the
+  // capture takes and cannot be dismissed from the Flutter side.
+  const capturingScreenshots = bool.fromEnvironment('SCREENSHOT_MODE');
+  if (!capturingScreenshots) {
+    PushService.initFirebase().then((_) => PushService.registerToken());
+  }
 }
 
 void main() => bootstrap(Flavor.home);
