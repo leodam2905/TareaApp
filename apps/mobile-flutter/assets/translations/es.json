@@ -492,7 +492,9 @@
     "setupBank": "Configura tu banco para cobrar",
     "readyToCashOut": "Listo para retirar",
     "clearing": "En proceso",
-    "clearingNote": "Los pagos con tarjeta tardan unos 2 días hábiles en liberarse. Podrás retirar en cuanto ocurra."
+    "clearingNote": "Los pagos con tarjeta tardan unos 2 días hábiles en liberarse. Podrás retirar en cuanto ocurra.",
+    "instantTitle": "Retiro instantáneo",
+    "instantNote": "Se desbloquea tras {} trabajos completados. Hasta entonces, tus ganancias llegan gratis en tu calendario de pagos habitual."
   },
   "jobDetail": {
     "title": "Detalle del trabajo",

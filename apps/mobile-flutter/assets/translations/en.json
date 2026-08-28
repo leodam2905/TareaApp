@@ -492,7 +492,9 @@
     "setupBank": "Set up your bank to get paid",
     "readyToCashOut": "Ready to cash out",
     "clearing": "Still clearing",
-    "clearingNote": "Card payments take about 2 business days to clear. You can cash out once they do."
+    "clearingNote": "Card payments take about 2 business days to clear. You can cash out once they do.",
+    "instantTitle": "Instant cash-out",
+    "instantNote": "Unlocks after {} completed jobs. Until then your earnings arrive free on your normal payout schedule."
   },
   "jobDetail": {
     "title": "Job Detail",

@@ -492,7 +492,9 @@
     "setupBank": "Configurez votre banque pour être payé",
     "readyToCashOut": "Disponible au retrait",
     "clearing": "En cours de compensation",
-    "clearingNote": "Les paiements par carte mettent environ 2 jours ouvrés à être compensés. Vous pourrez retirer ensuite."
+    "clearingNote": "Les paiements par carte mettent environ 2 jours ouvrés à être compensés. Vous pourrez retirer ensuite.",
+    "instantTitle": "Retrait instantané",
+    "instantNote": "Débloqué après {} missions terminées. D'ici là, vos gains arrivent gratuitement selon votre calendrier de versement habituel."
   },
   "jobDetail": {
     "title": "Détail de la mission",

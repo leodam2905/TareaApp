@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { proOwedForAll } from "@/lib/pro-payout";
 import { stripe } from "@/lib/stripe";
+import { INSTANT_MIN_COMPLETED_JOBS } from "@/lib/instant-payout";
 
 // The pro app's earnings summary.
 //
@@ -79,5 +80,11 @@ export async function GET() {
     // Straight from Stripe. null when unknown — never conflated with zero.
     withdrawableNow,
     clearingSoon,
+    // Progress towards instant cash-out, so the earnings screen can set the
+    // expectation instead of leaving pros to guess. Reported here rather than
+    // from /handyman/cashout because this is the screen a pro actually opens
+    // to ask "when do I get paid".
+    instantJobsCompleted: completed.length,
+    instantJobsRequired: INSTANT_MIN_COMPLETED_JOBS,
   });
 }

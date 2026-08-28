@@ -20,6 +20,12 @@ class _ProEarningsState extends State<ProEarnings> {
   num? _withdrawable;
   num? _clearing;
   int _jobs = 0;
+  // Progress towards instant cash-out. Stripe sets the platform's instant
+  // limit itself from volume and history, so this is Tarea's own threshold for
+  // who is offered it — shown as progress rather than a button, because a
+  // button that refuses every pro is worse than none.
+  int _instantDone = 0;
+  int _instantNeed = 0;
   String _stripe = '';
   bool _loading = true;
 
@@ -37,6 +43,8 @@ class _ProEarningsState extends State<ProEarnings> {
         _stripe = (d['stripeAccountStatus'] ?? '').toString();
         _withdrawable = d['withdrawableNow'] as num?;
         _clearing = d['clearingSoon'] as num?;
+        _instantDone = (d['instantJobsCompleted'] ?? 0) as int;
+        _instantNeed = (d['instantJobsRequired'] ?? 0) as int;
       }
     } catch (_) {}
     if (mounted) setState(() => _loading = false);
@@ -102,6 +110,45 @@ class _ProEarningsState extends State<ProEarnings> {
                                 style: const TextStyle(color: C.muted, fontSize: 12, height: 1.5)),
                           ),
                         ],
+                      ]),
+                    ),
+                  ],
+                  // Instant cash-out progress. Only while it is still locked —
+                  // once a pro passes the threshold this row has nothing left
+                  // to say, and Stripe's own limit decides the rest.
+                  if (_instantNeed > 0 && _instantDone < _instantNeed) ...[
+                    const SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(16)),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Row(children: [
+                          Container(
+                            width: 44, height: 44,
+                            decoration: BoxDecoration(color: const Color(0xFFF3F0FF), borderRadius: BorderRadius.circular(22)),
+                            child: const Icon(Icons.bolt_outlined, color: Color(0xFF7C5CFF)),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text('proEarnings.instantTitle'.tr(),
+                                style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+                          ),
+                          Text('$_instantDone/$_instantNeed',
+                              style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF7C5CFF), fontSize: 16)),
+                        ]),
+                        const SizedBox(height: 12),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: LinearProgressIndicator(
+                            value: _instantNeed == 0 ? 0 : (_instantDone / _instantNeed).clamp(0.0, 1.0),
+                            minHeight: 8,
+                            backgroundColor: const Color(0xFFEDE9FE),
+                            valueColor: const AlwaysStoppedAnimation(Color(0xFF7C5CFF)),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text('proEarnings.instantNote'.tr(args: ['$_instantNeed']),
+                            style: const TextStyle(color: C.muted, fontSize: 12, height: 1.5)),
                       ]),
                     ),
                   ],
