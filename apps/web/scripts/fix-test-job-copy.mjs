@@ -8,6 +8,10 @@
 //   node scripts/fix-test-job-copy.mjs             # rename (recommended)
 //   node scripts/fix-test-job-copy.mjs --delete    # remove it entirely
 //
+// Starts its own cloud-sql-proxy. The DATABASE_URL in Secret Manager points at
+// a unix socket that only exists inside Cloud Run, so passing it straight to
+// Prisma from a laptop fails with "Can't reach database server".
+//
 // RENAME is the default on purpose. This is the only job in the system with a
 // pro actually hired against it, so its card is the one screenshot that shows
 // the marketplace working — three "no pros have applied yet" cards do not.
@@ -16,8 +20,10 @@
 // Either way the Booking survives: Booking.jobRequestId carries no foreign key,
 // so the record of the real $57.50 charge and the $45 transfer is untouched.
 import { PrismaClient } from '@prisma/client';
+import { openCloudSql } from './lib/cloudsql.mjs';
 
-const prisma = new PrismaClient();
+const db = await openCloudSql();
+const prisma = new PrismaClient({ datasources: { db: { url: db.url } } });
 const dry = process.argv.includes('--dry-run');
 const del = process.argv.includes('--delete');
 
@@ -29,6 +35,7 @@ const jr = await prisma.jobRequest.findFirst({
 if (!jr) {
   console.log('Nothing to do — no job request matching "LIVE PAYMENT TEST".');
   await prisma.$disconnect();
+  await db.close();
   process.exit(0);
 }
 
@@ -50,3 +57,4 @@ if (del) {
 
 console.log(dry ? '\nnothing written' : '\ndone');
 await prisma.$disconnect();
+await db.close();
