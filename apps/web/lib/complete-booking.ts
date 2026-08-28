@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { handymanNet } from "@/lib/fees";
 import { proOwedFor, materialsRefundDue, payoutIdempotencyKey } from "@/lib/pro-payout";
-import { checkPayoutAccount, alertPayoutFailure } from "@/lib/payout-account";
+import { checkPayoutAccount, alertPayoutFailure, alertRefundFailure } from "@/lib/payout-account";
 import { sendInvoiceEmail } from "@/lib/email";
 import { releaseProxySessions } from "@/lib/voice";
 import { createNotification } from "@/lib/notify";
@@ -64,23 +64,59 @@ export async function completeBooking(bookingId: string, opts?: { receiptUrl?: s
     const due = materialsRefundDue(booking);
     if (due > 0) {
       try {
-        await stripe.refunds.create({
-          payment_intent: booking.stripePaymentIntentId,
-          amount: Math.round(due * 100),
-          metadata: { reason: "materials_underspend", bookingId },
+        // Ask Stripe what it has already given back before giving back more.
+        //
+        // booking.materialsRefunded guards against OUR retries, but it knows
+        // nothing about a refund an admin issued by hand in the Stripe
+        // dashboard — which is exactly what the failure alert below tells them
+        // to do. Without this, a hand-refunded job that later completed would
+        // pay the customer twice.
+        const pi = await stripe.paymentIntents.retrieve(booking.stripePaymentIntentId, {
+          expand: ["latest_charge"],
         });
-        await prisma.booking.update({ where: { id: bookingId }, data: { materialsRefunded: due } });
-        await createNotification({
-          userId: booking.customerId,
-          title: `Materials refund — $${due.toFixed(2)}`,
-          body: `Your pro spent less on materials than quoted for "${booking.service.title}". $${due.toFixed(2)} is on its way back to your card, usually within 5-10 days.`,
-          type: "booking_accepted",
-          refId: bookingId,
-        });
+        const charge = typeof pi.latest_charge === "string" ? null : pi.latest_charge;
+        const alreadyRefunded = (charge?.amount_refunded ?? 0) / 100;
+
+        if (alreadyRefunded >= due) {
+          // Someone already refunded at least what was owed. Record it so this
+          // stops asking, and say nothing to the customer — they have the money.
+          await prisma.booking.update({
+            where: { id: bookingId },
+            data: { materialsRefunded: alreadyRefunded },
+          });
+          console.warn(
+            `[completeBooking] materials already refunded ($${alreadyRefunded.toFixed(2)}) for ${bookingId} — recorded, not re-refunded`,
+          );
+        } else {
+          const outstanding = Math.round((due - alreadyRefunded) * 100) / 100;
+          await stripe.refunds.create({
+            payment_intent: booking.stripePaymentIntentId,
+            amount: Math.round(outstanding * 100),
+            metadata: { reason: "materials_underspend", bookingId },
+          });
+          await prisma.booking.update({
+            where: { id: bookingId },
+            data: { materialsRefunded: due },
+          });
+          await createNotification({
+            userId: booking.customerId,
+            title: `Materials refund — $${outstanding.toFixed(2)}`,
+            body: `Your pro spent less on materials than quoted for "${booking.service.title}". $${outstanding.toFixed(2)} is on its way back to your card, usually within 5-10 days.`,
+            type: "booking_accepted",
+            refId: bookingId,
+          });
+        }
       } catch (err) {
         // A failed refund must not block completion or the pro's payout — the
-        // customer is owed money either way, and an admin can see it unrefunded.
-        console.error("[completeBooking] materials refund failed:", err);
+        // customer is owed money either way. But it must not pass silently:
+        // materialsRefunded stays null, so nothing retries on its own and the
+        // customer would simply never be paid back.
+        await alertRefundFailure({
+          bookingId,
+          customerId: booking.customerId,
+          amount: due,
+          detail: err instanceof Error ? err.message : String(err),
+        });
       }
     }
   }

@@ -192,3 +192,54 @@ export async function alertPayoutFailure(input: {
     console.error("[payout] alerting failed:", err);
   }
 }
+
+/**
+ * A materials refund that did not go through.
+ *
+ * The customer is owed this money regardless: they were charged for materials
+ * the pro did not buy. Completion and the pro's payout deliberately continue
+ * when the refund throws — holding a finished job hostage to a Stripe error
+ * helps nobody — but that left the failure recorded only in a console line,
+ * so an admin would find out when the customer complained, if ever.
+ *
+ * Deliberately not a payout alert: the money is owed to the CUSTOMER, and
+ * booking.materialsRefunded stays null, so this is also the signal that a
+ * retry is still safe.
+ */
+export async function alertRefundFailure(input: {
+  bookingId: string;
+  customerId: string;
+  amount: number;
+  detail: string;
+}): Promise<void> {
+  const { bookingId, customerId, amount, detail } = input;
+
+  console.error(
+    "[refund] FAILED",
+    JSON.stringify({ bookingId, customerId, amount, detail, mode: stripeMode() }),
+  );
+
+  try {
+    const [admins, customer] = await Promise.all([
+      prisma.user.findMany({ where: { role: "ADMIN" }, select: { id: true } }),
+      prisma.user.findUnique({ where: { id: customerId }, select: { name: true, email: true } }),
+    ]);
+    await Promise.allSettled(
+      admins.map((a) =>
+        createNotification({
+          userId: a.id,
+          title: "Materials refund failed — customer owed",
+          body:
+            `${customer?.name ?? customerId} (${customer?.email ?? "no email"}) is owed `
+            + `$${amount.toFixed(2)} for materials their pro did not spend, and the refund `
+            + `did not go through. ${detail} — refund it in Stripe against booking ${bookingId}.`,
+          type: "payout",
+          refId: bookingId,
+        }),
+      ),
+    );
+  } catch (err) {
+    // Never let alerting break the caller — the refund already failed once.
+    console.error("[refund] alerting failed:", err);
+  }
+}
