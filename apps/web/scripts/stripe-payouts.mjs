@@ -38,6 +38,8 @@ head("PLATFORM BALANCE");
 const bal = await stripe.balance.retrieve();
 const sum = (rows) => rows.reduce((t, r) => t + r.amount, 0);
 console.log(`  available ${usd(sum(bal.available))}   pending ${usd(sum(bal.pending))}`);
+console.log(`  instant available ${usd(sum(bal.instant_available ?? []))}`
+  + `   <- instant cash-out is dead while this is $0.00`);
 
 head("TRANSFERS  Tarea -> pros");
 let transfers = 0;
@@ -64,7 +66,12 @@ for (const [id, who] of names) {
       stripe.payouts.list({ limit: 5 }, { stripeAccount: id }),
       stripe.balance.retrieve({}, { stripeAccount: id }),
     ]);
-    const held = `avail ${usd(sum(b.available))} / pending ${usd(sum(b.pending))}`;
+    // instant_available is the whole ballgame for instant cash-out: it is what
+    // Stripe will fund right now, and it stays at zero until the platform has
+    // enough volume and history. Watch this to know when instant goes live —
+    // there is no manual request process and no notification.
+    const instant = sum(b.instant_available ?? []);
+    const held = `avail ${usd(sum(b.available))} / pending ${usd(sum(b.pending))} / instant ${usd(instant)}`;
     console.log(`\n  ${who}  (${held})`);
     if (!payouts.data.length) { console.log("    (no payouts yet)"); continue; }
     for (const p of payouts.data) {

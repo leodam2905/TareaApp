@@ -52,10 +52,13 @@ export interface InstantEligibility {
     | "no_account"
     | "no_debit_card"
     | "card_not_instant"
+    | "no_instant_funds"
     | "lookup_failed";
   /** Completed jobs so far, and the threshold — so the app can show progress. */
   jobsCompleted?: number;
   jobsRequired?: number;
+  /** What Stripe will fund instantly for this pro right now, in dollars. */
+  instantAvailable?: number;
   /** Last 4 of the card the payout would land on, when there is one. */
   cardLast4?: string;
 }
@@ -64,6 +67,7 @@ export async function checkInstantEligibility(
   stripeAccountId?: string | null,
   completedJobs?: number,
 ): Promise<InstantEligibility> {
+  const stripeAccount = stripeAccountId ?? undefined;
   const progress = {
     jobsCompleted: completedJobs ?? 0,
     jobsRequired: INSTANT_MIN_COMPLETED_JOBS,
@@ -89,7 +93,26 @@ export async function checkInstantEligibility(
     });
     if (!instantCard) return { eligible: false, reason: "card_not_instant", ...progress };
 
-    return { eligible: true, cardLast4: (instantCard as { last4?: string }).last4, ...progress };
+    // The decisive check: what Stripe will ACTUALLY fund instantly right now.
+    //
+    // Stripe sets the instant-payout limit itself from volume and history and
+    // says outright there is no manual request process, so there is no flag to
+    // flip when it becomes available — but the balance reports it. Reading
+    // instant_available means the day Stripe starts funding this, it starts
+    // working, with no deploy and nobody watching a dashboard.
+    const balance = await stripe.balance.retrieve({}, { stripeAccount });
+    const instantFunds = (balance.instant_available ?? [])
+      .reduce((t, b) => t + b.amount, 0) / 100;
+    if (instantFunds <= 0) {
+      return { eligible: false, reason: "no_instant_funds", instantAvailable: 0, ...progress };
+    }
+
+    return {
+      eligible: true,
+      cardLast4: (instantCard as { last4?: string }).last4,
+      instantAvailable: instantFunds,
+      ...progress,
+    };
   } catch (err) {
     // Unknown is not the same as ineligible. Report the failure so the caller
     // can let the pro try rather than hiding a feature over a transient error.
@@ -112,6 +135,9 @@ export function instantBlockedMessage(
     }
     case "no_debit_card":
       return "Add a debit card to cash out instantly. Bank accounts can only receive the free standard payout.";
+    case "no_instant_funds":
+      return "Instant cash-out isn't available on your account yet. "
+        + "Your earnings still arrive free on the normal payout schedule.";
     case "card_not_instant":
       return "Your card's bank does not support instant payouts. Add a different debit card, or use the free standard payout.";
     case "no_account":
