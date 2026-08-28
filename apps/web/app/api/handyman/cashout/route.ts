@@ -19,7 +19,7 @@ export async function GET() {
   const user = await getCurrentUser();
   if (!user || user.role !== "HANDYMAN") return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const [unpaid, paid, pendingTips, activeDisputes] = await Promise.all([
+  const [unpaid, paid, pendingTips, activeDisputes, completedJobs] = await Promise.all([
     prisma.booking.findMany({
       where: { handymanId: user.id, status: "COMPLETED", isPaid: true, handymanPaidOut: false },
       select: { id: true, totalPrice: true, materialsEstimate: true, materialsActual: true, completedAt: true, service: { select: { title: true } } },
@@ -38,6 +38,11 @@ export async function GET() {
     prisma.booking.count({
       where: { handymanId: user.id, status: "DISPUTED" },
     }),
+    // Lifetime completed jobs, not just the 20 shown as history — the instant
+    // threshold is about a pro's track record, so it must count all of it.
+    prisma.booking.count({
+      where: { handymanId: user.id, status: "COMPLETED" },
+    }),
   ]);
 
   const bookingEarnings = proOwedForAll(unpaid);
@@ -47,7 +52,7 @@ export async function GET() {
   // Asked BEFORE the pro commits to anything. Offering instant cash-out and
   // discovering at the last step that their card cannot take it wastes the one
   // moment they actually wanted the money quickly.
-  const instant = await checkInstantEligibility(user.stripeAccountId);
+  const instant = await checkInstantEligibility(user.stripeAccountId, completedJobs);
 
   return NextResponse.json({
     available,
@@ -59,7 +64,11 @@ export async function GET() {
     instantCardLast4: instant.cardLast4 ?? null,
     // Null when eligible — the app shows the button instead of a reason.
     instantBlockedReason: instant.eligible ? null : instant.reason ?? null,
-    instantBlockedMessage: instant.eligible ? null : instantBlockedMessage(instant.reason),
+    instantBlockedMessage: instant.eligible ? null : instantBlockedMessage(instant.reason, instant),
+    // Progress towards the threshold, so the app can show "12 of 30" rather
+    // than only saying no.
+    instantJobsCompleted: instant.jobsCompleted ?? completedJobs,
+    instantJobsRequired: instant.jobsRequired ?? null,
     stripeStatus: user.stripeAccountStatus ?? "not_connected",
     pendingBookings: unpaid.map(b => ({
       id: b.id,
@@ -164,10 +173,13 @@ export async function POST(_req: NextRequest) {
   // card, would instead lose the option on those earnings permanently. A
   // lookup failure is deliberately NOT treated as ineligible: unknown means
   // let them try, and the payout leg below fails safely if it cannot run.
-  const instant = await checkInstantEligibility(user.stripeAccountId);
+  const completedJobs = await prisma.booking.count({
+    where: { handymanId: user.id, status: "COMPLETED" },
+  });
+  const instant = await checkInstantEligibility(user.stripeAccountId, completedJobs);
   if (!instant.eligible && instant.reason !== "lookup_failed") {
     return NextResponse.json(
-      { error: instantBlockedMessage(instant.reason), reason: instant.reason },
+      { error: instantBlockedMessage(instant.reason, instant), reason: instant.reason },
       { status: 400 },
     );
   }
