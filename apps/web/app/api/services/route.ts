@@ -33,7 +33,9 @@ export async function GET(req: NextRequest) {
             id: true,
             isPremium: true,
             rating: true,
-            user: { select: { name: true, avatarUrl: true, city: true, isVerified: true, latitude: true, longitude: true } },
+            // No coordinates: this route computes no distance, so they were
+            // pure exposure — a pro's home position handed to any caller.
+            user: { select: { name: true, avatarUrl: true, city: true, isVerified: true } },
           },
         },
       },

@@ -104,8 +104,13 @@ export async function GET(req: NextRequest) {
       avatarUrl: h.avatarUrl,
       city: h.city,
       state: h.state,
-      latitude: h.latitude,
-      longitude: h.longitude,
+      // Coordinates are NOT returned.
+      //
+      // They are selected above only to compute distanceKm here, on the
+      // server. Passing them on handed every signed-in customer a pro's home
+      // location at full precision — pros register their home address, the app
+      // never read these fields, and the UI only ever shows the distance. A
+      // number nobody uses is not worth a privacy exposure.
       isVerified: h.isVerified,
       handymanProfile: hp
         ? {

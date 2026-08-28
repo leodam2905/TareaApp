@@ -93,8 +93,8 @@ export async function GET(req: NextRequest) {
           backgroundCheckStatus: h.backgroundCheckStatus,
           distanceKm,
           score: h.rating * 8 + Math.min(h.totalJobs, 25) + (h.isPremium ? 25 : 0),
-          latitude: h.user.latitude,
-          longitude: h.user.longitude,
+          // Coordinates deliberately not returned — see the note in
+          // /api/handyman/browse. distanceKm is what the client needs.
           service: h.services[0] ?? null,
         };
       })

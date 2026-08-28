@@ -64,7 +64,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     const distanceScore = distanceKm !== null ? Math.max(0, 100 - distanceKm) : 0;
     const score = (cityMatch ? 50 : 0) + distanceScore + h.rating * 10;
 
-    return { ...h, distanceKm, score };
+    // The coordinates are needed for the haversine above but must not go out
+    // with the response; spreading the row sent a pro's home location to every
+    // customer browsing a service.
+    const { latitude: _lat, longitude: _lng, ...user } = h.user;
+    return { ...h, user, distanceKm, score };
   });
 
   scored.sort((a, b) => b.score - a.score);
