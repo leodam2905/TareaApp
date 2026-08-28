@@ -7,13 +7,16 @@
 //
 //   flutter drive --driver test_driver/screenshots.dart \
 //     --target integration_test/screenshots_test.dart -d <simulator-id>
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:integration_test/integration_test.dart';
 import 'package:tarea/main.dart' as app;
 import 'package:tarea/flavor.dart';
+import 'package:tarea/api.dart';
 
 /// pumpAndSettle throws if anything animates forever — a pulsing "searching"
 /// indicator, a shimmer placeholder. Screens here legitimately have those, so
@@ -53,27 +56,27 @@ void main() {
     await app.bootstrap(Flavor.home);
     await rest(tester, seconds: 6);
 
-    // appRouter is a top-level in main.dart, so navigation needs no context —
-    // which matters because the widget tree is not reliably queryable until
-    // EasyLocalization and the splash hand over.
-    app.appRouter.go('/login');
-    await rest(tester, seconds: 3);
+    // Signed in over HTTP, not through the form.
+    //
+    // Driving the login UI silently failed: the app rendered the logged-in
+    // shell with no session, so the home screen greeted "there" and My
+    // Requests showed "No requests yet" while the account actually had four
+    // open requests. An empty screenshot is exactly what Apple rejected, so
+    // authentication here has to be verifiable rather than best-effort — hence
+    // the expect() below, which fails the run instead of quietly capturing
+    // logged-out screens.
+    final res = await http.post(
+      Uri.parse('https://taptarea.com/api/auth/login'),
+      headers: const {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': 'reviewer@taptarea.com', 'password': 'Review123!'}),
+    );
+    expect(res.statusCode, 200, reason: 'demo login failed: ${res.body}');
+    final body = jsonDecode(res.body) as Map<String, dynamic>;
+    await Api.setToken(body['token'] as String);
+    await Api.setRole((body['role'] ?? 'CUSTOMER').toString());
 
-    final fields = find.byType(TextField);
-    if (fields.evaluate().length >= 2) {
-      await tester.enterText(fields.at(0), 'reviewer@taptarea.com');
-      await rest(tester, seconds: 1);
-      await tester.enterText(fields.at(1), 'Review123!');
-      await rest(tester, seconds: 1);
-      final filled = find.byType(FilledButton);
-      final elevated = find.byType(ElevatedButton);
-      if (filled.evaluate().isNotEmpty) {
-        await tester.tap(filled.first, warnIfMissed: false);
-      } else if (elevated.evaluate().isNotEmpty) {
-        await tester.tap(elevated.first, warnIfMissed: false);
-      }
-      await rest(tester, seconds: 8);
-    }
+    app.appRouter.go('/home');
+    await rest(tester, seconds: 8);
 
     for (final shot in const [
       ('01-home', '/home'),
@@ -81,8 +84,10 @@ void main() {
       ('03-instant-quote', '/instant-quote'),
       ('04-browse', '/browse'),
       ('05-my-jobs', '/requests'),
-      ('06-spending', '/spending'),
-      ('07-refer-earn', '/refer-earn'),
+      // Spending is deliberately absent. It only has content once real money
+      // has moved, and fabricating completed bookings to fill it would put
+      // revenue in the reconciliation report that no Stripe charge backs.
+      ('06-refer-earn', '/refer-earn'),
     ]) {
       app.appRouter.go(shot.$2);
       // Generous: these fetch from the live API, and a screenshot of a spinner
