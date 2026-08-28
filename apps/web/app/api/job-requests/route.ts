@@ -134,10 +134,19 @@ export async function GET() {
         handymanUser?.latitude && handymanUser?.longitude && r.latitude && r.longitude
           ? haversine(handymanUser.latitude, handymanUser.longitude, r.latitude, r.longitude)
           : null;
+      // The street address and coordinates are NOT sent to a browsing pro.
+      //
+      // Spreading the row handed every approved pro the customer's exact home
+      // address before they had applied, let alone been hired. The find-jobs
+      // screen only ever shows city and distance, so nothing displayed it — it
+      // just sat in the payload. Once a pro IS hired the address reaches them
+      // through the booking (pro_job_detail reads it from there), which is the
+      // point at which they need it.
+      const { address: _address, latitude: _lat, longitude: _lng, ...safe } = r;
       // distanceKm stays for older app builds that read it; distanceMiles is
       // what every UI shows.
       return {
-        ...r,
+        ...safe,
         distanceKm,
         distanceMiles: milesFromKmOrNull(distanceKm),
         // Server-owned, so the badge survives an app restart — it used to live
