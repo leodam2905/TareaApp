@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../location_permission.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -222,8 +223,7 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
   /// dialog — a pro who declines location still wants to be online.
   Future<Position?> _currentPosition() async {
     try {
-      var perm = await Geolocator.checkPermission();
-      if (perm == LocationPermission.denied) perm = await Geolocator.requestPermission();
+      final perm = await ensureLocationPermission();
       if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) return null;
       return await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),

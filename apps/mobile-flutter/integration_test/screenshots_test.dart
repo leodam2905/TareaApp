@@ -7,6 +7,8 @@
 //
 //   flutter drive --driver test_driver/screenshots.dart \
 //     --target integration_test/screenshots_test.dart -d <simulator-id>
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -25,8 +27,27 @@ Future<void> rest(WidgetTester tester, {int seconds = 4}) async {
   }
 }
 
+/// Hands off to the host to take the screenshot, and waits for it.
+///
+/// integration_test's own takeScreenshot is unusable here: on iOS it returns a
+/// stale frame, and the driver callbacks do not run until the test finishes, so
+/// every capture ended up showing the LAST screen. A marker file in the app's
+/// own tmp directory is visible to the host through `simctl get_app_container`,
+/// which gives a real handshake — the app holds still on the right screen until
+/// the host confirms it has the pixels.
+Future<void> _capture(WidgetTester tester, String name) async {
+  final tmp = Directory.systemTemp;
+  File('${tmp.path}/shot-$name').writeAsStringSync('1');
+  final done = File('${tmp.path}/done-$name');
+  for (var i = 0; i < 60; i++) {
+    if (done.existsSync()) return;
+    await tester.pump(const Duration(milliseconds: 250));
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+  }
+}
+
 void main() {
-  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('capture store screenshots', (tester) async {
     await app.bootstrap(Flavor.home);
@@ -67,7 +88,7 @@ void main() {
       // Generous: these fetch from the live API, and a screenshot of a spinner
       // is worse than no screenshot at all.
       await rest(tester, seconds: 6);
-      await binding.takeScreenshot(shot.$1);
+      await _capture(tester, shot.$1);
     }
   });
 }

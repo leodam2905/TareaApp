@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../location_permission.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
@@ -58,8 +59,7 @@ class _BrowseScreenState extends State<BrowseScreen> {
   /// still list pros — just not sorted by distance.
   Future<Position?> _here() async {
     try {
-      var perm = await Geolocator.checkPermission();
-      if (perm == LocationPermission.denied) perm = await Geolocator.requestPermission();
+      final perm = await ensureLocationPermission();
       if (perm == LocationPermission.denied || perm == LocationPermission.deniedForever) return null;
       return await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(accuracy: LocationAccuracy.medium),
