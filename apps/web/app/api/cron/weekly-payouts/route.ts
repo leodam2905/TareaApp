@@ -8,8 +8,14 @@ import { createNotification } from "@/lib/notify";
 import { isAuthorizedCron } from "@/lib/cron-auth";
 import { bgCheckDeductionFor } from "@/lib/background-check";
 
-// Runs every Monday at 9 AM UTC via Vercel cron
-// Pays out all remaining unpaid earnings to handyman bank accounts (standard, free)
+// Scheduled by Cloud Scheduler, not by the crons block in vercel.json — that
+// file is read only by Vercel and this deploys to Cloud Run. The live schedule
+// is Monday and Thursday at 09:00 America/New_York; the route is safe to run at
+// any cadence because it only ever picks up bookings still marked unpaid.
+//
+// Pays out remaining unpaid earnings to handyman bank accounts (standard, free).
+// Connected accounts also stay on Stripe's own automatic weekly payout, so a
+// failure here delays money rather than stranding it.
 export async function GET(_req: NextRequest) {
   if (!isAuthorizedCron()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -83,7 +89,7 @@ export async function GET(_req: NextRequest) {
           amount: Math.round(payable * 100),
           currency: "usd",
           destination: handyman.stripeAccountId,
-          description: `Tarea weekly payout — ${bookings.length} job${bookings.length > 1 ? "s" : ""}`,
+          description: `Tarea payout — ${bookings.length} job${bookings.length > 1 ? "s" : ""}`,
           metadata: { handymanId: handyman.id },
         },
         { idempotencyKey: payoutIdempotencyKey(bookingIds, "weekly") },
@@ -123,7 +129,7 @@ export async function GET(_req: NextRequest) {
             amount: Math.round(payable * 100),
             currency: "usd",
             method: "standard",
-            description: "Tarea weekly payout",
+            description: "Tarea payout",
             metadata: { handymanId: handyman.id },
           },
           {
@@ -141,7 +147,7 @@ export async function GET(_req: NextRequest) {
         : "";
       await createNotification({
         userId: handyman.id,
-        title: "Weekly Payout Sent",
+        title: "Payout Sent",
         body: payoutSent
           ? `$${payable.toFixed(2)} is on its way to your bank account. It arrives in 1–2 business days.${bgNote}`
           : `$${payable.toFixed(2)} has been added to your Tarea balance.${bgNote} It will reach your bank on your next scheduled payout.`,
