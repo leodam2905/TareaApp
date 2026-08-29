@@ -1,4 +1,5 @@
 import { createNotification } from "@/lib/notify";
+import { grossMinimum } from "@/lib/pricing-config";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { MATERIALS_MAX } from "@/lib/materials-policy";
@@ -123,14 +124,27 @@ export async function POST(req: NextRequest) {
     if (service.handyman && service.handyman.userId !== data.handymanUserId) {
       return NextResponse.json({ error: "Service does not belong to this handyman" }, { status: 400 });
     }
-    // Allow a tiny float tolerance on the bounds.
     // No price supplied means the service's own minimum.
     const totalPrice = data.totalPrice ?? service.minPrice;
+
+    // Floor is Tarea's, not the service row's.
+    //
+    // Prices come from the rate card in lib/pricing-config now — a pro takes a
+    // job at the price Tarea sets or does not take it — but this still gated on
+    // Service.minPrice/maxPrice, which every pro carries as the seeded $50-$150.
+    // So an AI estimate of $200 for a faucet was rejected as out of range and
+    // "request this pro" failed outright, which is what a customer hit from
+    // Browse Pros.
+    //
+    // The check that still matters is the floor: it is what stops a crafted
+    // request paying $0.01 for a $500 job. Above it, the platform's own quote
+    // is authoritative and the service range is advisory.
+    const floor = Math.floor(grossMinimum() * 100) / 100;
     const EPS = 0.01;
-    if (totalPrice < service.minPrice - EPS || totalPrice > service.maxPrice + EPS) {
+    if (totalPrice < floor - EPS) {
       return NextResponse.json(
-        { error: `Price must be between $${service.minPrice} and $${service.maxPrice} for this service.` },
-        { status: 400 }
+        { error: `The minimum for a job on Tarea is $${floor.toFixed(2)}.` },
+        { status: 400 },
       );
     }
 
