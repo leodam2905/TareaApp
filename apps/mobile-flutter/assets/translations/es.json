@@ -756,7 +756,8 @@
     "notNow": "Ahora no",
     "workPaused": "TRABAJO EN PAUSA",
     "timerPausedNote": "Tu pro pausó el cronómetro",
-    "payStripe": "Los pagos con tarjeta los procesa Stripe. Tarea nunca recibe ni almacena tu número de tarjeta."
+    "payStripe": "Los pagos con tarjeta los procesa Stripe. Tarea nunca recibe ni almacena tu número de tarjeta.",
+    "pendingExplainer": "Esperando a que {} acepte. Tiene 2 horas para responder. Solo se cobra tu tarjeta si acepta — si no, la solicitud se cancela y no se te cobra nada."
   },
   "instantQuote": {
     "title": "Cotización al instante",

@@ -371,6 +371,31 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
               _row('booking.date'.tr(), _fmtDate((_b['scheduledAt'] ?? '').toString())),
               _row('booking.location'.tr(), '${_b['address'] ?? ''}${_b['city'] != null ? ', ${_b['city']}' : ''}'),
               _row('booking.total'.tr(), '\$${price.toStringAsFixed(2)}', highlight: true),
+              // What happens next, while the pro has not answered yet.
+              //
+              // The screen showed a "Pending" chip and nothing else, so a
+              // customer who had just committed to a specific pro — and put a
+              // card on file to do it — could not tell whether anything was
+              // happening, how long it would take, or when they would be
+              // charged.
+              if (status == 'PENDING') ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                      color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(12)),
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    const Icon(Icons.hourglass_top, size: 16, color: Color(0xFFB45309)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text('booking.pendingExplainer'.tr(args: [name]),
+                          style: const TextStyle(
+                              color: Color(0xFFB45309), fontSize: 12.5, height: 1.45,
+                              fontWeight: FontWeight.w600)),
+                    ),
+                  ]),
+                ),
+              ],
               if (!isPaid) ...[
                 const SizedBox(height: 6),
                 Row(children: [

@@ -756,7 +756,8 @@
     "notNow": "Not now",
     "workPaused": "WORK PAUSED",
     "timerPausedNote": "Your pro paused the timer",
-    "payStripe": "Card payments are processed by Stripe. Tarea never receives or stores your card number."
+    "payStripe": "Card payments are processed by Stripe. Tarea never receives or stores your card number.",
+    "pendingExplainer": "Waiting for {} to accept. They have 2 hours to respond. Your card is only charged if they accept — if they don't, the request is cancelled and you're not charged."
   },
   "instantQuote": {
     "title": "Instant Quote",

@@ -264,7 +264,24 @@ class _PostJobScreenState extends State<PostJobScreen> {
       }
       if (mounted) {
         _toast(_isDirected ? 'postjob.requestSent'.tr(args: [_proName]) : 'postjob.jobPosted'.tr());
+
+        // Land where the answer to "what happens now" is, not on Home.
+        //
+        // Both paths used to bounce to the dashboard behind a toast that is
+        // gone in three seconds, so a customer who had just committed to a pro
+        // — and put a card on file to do it — had nothing to look at and no
+        // idea what came next.
+        String? newId;
+        try { newId = (jsonDecode(res.body)['id'] ?? '').toString(); } catch (_) {}
+
         context.go('/home');
+        if (_isDirected && (newId ?? '').isNotEmpty) {
+          // The booking itself: the pro, the price, and the acceptance window.
+          context.push('/booking-detail', extra: {'id': newId});
+        } else if (!_isDirected) {
+          // My Requests, where applications will start arriving.
+          context.push('/requests');
+        }
       }
     } catch (_) {
       if (mounted) _toast('postjob.postFailed'.tr());

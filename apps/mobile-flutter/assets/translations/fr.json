@@ -756,7 +756,8 @@
     "notNow": "Pas maintenant",
     "workPaused": "TRAVAIL EN PAUSE",
     "timerPausedNote": "Votre pro a mis le chrono en pause",
-    "payStripe": "Les paiements par carte sont traités par Stripe. Tarea ne reçoit ni ne conserve votre numéro de carte."
+    "payStripe": "Les paiements par carte sont traités par Stripe. Tarea ne reçoit ni ne conserve votre numéro de carte.",
+    "pendingExplainer": "En attente de la réponse de {}. Le pro a 2 heures pour répondre. Votre carte n'est débitée que s'il accepte — sinon la demande est annulée et rien ne vous est facturé."
   },
   "instantQuote": {
     "title": "Devis instantané",
