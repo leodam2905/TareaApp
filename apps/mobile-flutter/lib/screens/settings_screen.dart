@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../theme.dart';
 
 // Supported languages: label shown natively so users find their own language
@@ -49,7 +50,23 @@ class SettingsScreen extends StatelessWidget {
             _row(Icons.privacy_tip_outlined, 'Privacy Policy', onTap: () => launchUrl(Uri.parse('https://taptarea.com/privacy'))),
           ]),
           const SizedBox(height: 12),
-          const Center(child: Text('Tarea • v1.0.0', style: TextStyle(color: C.muted, fontSize: 12))),
+          // The real version and build, read from the bundle.
+          //
+          // This was hardcoded to "v1.0.0" and had been since 1.0.0, so the app
+          // reported the same string through twenty-odd releases. It is the
+          // first thing anyone checks when a build behaves unexpectedly, and it
+          // was quietly wrong — including while trying to work out whether a
+          // device had a store build or a TestFlight one.
+          Center(
+            child: FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (_, snap) {
+                final i = snap.data;
+                final label = i == null ? 'Tarea' : 'Tarea • v${i.version} (${i.buildNumber})';
+                return Text(label, style: const TextStyle(color: C.muted, fontSize: 12));
+              },
+            ),
+          ),
         ],
       ),
     );

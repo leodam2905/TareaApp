@@ -55,6 +55,7 @@ dependencies:
   # Runtime, not just the CLI generator: main.dart calls preserve()/remove()
   # to hold the launch screen for a minimum time.
   flutter_native_splash: ^2.4.4
+  package_info_plus: ^8.1.1
 
 dev_dependencies:
   integration_test:
