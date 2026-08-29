@@ -757,7 +757,19 @@
     "workPaused": "WORK PAUSED",
     "timerPausedNote": "Your pro paused the timer",
     "payStripe": "Card payments are processed by Stripe. Tarea never receives or stores your card number.",
-    "pendingExplainer": "Waiting for {} to accept. They have 2 hours to respond. Your card is only charged if they accept — if they don't, the request is cancelled and you're not charged."
+    "pendingExplainer": "Waiting for {} to accept. They have 2 hours to respond. Your card is only charged if they accept — if they don't, the request is cancelled and you're not charged.",
+    "approveTitle": "Approve the final price",
+    "approveLabour": "Labour",
+    "approveFee": "Service fee (15%)",
+    "approveMaterials": "Materials (quoted by your pro)",
+    "approveTotal": "Total",
+    "approveNote": "Your card is charged only when you approve. Decline and the booking is cancelled at no cost.",
+    "approveButton": "Approve & pay",
+    "declineButton": "Decline this price",
+    "approved": "Approved — your pro has been notified.",
+    "declineTitle": "Decline this price?",
+    "declineBody": "The booking will be cancelled and you won't be charged anything.",
+    "declineConfirm": "Decline"
   },
   "instantQuote": {
     "title": "Instant Quote",
@@ -905,5 +917,26 @@
     "emptyTitle": "No receipts yet",
     "emptyBody": "Once you pay for a job, its receipt appears here and stays available.",
     "openFailed": "Couldn't open the receipt."
+  },
+  "confirmRequest": {
+    "title": "Confirm your request",
+    "subtitle": "You're asking {} to take this job. Nothing is charged yet.",
+    "labour": "Labour",
+    "serviceFee": "Service fee (15%)",
+    "soFar": "So far",
+    "materialsLater": "Materials aren't included yet — your pro adds them when they accept.",
+    "step1": "You add a card now. It's saved, not charged.",
+    "step2": "Your pro accepts and quotes any materials the job needs.",
+    "step3": "You approve the final price. Only then is your card charged — if they decline, or you don't approve, you pay nothing.",
+    "confirm": "Confirm & add card"
+  },
+  "acceptQuote": {
+    "title": "Accept this job",
+    "subtitle": "Tell the customer what parts you'll need. They approve the total before you start.",
+    "needMaterials": "This job needs materials",
+    "materialsCost": "Materials cost",
+    "materialsHelp": "Quote what the parts will cost. You're reimbursed at cost up to this amount — spend less and the difference goes back to the customer.",
+    "customerPays": "Customer approves",
+    "accept": "Accept & send price"
   }
 }

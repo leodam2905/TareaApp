@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../../widgets/accept_quote_sheet.dart';
 import '../../widgets/materials_sheet.dart';
 import '../../tab_refresh.dart';
 import 'package:flutter/material.dart';
@@ -63,9 +64,12 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
     if (mounted) setState(() => _loading = false);
   }
 
-  Future<void> _setStatus(dynamic b, String status) async {
+  Future<void> _setStatus(dynamic b, String status, {double? materialsQuote}) async {
     try {
-      final res = await Api.patch('/bookings/${b['id']}', {'status': status});
+      final res = await Api.patch('/bookings/${b['id']}', {
+        'status': status,
+        if (materialsQuote != null) 'materialsQuote': materialsQuote,
+      });
       if (res.statusCode >= 200 && res.statusCode < 300) {
         setState(() => b['status'] = status);
       } else if (mounted) {
@@ -74,6 +78,18 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
     } catch (_) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('common.connectionRetry'.tr())));
     }
+  }
+
+  /// Accept, after naming what the job needs for parts.
+  ///
+  /// Backing out of the sheet does NOT accept the job: a pro who is unsure what
+  /// the parts cost should be able to close it and think, not be committed by
+  /// having tapped Accept once.
+  Future<void> _acceptWithQuote(dynamic b) async {
+    final labour = ((b['totalPrice'] ?? 0) as num).toDouble();
+    final quote = await showAcceptQuoteSheet(context, labour: labour);
+    if (quote == null) return;
+    await _setStatus(b, 'ACCEPTED', materialsQuote: quote);
   }
 
   // Pro signals work finished — the customer then confirms + releases payment.
@@ -238,7 +254,11 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
           if (status == 'PENDING') ...[
             _smallBtn('requests.decline'.tr(), C.muted, () => _setStatus(b, 'CANCELLED'), outlined: true),
             const SizedBox(width: 8),
-            _smallBtn('proJobs.accept'.tr(), C.blue, () => _setStatus(b, 'ACCEPTED')),
+            // Accepting names the price. The pro is the one who knows what
+            // parts the job needs, and the customer approves the resulting
+            // total before anything is charged — so the quote is collected
+            // here rather than discovered later.
+            _smallBtn('proJobs.accept'.tr(), C.blue, () => _acceptWithQuote(b)),
           ] else if (status == 'ACCEPTED')
             // Start is offered only once the customer has paid.
             //

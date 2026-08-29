@@ -757,7 +757,19 @@
     "workPaused": "TRAVAIL EN PAUSE",
     "timerPausedNote": "Votre pro a mis le chrono en pause",
     "payStripe": "Les paiements par carte sont traités par Stripe. Tarea ne reçoit ni ne conserve votre numéro de carte.",
-    "pendingExplainer": "En attente de la réponse de {}. Le pro a 2 heures pour répondre. Votre carte n'est débitée que s'il accepte — sinon la demande est annulée et rien ne vous est facturé."
+    "pendingExplainer": "En attente de la réponse de {}. Le pro a 2 heures pour répondre. Votre carte n'est débitée que s'il accepte — sinon la demande est annulée et rien ne vous est facturé.",
+    "approveTitle": "Approuver le prix final",
+    "approveLabour": "Main-d'œuvre",
+    "approveFee": "Frais de service (15 %)",
+    "approveMaterials": "Matériaux (chiffrés par votre pro)",
+    "approveTotal": "Total",
+    "approveNote": "Votre carte n'est débitée qu'à votre approbation. Si vous refusez, la réservation est annulée sans frais.",
+    "approveButton": "Approuver et payer",
+    "declineButton": "Refuser ce prix",
+    "approved": "Approuvé — votre pro a été prévenu.",
+    "declineTitle": "Refuser ce prix ?",
+    "declineBody": "La réservation sera annulée et rien ne vous sera facturé.",
+    "declineConfirm": "Refuser"
   },
   "instantQuote": {
     "title": "Devis instantané",
@@ -905,5 +917,26 @@
     "emptyTitle": "Aucun reçu pour l'instant",
     "emptyBody": "Dès que vous payez une mission, son reçu apparaît ici et y reste disponible.",
     "openFailed": "Impossible d'ouvrir le reçu."
+  },
+  "confirmRequest": {
+    "title": "Confirmez votre demande",
+    "subtitle": "Vous demandez à {} de prendre cette mission. Rien n'est débité pour l'instant.",
+    "labour": "Main-d'œuvre",
+    "serviceFee": "Frais de service (15 %)",
+    "soFar": "Pour l'instant",
+    "materialsLater": "Les matériaux ne sont pas encore inclus — votre pro les ajoute en acceptant.",
+    "step1": "Vous enregistrez une carte maintenant. Elle est enregistrée, pas débitée.",
+    "step2": "Votre pro accepte et chiffre les matériaux nécessaires.",
+    "step3": "Vous approuvez le prix final. Votre carte n'est débitée qu'à ce moment — s'il refuse, ou si vous n'approuvez pas, vous ne payez rien.",
+    "confirm": "Confirmer et ajouter une carte"
+  },
+  "acceptQuote": {
+    "title": "Accepter cette mission",
+    "subtitle": "Indiquez au client les fournitures nécessaires. Il approuve le total avant que vous commenciez.",
+    "needMaterials": "Cette mission nécessite des matériaux",
+    "materialsCost": "Coût des matériaux",
+    "materialsHelp": "Chiffrez le coût des fournitures. Vous êtes remboursé au coût réel dans la limite de ce montant — si vous dépensez moins, la différence revient au client.",
+    "customerPays": "Le client approuve",
+    "accept": "Accepter et envoyer le prix"
   }
 }

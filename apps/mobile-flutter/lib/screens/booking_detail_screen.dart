@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:image_picker/image_picker.dart';
+import '../payment_method.dart';
 import '../theme.dart';
 import '../api.dart';
 import '../job_timer.dart';
@@ -180,6 +181,75 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
   // hosted Checkout page in an external browser — they never touch the app.
   // The booking auto-cancels if it goes unpaid for 2h, so this has to be
   // reachable from the app, not just the web.
+  /// Approve the final price the pro quoted, and pay.
+  ///
+  /// Uses the card already on file, so there is no browser round trip: the
+  /// customer saved it when they requested this pro, precisely so approving
+  /// would be one tap. _payNow (the hosted checkout) stays for bookings that
+  /// have no card on file.
+  Future<void> _approvePrice() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      final res = await Api.patch('/bookings/$_id', {'approvePrice': true});
+      final data = jsonDecode(res.body);
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        _toast('booking.approved'.tr());
+        await _load();
+      } else {
+        final reason = (data is Map ? data['reason'] : null)?.toString();
+        final msg = (data is Map ? data['error'] : null)?.toString() ?? 'booking.payFailed'.tr();
+        // A missing card is the one failure the customer can fix here and now,
+        // so offer the sheet instead of only reporting it.
+        if (reason == 'no_card') {
+          final added = await PaymentMethods.ensureCardOnFile(context);
+          if (added && mounted) {
+            setState(() => _busy = false);
+            return _approvePrice();
+          }
+        }
+        _toast(msg);
+      }
+    } catch (_) {
+      _toast('common.connectionRetry'.tr());
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _declinePrice() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('booking.declineTitle'.tr()),
+        content: Text('booking.declineBody'.tr()),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('common.cancel'.tr())),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('booking.declineConfirm'.tr(),
+                style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFFB91C1C))),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    setState(() => _busy = true);
+    try {
+      final res = await Api.patch('/bookings/$_id',
+          {'status': 'CANCELLED', 'cancelReason': 'Customer declined the quoted price'});
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        await _load();
+      } else {
+        _toast('booking.payFailed'.tr());
+      }
+    } catch (_) {
+      _toast('common.connectionRetry'.tr());
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   Future<void> _payNow() async {
     if (_busy) return;
     setState(() => _busy = true);
@@ -405,39 +475,62 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
                 ]),
                 // Payment only opens once the pro has accepted — the checkout
                 // endpoint rejects anything else.
+                // The pro has accepted and named their price: this is the
+                // approval step, and the only point at which money moves.
                 if (status == 'ACCEPTED') ...[
                   const SizedBox(height: 12),
-                  // Say where the money sits BEFORE asking for it. Stripe's own
-                  // page carries the same promise, but by then the customer has
-                  // already decided; the reassurance is worth nothing if it
-                  // only appears after the tap.
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEFF5FF),
-                      borderRadius: BorderRadius.circular(12),
+                      color: const Color(0xFFEFF6FF),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: const Color(0xFFBFDBFE)),
                     ),
-                    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      const Icon(Icons.lock_outline, size: 16, color: C.blue),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text('booking.payEscrow'.tr(),
-                              style: const TextStyle(color: C.blue, fontSize: 12.5, height: 1.4, fontWeight: FontWeight.w600)),
-                          const SizedBox(height: 4),
-                          // Said here rather than on Stripe's own page, where it
-                          // would be self-evident: the doubt about typing a card
-                          // happens before you tap, not after.
-                          Text('booking.payStripe'.tr(),
-                              style: const TextStyle(color: C.muted, fontSize: 11.5, height: 1.4)),
-                        ]),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text('booking.approveTitle'.tr(),
+                          style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 15)),
+                      const SizedBox(height: 8),
+                      _quoteLine('booking.approveLabour'.tr(), (_b['totalPrice'] ?? 0) as num),
+                      const SizedBox(height: 5),
+                      _quoteLine('booking.approveFee'.tr(), ((_b['totalPrice'] ?? 0) as num) * 0.15),
+                      if (((_b['materialsEstimate'] ?? 0) as num) > 0) ...[
+                        const SizedBox(height: 5),
+                        _quoteLine('booking.approveMaterials'.tr(), (_b['materialsEstimate'] ?? 0) as num),
+                      ],
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 9),
+                        child: Divider(color: Color(0xFFBFDBFE), height: 1),
+                      ),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Text('booking.approveTotal'.tr(),
+                            style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 14)),
+                        Text('\$${(((_b['totalPrice'] ?? 0) as num) * 1.15 + ((_b['materialsEstimate'] ?? 0) as num)).toStringAsFixed(2)}',
+                            style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 20)),
+                      ]),
+                      const SizedBox(height: 8),
+                      Text('booking.approveNote'.tr(),
+                          style: const TextStyle(color: C.muted, fontSize: 11.5, height: 1.45)),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          style: FilledButton.styleFrom(
+                              backgroundColor: C.blue, minimumSize: const Size.fromHeight(50)),
+                          onPressed: _busy ? null : _approvePrice,
+                          child: Text(_busy ? 'common.loading'.tr() : 'booking.approveButton'.tr(),
+                              style: const TextStyle(fontWeight: FontWeight.w800)),
+                        ),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: TextButton(
+                          onPressed: _busy ? null : _declinePrice,
+                          child: Text('booking.declineButton'.tr(),
+                              style: const TextStyle(color: C.muted, fontSize: 13)),
+                        ),
                       ),
                     ]),
                   ),
-                  const SizedBox(height: 12),
-                  _primaryBtn(_busy ? 'common.loading'.tr() : 'booking.payNow'.tr(), _busy ? () {} : _payNow),
-                  const SizedBox(height: 4),
-                  Text('booking.payNote'.tr(), style: const TextStyle(color: C.muted, fontSize: 12)),
                 ],
               ],
             ]),
@@ -667,6 +760,13 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
           child: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16)),
         ),
       );
+
+  static Widget _quoteLine(String label, num amount) =>
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Text(label, style: const TextStyle(color: C.muted, fontSize: 12.5)),
+        Text('\$${amount.toStringAsFixed(2)}',
+            style: const TextStyle(color: C.ink, fontSize: 12.5, fontWeight: FontWeight.w700)),
+      ]);
 }
 
 class _ReviewSheet extends StatefulWidget {
@@ -801,4 +901,5 @@ class _TipSheetState extends State<_TipSheet> {
       ),
     );
   }
+
 }

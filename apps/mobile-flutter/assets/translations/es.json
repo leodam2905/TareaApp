@@ -757,7 +757,19 @@
     "workPaused": "TRABAJO EN PAUSA",
     "timerPausedNote": "Tu pro pausó el cronómetro",
     "payStripe": "Los pagos con tarjeta los procesa Stripe. Tarea nunca recibe ni almacena tu número de tarjeta.",
-    "pendingExplainer": "Esperando a que {} acepte. Tiene 2 horas para responder. Solo se cobra tu tarjeta si acepta — si no, la solicitud se cancela y no se te cobra nada."
+    "pendingExplainer": "Esperando a que {} acepte. Tiene 2 horas para responder. Solo se cobra tu tarjeta si acepta — si no, la solicitud se cancela y no se te cobra nada.",
+    "approveTitle": "Aprueba el precio final",
+    "approveLabour": "Mano de obra",
+    "approveFee": "Tarifa de servicio (15 %)",
+    "approveMaterials": "Materiales (presupuestados por tu profesional)",
+    "approveTotal": "Total",
+    "approveNote": "Tu tarjeta se cobra solo cuando apruebas. Si rechazas, la reserva se cancela sin coste.",
+    "approveButton": "Aprobar y pagar",
+    "declineButton": "Rechazar este precio",
+    "approved": "Aprobado: tu profesional ha sido avisado.",
+    "declineTitle": "¿Rechazar este precio?",
+    "declineBody": "La reserva se cancelará y no se te cobrará nada.",
+    "declineConfirm": "Rechazar"
   },
   "instantQuote": {
     "title": "Cotización al instante",
@@ -905,5 +917,26 @@
     "emptyTitle": "Aún no hay recibos",
     "emptyBody": "Cuando pagues un trabajo, su recibo aparecerá aquí y seguirá disponible.",
     "openFailed": "No se pudo abrir el recibo."
+  },
+  "confirmRequest": {
+    "title": "Confirma tu solicitud",
+    "subtitle": "Le estás pidiendo a {} que acepte este trabajo. Aún no se cobra nada.",
+    "labour": "Mano de obra",
+    "serviceFee": "Tarifa de servicio (15 %)",
+    "soFar": "Hasta ahora",
+    "materialsLater": "Los materiales aún no están incluidos: tu profesional los añade al aceptar.",
+    "step1": "Añades una tarjeta ahora. Se guarda, no se cobra.",
+    "step2": "Tu profesional acepta y presupuesta los materiales necesarios.",
+    "step3": "Apruebas el precio final. Solo entonces se cobra tu tarjeta: si rechaza, o no apruebas, no pagas nada.",
+    "confirm": "Confirmar y añadir tarjeta"
+  },
+  "acceptQuote": {
+    "title": "Aceptar este trabajo",
+    "subtitle": "Dile al cliente qué materiales necesitarás. Aprobará el total antes de que empieces.",
+    "needMaterials": "Este trabajo necesita materiales",
+    "materialsCost": "Coste de materiales",
+    "materialsHelp": "Presupuesta lo que costarán los materiales. Se te reembolsa al coste real hasta ese importe: si gastas menos, la diferencia vuelve al cliente.",
+    "customerPays": "El cliente aprueba",
+    "accept": "Aceptar y enviar precio"
   }
 }

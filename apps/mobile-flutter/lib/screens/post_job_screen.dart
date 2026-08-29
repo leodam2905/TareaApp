@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
+import '../widgets/confirm_request_sheet.dart';
 import '../payment_method.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -211,6 +212,21 @@ class _PostJobScreenState extends State<PostJobScreen> {
     // a 2h wait for the customer to open a payment page; see
     // apps/web/lib/booking-charge.ts (chargeSavedCardForBooking).
     if (_isDirected) {
+      // Explain before asking, not after. The card is saved now and charged
+      // later — only once the pro accepts AND the customer approves the final
+      // price — so a sheet that just says "card required" invites the
+      // assumption that the money has gone.
+      final labour = (_estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceMin'] ?? 0);
+      final labourNum = (labour is num ? labour : num.tryParse('$labour') ?? 0).toDouble();
+      final confirmed = await showConfirmRequestSheet(
+        context,
+        proName: _proName,
+        labour: labourNum,
+        serviceFee: labourNum * 0.15,
+      );
+      if (!confirmed) return;
+      if (!mounted) return;
+
       final ok = await PaymentMethods.ensureCardOnFile(context);
       if (!ok) {
         if (mounted) _toast('postjob.cardRequired'.tr());
