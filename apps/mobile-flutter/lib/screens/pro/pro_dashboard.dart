@@ -24,6 +24,10 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
   double _rating = 0;
   num _totalEarnings = 0;
   num _pendingEarnings = 0;
+  // Stripe's pending balance — money that has left Tarea and is settling
+  // towards the pro's bank. This is what a pro means by "pending"; the field
+  // above means "Tarea has not sent it", which is now an error state.
+  num? _clearingSoon;
   bool _available = false;
   bool _busy = false;
   int _completed = 0;
@@ -129,6 +133,7 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
         final ej = jsonDecode(e.body) as Map<String, dynamic>;
         _totalEarnings = (ej['totalEarnings'] ?? 0) as num;
         _pendingEarnings = (ej['pendingEarnings'] ?? 0) as num;
+        _clearingSoon = ej['clearingSoon'] as num?;
       }
     } catch (_) {}
     try {
@@ -396,7 +401,12 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
                 ]),
                 const SizedBox(height: 10),
                 Text('\$${_totalEarnings.round()}', style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w900, color: Colors.white)),
-                Text('pro.pendingPayout'.tr(args: ['\$${_pendingEarnings.round()}']), style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600)),
+                Text(
+                  _clearingSoon == null
+                      ? 'pro.onTheWayUnknown'.tr()
+                      : 'pro.onTheWay'.tr(args: ['\$${_clearingSoon!.round()}']),
+                  style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 12),
                 Container(
                   width: double.infinity, padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 12),

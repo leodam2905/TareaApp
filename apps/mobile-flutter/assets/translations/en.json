@@ -251,7 +251,6 @@
     "viewAll": "View all",
     "noUpcomingJobs": "No upcoming jobs yet.",
     "earningsOverview": "Earnings Overview",
-    "pendingPayout": "{} pending payout",
     "earningsTrend": "Your earnings trend appears here as you complete jobs.",
     "profileCompleteness": "Profile Completeness",
     "completenessDesc": "Complete your profile to get more job opportunities.",
@@ -260,7 +259,9 @@
     "new": "NEW",
     "jobFallback": "Job",
     "licensed": "Licensed",
-    "insured": "Insured"
+    "insured": "Insured",
+    "onTheWay": "{} on the way to your bank",
+    "onTheWayUnknown": "Paid out after each job"
   },
   "postjob": {
     "requestPro": "Request {}",
@@ -485,7 +486,6 @@
   },
   "proEarnings": {
     "totalEarned": "Total earned",
-    "pendingPayout": "Pending payout",
     "jobsCompleted": "Jobs completed",
     "payoutMethod": "Payout method",
     "connected": "Connected — instant payouts on",
@@ -494,7 +494,9 @@
     "clearing": "Still clearing",
     "clearingNote": "Card payments take about 2 business days to clear. You can cash out once they do.",
     "instantTitle": "Instant cash-out",
-    "instantNote": "Unlocks after {} completed jobs. Until then your earnings arrive free on your normal payout schedule."
+    "instantNote": "Unlocks after {} completed jobs. Until then your earnings arrive free on your normal payout schedule.",
+    "onTheWay": "On the way",
+    "awaitingTransfer": "${} of your earnings has not been transferred yet. We're on it — you'll be paid without needing to do anything."
   },
   "jobDetail": {
     "title": "Job Detail",

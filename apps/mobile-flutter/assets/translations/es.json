@@ -251,7 +251,6 @@
     "viewAll": "Ver todo",
     "noUpcomingJobs": "Aún no hay trabajos próximos.",
     "earningsOverview": "Resumen de ganancias",
-    "pendingPayout": "{} por cobrar",
     "earningsTrend": "Tu tendencia de ganancias aparece aquí al completar trabajos.",
     "profileCompleteness": "Perfil completo",
     "completenessDesc": "Completa tu perfil para más oportunidades.",
@@ -260,7 +259,9 @@
     "new": "NUEVO",
     "jobFallback": "Trabajo",
     "licensed": "Con licencia",
-    "insured": "Asegurado"
+    "insured": "Asegurado",
+    "onTheWay": "{} en camino a tu banco",
+    "onTheWayUnknown": "Se paga después de cada trabajo"
   },
   "postjob": {
     "requestPro": "Solicitar a {}",
@@ -485,7 +486,6 @@
   },
   "proEarnings": {
     "totalEarned": "Total ganado",
-    "pendingPayout": "Pago pendiente",
     "jobsCompleted": "Trabajos completados",
     "payoutMethod": "Método de pago",
     "connected": "Conectado — pagos instantáneos activados",
@@ -494,7 +494,9 @@
     "clearing": "En proceso",
     "clearingNote": "Los pagos con tarjeta tardan unos 2 días hábiles en liberarse. Podrás retirar en cuanto ocurra.",
     "instantTitle": "Retiro instantáneo",
-    "instantNote": "Se desbloquea tras {} trabajos completados. Hasta entonces, tus ganancias llegan gratis en tu calendario de pagos habitual."
+    "instantNote": "Se desbloquea tras {} trabajos completados. Hasta entonces, tus ganancias llegan gratis en tu calendario de pagos habitual.",
+    "onTheWay": "En camino",
+    "awaitingTransfer": "${} de tus ganancias aún no se han transferido. Estamos en ello — se te pagará sin que tengas que hacer nada."
   },
   "jobDetail": {
     "title": "Detalle del trabajo",

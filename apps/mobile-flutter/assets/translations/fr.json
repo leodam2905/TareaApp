@@ -251,7 +251,6 @@
     "viewAll": "Tout voir",
     "noUpcomingJobs": "Aucune mission à venir.",
     "earningsOverview": "Aperçu des revenus",
-    "pendingPayout": "{} en attente",
     "earningsTrend": "Votre tendance de revenus apparaît ici au fil des missions.",
     "profileCompleteness": "Profil complété",
     "completenessDesc": "Complétez votre profil pour plus d'opportunités.",
@@ -260,7 +259,9 @@
     "new": "NOUVEAU",
     "jobFallback": "Mission",
     "licensed": "Licencié",
-    "insured": "Assuré"
+    "insured": "Assuré",
+    "onTheWay": "{} en route vers votre banque",
+    "onTheWayUnknown": "Versé après chaque mission"
   },
   "postjob": {
     "requestPro": "Demander à {}",
@@ -485,7 +486,6 @@
   },
   "proEarnings": {
     "totalEarned": "Total gagné",
-    "pendingPayout": "Paiement en attente",
     "jobsCompleted": "Missions terminées",
     "payoutMethod": "Mode de paiement",
     "connected": "Connecté — paiements instantanés activés",
@@ -494,7 +494,9 @@
     "clearing": "En cours de compensation",
     "clearingNote": "Les paiements par carte mettent environ 2 jours ouvrés à être compensés. Vous pourrez retirer ensuite.",
     "instantTitle": "Retrait instantané",
-    "instantNote": "Débloqué après {} missions terminées. D'ici là, vos gains arrivent gratuitement selon votre calendrier de versement habituel."
+    "instantNote": "Débloqué après {} missions terminées. D'ici là, vos gains arrivent gratuitement selon votre calendrier de versement habituel.",
+    "onTheWay": "En route",
+    "awaitingTransfer": "{} $ de vos gains n'ont pas encore été transférés. Nous nous en occupons — vous serez payé sans rien avoir à faire."
   },
   "jobDetail": {
     "title": "Détail de la mission",

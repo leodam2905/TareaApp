@@ -73,10 +73,38 @@ class _ProEarningsState extends State<ProEarnings> {
                     ]),
                   ),
                   const SizedBox(height: 12),
+                  // "On the way" is what a pro means by pending: money that
+                  // has left Tarea and is settling towards their bank. The old
+                  // second stat was pendingEarnings — earned but NOT YET
+                  // TRANSFERRED — which since payouts moved to job completion
+                  // is zero except when a transfer has failed. A pro reading
+                  // "Pending payout $0" three days after finishing a job
+                  // reasonably concluded they had not been paid.
                   Row(children: [
-                    _stat('\$${_pending.round()}', 'proEarnings.pendingPayout'.tr(), C.amber),
+                    _stat(
+                      _clearing == null ? '—' : '\$${_clearing!.round()}',
+                      'proEarnings.onTheWay'.tr(),
+                      C.amber,
+                    ),
                     _stat('$_jobs', 'proEarnings.jobsCompleted'.tr(), C.blue),
                   ]),
+                  // Untransferred earnings are now an exception, not a normal
+                  // state, so they get an explicit warning rather than a stat
+                  // tile that reads as routine.
+                  if (_pending > 0) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                          color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(14)),
+                      child: Text(
+                        'proEarnings.awaitingTransfer'.tr(args: [_pending.toStringAsFixed(2)]),
+                        style: const TextStyle(
+                            color: Color(0xFFB45309), fontSize: 13, fontWeight: FontWeight.w600, height: 1.45),
+                      ),
+                    ),
+                  ],
                   // What Stripe will actually release, and what is still
                   // settling. Card money takes about two business days to
                   // clear, and a pro told "available" for funds that cannot be
