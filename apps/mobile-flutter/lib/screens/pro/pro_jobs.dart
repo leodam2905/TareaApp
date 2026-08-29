@@ -346,7 +346,17 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
             const SizedBox(width: 8),
             _smallBtn('proJobs.accept'.tr(), C.blue, () => _setStatus(b, 'ACCEPTED')),
           ] else if (status == 'ACCEPTED')
-            _smallBtn('proJobs.startJob'.tr(), C.blue, () => _setStatus(b, 'IN_PROGRESS'))
+            // Start is offered only once the customer has paid.
+            //
+            // The server refuses IN_PROGRESS on an unpaid booking, so tapping
+            // this used to fail with a 409 after the pro had already decided to
+            // travel. Pay-at-hire promises a pro the money is there before they
+            // set off; the button has to say so rather than let them find out.
+            (b['isPaid'] == true
+                ? _smallBtn('proJobs.startJob'.tr(), C.blue, () => _setStatus(b, 'IN_PROGRESS'))
+                : Text('proJobs.awaitingPayment'.tr(),
+                    style: const TextStyle(
+                        color: Color(0xFFB45309), fontWeight: FontWeight.w800, fontSize: 12)))
           else if (status == 'IN_PROGRESS')
             (b['workDoneAt'] != null
                 ? Text('proJobs.awaiting'.tr(), style: const TextStyle(color: Color(0xFF15803D), fontWeight: FontWeight.w800, fontSize: 12))

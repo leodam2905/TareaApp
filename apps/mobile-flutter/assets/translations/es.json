@@ -482,7 +482,8 @@
     "materialsNote": "Cotizaste ${}. Indica lo que gastaste realmente — si es menos, la diferencia vuelve al cliente. Gastar de más corre por tu cuenta.",
     "materialsSpent": "Gasto real",
     "receiptAttached": "Recibo adjunto",
-    "finishJob": "Finalizar"
+    "finishJob": "Finalizar",
+    "awaitingPayment": "Esperando el pago"
   },
   "proEarnings": {
     "totalEarned": "Total ganado",

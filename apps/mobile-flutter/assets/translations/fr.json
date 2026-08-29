@@ -482,7 +482,8 @@
     "materialsNote": "Vous aviez indiqué {} $. Saisissez la dépense réelle — si elle est inférieure, la différence est remboursée au client. Un dépassement est à votre charge.",
     "materialsSpent": "Dépense réelle",
     "receiptAttached": "Reçu joint",
-    "finishJob": "Terminer"
+    "finishJob": "Terminer",
+    "awaitingPayment": "En attente du paiement"
   },
   "proEarnings": {
     "totalEarned": "Total gagné",
