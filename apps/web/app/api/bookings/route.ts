@@ -10,13 +10,22 @@ import { assertPromoUsable, hasPriorPaidOrder } from "@/lib/promo";
 import { canCall } from "@/lib/voice";
 
 const createSchema = z.object({
-  serviceId: z.string(),
+  // Optional: a customer requesting a pro from their profile has not chosen a
+  // service row, and should not have to. Resolved below from the category, or
+  // the pro's first active service.
+  serviceId: z.string().optional(),
+  category: z.string().optional(),
   handymanUserId: z.string(),
   scheduledAt: z.string().datetime(),
   address: z.string().min(5),
   city: z.string().min(2),
   notes: z.string().optional(),
-  totalPrice: z.number().positive(),
+  // The app sends the job text as `description`; zod stripped it silently, so
+  // everything the customer wrote about the job was thrown away.
+  description: z.string().optional(),
+  // Optional: without a price the service's own minimum applies. Requiring it
+  // meant "request this pro" failed outright whenever no estimate had been run.
+  totalPrice: z.number().positive().optional(),
   materialsEstimate: z.number().min(0).max(MATERIALS_MAX).optional(),
   promoCode: z.string().optional(),
 });
@@ -85,23 +94,40 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "You can't book yourself." }, { status: 400 });
     }
 
-    // Authoritative price check: the client-supplied totalPrice must fall within
-    // the service's server-side price range. Prevents price tampering (e.g. paying
-    // $0.01 for a $500 job). Materials are tracked separately (materialsEstimate).
-    const service = await prisma.service.findUnique({
-      where: { id: data.serviceId },
-      select: { minPrice: true, maxPrice: true, isActive: true, handyman: { select: { userId: true } } },
-    });
+    // Resolve the service when the client did not name one.
+    //
+    // Booking a pro from their profile sends no serviceId — the customer picked
+    // a person, not a row in a table. Prefer a service matching the category
+    // they chose, and otherwise take the pro's first active one.
+    const service = data.serviceId
+      ? await prisma.service.findUnique({
+          where: { id: data.serviceId },
+          select: { id: true, minPrice: true, maxPrice: true, isActive: true, handyman: { select: { userId: true } } },
+        })
+      : await prisma.service.findFirst({
+          where: {
+            isActive: true,
+            handyman: { userId: data.handymanUserId },
+            ...(data.category ? { category: data.category as never } : {}),
+          },
+          select: { id: true, minPrice: true, maxPrice: true, isActive: true, handyman: { select: { userId: true } } },
+          orderBy: { minPrice: "asc" },
+        });
     if (!service || !service.isActive) {
-      return NextResponse.json({ error: "Service not available" }, { status: 400 });
+      return NextResponse.json(
+        { error: "This pro has no service available for that job." },
+        { status: 400 },
+      );
     }
     // If the service is owned by a specific handyman, it must match the booking target.
     if (service.handyman && service.handyman.userId !== data.handymanUserId) {
       return NextResponse.json({ error: "Service does not belong to this handyman" }, { status: 400 });
     }
     // Allow a tiny float tolerance on the bounds.
+    // No price supplied means the service's own minimum.
+    const totalPrice = data.totalPrice ?? service.minPrice;
     const EPS = 0.01;
-    if (data.totalPrice < service.minPrice - EPS || data.totalPrice > service.maxPrice + EPS) {
+    if (totalPrice < service.minPrice - EPS || totalPrice > service.maxPrice + EPS) {
       return NextResponse.json(
         { error: `Price must be between $${service.minPrice} and $${service.maxPrice} for this service.` },
         { status: 400 }
@@ -116,7 +142,7 @@ export async function POST(req: NextRequest) {
         where: { code: data.promoCode.toUpperCase() },
       });
       const prior = await hasPriorPaidOrder(user.id);
-      if (promo && assertPromoUsable(promo, user.id, data.totalPrice, prior).ok) {
+      if (promo && assertPromoUsable(promo, user.id, totalPrice, prior).ok) {
         promoCodeId = promo.id;
         await prisma.promoCode.update({ where: { id: promo.id }, data: { usesCount: { increment: 1 } } });
       }
@@ -126,12 +152,14 @@ export async function POST(req: NextRequest) {
       data: {
         customerId: user.id,
         handymanId: data.handymanUserId,
-        serviceId: data.serviceId,
+        serviceId: service.id,
         scheduledAt: new Date(data.scheduledAt),
         address: data.address,
         city: data.city,
-        notes: data.notes,
-        totalPrice: data.totalPrice,
+        // The app sends the job text as `description`; keep either name rather
+        // than discarding what the customer wrote.
+        notes: data.notes ?? data.description,
+        totalPrice,
         materialsEstimate: data.materialsEstimate ?? 0,
         responseDeadline,
         ...(promoCodeId && { promoCodeId }),
@@ -150,7 +178,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(booking, { status: 201 });
   } catch (err) {
     if (err instanceof z.ZodError) {
-      return NextResponse.json({ error: err.errors[0].message }, { status: 400 });
+      // Name the field. "Required" on its own told the customer nothing and
+      // told whoever was debugging it even less — a booking failing to send
+      // looked identical whether the address was short or the date malformed.
+      const issue = err.errors[0];
+      const field = issue.path.join(".");
+      return NextResponse.json(
+        { error: field ? `${field}: ${issue.message}` : issue.message, field },
+        { status: 400 },
+      );
     }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
