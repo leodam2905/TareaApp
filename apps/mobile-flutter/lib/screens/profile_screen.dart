@@ -17,6 +17,7 @@ const _menu = [
   _MenuItem(Icons.favorite_border, 'profile.savedPros', '/favorites'),
   _MenuItem(Icons.card_giftcard, 'profile.referEarn', '/refer-earn'),
   _MenuItem(Icons.account_balance_wallet_outlined, 'profile.spending', '/spending'),
+  _MenuItem(Icons.receipt_long_outlined, 'invoices.title', '/invoices'),
   _MenuItem(Icons.notifications_outlined, 'settings.notifications', '/notifications'),
   _MenuItem(Icons.description_outlined, 'profile.myRequests', '/requests'),
   _MenuItem(Icons.gavel_outlined, 'disputes.title', '/disputes'),

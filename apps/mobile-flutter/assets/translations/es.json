@@ -893,5 +893,13 @@
     "emailFailed": "No se pudo enviar el informe",
     "form1099": "Recibiste más de $600 en {}: Tarea te emitirá un formulario IRS 1099-NEC.",
     "disclaimer": "Eres contratista independiente y responsable de tus impuestos. Este es un registro de lo que Tarea te pagó, no asesoramiento fiscal."
+  },
+  "invoices": {
+    "title": "Facturas y recibos",
+    "viewReceipt": "Ver recibo",
+    "refunded": "${} de materiales reembolsados",
+    "emptyTitle": "Aún no hay recibos",
+    "emptyBody": "Cuando pagues un trabajo, su recibo aparecerá aquí y seguirá disponible.",
+    "openFailed": "No se pudo abrir el recibo."
   }
 }

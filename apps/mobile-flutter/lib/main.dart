@@ -27,6 +27,7 @@ import 'screens/instant_quote_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'screens/favorites_screen.dart';
 import 'screens/spending_screen.dart';
+import 'screens/invoices_screen.dart';
 import 'screens/refer_earn_screen.dart';
 import 'screens/requests_screen.dart';
 import 'screens/request_detail_screen.dart';
@@ -125,6 +126,7 @@ final appRouter = GoRouter(
     GoRoute(path: '/notifications', builder: (_, __) => const NotificationsScreen()),
     GoRoute(path: '/favorites', builder: (_, __) => const FavoritesScreen()),
     GoRoute(path: '/spending', builder: (_, __) => const SpendingScreen()),
+    GoRoute(path: '/invoices', builder: (_, __) => const InvoicesScreen()),
     GoRoute(path: '/refer-earn', builder: (_, __) => const ReferEarnScreen()),
     GoRoute(path: '/requests', builder: (_, __) => const RequestsScreen()),
     GoRoute(path: '/disputes', builder: (_, __) => const DisputesScreen()),

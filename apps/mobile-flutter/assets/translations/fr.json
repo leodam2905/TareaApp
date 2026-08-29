@@ -893,5 +893,13 @@
     "emailFailed": "Envoi du rapport impossible",
     "form1099": "Vous avez reçu plus de 600 $ en {} — Tarea vous délivrera un formulaire IRS 1099-NEC.",
     "disclaimer": "Vous êtes travailleur indépendant et responsable de vos impôts. Ceci est un relevé des paiements de Tarea, pas un conseil fiscal."
+  },
+  "invoices": {
+    "title": "Factures et reçus",
+    "viewReceipt": "Voir le reçu",
+    "refunded": "{} $ de matériaux remboursés",
+    "emptyTitle": "Aucun reçu pour l'instant",
+    "emptyBody": "Dès que vous payez une mission, son reçu apparaît ici et y reste disponible.",
+    "openFailed": "Impossible d'ouvrir le reçu."
   }
 }

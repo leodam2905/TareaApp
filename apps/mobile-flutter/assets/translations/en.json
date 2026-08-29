@@ -893,5 +893,13 @@
     "emailFailed": "Could not send the report",
     "form1099": "You were paid over $600 in {} — Tarea will issue you an IRS Form 1099-NEC.",
     "disclaimer": "You are an independent contractor and responsible for your own taxes. This is a record of what Tarea paid you, not tax advice."
+  },
+  "invoices": {
+    "title": "Invoices & receipts",
+    "viewReceipt": "View receipt",
+    "refunded": "${} materials refunded",
+    "emptyTitle": "No receipts yet",
+    "emptyBody": "Once you pay for a job, its receipt appears here and stays available.",
+    "openFailed": "Couldn't open the receipt."
   }
 }

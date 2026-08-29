@@ -134,7 +134,7 @@ export async function sendInvoiceEmail(params: {
         <p class="thank-you">Thank you for using Tarea!</p>
         <p class="thank-sub">We hope you're satisfied with the service. Book again anytime.</p>
         <div style="text-align:center;margin:16px 0">
-          <a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://taptarea.com"}/customer/bookings/${bookingId}/invoice?t=${invoiceToken(bookingId)}"
+          <a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://taptarea.com"}/invoice/${bookingId}?t=${invoiceToken(bookingId)}"
             style="background:#38BDF8;color:#0F172A;font-weight:700;font-size:14px;padding:12px 28px;border-radius:12px;text-decoration:none;display:inline-block">
             View Full Invoice →
           </a>
