@@ -494,7 +494,7 @@
     "clearing": "En cours de compensation",
     "clearingNote": "Les paiements par carte mettent environ 2 jours ouvrés à être compensés. Vous pourrez retirer ensuite.",
     "instantTitle": "Retrait instantané",
-    "instantNote": "Débloqué après {} missions terminées. D'ici là, vos gains arrivent gratuitement selon votre calendrier de versement habituel.",
+    "instantNote": "Débloqué après {} missions terminées. D'ici là, vos gains arrivent gratuitement sur votre compte, deux jours ouvrés environ après chaque mission.",
     "onTheWay": "En route",
     "awaitingTransfer": "{} $ de vos gains n'ont pas encore été transférés. Nous nous en occupons — vous serez payé sans rien avoir à faire."
   },

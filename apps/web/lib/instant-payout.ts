@@ -131,7 +131,7 @@ export function instantBlockedMessage(
       const done = progress?.jobsCompleted ?? 0;
       const need = progress?.jobsRequired ?? INSTANT_MIN_COMPLETED_JOBS;
       return `Instant cash-out unlocks after ${need} completed jobs — you're at ${done}. `
-        + `Until then your earnings arrive free on your weekly Monday payout.`;
+        + `Until then your earnings reach your bank free, a couple of business days after each job.`;
     }
     case "no_debit_card":
       return "Add a debit card to cash out instantly. Bank accounts can only receive the free standard payout.";

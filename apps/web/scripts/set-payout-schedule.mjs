@@ -1,4 +1,4 @@
-// Moves EXISTING connected accounts onto the weekly/Monday payout schedule.
+// Moves EXISTING connected accounts onto the daily payout schedule.
 //
 // New accounts get it at creation (lib/payout-schedule.ts, applied in
 // api/stripe/connect and api/stripe/login-link). Stripe's Connect dashboard
@@ -38,7 +38,7 @@ if (key.includes("_test_") && !process.argv.includes("--test")) {
 
 const stripe = new Stripe(key);
 
-const TARGET = { interval: "weekly", weekly_anchor: "monday" };
+const TARGET = { interval: "daily" };
 
 let changed = 0, already = 0, failed = 0, skipped = 0;
 
@@ -53,21 +53,21 @@ for await (const account of stripe.accounts.list({ limit: 100 })) {
     skipped++;
     continue;
   }
-  if (current?.interval === "weekly" && current?.weekly_anchor === "monday") {
+  if (current?.interval === "daily") {
     already++;
     continue;
   }
 
   const from = current ? `${current.interval}${current.weekly_anchor ? `/${current.weekly_anchor}` : ""}` : "unset";
   if (dryRun) {
-    console.log(`~ ${label}: ${from} -> weekly/monday`);
+    console.log(`~ ${label}: ${from} -> daily`);
     changed++;
     continue;
   }
 
   try {
     await stripe.accounts.update(account.id, { settings: { payouts: { schedule: TARGET } } });
-    console.log(`✓ ${label}: ${from} -> weekly/monday`);
+    console.log(`✓ ${label}: ${from} -> daily`);
     changed++;
   } catch (err) {
     // Usually an account that has not finished onboarding and has no payouts
@@ -79,5 +79,5 @@ for await (const account of stripe.accounts.list({ limit: 100 })) {
 
 console.log(
   `\n${dryRun ? "[dry run] " : ""}${changed} ${dryRun ? "would change" : "changed"}, ` +
-  `${already} already weekly/monday, ${skipped} manual, ${failed} failed`,
+  `${already} already daily, ${skipped} manual, ${failed} failed`,
 );

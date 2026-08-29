@@ -494,7 +494,7 @@
     "clearing": "Still clearing",
     "clearingNote": "Card payments take about 2 business days to clear. You can cash out once they do.",
     "instantTitle": "Instant cash-out",
-    "instantNote": "Unlocks after {} completed jobs. Until then your earnings arrive free on your normal payout schedule.",
+    "instantNote": "Unlocks after {} completed jobs. Until then your earnings reach your bank free, a couple of business days after each job.",
     "onTheWay": "On the way",
     "awaitingTransfer": "${} of your earnings has not been transferred yet. We're on it — you'll be paid without needing to do anything."
   },
