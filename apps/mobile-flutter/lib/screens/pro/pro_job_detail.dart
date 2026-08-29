@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../widgets/materials_sheet.dart';
 import '../../theme.dart';
 import '../../api.dart';
 import '../../job_timer.dart';
@@ -139,9 +140,27 @@ class _ProJobDetailState extends State<ProJobDetail> {
       ],
     ));
     if (ok != true) return;
+
+    // Same materials capture as the jobs list. This screen sent workDone with
+    // no figure, so finishing a job from here meant the customer was charged
+    // the estimate whatever the pro actually spent.
+    String? receiptUrl;
+    num? materialsActual;
+    final estimate = (_b['materialsEstimate'] ?? 0) as num;
+    if (estimate > 0) {
+      final out = await showMaterialsAtFinish(context, estimate);
+      if (out == null) return; // cancelled — do not finish half-reported
+      receiptUrl = out['receiptUrl'] as String?;
+      materialsActual = out['materialsActual'] as num?;
+    }
+
     setState(() => _busy = true);
     try {
-      final res = await Api.patch('/bookings/$_id', {'workDone': true});
+      final res = await Api.patch('/bookings/$_id', {
+        'workDone': true,
+        if (receiptUrl != null) 'receiptUrl': receiptUrl,
+        if (materialsActual != null) 'materialsActual': materialsActual,
+      });
       if (res.statusCode >= 200 && res.statusCode < 300) { await _load(); }
       else { _toast('proJobs.updateFailed'.tr()); }
     } catch (_) { _toast('common.connectionRetry'.tr()); }
