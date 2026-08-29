@@ -251,7 +251,9 @@ class _PostJobScreenState extends State<PostJobScreen> {
               if (_estimate?['price'] != null || _estimate?['min'] != null) ...{
                 'budgetMin': _estimate?['price'] ?? _estimate?['min'],
                 'budgetMax': _estimate?['price'] ?? _estimate?['max'] ?? _estimate?['min'],
-                'materialsCost': _estimate?['materials'] ?? (_estimate?['breakdown'] as Map?)?['materials'] ?? 0,
+                // Zero on purpose: the pro quotes materials when they apply,
+                // and that quote is what the customer is charged.
+                'materialsCost': 0,
               },
             });
       if (res.statusCode < 200 || res.statusCode >= 300) {
@@ -818,10 +820,6 @@ class _PostJobScreenState extends State<PostJobScreen> {
         child: Column(children: [
           // Labor + travel = the service price minus the (separately shown) rush fee.
           _feeRow('postjob.laborService'.tr(), '\$${_n(e['price']) - _n(bd['urgency'])}'),
-          if (_n(bd['materials']) > 0) ...[
-            const SizedBox(height: 10),
-            _feeRow('postjob.materialsFurniture'.tr(), '\$${_n(bd['materials'])}'),
-          ],
           if (_n(bd['urgency']) > 0) ...[
             const SizedBox(height: 10),
             _feeRow('postjob.rushFee'.tr(), '+\$${_n(bd['urgency'])}', color: const Color(0xFFB91C1C)),
@@ -834,15 +832,19 @@ class _PostJobScreenState extends State<PostJobScreen> {
           _feeRow('postjob.total'.tr(), '\$$total', bold: true),
         ]),
       ),
-      if (_n(bd['materials']) > 0) ...[
-        const SizedBox(height: 8),
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Icon(Icons.info_outline, size: 14, color: C.muted),
-          const SizedBox(width: 6),
-          Expanded(child: Text('postjob.materialsNote'.tr(),
-              style: const TextStyle(color: C.muted, fontSize: 12, height: 1.3))),
-        ]),
-      ],
+      // Always shown, not just when the model guessed a figure.
+      //
+      // Materials used to appear as an AI estimate inside this total, but the
+      // pro who applies names their own — so the number here was one nobody
+      // would honour. Saying so up front is the difference between a quote that
+      // grows unexpectedly and one the customer understood.
+      const SizedBox(height: 8),
+      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Icon(Icons.info_outline, size: 14, color: C.muted),
+        const SizedBox(width: 6),
+        Expanded(child: Text('postjob.materialsByPro'.tr(),
+            style: const TextStyle(color: C.muted, fontSize: 12, height: 1.3))),
+      ]),
       const SizedBox(height: 16),
       const Divider(color: C.line, height: 1),
       const SizedBox(height: 14),

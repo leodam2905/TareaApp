@@ -326,7 +326,8 @@
     "estimatePending": "Working out your price…",
     "retryEstimate": "Retry estimate",
     "signInToPost": "Create an account to post this job — your details are saved.",
-    "cardRequired": "A card is needed to confirm the booking. You won't be charged until the job is done."
+    "cardRequired": "A card is needed to confirm the booking. You won't be charged until the job is done.",
+    "materialsByPro": "Materials aren't included. Each pro adds their own materials quote when they apply, and you'll see the full price before you hire."
   },
   "browse": {
     "title": "Browse Pros",

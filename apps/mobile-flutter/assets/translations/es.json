@@ -326,7 +326,8 @@
     "estimatePending": "Calculando tu precio…",
     "retryEstimate": "Reintentar estimación",
     "signInToPost": "Crea una cuenta para publicar — tus datos se han guardado.",
-    "cardRequired": "Necesitas una tarjeta para confirmar la reserva. No se te cobrará hasta que el trabajo esté terminado."
+    "cardRequired": "Necesitas una tarjeta para confirmar la reserva. No se te cobrará hasta que el trabajo esté terminado.",
+    "materialsByPro": "Los materiales no están incluidos. Cada profesional añade su propio presupuesto de materiales al postularse, y verás el precio completo antes de contratar."
   },
   "browse": {
     "title": "Buscar pros",

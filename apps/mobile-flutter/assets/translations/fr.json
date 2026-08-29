@@ -326,7 +326,8 @@
     "estimatePending": "Calcul de votre prix…",
     "retryEstimate": "Réessayer l'estimation",
     "signInToPost": "Créez un compte pour publier — vos informations sont conservées.",
-    "cardRequired": "Une carte est nécessaire pour confirmer la réservation. Rien ne sera débité avant la fin du travail."
+    "cardRequired": "Une carte est nécessaire pour confirmer la réservation. Rien ne sera débité avant la fin du travail.",
+    "materialsByPro": "Les matériaux ne sont pas inclus. Chaque pro ajoute son propre devis de matériaux lorsqu'il postule, et vous verrez le prix complet avant d'engager."
   },
   "browse": {
     "title": "Parcourir les pros",

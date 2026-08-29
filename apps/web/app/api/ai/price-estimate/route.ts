@@ -111,19 +111,30 @@ No markdown, just the JSON.`,
     const labor = hourlyRate * hMid;
     const urgency = urgent ? labor * URGENCY_RATE : 0;
 
-    // Fee (15%) on the service price only; materials passed through at cost.
+    // Materials are NOT in this quote.
+    //
+    // The pro who applies names their own materials figure, and that is what
+    // the customer is actually charged — so an AI guess in the quote was a
+    // number nobody would honour. On a live request the model had guessed $0
+    // while the applicant quoted $150, and the customer was comparing against
+    // the guess. The estimate now covers labour and the service fee, and says
+    // materials come from the pro.
     const materialsRounded = Math.round(materials);
     const serviceFee = Math.round(price * CUSTOMER_FEE_RATE);
-    const total = price + materialsRounded + serviceFee;
+    const total = price + serviceFee;
 
     return NextResponse.json({
       isFixed,
       price,                       // service price (fee-able, no materials) = budget
       min, max,                    // service-price range (use when !isFixed)
-      materials: materialsRounded, // pass-through, NOT fee-charged
+      // Kept for reference only — the app does not show it and the job request
+      // does not carry it. The pro's quote at application is authoritative.
+      materialsHint: materialsRounded,
+      materials: 0,                // quoted by the pro, not estimated here
       serviceFee,                  // 15% Service Fee (on service only)
       feeRate: CUSTOMER_FEE_RATE,  // 0.15
-      total,                       // service + materials + fee = what the customer pays
+      total,                       // service + fee; materials added by the pro
+      materialsByPro: true,
       workTime,
       minWindow,                   // hours
       confidence,
@@ -132,7 +143,7 @@ No markdown, just the JSON.`,
       notIncluded: Array.isArray(ai.notIncluded) ? ai.notIncluded.slice(0, 6).map(String) : [],
       breakdown: {
         hourlyRate, laborHours: workTime,
-        labor: Math.round(labor), materials: Math.round(materials),
+        labor: Math.round(labor), materials: 0, materialsHint: Math.round(materials),
         travel: TRAVEL_ADJUSTMENT, urgency: Math.round(urgency),
         serviceFee, total,
       },
