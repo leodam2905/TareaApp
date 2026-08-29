@@ -430,7 +430,9 @@ export async function POST(req: NextRequest) {
       userId: user.id,
       title: "Job posted",
       body: `Your "${title}" request is live. We'll let you know when a pro applies.`,
-      type: "booking_request",
+      // Same reason as the application notification: this refId is a
+      // jobRequest, so it must not route to booking detail.
+      type: "job_application",
       refId: jobRequest.id,
     },
   });

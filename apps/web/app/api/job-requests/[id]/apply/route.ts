@@ -94,7 +94,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     userId: jobRequest.customerId,
     title: "New Application Received",
     body: `${user.name} applied to your job: "${jobRequest.title}". Review it in My Requests.`,
-    type: "booking_request",
+    // NOT booking_request: refId is a jobRequest id, and the app sends a
+    // customer's booking_request to /booking-detail, which then fetches
+    // /bookings/{jobRequestId} and 404s. The tap looked broken because it
+    // opened a dead screen. job_application routes to My Requests, which is
+    // where this notification tells them to go anyway.
+    type: "job_application",
     refId: jobRequest.id,
   });
 
