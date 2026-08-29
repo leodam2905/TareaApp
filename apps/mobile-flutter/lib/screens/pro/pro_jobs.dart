@@ -90,6 +90,14 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
     return showModalBottomSheet<Map<String, dynamic>>(
       context: context,
       isScrollControlled: true,
+      // Backdrop taps and drags cannot dismiss this.
+      //
+      // Cancelling silently returns null, which aborts finishing the job — a
+      // pro who brushed the scrim would think they had marked it done and only
+      // find out later. The two explicit buttons are the only ways out, and
+      // the global tap-to-dismiss in main.dart still closes the keyboard.
+      isDismissible: false,
+      enableDrag: false,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheet) => Padding(
           padding: EdgeInsets.fromLTRB(20, 18, 20, MediaQuery.of(ctx).viewInsets.bottom + 18),
