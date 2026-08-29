@@ -37,22 +37,6 @@ export async function completeBooking(bookingId: string, opts?: { receiptUrl?: s
     data: { totalEarnings: { increment: handymanNet(booking.totalPrice) } },
   });
 
-  try {
-    await sendInvoiceEmail({
-      to: booking.customer.email,
-      bookingId: booking.id,
-      serviceTitle: booking.service.title,
-      serviceCategory: booking.service.category,
-      handymanName: booking.handyman.name,
-      scheduledAt: booking.scheduledAt,
-      address: booking.address,
-      city: booking.city,
-      totalPrice: booking.totalPrice,
-      materials: booking.materialsEstimate ?? 0,
-    });
-  } catch (err) {
-    console.error("[completeBooking] invoice email failed:", err);
-  }
   // Refund the materials the pro did not spend.
   //
   // Materials are prepaid from the estimate given at application and reimbursed
@@ -119,6 +103,35 @@ export async function completeBooking(bookingId: string, opts?: { receiptUrl?: s
         });
       }
     }
+  }
+
+  // Invoice email — sent AFTER the refund, not before.
+  //
+  // It used to go out first, quoting materialsEstimate, so a customer whose pro
+  // spent less than quoted received an invoice for money that was already on
+  // its way back to their card. The email is the document they keep; it has to
+  // match the charge.
+  try {
+    const refunded = (await prisma.booking.findUnique({
+      where: { id: bookingId },
+      select: { materialsRefunded: true },
+    }))?.materialsRefunded ?? 0;
+
+    await sendInvoiceEmail({
+      to: booking.customer.email,
+      bookingId: booking.id,
+      serviceTitle: booking.service.title,
+      serviceCategory: booking.service.category,
+      handymanName: booking.handyman.name,
+      scheduledAt: booking.scheduledAt,
+      address: booking.address,
+      city: booking.city,
+      totalPrice: booking.totalPrice,
+      materials: booking.materialsEstimate ?? 0,
+      materialsRefunded: refunded,
+    });
+  } catch (err) {
+    console.error("[completeBooking] invoice email failed:", err);
   }
 
   // Close the job request this booking came from.

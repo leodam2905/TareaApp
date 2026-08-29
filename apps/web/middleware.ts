@@ -28,6 +28,14 @@ function redirectToLogin(req: NextRequest) {
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  // An invoice opened from its emailed link carries a signed token and is
+  // allowed through unauthenticated — the page verifies the signature itself.
+  // Without this the redirect happens here, before the page can check, and the
+  // customer lands on a login wall for a receipt they already paid for.
+  if (/^\/customer\/bookings\/[^/]+\/invoice$/.test(pathname) && req.nextUrl.searchParams.get("t")) {
+    return NextResponse.next();
+  }
   const token = req.cookies.get("tarea_token")?.value;
   const role = token ? await getVerifiedRole(token) : null;
 

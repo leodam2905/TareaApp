@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
+import { invoiceToken } from "@/lib/invoice-link";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const FROM = "Tarea <noreply@taptarea.com>";
@@ -78,8 +79,10 @@ export async function sendInvoiceEmail(params: {
   city: string;
   totalPrice: number;
   materials?: number;
+  /** Materials quoted but not spent, already returned to the card. */
+  materialsRefunded?: number;
 }) {
-  const { to, bookingId, serviceTitle, serviceCategory, handymanName, scheduledAt, address, city, totalPrice, materials = 0 } = params;
+  const { to, bookingId, serviceTitle, serviceCategory, handymanName, scheduledAt, address, city, totalPrice, materials = 0, materialsRefunded = 0 } = params;
   const shortId = bookingId.slice(-8).toUpperCase();
   const treaFee = totalPrice * CUSTOMER_FEE_RATE;
   const total = totalPrice + treaFee + materials;
@@ -124,12 +127,14 @@ export async function sendInvoiceEmail(params: {
           <div class="totals-row"><span>Service price</span><span>$${totalPrice.toFixed(2)}</span></div>
           <div class="totals-row"><span>Tarea fee (${Math.round(CUSTOMER_FEE_RATE * 100)}%)</span><span>$${treaFee.toFixed(2)}</span></div>
           ${materials > 0 ? `<div class="totals-row"><span>Materials (at cost)</span><span>$${materials.toFixed(2)}</span></div>` : ""}
-          <div class="totals-row total"><span>Total charged</span><span>$${total.toFixed(2)}</span></div>
+          ${materialsRefunded > 0 ? `<div class="totals-row" style="color:#047857"><span>Materials refunded</span><span>−$${materialsRefunded.toFixed(2)}</span></div>` : ""}
+          <div class="totals-row total"><span>${materialsRefunded > 0 ? "Total paid" : "Total charged"}</span><span>$${(total - materialsRefunded).toFixed(2)}</span></div>
+          ${materialsRefunded > 0 ? `<div style="font-size:12px;color:#64748b;padding-top:8px">Your pro spent less on materials than quoted. $${materialsRefunded.toFixed(2)} is on its way back to your card, usually within 5–10 days.</div>` : ""}
         </div>
         <p class="thank-you">Thank you for using Tarea!</p>
         <p class="thank-sub">We hope you're satisfied with the service. Book again anytime.</p>
         <div style="text-align:center;margin:16px 0">
-          <a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://taptarea.com"}/customer/bookings/${bookingId}/invoice"
+          <a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://taptarea.com"}/customer/bookings/${bookingId}/invoice?t=${invoiceToken(bookingId)}"
             style="background:#38BDF8;color:#0F172A;font-weight:700;font-size:14px;padding:12px 28px;border-radius:12px;text-decoration:none;display:inline-block">
             View Full Invoice →
           </a>

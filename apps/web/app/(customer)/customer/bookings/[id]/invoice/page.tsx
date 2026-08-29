@@ -3,10 +3,23 @@ import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
 import InvoicePrint from "./InvoicePrint";
+import { verifyInvoiceToken } from "@/lib/invoice-link";
 
-export default async function InvoicePage({ params }: { params: { id: string } }) {
+export default async function InvoicePage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { t?: string };
+}) {
+  // A signed link from the invoice email stands in for a session.
+  //
+  // The token is an HMAC over this booking id alone, so it opens this invoice
+  // and nothing else. Without it a customer who lives in the app was asked to
+  // create a website login to read a receipt for money they had already paid.
+  const emailed = verifyInvoiceToken(params.id, searchParams?.t);
   const user = await getCurrentUser();
-  if (!user) redirect("/login");
+  if (!user && !emailed) redirect("/login");
 
   const booking = await prisma.booking.findUnique({
     where: { id: params.id },
@@ -18,7 +31,10 @@ export default async function InvoicePage({ params }: { params: { id: string } }
   });
 
   if (!booking) notFound();
-  if (booking.customerId !== user.id && user.role !== "ADMIN") redirect("/customer/bookings");
+  // A valid token already proves the bearer was sent this invoice.
+  if (!emailed && booking.customerId !== user!.id && user!.role !== "ADMIN") {
+    redirect("/customer/bookings");
+  }
   if (!booking.isPaid) redirect(`/customer/bookings/${params.id}`);
 
   // Fee applies to the service price only; materials are passed through at cost.
