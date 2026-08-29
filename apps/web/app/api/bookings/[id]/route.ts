@@ -200,6 +200,20 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       { status: 403 }
     );
   }
+  // A job can only be STARTED once it has been paid for.
+  //
+  // Only COMPLETED was guarded, so a pro could take an accepted booking to
+  // IN_PROGRESS, travel, do the work and mark it done — and only then hit the
+  // wall at completion, with no way to be paid for labour already performed.
+  // Pay-at-hire exists precisely so a pro knows the money is there before they
+  // start; letting them start unpaid gives away the one guarantee it buys.
+  if (status === "IN_PROGRESS" && !booking.isPaid) {
+    return NextResponse.json(
+      { error: "This job has not been paid for yet. You'll be able to start once the customer pays." },
+      { status: 409 },
+    );
+  }
+
   // A job can only be completed once it has been paid for.
   if (status === "COMPLETED" && !booking.isPaid) {
     return NextResponse.json({ error: "Cannot complete an unpaid booking." }, { status: 409 });
