@@ -7,7 +7,8 @@ import { stripe } from "@/lib/stripe";
 import { completeBooking } from "@/lib/complete-booking";
 import { chargeSavedCardForBooking } from "@/lib/booking-charge";
 import { canCall, releaseProxySessions } from "@/lib/voice";
-import { handymanNet } from "@/lib/fees";
+import { handymanNet, CUSTOMER_FEE_RATE } from "@/lib/fees";
+import { validateMaterials } from "@/lib/materials-policy";
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
@@ -51,7 +52,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { status, cancelReason, receiptUrl, workDone, timer, materialsActual } = await req.json();
+  const {
+    status, cancelReason, receiptUrl, workDone, timer, materialsActual,
+    // Set by the PRO when accepting: what they will need for parts. The
+    // customer approves the resulting total before any money moves.
+    materialsQuote,
+    // Set by the CUSTOMER to approve that total and pay.
+    approvePrice,
+  } = await req.json();
   const booking = await prisma.booking.findUnique({
     where: { id: params.id },
     include: {
@@ -172,6 +180,47 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     return NextResponse.json({ ok: true, receiptUrl: proReceipt ?? booking.receiptUrl ?? null });
   }
 
+  // Customer approves the quoted price and pays.
+  //
+  // Directed bookings used to charge the card automatically the moment the pro
+  // accepted. That was fine while the price was fixed at request time, but a
+  // pro now names their materials when they accept — so the amount charged
+  // could differ from the amount the customer agreed to. Nothing is taken
+  // until they have seen the final total and said yes.
+  if (approvePrice === true) {
+    if (actorRole !== "CUSTOMER") {
+      return NextResponse.json({ error: "Only the customer can approve the price." }, { status: 403 });
+    }
+    if (booking.status !== "ACCEPTED") {
+      return NextResponse.json({ error: "This booking is not awaiting your approval." }, { status: 409 });
+    }
+    if (booking.isPaid) {
+      return NextResponse.json({ error: "This booking is already paid." }, { status: 409 });
+    }
+    const charge = await chargeSavedCardForBooking(params.id);
+    if (!charge.ok) {
+      // Say what to do, not just that it failed. "no_card" is the one the
+      // customer can actually fix, and it is reachable — a card can be removed
+      // between requesting the pro and approving the price.
+      const message =
+        charge.reason === "no_card"
+          ? "No card on file. Add a payment method and approve again."
+          : charge.reason === "requires_action"
+            ? "Your bank needs to confirm this payment. Try again and complete the check."
+            : charge.message ?? "Your card was declined. Try another payment method.";
+      return NextResponse.json({ error: message, reason: charge.reason }, { status: 402 });
+    }
+    const paid = await prisma.booking.findUnique({ where: { id: params.id } });
+    await createNotification({
+      userId: booking.handymanId,
+      title: "Payment confirmed ✓",
+      body: `${booking.customer?.name ?? "The customer"} approved the price for "${booking.service.title}". You're clear to start.`,
+      type: "booking_accepted",
+      refId: params.id,
+    });
+    return NextResponse.json(paid);
+  }
+
   const ALLOWED_TRANSITIONS: Record<string, Record<string, Array<"CUSTOMER" | "HANDYMAN">>> = {
     PENDING: {
       ACCEPTED: ["HANDYMAN"],
@@ -200,6 +249,18 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       { status: 403 }
     );
   }
+  // The pro's materials quote, named when accepting.
+  let quotedMaterials: number | undefined;
+  if (status === "ACCEPTED" && materialsQuote !== undefined && materialsQuote !== null && materialsQuote !== "") {
+    const n = Math.round(Number(materialsQuote) * 100) / 100;
+    if (!Number.isFinite(n) || n < 0) {
+      return NextResponse.json({ error: "Materials must be a positive amount." }, { status: 400 });
+    }
+    const check = validateMaterials(n);
+    if (!check.ok) return NextResponse.json({ error: check.error }, { status: 400 });
+    quotedMaterials = check.value;
+  }
+
   // A job can only be STARTED once it has been paid for.
   //
   // Only COMPLETED was guarded, so a pro could take an accepted booking to
@@ -242,34 +303,48 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       data: {
         status,
         cancelReason,
-        // When handyman accepts, give customer 2 hours to pay before auto-cancel
+        // When the handyman accepts, the customer gets 2 hours to approve the
+        // final price before auto-cancel.
         ...(status === "ACCEPTED" && { responseDeadline: responseDeadlineFromNow() }),
+        // Materials the pro says the job needs, named at acceptance. This is
+        // what turns the request price into a final one, so it is the number
+        // the customer is then asked to approve.
+        ...(status === "ACCEPTED" && quotedMaterials !== undefined
+          ? { materialsEstimate: quotedMaterials }
+          : {}),
         ...(status === "IN_PROGRESS" && !booking.jobStartedAt && { jobStartedAt: new Date() }),
       },
     });
   }
 
-  // The pro accepting is what finalises a directed booking, so take the money
-  // now rather than sending the customer to a payment page they may never open.
-  // The card was saved with off-session consent when they hired (see
-  // PaymentMethods.ensureCardOnFile / /api/stripe/setup-intent), so no customer
-  // action is needed and the pro's accept becomes a paid job within seconds.
+  // Accepting no longer charges. It asks.
   //
-  // A failure here is not fatal: the booking stays accepted-but-unpaid and the
-  // customer is asked to pay by hand, exactly as before, with the 2-hour
-  // deadline and expire-bookings cron as the backstop.
-  let chargedOnAccept = false;
+  // The card used to be charged the instant the pro accepted, using the
+  // off-session consent taken at request time. That worked while the price was
+  // settled up front — but a pro now names their materials when they accept, so
+  // the amount would differ from the amount the customer agreed to. Charging a
+  // saved card for a number the customer has not seen is the wrong side of the
+  // line, however small the difference.
+  //
+  // So acceptance produces a final price and a request for approval. The
+  // customer approves (approvePrice above) and is charged, or declines, or lets
+  // the 2-hour deadline pass and expire-bookings cancels it — no charge in
+  // either of the last two.
   if (status === "ACCEPTED" && !booking.isPaid) {
-    const charge = await chargeSavedCardForBooking(params.id);
-    chargedOnAccept = charge.ok;
-    if (!charge.ok && charge.reason !== "no_card") {
-      console.warn("[bookings/PATCH] Accept-time charge failed:", params.id, charge.reason);
-    }
-    // The row was read before the charge, so re-read it: the pro who just
-    // accepted should see a paid job, not a stale "awaiting payment".
-    if (chargedOnAccept) {
-      updated = (await prisma.booking.findUnique({ where: { id: params.id } })) ?? updated;
-    }
+    const labour = booking.totalPrice;
+    const materials = quotedMaterials ?? booking.materialsEstimate ?? 0;
+    const finalTotal = Math.round((labour * (1 + CUSTOMER_FEE_RATE) + materials) * 100) / 100;
+    await createNotification({
+      userId: booking.customerId,
+      title: `Approve $${finalTotal.toFixed(2)} to confirm`,
+      body: materials > 0
+        ? `${booking.handyman?.name ?? "Your pro"} accepted "${booking.service.title}" and quoted $${materials.toFixed(2)} for materials. Approve $${finalTotal.toFixed(2)} to confirm — you're not charged until you do.`
+        : `${booking.handyman?.name ?? "Your pro"} accepted "${booking.service.title}". Approve $${finalTotal.toFixed(2)} to confirm — you're not charged until you do.`,
+      type: "booking_accepted",
+      refId: params.id,
+    });
+    // Re-read so the response carries the materials quote just written.
+    updated = (await prisma.booking.findUnique({ where: { id: params.id } })) ?? updated;
   }
 
   // Cancellation penalties
@@ -382,17 +457,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   } else {
     const notifyUserId = user.id === booking.customerId ? booking.handymanId : booking.customerId;
 
-    // A booking paid on acceptance is already announced to both parties by
-    // markBookingPaid — saying "payment required" on top of it would be wrong
-    // and alarming.
-    if (!(status === "ACCEPTED" && chargedOnAccept)) {
-      const acceptBody = user.role === "HANDYMAN" && status === "ACCEPTED"
-        ? "Your booking was accepted! Open your bookings to complete payment."
-        : `Your booking has been marked as ${status.toLowerCase()}.`;
+    // ACCEPTED is announced above, by the notification that carries the final
+    // price and asks for approval. A second "payment required" on top of it
+    // would say a different thing about the same event.
+    if (status !== "ACCEPTED") {
       await createNotification({
         userId: notifyUserId,
-        title: status === "ACCEPTED" ? "Booking accepted — payment required" : `Booking ${status.toLowerCase()}`,
-        body: acceptBody,
+        title: `Booking ${status.toLowerCase()}`,
+        body: `Your booking has been marked as ${status.toLowerCase()}.`,
         type: "booking_accepted",
         refId: booking.id,
       });
