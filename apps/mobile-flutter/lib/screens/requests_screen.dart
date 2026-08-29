@@ -180,15 +180,29 @@ class _RequestsScreenState extends State<RequestsScreen> {
         if (open && st == 'PENDING') ...[
           const SizedBox(height: 10),
           Row(children: [
+            // Equal widths. Hire used to take two thirds, which left Decline
+            // too narrow for its own label — it wrapped to "Declin / e" on a
+            // stock iPhone, and French and Spanish are longer still. Hire keeps
+            // its prominence from being filled and blue, not from being wider.
             Expanded(child: OutlinedButton(
-              style: OutlinedButton.styleFrom(side: const BorderSide(color: C.line)),
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: C.line),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
               onPressed: _busy ? null : () => _respond(reqId, a['id'].toString(), 'reject'),
-              child: Text('requests.decline'.tr(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w800)))),
+              child: Text('requests.decline'.tr(),
+                  maxLines: 1, overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: C.muted, fontWeight: FontWeight.w800)))),
             const SizedBox(width: 8),
-            Expanded(flex: 2, child: FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: C.blue),
+            Expanded(child: FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: C.blue,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
               onPressed: _busy ? null : () => _respond(reqId, a['id'].toString(), 'accept'),
-              child: Text('requests.hire'.tr(), style: const TextStyle(fontWeight: FontWeight.w800)))),
+              child: Text('requests.hire'.tr(),
+                  maxLines: 1, overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontWeight: FontWeight.w800)))),
           ]),
         ],
       ]),

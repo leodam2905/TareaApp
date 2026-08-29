@@ -252,15 +252,27 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
         if (open && st == 'PENDING') ...[
           const SizedBox(height: 10),
           Row(children: [
+            // Equal widths — see the note in requests_screen.dart. Hire took two
+            // thirds, leaving Decline too narrow for its own label.
             Expanded(child: OutlinedButton(
-              style: OutlinedButton.styleFrom(side: const BorderSide(color: C.line)),
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: C.line),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
               onPressed: _busy ? null : () => _respond(a['id'].toString(), 'reject'),
-              child: Text('requests.decline'.tr(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w800)))),
+              child: Text('requests.decline'.tr(),
+                  maxLines: 1, overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: C.muted, fontWeight: FontWeight.w800)))),
             const SizedBox(width: 8),
-            Expanded(flex: 2, child: FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: C.blue),
+            Expanded(child: FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: C.blue,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
               onPressed: _busy ? null : () => _respond(a['id'].toString(), 'accept'),
-              child: Text('requests.hire'.tr(), style: const TextStyle(fontWeight: FontWeight.w800)))),
+              child: Text('requests.hire'.tr(),
+                  maxLines: 1, overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontWeight: FontWeight.w800)))),
           ]),
         ],
       ]),
