@@ -420,7 +420,9 @@
     "cancelRequest": "Cancelar solicitud",
     "cancelTitle": "¿Cancelar esta solicitud?",
     "cancelBody": "Esto elimina tu trabajo publicado. No se puede deshacer.",
-    "cancelled": "Solicitud cancelada"
+    "cancelled": "Solicitud cancelada",
+    "priceMaterials": "Materiales cotizados",
+    "priceTotal": "Pagarías"
   },
   "proProfile": {
     "title": "Perfil Pro",

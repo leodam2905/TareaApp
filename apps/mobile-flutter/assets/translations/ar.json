@@ -420,7 +420,9 @@
     "cancelRequest": "إلغاء الطلب",
     "cancelTitle": "إلغاء هذا الطلب؟",
     "cancelBody": "سيؤدي هذا إلى حذف طلبك المنشور. لا يمكن التراجع.",
-    "cancelled": "تم إلغاء الطلب"
+    "cancelled": "تم إلغاء الطلب",
+    "priceMaterials": "المواد المقدَّرة",
+    "priceTotal": "ستدفع"
   },
   "proProfile": {
     "title": "ملف المحترف",

@@ -420,7 +420,9 @@
     "cancelRequest": "Annuler la demande",
     "cancelTitle": "Annuler cette demande ?",
     "cancelBody": "Cela supprime votre annonce. Action irréversible.",
-    "cancelled": "Demande annulée"
+    "cancelled": "Demande annulée",
+    "priceMaterials": "Matériaux estimés",
+    "priceTotal": "Vous paieriez"
   },
   "proProfile": {
     "title": "Profil Pro",

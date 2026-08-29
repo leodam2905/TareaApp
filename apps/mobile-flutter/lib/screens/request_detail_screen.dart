@@ -249,6 +249,28 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
           const SizedBox(height: 6),
           Align(alignment: Alignment.centerLeft, child: Text((hp['bio']).toString(), style: const TextStyle(color: C.muted, fontSize: 12))),
         ],
+        // What hiring THIS pro costs. Pros quote their own materials, so two
+        // applicants on the same job are not the same price — and without the
+        // breakdown a customer comparing them is comparing names and ratings
+        // while the amount they pay differs silently.
+        if (((a['customerTotal'] ?? 0) as num) > 0) ...[
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: C.bg, borderRadius: BorderRadius.circular(12)),
+            child: Column(children: [
+              _priceRow('requests.priceMaterials'.tr(),
+                  '\$${((a['effectiveMaterials'] ?? 0) as num).toStringAsFixed(2)}'),
+              const SizedBox(height: 6),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text('requests.priceTotal'.tr(),
+                    style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 13)),
+                Text('\$${((a['customerTotal'] ?? 0) as num).toStringAsFixed(2)}',
+                    style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+              ]),
+            ]),
+          ),
+        ],
         if (open && st == 'PENDING') ...[
           const SizedBox(height: 10),
           Row(children: [
@@ -278,4 +300,11 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
       ]),
     );
   }
+
+  static Widget _priceRow(String label, String value) =>
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Text(label, style: const TextStyle(color: C.muted, fontSize: 12)),
+        Text(value, style: const TextStyle(color: C.ink, fontSize: 12, fontWeight: FontWeight.w700)),
+      ]);
+
 }

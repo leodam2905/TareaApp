@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { hireAmounts } from "@/lib/hire";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
@@ -76,7 +77,32 @@ export async function GET() {
       },
       orderBy: { createdAt: "desc" },
     });
-    return NextResponse.json(requests);
+
+    // Price each application the way hiring it actually would.
+    //
+    // Pros quote their own materials, so two applicants on the same job cost
+    // the customer different amounts — and the app was showing one number for
+    // the request, which was whichever figure happened to be on the request
+    // itself. Computed here, from hireAmounts, so the number a customer
+    // compares against is the number they will be charged; a second
+    // arithmetic in the app is how a preview and a checkout end up disagreeing.
+    const priced = requests.map((r) => ({
+      ...r,
+      applications: r.applications.map((a) => {
+        const materials = a.materialsEstimate ?? r.materialsCost ?? 0;
+        const amounts = hireAmounts(r.budgetMin, materials);
+        return {
+          ...a,
+          // What THIS pro quoted for parts, falling back to the figure on the
+          // request when they did not name one.
+          effectiveMaterials: Math.round(amounts.materials * 100) / 100,
+          // What hiring this pro would cost, all in.
+          customerTotal:
+            Math.round((amounts.labour + amounts.serviceFee + amounts.materials) * 100) / 100,
+        };
+      }),
+    }));
+    return NextResponse.json(priced);
   }
 
   // Handyman: return ALL open requests, optionally filtered by their service categories
