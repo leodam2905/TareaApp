@@ -327,7 +327,12 @@
     "retryEstimate": "Réessayer l'estimation",
     "signInToPost": "Créez un compte pour publier — vos informations sont conservées.",
     "cardRequired": "Une carte est nécessaire pour confirmer la réservation. Rien ne sera débité avant la fin du travail.",
-    "materialsByPro": "Les matériaux ne sont pas inclus. Chaque pro ajoute son propre devis de matériaux lorsqu'il postule, et vous verrez le prix complet avant d'engager."
+    "materialsByPro": "Les matériaux ne sont pas inclus. Chaque pro ajoute son propre devis de matériaux lorsqu'il postule, et vous verrez le prix complet avant d'engager.",
+    "estimatedServiceTime": "Temps de service estimé par Tarea AI",
+    "rangeAcrossPros": "Total estimé pour {} pros",
+    "youChoosePro": "Les pros fixent leurs propres tarifs. Votre prix final dépend du pro que vous choisissez.",
+    "laborServiceLowest": "Main-d’œuvre et service (pro le moins cher)",
+    "billedAtMinimum": "Facturé au minimum de {}h de ce pro"
   },
   "browse": {
     "title": "Parcourir les pros",
@@ -335,7 +340,6 @@
     "within60": "Moins de 60 mi",
     "availableNow": "Disponible",
     "topRated": "Mieux notés",
-    "price": "Prix",
     "noMatch": "Aucun pro ne correspond à vos filtres.",
     "available": "Disponible",
     "newRating": "Nouveau",
@@ -344,9 +348,23 @@
     "licensed": "Agréé",
     "insured": "Assuré",
     "backgroundChecked": "Antécédents vérifiés",
-    "perHour": "/h",
-    "minHour": "• Min. 1 heure",
-    "viewProfile": "Voir le profil"
+    "viewProfile": "Voir le profil",
+    "band": {
+      "excellent": "Excellente correspondance",
+      "great": "Très bonne correspondance",
+      "good": "Bonne correspondance",
+      "fair": "Correspondance"
+    },
+    "reason": {
+      "licensed_insured": "Licencié et assuré",
+      "licensed": "Licencié",
+      "insured": "Assuré",
+      "highly_rated": "Très bien noté",
+      "experienced": "Expérimenté",
+      "fast_replies": "Répond vite",
+      "nearby": "À proximité",
+      "new_pro": "Nouveau sur Tarea"
+    }
   },
   "notifications": {
     "markAllRead": "Tout marquer lu",
@@ -525,7 +543,6 @@
     "extDeclined": "Refusé",
     "extWaiting": "En attente",
     "extraTimeNeeded": "Temps supplémentaire",
-    "extraChargeHint": "Frais en plus (facultatif, $)",
     "reasonHint": "Motif (facultatif)",
     "sendRequest": "Envoyer",
     "acceptJob": "Accepter la mission",
@@ -556,7 +573,8 @@
     "timerPause": "Mettre en pause",
     "timerResume": "Reprendre",
     "timerPaused": "En pause",
-    "timerFailed": "Impossible de mettre à jour le chrono"
+    "timerFailed": "Impossible de mettre à jour le chrono",
+    "extraCostAtRate": "Ajoute ${amount} à votre tarif de ${rate}/h"
   },
   "payout": {
     "title": "Modes de paiement",
@@ -607,16 +625,13 @@
     "category": "Catégorie",
     "fldDescription": "Description",
     "descHint": "Ce que comprend ce service",
-    "minPrice": "Prix min ($)",
-    "maxPrice": "Prix max ($)",
     "duration": "Durée (minutes)",
     "titleMin": "Le titre doit faire au moins 3 caractères",
     "descMin": "La description doit faire au moins 10 caractères",
-    "validPrices": "Saisissez des prix valides",
     "validDuration": "Saisissez une durée valide",
     "bio": "Bio",
     "bioHint": "Parlez de votre expérience aux clients",
-    "hourlyRate": "Taux horaire ($)",
+    "hourlyRate": "Votre tarif ($/h)",
     "companyName": "Nom de l'entreprise (facultatif)",
     "website": "Site web (facultatif)",
     "state": "État / région",
@@ -666,7 +681,17 @@
     "policyNumber": "Numéro de police",
     "perOccurrence": "Par sinistre (USD)",
     "aggregate": "Plafond global (USD)",
-    "choosePdf": "Choisir un PDF"
+    "choosePdf": "Choisir un PDF",
+    "hourlyRateHint": "Un seul tarif pour cette catégorie",
+    "validRate": "Saisissez votre tarif horaire",
+    "setRate": "Définir le tarif",
+    "editRateTitle": "Modifier votre tarif",
+    "rateUpdated": "Tarif mis à jour",
+    "updateRateFailed": "Impossible de mettre à jour le tarif",
+    "rateAppliesToNew": "S'applique aux nouvelles réservations. Les missions déjà réservées conservent le tarif convenu.",
+    "minimumBillable": "Durée minimum facturée",
+    "minimumBillableHint": "Une intervention plus courte est facturée à ce minimum. La plupart des métiers facturent une heure.",
+    "minShort": "min {}h"
   },
   "diagnose": {
     "title": "Diagnostic IA",
@@ -686,7 +711,12 @@
     "routine": "Courant",
     "disclaimer": "À titre informatif uniquement — ceci est une estimation par IA, pas un diagnostic professionnel. Un pro agréé doit confirmer le problème avant tout travail. En cas de fuite de gaz, de danger électrique ou d'inondation, appelez les secours ou un pro agréé immédiatement.",
     "tips": "Conseils",
-    "postThisJob": "Publier cette tâche"
+    "postThisJob": "Publier cette tâche",
+    "ballparkLabel": "Estimation approximative",
+    "estimateLabel": "Total estimé",
+    "aboutTime": "environ {} sur place",
+    "priceNote": "Frais de service inclus. Répondez à quelques questions dans Publier une mission pour un prix plus précis.",
+    "priceNoteAcrossPros": "Frais de service inclus. Sur {} pros — chacun fixe son tarif, votre prix dépend de celui que vous choisissez. Répondez à quelques questions pour un prix plus précis."
   },
   "handymanDetail": {
     "proFallback": "Pro",
@@ -788,7 +818,9 @@
     "estimate": "~ Estimation",
     "whatsIncluded": "Ce qui est inclus",
     "postThisJobArrow": "Publier cette tâche",
-    "editAnswers": "Modifier les réponses"
+    "editAnswers": "Modifier les réponses",
+    "allIn": "Frais de service inclus. Les matériaux éventuels sont devisés séparément par votre pro.",
+    "allInAcrossPros": "Frais de service inclus. Sur {} pros — les pros fixent leurs tarifs, votre prix dépend de celui que vous choisissez. Matériaux devisés séparément."
   },
   "call": {
     "unavailable": "Appel indisponible pour le moment. Utilisez le chat.",

@@ -25,13 +25,12 @@ type Service = {
   title: string;
   description: string;
   category: string;
-  minPrice: number;
-  maxPrice: number;
+  hourlyRate: number | null;
   duration: number;
   isActive: boolean;
 };
 
-const EMPTY_FORM = { title: "", description: "", category: "PLUMBING", minPrice: "", maxPrice: "", duration: "" };
+const EMPTY_FORM = { title: "", description: "", category: "PLUMBING", hourlyRate: "", duration: "" };
 
 export default function HandymanServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
@@ -63,8 +62,7 @@ export default function HandymanServicesPage() {
       title: s.title,
       description: s.description,
       category: s.category,
-      minPrice: String(s.minPrice),
-      maxPrice: String(s.maxPrice),
+      hourlyRate: s.hourlyRate != null ? String(s.hourlyRate) : "",
       duration: String(s.duration),
     });
     setShowForm(true);
@@ -74,15 +72,13 @@ export default function HandymanServicesPage() {
 
   const save = async () => {
     if (!form.title.trim() || !form.description.trim()) { toast.error("Title and description required"); return; }
-    const min = parseFloat(form.minPrice);
-    const max = parseFloat(form.maxPrice);
+    const rate = parseFloat(form.hourlyRate);
     const dur = parseInt(form.duration);
-    if (isNaN(min) || isNaN(max) || min <= 0 || max <= 0) { toast.error("Enter valid prices"); return; }
-    if (max < min) { toast.error("Max price must be ≥ min price"); return; }
+    if (isNaN(rate) || rate <= 0) { toast.error("Enter your hourly rate for this category"); return; }
     if (isNaN(dur) || dur <= 0) { toast.error("Enter a valid duration"); return; }
 
     setSaving(true);
-    const body = { title: form.title.trim(), description: form.description.trim(), category: form.category, minPrice: min, maxPrice: max, duration: dur };
+    const body = { title: form.title.trim(), description: form.description.trim(), category: form.category, hourlyRate: rate, duration: dur };
 
     try {
       if (editing) {
@@ -193,20 +189,14 @@ export default function HandymanServicesPage() {
                 className={field + " resize-none"} />
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-slate-300 text-sm font-medium block mb-1.5 flex items-center gap-1">
-                  <DollarSign className="w-3.5 h-3.5 text-tarea-sky" /> Min Price
+                  <DollarSign className="w-3.5 h-3.5 text-tarea-sky" /> Your rate ($/hr)
                 </label>
-                <input type="number" min="0" value={form.minPrice} onChange={e => set("minPrice", e.target.value)}
-                  placeholder="50" className={field} />
-              </div>
-              <div>
-                <label className="text-slate-300 text-sm font-medium block mb-1.5 flex items-center gap-1">
-                  <DollarSign className="w-3.5 h-3.5 text-tarea-sky" /> Max Price
-                </label>
-                <input type="number" min="0" value={form.maxPrice} onChange={e => set("maxPrice", e.target.value)}
-                  placeholder="200" className={field} />
+                <input type="number" min="0" value={form.hourlyRate} onChange={e => set("hourlyRate", e.target.value)}
+                  placeholder="75" className={field} />
+                <p className="text-slate-500 text-xs mt-1">One rate for this category. Customers see it before they book.</p>
               </div>
               <div>
                 <label className="text-slate-300 text-sm font-medium block mb-1.5 flex items-center gap-1">
@@ -277,7 +267,7 @@ export default function HandymanServicesPage() {
                       </div>
                       <p className="text-slate-400 text-sm mt-1.5 line-clamp-2">{s.description}</p>
                       <div className="flex gap-4 mt-2 text-xs text-slate-500">
-                        <span className="text-tarea-sky font-semibold">{formatCurrency(s.minPrice)}–{formatCurrency(s.maxPrice)}</span>
+                        <span className="text-tarea-sky font-semibold">{s.hourlyRate != null ? `${formatCurrency(s.hourlyRate)}/hr` : "Rate not set"}</span>
                         <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{s.duration} min</span>
                         <span className={s.isActive ? "text-emerald-400" : "text-slate-500"}>{s.isActive ? "Active" : "Paused"}</span>
                       </div>

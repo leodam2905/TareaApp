@@ -49,14 +49,23 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ services, total, page, pages: Math.ceil(total / limit) });
 }
 
+// A pro names ONE hourly rate per category. minPrice/maxPrice are still accepted
+// because build 48 and earlier send them and will keep doing so until every
+// install updates; they are recorded but no longer price anything. A request
+// carrying only the old range yields a rate from minPrice, which is the closest
+// honest reading of "what this pro charges".
 const createSchema = z.object({
   title: z.string().min(3),
   description: z.string().min(10),
   category: z.string(),
-  minPrice: z.number().positive(),
-  maxPrice: z.number().positive(),
+  hourlyRate: z.number().positive().optional(),
+  minimumMinutes: z.number().int().min(60).max(240).optional(),
+  minPrice: z.number().positive().optional(),
+  maxPrice: z.number().positive().optional(),
   duration: z.number().int().positive(),
   imageUrl: z.string().url().optional(),
+}).refine(d => d.hourlyRate !== undefined || d.minPrice !== undefined, {
+  message: "Set an hourly rate for this category",
 });
 
 export async function POST(req: NextRequest) {
@@ -72,6 +81,7 @@ export async function POST(req: NextRequest) {
     const service = await prisma.service.create({
       data: {
         ...data,
+        hourlyRate: data.hourlyRate ?? data.minPrice,
         category: data.category as never,
         handymanId: user.handymanProfile!.id,
       },

@@ -54,11 +54,21 @@ export const TARGET_NET_TRAVEL = 30;
 export const URGENCY_RATE = 0.2;
 
 /**
- * The floor under any job.
+ * RETIRED as a pricing rule — do not reintroduce. See migration 013.
  *
- * A price too low to be worth the trip is not a cheap job — it is a job nobody
- * accepts, which looks exactly like having no pros. Below this, a call-out is
- * not worth making.
+ * This floored every quote at $120, and on a short job it erased the model:
+ * measured on 30 minutes of work, every pro from $50/hr to $150/hr was charged
+ * exactly $120. The customer's range collapsed to one number, the pro's chosen
+ * rate decided nothing, and the platform was setting a single identical price
+ * across every competing pro.
+ *
+ * Replaced by a minimum billable TIME (DEFAULT_MINIMUM_MINUTES in
+ * lib/labor-pricing), which the pro sets. Price stays rate x time, so it still
+ * varies by pro. What remains as a hard floor is ABSOLUTE_MINIMUM_CHARGE, set
+ * far below any real quote so it never decides a price.
+ *
+ * Kept only because grossMinimum() below is still referenced by the legacy
+ * min/max range served to pre-build-49 clients.
  */
 export const MINIMUM_NET_JOB = 120;
 

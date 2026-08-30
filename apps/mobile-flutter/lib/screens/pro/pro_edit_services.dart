@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
 import '../../api.dart';
 import 'pro_widgets.dart';
+import '../../widgets/rate_sheet.dart';
 
 class ProEditServices extends StatefulWidget {
   const ProEditServices({super.key});
@@ -61,6 +62,41 @@ class _ProEditServicesState extends State<ProEditServices> {
     }
   }
 
+  /// Change the rate for one category without rebuilding the whole listing.
+  ///
+  /// A pro's rate is the thing most likely to change after onboarding — fuel,
+  /// season, a licence earned — and until now the only place to change it was
+  /// the website. Everything else about the service (title, description,
+  /// category) stays put; this edits the one field that prices their work.
+  Future<void> _editRate(dynamic s) async {
+    final id = (s['id'] ?? '').toString();
+    if (id.isEmpty) return;
+    final edit = await showEditRateSheet(
+      context,
+      categoryLabel: prettyCategory((s['category'] ?? '').toString()),
+      currentRate: s['hourlyRate'] as num?,
+      currentMinimumMinutes: s['minimumMinutes'] as int?,
+    );
+    if (edit == null) return;
+
+    // PATCH carries only the field that changed, so nothing else on the row can
+    // be clobbered by a stale value the sheet happened to be holding.
+    try {
+      final res = await Api.patch('/services/$id',
+          {'hourlyRate': edit.hourlyRate, 'minimumMinutes': edit.minimumMinutes});
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        _toast('proEdit.rateUpdated'.tr());
+        _load();
+      } else {
+        String msg = 'proEdit.updateRateFailed'.tr();
+        try { msg = (jsonDecode(res.body)['error'] ?? msg).toString(); } catch (_) {}
+        _toast(msg);
+      }
+    } catch (_) {
+      _toast('common.connectionRetry'.tr());
+    }
+  }
+
   Future<void> _addSheet() async {
     final added = await showModalBottomSheet<bool>(
       context: context,
@@ -93,8 +129,7 @@ class _ProEditServicesState extends State<ProEditServices> {
   Widget _card(dynamic s) {
     final title = (s['title'] ?? 'proProfile.serviceFallback'.tr()).toString();
     final cat = prettyCategory((s['category'] ?? '').toString());
-    final min = (s['minPrice'] ?? 0) as num;
-    final max = (s['maxPrice'] ?? 0) as num;
+    final rate = s['hourlyRate'] as num?;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -105,7 +140,25 @@ class _ProEditServicesState extends State<ProEditServices> {
           const SizedBox(height: 2),
           Text(cat, style: const TextStyle(color: C.muted)),
         ])),
-        Text('\$${min.round()}–${max.round()}', style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF16A34A))),
+        // The rate is the tap target: it is what a pro comes here to change,
+        // and a bare number gave no hint it could be edited.
+        InkWell(
+          onTap: () => _editRate(s),
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                Text(rate == null ? 'proEdit.setRate'.tr() : '\$${rate.round()}/hr',
+                    style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF16A34A))),
+                Text('proEdit.minShort'.tr(args: ['${((s['minimumMinutes'] ?? 60) as int) ~/ 60}']),
+                    style: const TextStyle(color: C.muted, fontSize: 11)),
+              ]),
+              const SizedBox(width: 4),
+              const Icon(Icons.edit_outlined, size: 15, color: Color(0xFF16A34A)),
+            ]),
+          ),
+        ),
         IconButton(icon: const Icon(Icons.delete_outline, color: C.red, size: 20), onPressed: () => _delete(s)),
       ]),
     );
@@ -121,8 +174,7 @@ class _AddServiceSheet extends StatefulWidget {
 class _AddServiceSheetState extends State<_AddServiceSheet> {
   final _title = TextEditingController();
   final _desc = TextEditingController();
-  final _min = TextEditingController();
-  final _max = TextEditingController();
+  final _rate = TextEditingController();
   final _duration = TextEditingController(text: '60');
   String _category = kServiceCategories.first;
   bool _saving = false;
@@ -132,18 +184,17 @@ class _AddServiceSheetState extends State<_AddServiceSheet> {
   Future<void> _submit() async {
     final title = _title.text.trim();
     final desc = _desc.text.trim();
-    final min = double.tryParse(_min.text.trim());
-    final max = double.tryParse(_max.text.trim());
+    final rate = double.tryParse(_rate.text.trim());
     final dur = int.tryParse(_duration.text.trim());
     if (title.length < 3) return _toast('proEdit.titleMin'.tr());
     if (desc.length < 10) return _toast('proEdit.descMin'.tr());
-    if (min == null || max == null || min <= 0 || max <= 0) return _toast('proEdit.validPrices'.tr());
+    if (rate == null || rate <= 0) return _toast('proEdit.validRate'.tr());
     if (dur == null || dur <= 0) return _toast('proEdit.validDuration'.tr());
     setState(() => _saving = true);
     try {
       final res = await Api.post('/services', {
         'title': title, 'description': desc, 'category': _category,
-        'minPrice': min, 'maxPrice': max, 'duration': dur,
+        'hourlyRate': rate, 'duration': dur,
       });
       if (res.statusCode >= 200 && res.statusCode < 300) {
         if (mounted) Navigator.pop(context, true);
@@ -186,11 +237,7 @@ class _AddServiceSheetState extends State<_AddServiceSheet> {
             ),
             const SizedBox(height: 16),
             proField('proEdit.fldDescription'.tr(), _desc, maxLines: 3, hint: 'proEdit.descHint'.tr()),
-            Row(children: [
-              Expanded(child: proField('proEdit.minPrice'.tr(), _min, keyboard: TextInputType.number)),
-              const SizedBox(width: 12),
-              Expanded(child: proField('proEdit.maxPrice'.tr(), _max, keyboard: TextInputType.number)),
-            ]),
+            proField('proEdit.hourlyRate'.tr(), _rate, keyboard: TextInputType.number, hint: 'proEdit.hourlyRateHint'.tr()),
             proField('proEdit.duration'.tr(), _duration, keyboard: TextInputType.number),
             const SizedBox(height: 4),
             proSaveButton(_saving, _submit, label: 'proEdit.addService'.tr()),

@@ -66,11 +66,21 @@ npx prisma migrate diff \
 | 005 | Name on the licence | **Yes** — 2026-08-25 |
 | 006 | Insurance certificate detail | **Yes** — 2026-08-25 |
 | 007 | Booking → job request link | **Yes** — 2026-08-26 |
+| 008 | Actual materials spend + refund record | **Yes** — 2026-08-29 |
+| 009 | One hourly rate per category (range retired) | **No** |
+| 010 | Booking labour snapshot (rate, minutes, amount) | **No** |
+| 011 | Which ICA version a pro signed | **No** |
+| 012 | Estimated billable minutes on a job request | **No** |
+| 013 | Minimum billable TIME, replacing the price floor | **No** |
 
-> Neither is applied. `schema.prisma` describes them, so the deploy script's
-> drift gate will **refuse all deploys** until they are applied. That is
-> deliberate fail-closed behaviour, but it means the next deploy of `apps/web`
-> requires applying 001 and 002 first.
+> 001, 002, 009, 010, 011, 012 and 013 are unapplied. `schema.prisma` describes them, so the
+> deploy script's drift gate will **refuse all deploys** until they are applied.
+> That is deliberate fail-closed behaviour, but it means the next deploy of
+> `apps/web` requires applying all seven first.
+>
+> 009 and 010 are the pricing-model change: a pro sets one rate per category,
+> Tarea AI estimates one billable time, and the booking freezes both. Apply 009
+> before 010 — 010's snapshot reads the rate 009 introduces.
 
 ## Notes
 

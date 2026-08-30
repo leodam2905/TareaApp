@@ -6,6 +6,7 @@ import { unmetSteps, unmetStepsMessage } from "@/lib/pro-bookable";
 import { syncPayoutStatus } from "@/lib/payout-account";
 import { validateMaterials, materialsTier } from "@/lib/materials-policy";
 import { credentialBadges, CREDENTIAL_SELECT } from "@/lib/credentials";
+import { resolveRate, quoteLabor } from "@/lib/labor-pricing";
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
@@ -79,13 +80,54 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
   }
 
+  // What this pro's labour costs is arithmetic, not a number they type.
+  //
+  // The customer was shown an interval — "$150-$338 across 7 pros, your price
+  // depends on which pro you choose" — built from real rates. If applicants
+  // then name arbitrary prices, that interval describes nothing and the
+  // comparison the customer is making is between figures with no common basis.
+  //
+  // So every applicant is quoted on the SAME estimated minutes at their OWN
+  // rate: same job, same time, different pro. Their rate for this category
+  // wins, then their profile rate, then the platform card (resolveRate).
+  const proService = await prisma.service.findFirst({
+    where: { handymanId: profile.id, category: jobRequest.category, isActive: true },
+    select: { hourlyRate: true, minimumMinutes: true },
+  });
+  const { hourlyRate } = resolveRate({
+    serviceHourlyRate: proService?.hourlyRate,
+    profileHourlyRate: profile.hourlyRate,
+    category: jobRequest.category,
+  });
+
+  const derivedPrice = jobRequest.estimatedBillableMinutes
+    ? quoteLabor({
+        hourlyRate,
+        estimatedBillableMinutes: jobRequest.estimatedBillableMinutes,
+        minimumMinutes: proService?.minimumMinutes ?? undefined,
+        urgent: jobRequest.urgency === "URGENT",
+      }).initialLaborAmount
+    : null;
+
+  // A typed price is still honoured when it UNDERCUTS the derived one — a pro
+  // discounting themselves is their business. Above it is refused: that is the
+  // direction that breaks the customer's comparison and costs them money.
+  // Requests predating migration 012 have no minutes, so the typed price stands.
+  const typed = proposedPrice != null ? parseFloat(proposedPrice) : null;
+  const finalPrice =
+    derivedPrice == null
+      ? (typed && typed > 0 ? typed : null)
+      : typed && typed > 0
+        ? Math.min(typed, derivedPrice)
+        : derivedPrice;
+
   const application = await prisma.jobApplication.create({
     data: {
       jobRequestId: params.id,
       handymanId: profile.id,
       userId: user.id,
       message: message?.trim() || null,
-      proposedPrice: proposedPrice ? parseFloat(proposedPrice) : null,
+      proposedPrice: finalPrice,
       materialsEstimate: materials.value || null,
     },
   });

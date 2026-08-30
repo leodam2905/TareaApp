@@ -25,8 +25,7 @@ type Service = {
   id: string;
   title: string;
   category: string;
-  minPrice: number;
-  maxPrice: number;
+  hourlyRate: number | null;
   handyman: { user: { name: string } } | null;
 };
 
@@ -539,7 +538,7 @@ export default function DashboardAnimated({
                   <div className="flex-1 min-w-0">
                     <p className="text-white font-semibold text-xs truncate">{s.title}</p>
                     <p className="text-tarea-sky text-xs font-bold mt-0.5">
-                      {formatCurrency(s.minPrice)} – {formatCurrency(s.maxPrice)}
+                      {s.hourlyRate != null ? `${formatCurrency(s.hourlyRate)}/hr` : "—"}
                     </p>
                   </div>
                   <motion.div

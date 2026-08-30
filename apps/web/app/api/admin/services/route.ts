@@ -21,9 +21,9 @@ export async function POST(req: NextRequest) {
   if (!admin || admin.role !== "ADMIN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await req.json();
-  const { title, description, category, minPrice, maxPrice, duration } = body;
+  const { title, description, category, hourlyRate, minPrice, maxPrice, duration } = body;
 
-  if (!title || !description || !category || !minPrice || !maxPrice || !duration) {
+  if (!title || !description || !category || !duration || (!hourlyRate && !minPrice)) {
     return NextResponse.json({ error: "All fields are required" }, { status: 400 });
   }
 
@@ -33,8 +33,9 @@ export async function POST(req: NextRequest) {
       title,
       description,
       category,
-      minPrice: parseFloat(minPrice),
-      maxPrice: parseFloat(maxPrice),
+      hourlyRate: parseFloat(hourlyRate ?? minPrice) || null,
+      minPrice: minPrice !== undefined ? parseFloat(minPrice) : null,
+      maxPrice: maxPrice !== undefined ? parseFloat(maxPrice) : null,
       duration: parseInt(duration),
       isActive: true,
     },

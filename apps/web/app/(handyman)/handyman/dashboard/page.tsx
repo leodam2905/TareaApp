@@ -409,7 +409,7 @@ export default async function HandymanDashboard() {
               </div>
               <p className="text-white font-semibold text-sm">{s.title}</p>
               <p className="text-tarea-sky text-sm font-bold mt-1">
-                {formatCurrency(s.minPrice)}–{formatCurrency(s.maxPrice)}
+                {s.hourlyRate != null ? `${formatCurrency(s.hourlyRate)}/hr` : "—"}
               </p>
             </div>
           ))}

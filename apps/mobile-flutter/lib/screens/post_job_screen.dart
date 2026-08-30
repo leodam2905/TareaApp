@@ -64,7 +64,24 @@ class _PostJobScreenState extends State<PostJobScreen> {
         for (final c in kServiceCats) { if (c.api == cat) { _cat = c; break; } }
       }
     }
+
+    // Seed from AI Diagnose, so the customer does not describe the same problem
+    // twice. The guided questions still run — they are what makes the second
+    // estimate firmer — but what they already wrote and photographed carries.
+    final seeded = (d?['description'] ?? '').toString().trim();
+    if (seeded.isNotEmpty) _desc.text = seeded;
+    _diagnosis = (d?['diagnosis'] ?? '').toString().trim();
+    _seedImagePath = (d?['imagePath'] ?? '').toString().trim();
+    if (_seedImagePath!.isEmpty) _seedImagePath = null;
   }
+
+  /// What AI Diagnose concluded, carried into the job so the pro reads the same
+  /// assessment the customer did.
+  String _diagnosis = '';
+
+  /// The photo from Diagnose. Uploaded at post time, not before: a customer who
+  /// backs out should not have left a file on the server.
+  String? _seedImagePath;
   final _desc = TextEditingController(); // optional extra notes
   DateTime? _date;
   TimeOfDay? _time;
@@ -90,6 +107,10 @@ class _PostJobScreenState extends State<PostJobScreen> {
     if (filled.isNotEmpty) b.write(' ($filled)');
     final notes = _desc.text.trim();
     if (notes.isNotEmpty) b.write('. $notes');
+    // The AI's read of the photo, when the customer came from Diagnose. The pro
+    // reads the same assessment the customer did, attributed so nobody mistakes
+    // it for something the customer asserted.
+    if (_diagnosis.isNotEmpty) b.write(' [AI Diagnose: $_diagnosis]');
     return b.toString();
   }
 
@@ -105,6 +126,10 @@ class _PostJobScreenState extends State<PostJobScreen> {
         'description': _builtDescription(),
         'city': zip.isEmpty ? _city.text.trim() : '${_city.text.trim()} $zip',
         'urgent': _urgency == 'URGENT',
+        // A directed request knows the pro, so it is quoted at THEIR rate
+        // rather than at the platform rate card.
+        if (widget.directed?['serviceRate'] != null)
+          'proHourlyRate': widget.directed?['serviceRate'],
       }).timeout(const Duration(seconds: 25));
       var ok = false;
       if (res.statusCode == 200) {
@@ -217,7 +242,9 @@ class _PostJobScreenState extends State<PostJobScreen> {
       // later — only once the pro accepts AND the customer approves the final
       // price — so a sheet that just says "card required" invites the
       // assumption that the money has gone.
-      final labour = (_estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceMin'] ?? 0);
+      // Last resort when there is no AI estimate: the pro's rate for one hour.
+      // Becomes rate x estimatedBillableMinutes once the AI returns minutes.
+      final labour = (_estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceRate'] ?? 0);
       final labourNum = (labour is num ? labour : num.tryParse('$labour') ?? 0).toDouble();
       final confirmed = await showConfirmRequestSheet(
         context,
@@ -238,6 +265,21 @@ class _PostJobScreenState extends State<PostJobScreen> {
     setState(() => _submitting = true);
     try {
       final pos = _isDirected ? null : await _coords();
+
+      // Upload the Diagnose photo now, not when it was taken: a customer who
+      // looked at the diagnosis and backed out should not have left a file on
+      // the server. A failed upload must not lose the job — the photo is
+      // helpful, the booking is the point.
+      final imageUrls = <String>[];
+      if (_seedImagePath != null) {
+        try {
+          final up = await Api.uploadImage(_seedImagePath!, folder: 'tarea/jobs');
+          if (up.statusCode >= 200 && up.statusCode < 300) {
+            final url = (jsonDecode(up.body)['url'] ?? '').toString();
+            if (url.isNotEmpty) imageUrls.add(url);
+          }
+        } catch (_) { /* post the job without it */ }
+      }
       final res = _isDirected
           // Directed booking — request goes to one specific pro.
           ? await Api.post('/bookings', {
@@ -246,8 +288,14 @@ class _PostJobScreenState extends State<PostJobScreen> {
               'scheduledAt': _scheduledAt().toIso8601String(),
               'address': _addressLine(),
               'city': _city.text.trim(),
-              if ((_estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceMin']) != null)
-                'totalPrice': _estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceMin'],
+              if ((_estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceRate']) != null)
+                'totalPrice': _estimate?['price'] ?? _estimate?['min'] ?? widget.directed?['serviceRate'],
+              // Tarea AI's estimated service time, as shown on Review. The
+              // server snapshots it beside the rate so the invoice, and any
+              // extra-time request, reconcile against what was agreed.
+              if (_estimate?['estimatedBillableMinutes'] != null)
+                'estimatedBillableMinutes': _estimate?['estimatedBillableMinutes'],
+              'urgent': _urgency == 'URGENT',
               'description': _builtDescription(),
             })
           // Open job request — the backend requires title + a non-null scheduledAt.
@@ -263,6 +311,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
                 'latitude': pos.latitude,
                 'longitude': pos.longitude,
               },
+              if (imageUrls.isNotEmpty) 'imageUrls': imageUrls,
               // Persist the AI's service price as the budget (fee-able, no
               // materials) + materials separately (pass-through, no fee).
               if (_estimate?['price'] != null || _estimate?['min'] != null) ...{
@@ -272,6 +321,10 @@ class _PostJobScreenState extends State<PostJobScreen> {
                 // and that quote is what the customer is charged.
                 'materialsCost': 0,
               },
+              // Every applicant is quoted on these minutes at their own rate,
+              // so the customer's comparison between them is like-for-like.
+              if (_estimate?['estimatedBillableMinutes'] != null)
+                'estimatedBillableMinutes': _estimate?['estimatedBillableMinutes'],
             });
       if (res.statusCode < 200 || res.statusCode >= 300) {
         String msg = 'postjob.postFailed'.tr();
@@ -841,19 +894,47 @@ class _PostJobScreenState extends State<PostJobScreen> {
         : ((priceVal ?? 0) + serviceFee);
     final feePct = (((e['feeRate'] is num ? e['feeRate'] as num : 0.15)) * 100).round();
 
+    // The headline is an INTERVAL, not a figure Tarea picked.
+    //
+    // Pros set their own rates, so what the job costs depends on which pro the
+    // customer chooses. Showing the spread of real rates is what a marketplace
+    // of independent contractors looks like — and it keeps Tarea out of setting
+    // anyone's pay, which is the control test that decides whether these are
+    // contractors at all.
+    //
+    // Collapses to one number when only one pro qualifies, or when the server
+    // is older than this and sends no range.
+    final range = e['priceRange'] as Map?;
+    final hasRange = range != null && range['single'] != true;
+    final headline = hasRange
+        ? '\$${_n(range['low'])}–\$${_n(range['high'])}'
+        : '\$$total';
+
     return _card([
-      Center(child: Text('\$$total', style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w900, color: C.blue))),
+      Center(child: Text(headline, style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w900, color: C.blue))),
       Center(
-        child: Text(fixed ? 'postjob.fixedPrice'.tr() : 'postjob.estimatedPrice'.tr(),
+        child: Text(
+            hasRange
+                ? 'postjob.rangeAcrossPros'.tr(args: ['${_n(range['proCount'])}'])
+                : (fixed ? 'postjob.fixedPrice'.tr() : 'postjob.estimatedPrice'.tr()),
+            textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: C.muted)),
       ),
+      if (hasRange) ...[
+        const SizedBox(height: 6),
+        Center(child: Text('postjob.youChoosePro'.tr(),
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 13, color: C.muted, height: 1.3))),
+      ],
       const SizedBox(height: 16),
       Container(
         decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(14)),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Column(children: [
           // Labor + travel = the service price minus the (separately shown) rush fee.
-          _feeRow('postjob.laborService'.tr(), '\$${_n(e['price']) - _n(bd['urgency'])}'),
+          _feeRow(
+              hasRange ? 'postjob.laborServiceLowest'.tr() : 'postjob.laborService'.tr(),
+              '\$${_n(e['price']) - _n(bd['urgency'])}'),
           if (_n(bd['urgency']) > 0) ...[
             const SizedBox(height: 10),
             _feeRow('postjob.rushFee'.tr(), '+\$${_n(bd['urgency'])}', color: const Color(0xFFB91C1C)),
@@ -883,7 +964,18 @@ class _PostJobScreenState extends State<PostJobScreen> {
       const Divider(color: C.line, height: 1),
       const SizedBox(height: 14),
       Row(children: [
-        Expanded(child: _statCell('postjob.workTime'.tr(), (e['workTime'] ?? '—').toString())),
+        // The single estimated billable time is what the price is built from and
+        // what an extra-time request is measured against, so it leads. The old
+        // hours range stays as a fallback for a server that has not shipped it.
+        Expanded(child: _statCell(
+          'postjob.estimatedServiceTime'.tr(),
+          (e['estimatedServiceTime'] ?? e['workTime'] ?? '—').toString(),
+          // A bill longer than the estimate needs its reason stated, not a
+          // silently larger number — the customer is being asked to rely on it.
+          sub: e['minimumApplied'] == true && e['minimumMinutes'] != null
+              ? 'postjob.billedAtMinimum'.tr(args: ['${((e['minimumMinutes'] as num) ~/ 60)}'])
+              : null,
+        )),
         Expanded(child: _statCell('postjob.minAppointment'.tr(), 'postjob.hours'.tr(args: ['${_n(e['minWindow'])}']))),
       ]),
       const SizedBox(height: 16),
@@ -915,12 +1007,14 @@ class _PostJobScreenState extends State<PostJobScreen> {
         ],
       );
 
-  Widget _statCell(String label, String value, {Color color = C.ink}) => Column(
+  Widget _statCell(String label, String value, {Color color = C.ink, String? sub}) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label, style: const TextStyle(color: C.muted, fontSize: 13)),
           const SizedBox(height: 2),
           Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: color)),
+          if (sub != null)
+            Text(sub, style: const TextStyle(color: C.muted, fontSize: 11, height: 1.3)),
         ],
       );
 }

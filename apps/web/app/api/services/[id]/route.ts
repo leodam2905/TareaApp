@@ -23,9 +23,13 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
   return NextResponse.json(service);
 }
 
+// hourlyRate is the rate that counts; the range is still accepted from older
+// installs (see the note in ../route.ts) and recorded without pricing anything.
 const updateSchema = z.object({
   title: z.string().min(3).optional(),
   description: z.string().min(10).optional(),
+  hourlyRate: z.number().positive().optional(),
+  minimumMinutes: z.number().int().min(60).max(240).optional(),
   minPrice: z.number().positive().optional(),
   maxPrice: z.number().positive().optional(),
   duration: z.number().int().positive().optional(),
@@ -47,6 +51,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   try {
     const body = await req.json();
     const data = updateSchema.parse(body);
+    // An old client sending only the range still ends up with a usable rate.
+    if (data.hourlyRate === undefined && data.minPrice !== undefined) {
+      data.hourlyRate = data.minPrice;
+    }
     const updated = await prisma.service.update({ where: { id: params.id }, data });
     return NextResponse.json(updated);
   } catch (err) {

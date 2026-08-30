@@ -71,13 +71,16 @@ export async function POST(req: NextRequest) {
   if (Array.isArray(services) && services.length > 0) {
     await prisma.service.deleteMany({ where: { handymanId: profile.id } });
     await prisma.service.createMany({
-      data: services.map((s: { category: string; title: string; description: string; minPrice: string; maxPrice: string; duration: string }) => ({
+      data: services.map((s: { category: string; title: string; description: string; hourlyRate?: string; minPrice?: string; maxPrice?: string; duration: string }) => ({
         handymanId: profile.id,
-        category: s.category,
+        category: s.category as never,
         title: s.title,
         description: s.description,
-        minPrice: parseFloat(s.minPrice),
-        maxPrice: parseFloat(s.maxPrice),
+        // The rate the pro set for this category. Older clients send only the
+        // range; minPrice stands in so they still save something usable.
+        hourlyRate: parseFloat(s.hourlyRate ?? s.minPrice ?? "") || null,
+        minPrice: s.minPrice !== undefined ? parseFloat(s.minPrice) : null,
+        maxPrice: s.maxPrice !== undefined ? parseFloat(s.maxPrice) : null,
         duration: parseInt(s.duration),
         isActive: true,
       })),

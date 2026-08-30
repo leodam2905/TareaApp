@@ -26,7 +26,7 @@ type HandymanDetail = {
     yearsExperience: number;
     responseTime: number;
     backgroundCheckStatus: string | null;
-    services: { id: string; title: string; category: string; minPrice: number; maxPrice: number; duration: number }[];
+    services: { id: string; title: string; category: string; hourlyRate: number | null; duration: number }[];
   } | null;
 };
 
@@ -305,7 +305,7 @@ function ProfileInner() {
                 <p className="text-slate-500 text-xs">{SERVICE_CATEGORY_LABELS[s.category]}</p>
               </div>
               <div className="text-right">
-                <p className="text-tarea-sky font-bold text-sm">{formatCurrency(s.minPrice)}–{formatCurrency(s.maxPrice)}</p>
+                <p className="text-tarea-sky font-bold text-sm">{s.hourlyRate != null ? `${formatCurrency(s.hourlyRate)}/hr` : "—"}</p>
                 <p className="text-slate-500 text-xs flex items-center gap-1 justify-end">
                   <Clock className="w-3 h-3" />{s.duration} min
                 </p>
@@ -385,7 +385,7 @@ function ProfileInner() {
             <CategoryIcon catKey={service.category} active className="w-5 h-5 flex-shrink-0" />
             <span className="text-white font-medium">{service.title}</span>
             <span className="ml-auto text-tarea-sky font-bold">
-              {formatCurrency(service.minPrice)}–{formatCurrency(service.maxPrice)}
+              {service.hourlyRate != null ? `${formatCurrency(service.hourlyRate)}/hr` : "—"}
             </span>
           </div>
         )}
@@ -432,17 +432,16 @@ function ProfileInner() {
             Agreed Price ($) <span className="text-red-400">*</span>
             {service && (
               <span className="text-slate-500 font-normal ml-1">
-                (range: {formatCurrency(service.minPrice)}–{formatCurrency(service.maxPrice)})
+                (their rate: {service.hourlyRate != null ? `${formatCurrency(service.hourlyRate)}/hr` : "not set"})
               </span>
             )}
           </label>
           <input
             type="number"
-            min={service?.minPrice}
-            max={service?.maxPrice}
+            min={0}
             value={form.totalPrice}
             onChange={e => setForm(f => ({ ...f, totalPrice: e.target.value }))}
-            placeholder={String(service?.minPrice ?? "")}
+            placeholder={String(service?.hourlyRate ?? "")}
             className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-tarea-sky"
           />
         </div>

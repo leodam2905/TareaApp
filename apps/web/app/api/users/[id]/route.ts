@@ -24,7 +24,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
           backgroundCheckStatus: true,
           services: {
             where: { isActive: true },
-            select: { id: true, title: true, category: true, minPrice: true, maxPrice: true, duration: true },
+            select: { id: true, title: true, category: true, hourlyRate: true, duration: true },
           },
         },
       },

@@ -25,8 +25,14 @@ const nowLocal = () => {
 function PostJobForm() {
   const router = useRouter();
   const { t } = useT();
-  const presetCat = (useSearchParams().get("category") || "").toUpperCase();
-  const [estimate, setEstimate] = useState<{ price: number; urgency: number; isFixed: boolean; fee: number; total: number; feePct: number; materials: number } | null>(null);
+  const params = useSearchParams();
+  const presetCat = (params.get("category") || "").toUpperCase();
+  // Seeded by AI Diagnose so the same problem is not described twice. The
+  // guided questions still run — they are what makes the second estimate
+  // firmer — but the customer's own words carry across.
+  const presetDesc = params.get("description") || "";
+  const presetDiagnosis = params.get("diagnosis") || "";
+  const [estimate, setEstimate] = useState<{ price: number; urgency: number; isFixed: boolean; fee: number; total: number; feePct: number; materials: number; serviceTime: string; minutes: number | null; minimumNote: string | null; range: { low: number; high: number; proCount: number; single: boolean } | null } | null>(null);
   const [saving, setSaving] = useState(false);
   const [locating, setLocating] = useState(false);
   const [aiAssisting, setAiAssisting] = useState(false);
@@ -47,7 +53,7 @@ function PostJobForm() {
   const [form, setForm] = useState({
     category: CATEGORIES.includes(presetCat) ? presetCat : "PLUMBING",
     title: "",
-    description: "",
+    description: presetDesc,
     address: "",
     city: "",
     zip: "",
@@ -130,7 +136,10 @@ function PostJobForm() {
       .filter((d) => answers[d.key])
       .map((d) => `${d.label}: ${answers[d.key]}`);
     const extra = form.description.trim();
-    return `${currentTask.label}${parts.length ? ` (${parts.join(", ")})` : ""}${extra ? `. ${extra}` : ""}`;
+    // The AI's read of the photo, when the customer came from Diagnose.
+    // Attributed, so nobody mistakes it for something the customer asserted.
+    const diag = presetDiagnosis ? ` [AI Diagnose: ${presetDiagnosis}]` : "";
+    return `${currentTask.label}${parts.length ? ` (${parts.join(", ")})` : ""}${extra ? `. ${extra}` : ""}${diag}`;
   };
 
   const aiAssist = async () => {
@@ -176,6 +185,18 @@ function PostJobForm() {
         total: d.total ?? (price ?? 0),
         feePct: Math.round((d.feeRate ?? 0.15) * 100),
         materials: d.materials ?? d.breakdown?.materials ?? 0,
+        // Tarea AI's single estimated billable time — what the price is built
+        // from. Falls back to the legacy hours range on an older server.
+        serviceTime: (d.estimatedServiceTime ?? d.workTime ?? "") as string,
+        minutes: (d.estimatedBillableMinutes ?? null) as number | null,
+        // A bill longer than the estimate needs its reason stated — the
+        // customer is being asked to rely on this number.
+        minimumNote: d.minimumApplied && d.minimumMinutes
+          ? `Billed at this pro's ${Math.round(d.minimumMinutes / 60)}h minimum`
+          : null,
+        // The spread of what pros actually charge. Tarea does not set this
+        // price — the customer picks a pro and that pro's rate decides it.
+        range: d.priceRange ?? null,
       });
       setPriceNote(d.note || "");
     } else {
@@ -204,6 +225,9 @@ function PostJobForm() {
         // Zero on purpose: the pro quotes materials when they apply, and that
         // quote is what the customer is charged.
         materialsCost: 0,
+        // Every applicant is quoted on these minutes at their own rate, so the
+        // customer's comparison between them is like-for-like.
+        ...(estimate?.minutes ? { estimatedBillableMinutes: estimate.minutes } : {}),
         scheduledAt: new Date(form.scheduledAt).toISOString(),
         imageUrls,
       }),
@@ -416,6 +440,12 @@ function PostJobForm() {
           </div>
           {estimate && (
             <div className="mt-3 rounded-xl bg-orange-50/60 border border-orange-100 p-3 space-y-1.5 text-sm">
+              {estimate.serviceTime && (
+                <div className="flex justify-between text-gray-600"><span>Tarea AI Estimated Service Time</span><span>{estimate.serviceTime}</span></div>
+              )}
+              {estimate.minimumNote && (
+                <p className="text-[11px] text-gray-500 -mt-1">{estimate.minimumNote}</p>
+              )}
               <div className="flex justify-between text-gray-600"><span>Service price</span><span>${estimate.price}</span></div>
               {estimate.urgency > 0 && (
                 <div className="flex justify-between text-red-600 font-semibold"><span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5" /> Urgent rush fee</span><span>+${estimate.urgency}</span></div>
@@ -424,7 +454,19 @@ function PostJobForm() {
                 <div className="flex justify-between text-gray-600"><span>Materials (at cost)</span><span>${estimate.materials}</span></div>
               )}
               <div className="flex justify-between text-gray-600"><span>Service Fee ({estimate.feePct}%)</span><span>${estimate.fee}</span></div>
-              <div className="flex justify-between font-extrabold text-gray-900 pt-1.5 border-t border-orange-100"><span>{estimate.isFixed ? "Total (fixed)" : "Estimated total"}</span><span>${estimate.total}</span></div>
+              {estimate.range && !estimate.range.single ? (
+                <>
+                  <div className="flex justify-between font-extrabold text-gray-900 pt-1.5 border-t border-orange-100">
+                    <span>Estimated total</span>
+                    <span>${estimate.range.low}–${estimate.range.high}</span>
+                  </div>
+                  <p className="text-[11px] text-gray-500 pt-1">
+                    Across {estimate.range.proCount} pros. Pros set their own rates — your final price depends on which pro you choose.
+                  </p>
+                </>
+              ) : (
+                <div className="flex justify-between font-extrabold text-gray-900 pt-1.5 border-t border-orange-100"><span>{estimate.isFixed ? "Total (fixed)" : "Estimated total"}</span><span>${estimate.total}</span></div>
+              )}
               {estimate.materials > 0 && (
                 <p className="text-[11px] text-gray-500 pt-1">Materials is a suggested estimate — your pro confirms the actual cost (with receipts) when they apply.</p>
               )}

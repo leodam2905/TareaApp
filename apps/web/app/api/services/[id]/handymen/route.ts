@@ -41,7 +41,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       },
       services: {
         where: { category: service.category, isActive: true },
-        select: { minPrice: true, maxPrice: true },
+        select: { hourlyRate: true },
         take: 1,
       },
     },

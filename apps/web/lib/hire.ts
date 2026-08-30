@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { createNotification } from "@/lib/notify";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
+import { resolveRate, quoteLabor, resolveMinimumMinutes } from "./labor-pricing";
 
 // Hiring an applicant IS paying them.
 //
@@ -112,6 +113,12 @@ export async function materializeHire(opts: {
     where: { handymanId: application.handymanId, category: jobRequest.category },
     orderBy: { isActive: "desc" },
   });
+  // A service row carries the pro's rate for that category. This one is created
+  // from a job rather than chosen by the pro, so it inherits their profile rate.
+  const proRate = await prisma.handymanProfile.findUnique({
+    where: { id: application.handymanId },
+    select: { hourlyRate: true },
+  });
   if (!service) {
     service = await prisma.service.create({
       data: {
@@ -119,6 +126,7 @@ export async function materializeHire(opts: {
         title: jobRequest.title,
         description: (jobRequest.description || jobRequest.title).slice(0, 500),
         category: jobRequest.category,
+        hourlyRate: proRate?.hourlyRate || null,
         minPrice: price,
         maxPrice: jobRequest.budgetMax ?? price,
         duration: 60,
@@ -126,6 +134,33 @@ export async function materializeHire(opts: {
       },
     });
   }
+
+  // Freeze what this job was priced FROM, exactly as the directed path does.
+  //
+  // This was missing: a booking created from a job request carried totalPrice
+  // and nothing else. Two things broke as a result. An extra-time request fell
+  // back to re-reading the pro's CURRENT rate, so a pro who raised it mid-job
+  // billed the customer at the new rate for work agreed at the old one — the
+  // precise thing a snapshot exists to prevent. And an invoice could not
+  // reproduce its own figure for half the bookings on the platform.
+  //
+  // The rate is the one that priced the application (same resolveRate order),
+  // and the minutes are the estimate every applicant quoted against, so the
+  // snapshot reconstructs the number the customer actually agreed to.
+  const { hourlyRate: ratePriced } = resolveRate({
+    serviceHourlyRate: service.hourlyRate,
+    profileHourlyRate: proRate?.hourlyRate,
+    category: jobRequest.category,
+  });
+  const minimumMinutes = resolveMinimumMinutes(service.minimumMinutes);
+  const laborQuote = jobRequest.estimatedBillableMinutes
+    ? quoteLabor({
+        hourlyRate: ratePriced,
+        estimatedBillableMinutes: jobRequest.estimatedBillableMinutes,
+        minimumMinutes,
+        urgent: jobRequest.urgency === "URGENT",
+      })
+    : null;
 
   const booking = await prisma.booking.create({
     data: {
@@ -143,8 +178,15 @@ export async function materializeHire(opts: {
       scheduledAt: jobRequest.scheduledAt,
       address: jobRequest.address,
       city: jobRequest.city,
-      // Tarea sets the labour price; a pro cannot bid it up or change it.
+      // What the customer paid. The pro's own rate produced it — their
+      // application was quoted at rate x the job's estimated minutes — and the
+      // charge has already gone through, so this figure is settled, not derived.
       totalPrice: price,
+      proRateSnapshot: ratePriced,
+      estimatedBillableMinutes: jobRequest.estimatedBillableMinutes,
+      initialLaborAmount: laborQuote?.initialLaborAmount ?? price,
+      minimumMinutesSnapshot: minimumMinutes,
+      pricingType: "hourly",
       ...(promoCodeId ? { promoCodeId } : {}),
       materialsEstimate: application.materialsEstimate ?? jobRequest.materialsCost ?? 0,
     },

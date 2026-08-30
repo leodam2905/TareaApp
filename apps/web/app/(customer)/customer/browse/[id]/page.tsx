@@ -16,8 +16,7 @@ type Service = {
   title: string;
   description: string;
   category: string;
-  minPrice: number;
-  maxPrice: number;
+  hourlyRate: number | null;
   duration: number;
   handymanId: string | null;
   handyman: {
@@ -36,7 +35,7 @@ type MatchedHandyman = {
   distanceMiles: number | null;
   score: number;
   user: { id: string; name: string; avatarUrl: string | null; city: string | null; state: string | null };
-  services: { minPrice: number; maxPrice: number }[];
+  services: { hourlyRate: number | null }[];
 };
 
 type PortfolioPhoto = {
@@ -92,7 +91,7 @@ function HandymanCard({
         {handyman.services[0] && (
           <div className="text-right flex-shrink-0">
             <p className="text-tarea-sky font-bold text-sm">
-              {formatCurrency(handyman.services[0].minPrice)}–{formatCurrency(handyman.services[0].maxPrice)}
+              {handyman.services[0].hourlyRate != null ? `${formatCurrency(handyman.services[0].hourlyRate)}/hr` : "—"}
             </p>
           </div>
         )}
@@ -247,7 +246,7 @@ export default function ServiceDetailPage() {
             <p className="text-slate-400 mt-2 text-sm leading-relaxed">{service.description}</p>
             <div className="flex items-center gap-4 mt-4 text-sm text-slate-400">
               <span className="text-tarea-sky font-bold text-lg">
-                {formatCurrency(service.minPrice)}–{formatCurrency(service.maxPrice)}
+                {service.hourlyRate != null ? `${formatCurrency(service.hourlyRate)}/hr` : "—"}
               </span>
               <span className="flex items-center gap-1">
                 <Clock className="w-4 h-4" />
@@ -385,16 +384,15 @@ export default function ServiceDetailPage() {
           <label className="text-slate-400 text-sm font-medium block mb-1.5">
             Agreed Price ($) <span className="text-red-400">*</span>
             <span className="text-slate-500 font-normal ml-1">
-              (range: {formatCurrency(service.minPrice)}–{formatCurrency(service.maxPrice)})
+              (their rate: {service.hourlyRate != null ? `${formatCurrency(service.hourlyRate)}/hr` : "not set"})
             </span>
           </label>
           <input
             type="number"
-            min={service.minPrice}
-            max={service.maxPrice}
+            min={0}
             value={form.totalPrice}
             onChange={e => setForm(f => ({ ...f, totalPrice: e.target.value }))}
-            placeholder={String(service.minPrice)}
+            placeholder={String(service.hourlyRate ?? "")}
             className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-slate-500 focus:outline-none focus:border-tarea-sky"
           />
         </div>

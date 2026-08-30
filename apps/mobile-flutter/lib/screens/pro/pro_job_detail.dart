@@ -40,8 +40,20 @@ class _ProJobDetailState extends State<ProJobDetail> {
   // extension form
   bool _showExt = false;
   String _extMin = '';
-  final _extAmount = TextEditingController();
   final _extReason = TextEditingController();
+
+  /// The rate this booking was priced at. Extra time bills at the same rate —
+  /// the pro does not name a new number, so the customer cannot be surprised.
+  num? get _proRate => _b['proRateSnapshot'] as num?;
+
+  /// What the selected extra time will cost. No travel and no call-out minimum:
+  /// the pro is already on site.
+  double? get _extCost {
+    final rate = _proRate;
+    final mins = int.tryParse(_extMin);
+    if (rate == null || mins == null) return null;
+    return (rate / 60) * mins;
+  }
 
   String get _id => (_b['id'] ?? '').toString();
   String get _status => (_b['status'] ?? '').toString();
@@ -242,11 +254,10 @@ class _ProJobDetailState extends State<ProJobDetail> {
     try {
       final res = await Api.post('/bookings/$_id/extension', {
         'additionalMinutes': min,
-        if (_extAmount.text.trim().isNotEmpty) 'extraAmount': _extAmount.text.trim(),
         if (_extReason.text.trim().isNotEmpty) 'reason': _extReason.text.trim(),
       });
       if (res.statusCode >= 200 && res.statusCode < 300) {
-        _showExt = false; _extMin = ''; _extAmount.clear(); _extReason.clear();
+        _showExt = false; _extMin = ''; _extReason.clear();
         _toast('jobDetail.requestSentCustomer'.tr()); await _load();
       } else {
         String msg = 'jobDetail.sendRequestFailed'.tr();
@@ -529,12 +540,24 @@ class _ProJobDetailState extends State<ProJobDetail> {
           ));
         }).toList()),
         const SizedBox(height: 12),
-        TextField(controller: _extAmount, keyboardType: TextInputType.number, decoration: _inputDec('jobDetail.extraChargeHint'.tr())),
+        if (_extCost != null)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(color: C.bg, borderRadius: BorderRadius.circular(10)),
+            child: Text(
+              'jobDetail.extraCostAtRate'.tr(namedArgs: {
+                'amount': _extCost!.toStringAsFixed(2),
+                'rate': _proRate!.round().toString(),
+              }),
+              style: const TextStyle(color: C.ink, fontWeight: FontWeight.w700, fontSize: 13),
+            ),
+          ),
         const SizedBox(height: 10),
         TextField(controller: _extReason, maxLines: 2, decoration: _inputDec('jobDetail.reasonHint'.tr())),
         const SizedBox(height: 10),
         Row(children: [
-          Expanded(child: OutlinedButton(onPressed: () => setState(() { _showExt = false; _extMin = ''; _extAmount.clear(); _extReason.clear(); }), child: Text('common.cancel'.tr()))),
+          Expanded(child: OutlinedButton(onPressed: () => setState(() { _showExt = false; _extMin = ''; _extReason.clear(); }), child: Text('common.cancel'.tr()))),
           const SizedBox(width: 10),
           Expanded(child: FilledButton(style: FilledButton.styleFrom(backgroundColor: C.blue), onPressed: _busy ? null : _requestExtension, child: Text('jobDetail.sendRequest'.tr()))),
         ]),

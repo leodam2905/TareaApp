@@ -68,8 +68,7 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
       'proName': (_p['name'] ?? 'handymanDetail.proFallback'.tr()).toString(),
       if (service != null) 'serviceId': service['id'],
       if (service != null) 'category': (service['category'] ?? '').toString(),
-      if (service != null) 'serviceMin': service['minPrice'] ?? hp['hourlyRate'],
-      if (service != null) 'serviceMax': service['maxPrice'] ?? hp['hourlyRate'],
+      if (service != null) 'serviceRate': service['hourlyRate'] ?? hp['hourlyRate'],
     });
   }
 
@@ -176,9 +175,8 @@ class _HandymanDetailScreenState extends State<HandymanDetailScreen> {
 
   Widget _serviceRow(dynamic sv) {
     final title = (sv['title'] ?? _pretty((sv['category'] ?? '').toString())).toString();
-    final min = sv['minPrice'];
-    final max = sv['maxPrice'];
-    final priceText = min != null ? '\$${(min as num).round()}${max != null ? '–\$${(max as num).round()}' : ''}' : '';
+    final rate = sv['hourlyRate'] as num?;
+    final priceText = rate != null ? '\$${rate.round()}/hr' : '';
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),

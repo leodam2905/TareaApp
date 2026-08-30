@@ -327,7 +327,12 @@
     "retryEstimate": "Reintentar estimación",
     "signInToPost": "Crea una cuenta para publicar — tus datos se han guardado.",
     "cardRequired": "Necesitas una tarjeta para confirmar la reserva. No se te cobrará hasta que el trabajo esté terminado.",
-    "materialsByPro": "Los materiales no están incluidos. Cada profesional añade su propio presupuesto de materiales al postularse, y verás el precio completo antes de contratar."
+    "materialsByPro": "Los materiales no están incluidos. Cada profesional añade su propio presupuesto de materiales al postularse, y verás el precio completo antes de contratar.",
+    "estimatedServiceTime": "Tiempo de servicio estimado por Tarea AI",
+    "rangeAcrossPros": "Total estimado entre {} pros",
+    "youChoosePro": "Los pros fijan sus propias tarifas. Tu precio final depende del pro que elijas.",
+    "laborServiceLowest": "Mano de obra y servicio (pro más económico)",
+    "billedAtMinimum": "Cobrado al mínimo de {}h de este pro"
   },
   "browse": {
     "title": "Buscar pros",
@@ -335,7 +340,6 @@
     "within60": "Menos de 60 mi",
     "availableNow": "Disponible",
     "topRated": "Mejor valorados",
-    "price": "Precio",
     "noMatch": "Ningún pro coincide con tus filtros.",
     "available": "Disponible",
     "newRating": "Nuevo",
@@ -344,9 +348,23 @@
     "licensed": "Con licencia",
     "insured": "Asegurado",
     "backgroundChecked": "Antecedentes revisados",
-    "perHour": "/h",
-    "minHour": "• Mín. 1 hora",
-    "viewProfile": "Ver perfil"
+    "viewProfile": "Ver perfil",
+    "band": {
+      "excellent": "Coincidencia excelente",
+      "great": "Muy buena coincidencia",
+      "good": "Buena coincidencia",
+      "fair": "Coincidencia"
+    },
+    "reason": {
+      "licensed_insured": "Con licencia y seguro",
+      "licensed": "Con licencia",
+      "insured": "Asegurado",
+      "highly_rated": "Muy bien valorado",
+      "experienced": "Con experiencia",
+      "fast_replies": "Responde rápido",
+      "nearby": "Cerca",
+      "new_pro": "Nuevo en Tarea"
+    }
   },
   "notifications": {
     "markAllRead": "Marcar todo leído",
@@ -525,7 +543,6 @@
     "extDeclined": "Rechazado",
     "extWaiting": "En espera",
     "extraTimeNeeded": "Tiempo extra necesario",
-    "extraChargeHint": "Cargo extra (opcional, $)",
     "reasonHint": "Motivo (opcional)",
     "sendRequest": "Enviar",
     "acceptJob": "Aceptar trabajo",
@@ -556,7 +573,8 @@
     "timerPause": "Pausar cronómetro",
     "timerResume": "Reanudar",
     "timerPaused": "En pausa",
-    "timerFailed": "No se pudo actualizar el cronómetro"
+    "timerFailed": "No se pudo actualizar el cronómetro",
+    "extraCostAtRate": "Añade ${amount} a tu tarifa de ${rate}/h"
   },
   "payout": {
     "title": "Métodos de pago",
@@ -607,16 +625,13 @@
     "category": "Categoría",
     "fldDescription": "Descripción",
     "descHint": "Qué incluye este servicio",
-    "minPrice": "Precio mín ($)",
-    "maxPrice": "Precio máx ($)",
     "duration": "Duración (minutos)",
     "titleMin": "El título debe tener al menos 3 caracteres",
     "descMin": "La descripción debe tener al menos 10 caracteres",
-    "validPrices": "Ingresa precios válidos",
     "validDuration": "Ingresa una duración válida",
     "bio": "Biografía",
     "bioHint": "Cuéntales a los clientes sobre tu experiencia",
-    "hourlyRate": "Tarifa por hora ($)",
+    "hourlyRate": "Tu tarifa ($/h)",
     "companyName": "Nombre de empresa (opcional)",
     "website": "Sitio web (opcional)",
     "state": "Estado / provincia",
@@ -666,7 +681,17 @@
     "policyNumber": "Número de póliza",
     "perOccurrence": "Por siniestro (USD)",
     "aggregate": "Agregado general (USD)",
-    "choosePdf": "Elegir un PDF"
+    "choosePdf": "Elegir un PDF",
+    "hourlyRateHint": "Una sola tarifa para esta categoría",
+    "validRate": "Ingresa tu tarifa por hora",
+    "setRate": "Fijar tarifa",
+    "editRateTitle": "Editar tu tarifa",
+    "rateUpdated": "Tarifa actualizada",
+    "updateRateFailed": "No se pudo actualizar la tarifa",
+    "rateAppliesToNew": "Se aplica a nuevas reservas. Los trabajos ya reservados mantienen la tarifa acordada.",
+    "minimumBillable": "Trabajo mínimo que cobras",
+    "minimumBillableHint": "Una visita más corta se cobra a este mínimo. La mayoría de los oficios cobran una hora.",
+    "minShort": "mín {}h"
   },
   "diagnose": {
     "title": "Diagnóstico IA",
@@ -686,7 +711,12 @@
     "routine": "Rutinario",
     "disclaimer": "Solo informativo — es una estimación con IA, no un diagnóstico profesional. Un pro con licencia debe confirmar el problema antes de cualquier trabajo. Ante una posible fuga de gas, peligro eléctrico o inundación, llama a emergencias o a un pro con licencia ahora.",
     "tips": "Consejos",
-    "postThisJob": "Publicar este trabajo"
+    "postThisJob": "Publicar este trabajo",
+    "ballparkLabel": "Estimación aproximada",
+    "estimateLabel": "Total estimado",
+    "aboutTime": "unos {} en el lugar",
+    "priceNote": "Tarifa de servicio incluida. Responde unas preguntas en Publicar trabajo para un precio más firme.",
+    "priceNoteAcrossPros": "Tarifa de servicio incluida. Entre {} pros — cada uno fija su tarifa, tu precio depende de a quién elijas. Responde unas preguntas para un precio más firme."
   },
   "handymanDetail": {
     "proFallback": "Pro",
@@ -788,7 +818,9 @@
     "estimate": "~ Estimación",
     "whatsIncluded": "Qué incluye",
     "postThisJobArrow": "Publicar este trabajo",
-    "editAnswers": "Editar respuestas"
+    "editAnswers": "Editar respuestas",
+    "allIn": "Tarifa de servicio incluida. Los materiales, si los hay, los cotiza tu pro por separado.",
+    "allInAcrossPros": "Tarifa de servicio incluida. Entre {} pros — cada pro fija su tarifa, tu precio depende de a quién elijas. Materiales aparte."
   },
   "call": {
     "unavailable": "Las llamadas no están disponibles. Usa el chat.",

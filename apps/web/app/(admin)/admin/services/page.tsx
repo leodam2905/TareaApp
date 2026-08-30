@@ -8,7 +8,7 @@ import CategoryIcon from "@/components/ui/CategoryIcon";
 
 type Service = {
   id: string; title: string; category: string;
-  minPrice: number; maxPrice: number; isActive: boolean;
+  hourlyRate: number | null; isActive: boolean;
   handyman: { user: { name: string; email: string } };
 };
 
@@ -21,7 +21,7 @@ const CATEGORIES = [
 
 const emptyForm = {
   title: "", description: "",
-  category: "GENERAL", minPrice: "", maxPrice: "", duration: "60",
+  category: "GENERAL", hourlyRate: "", duration: "60",
 };
 
 export default function AdminServicesPage() {
@@ -128,20 +128,12 @@ export default function AdminServicesPage() {
                 </select>
               </div>
 
-              {/* Price range */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="label">Min Price ($)</label>
-                  <input type="number" min="0" value={form.minPrice}
-                    onChange={e => setForm(f => ({ ...f, minPrice: e.target.value }))}
-                    placeholder="50" className="input" required />
-                </div>
-                <div>
-                  <label className="label">Max Price ($)</label>
-                  <input type="number" min="0" value={form.maxPrice}
-                    onChange={e => setForm(f => ({ ...f, maxPrice: e.target.value }))}
-                    placeholder="200" className="input" required />
-                </div>
+              {/* Rate */}
+              <div>
+                <label className="label">Rate ($/hr)</label>
+                <input type="number" min="0" value={form.hourlyRate}
+                  onChange={e => setForm(f => ({ ...f, hourlyRate: e.target.value }))}
+                  placeholder="75" className="input" required />
               </div>
 
               {/* Duration */}
@@ -214,7 +206,7 @@ export default function AdminServicesPage() {
                   </span>
                 </td>
                 <td className="px-5 py-4 text-sm text-slate-300">
-                  {formatCurrency(s.minPrice)} – {formatCurrency(s.maxPrice)}
+                  {s.hourlyRate != null ? `${formatCurrency(s.hourlyRate)}/hr` : "—"}
                 </td>
                 <td className="px-5 py-4">
                   <span className={s.isActive ? "badge-green" : "badge-red"}>

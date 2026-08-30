@@ -213,6 +213,9 @@ model HandymanProfile {
   backgroundCheckRef    String?
   icaSignedAt           DateTime?
   icaSignedIp           String?
+  // AGREEMENT_VERSION of the text actually shown when they accepted (mig 011).
+  // NULL = signed before versions were recorded, not "signed the current one".
+  icaSignedVersion      String?
   idFrontUrl            String?
   idBackUrl             String?
 
@@ -285,8 +288,10 @@ model Service {
   title       String
   description String
   category    ServiceCategory
-  minPrice    Float
-  maxPrice    Float
+  hourlyRate  Float?          // what this pro charges per hour for this category
+  minimumMinutes Int?         // shortest billable job for this category (mig 013)
+  minPrice    Float?          // legacy range, no longer written - dropped in a later migration
+  maxPrice    Float?
   duration    Int             // in minutes
   imageUrl    String?
   isActive    Boolean         @default(true)
@@ -336,6 +341,16 @@ model Booking {
   disputedAt       DateTime?
   resolutionNote   String?
   resolvedAt       DateTime?
+  // What this job was priced FROM, frozen at booking time (migration 010).
+  // initialLaborAmount = (proRateSnapshot / 60) * estimatedBillableMinutes.
+  // Snapshots, so a later rate change cannot rewrite an agreed price.
+  proRateSnapshot          Float?
+  estimatedBillableMinutes Int?     // Tarea AI's single estimate of billable time
+  initialLaborAmount       Float?
+  minimumChargeSnapshot    Float?
+  minimumMinutesSnapshot   Int?     // the pro's minimum billable time, frozen
+  pricingType              String?  // hourly | service | quote_required
+
   materialsEstimate Float         @default(0)
   // What the materials actually cost, entered by the pro at work-done with the
   // receipt. Materials are charged at cost CAPPED AT THE ESTIMATE: spend less
@@ -454,6 +469,10 @@ model JobRequest {
   scheduledAt DateTime
   budgetMin   Float
   budgetMax   Float
+  // Tarea AI's estimate of billable time for this job (migration 012). Every
+  // applicant is quoted on the SAME minutes at their OWN rate, so the customer
+  // compares like with like.
+  estimatedBillableMinutes Int?
   materialsCost Float         @default(0) // furniture/materials the customer buys; INCLUDED in the CSLB $1,000 cap (AB 2622)
   urgency     String          @default("STANDARD") // STANDARD, SOON, URGENT
   // DRAFT = geocoding failed or was low confidence; not published, not matchable.

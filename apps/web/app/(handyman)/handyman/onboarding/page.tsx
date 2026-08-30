@@ -39,7 +39,7 @@ const SERVICES = [
 
 type ServiceEntry = {
   category: string; title: string; description: string;
-  minPrice: string; maxPrice: string; duration: string;
+  hourlyRate: string; duration: string;
 };
 
 // Renders the agreement from lib/ica-text.ts — the single source the mobile app
@@ -257,7 +257,9 @@ export default function HandymanOnboarding() {
         if (!serviceDetails[cat]) {
           setServiceDetails(d => ({
             ...d,
-            [cat]: { category: cat, title: label, description: desc, minPrice: "50", maxPrice: "150", duration: "60" },
+            // Pre-filled from the base rate set a step earlier; a pro who
+            // charges more for, say, electrical than for assembly overrides it.
+            [cat]: { category: cat, title: label, description: desc, hourlyRate, duration: "60" },
           }));
         }
       }
@@ -589,17 +591,11 @@ export default function HandymanOnboarding() {
                       </button>
 
                       {isOn && detail && (
-                        <div className="px-4 pb-4 grid grid-cols-3 gap-3 border-t border-tarea-sky/20 pt-4">
+                        <div className="px-4 pb-4 grid grid-cols-2 gap-3 border-t border-tarea-sky/20 pt-4">
                           <div>
-                            <label className="text-slate-300 text-xs font-medium block mb-1">Min Price ($)</label>
-                            <input type="number" min="0" value={detail.minPrice}
-                              onChange={e => updateDetail(category, "minPrice", e.target.value)}
-                              className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-tarea-sky text-sm" />
-                          </div>
-                          <div>
-                            <label className="text-slate-300 text-xs font-medium block mb-1">Max Price ($)</label>
-                            <input type="number" min="0" value={detail.maxPrice}
-                              onChange={e => updateDetail(category, "maxPrice", e.target.value)}
+                            <label className="text-slate-300 text-xs font-medium block mb-1">Your rate ($/hr)</label>
+                            <input type="number" min="0" value={detail.hourlyRate}
+                              onChange={e => updateDetail(category, "hourlyRate", e.target.value)}
                               className="w-full bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-tarea-sky text-sm" />
                           </div>
                           <div>

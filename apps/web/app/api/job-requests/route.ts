@@ -11,7 +11,7 @@ import { geocodeAddress } from "@/lib/geo/geocode";
 import { milesFromKmOrNull } from "@/lib/units";
 import { CREDENTIAL_SELECT, credentialBadges } from "@/lib/credentials";
 import { materialsTier, validateMaterials } from "@/lib/materials-policy";
-import { grossMinimum } from "@/lib/pricing-config";
+import { ABSOLUTE_MINIMUM_CHARGE } from "@/lib/labor-pricing";
 
 // Fallback only. Each pro sets their own serviceRadius in miles, and that is
 // what decides eligibility — this applies when a profile somehow has none.
@@ -229,7 +229,7 @@ export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { category, title, description, address, city, scheduledAt, budgetMin, budgetMax, materialsCost, latitude, longitude, imageUrls, urgency } = await req.json();
+  const { category, title, description, address, city, scheduledAt, budgetMin, budgetMax, materialsCost, latitude, longitude, imageUrls, urgency, estimatedBillableMinutes } = await req.json();
 
   if (!category || !title || !description || !address || !city || !scheduledAt) {
     return NextResponse.json({ error: "All fields are required" }, { status: 400 });
@@ -238,31 +238,28 @@ export async function POST(req: NextRequest) {
   const materials = validateMaterials(materialsCost);
   if (!materials.ok) return NextResponse.json({ error: materials.error }, { status: 400 });
 
-  // The floor is enforced HERE, not just in the quoting routes.
+  // Fraud protection, enforced HERE and not only in the quoting routes.
   //
-  // /api/ai/price-estimate and /api/ai/instant-quote both apply
-  // grossMinimum(), and the app always posts the figure they returned — so in
-  // normal use a job never lands below it. But this endpoint took budgetMin at
-  // face value, which means the rule lived in the client. A $50 job created
-  // straight against the API was accepted, hired and paid: the pro netted $45
-  // against a $120 minimum that exists precisely because a job worth less than
-  // the trip is one nobody accepts.
+  // This endpoint takes budgetMin at face value, so without a server-side check
+  // a request created straight against the API could post real work for a cent.
+  //
+  // It used to reject anything under grossMinimum() ($120), which was a price
+  // floor rather than a fraud check: a job is now priced at the PRO's rate over
+  // a minimum billable TIME (migration 013), so a cheaper pro legitimately
+  // quotes less than $120 and this would have refused their honest price. A
+  // dollar floor that binds sets one price for every competing pro, which is
+  // exactly what 013 removed.
   //
   // REJECTED, not silently raised. Quietly changing the number would show the
-  // customer one price and charge another, which is the same class of problem
-  // from the other direction.
-  // Rounded DOWN to cents: grossMinimum() is 120 / 0.9 = 133.333…, which cannot
-  // be expressed in money. Comparing against the raw value rejected $133.33 —
-  // the exact figure the UI displays as the minimum — for being a third of a
-  // cent short.
-  const floor = Math.floor(grossMinimum() * 100) / 100;
+  // customer one price and charge another.
+  const floor = ABSOLUTE_MINIMUM_CHARGE;
   const labour = budgetMin ? parseFloat(budgetMin) : 0;
   if (!Number.isFinite(labour)) {
     return NextResponse.json({ error: "Budget must be a number." }, { status: 400 });
   }
   if (labour > 0 && labour < floor) {
     return NextResponse.json(
-      { error: `The minimum for a job is $${floor.toFixed(2)} of labour — below that a pro will not accept the call-out.`, minimum: floor },
+      { error: `A job must be at least $${floor.toFixed(2)} of labour.`, minimum: floor },
       { status: 400 },
     );
   }
@@ -296,6 +293,12 @@ export async function POST(req: NextRequest) {
       scheduledAt: new Date(scheduledAt),
       budgetMin: budgetMin ? parseFloat(budgetMin) : 0,
       budgetMax: budgetMax ? parseFloat(budgetMax) : 0,
+      // Every applicant quotes against these minutes at their own rate, so the
+      // customer's comparison is like-for-like. Clamped: an unbounded value
+      // from the client would let a crafted request price a job at any size.
+      estimatedBillableMinutes: estimatedBillableMinutes
+        ? Math.min(Math.max(Math.round(Number(estimatedBillableMinutes)), 15), 60 * 40)
+        : null,
       materialsCost: materials.value,
       urgency: ["STANDARD", "SOON", "URGENT"].includes(urgency) ? urgency : "STANDARD",
       imageUrls: Array.isArray(imageUrls) ? imageUrls : [],

@@ -327,7 +327,12 @@
     "retryEstimate": "Retry estimate",
     "signInToPost": "Create an account to post this job — your details are saved.",
     "cardRequired": "A card is needed to confirm the booking. You won't be charged until the job is done.",
-    "materialsByPro": "Materials aren't included. Each pro adds their own materials quote when they apply, and you'll see the full price before you hire."
+    "materialsByPro": "Materials aren't included. Each pro adds their own materials quote when they apply, and you'll see the full price before you hire.",
+    "estimatedServiceTime": "Tarea AI Estimated Service Time",
+    "rangeAcrossPros": "Estimated total across {} pros",
+    "youChoosePro": "Pros set their own rates. Your final price depends on which pro you choose.",
+    "laborServiceLowest": "Labor & service (lowest pro)",
+    "billedAtMinimum": "Billed at this pro’s {}h minimum"
   },
   "browse": {
     "title": "Browse Pros",
@@ -335,7 +340,6 @@
     "within60": "Within 60 mi",
     "availableNow": "Available now",
     "topRated": "Top rated",
-    "price": "Price",
     "noMatch": "No pros match your filters.",
     "available": "Available",
     "newRating": "New",
@@ -344,9 +348,23 @@
     "licensed": "Licensed",
     "insured": "Insured",
     "backgroundChecked": "Background checked",
-    "perHour": "/hr",
-    "minHour": "• Min. 1 hour",
-    "viewProfile": "View Profile"
+    "viewProfile": "View Profile",
+    "band": {
+      "excellent": "Excellent match",
+      "great": "Great match",
+      "good": "Good match",
+      "fair": "Match"
+    },
+    "reason": {
+      "licensed_insured": "Licensed & insured",
+      "licensed": "Licensed",
+      "insured": "Insured",
+      "highly_rated": "Highly rated",
+      "experienced": "Experienced",
+      "fast_replies": "Replies fast",
+      "nearby": "Nearby",
+      "new_pro": "New to Tarea"
+    }
   },
   "notifications": {
     "markAllRead": "Mark all read",
@@ -525,7 +543,6 @@
     "extDeclined": "Declined",
     "extWaiting": "Waiting",
     "extraTimeNeeded": "Extra time needed",
-    "extraChargeHint": "Extra charge (optional, $)",
     "reasonHint": "Reason (optional)",
     "sendRequest": "Send Request",
     "acceptJob": "Accept Job",
@@ -556,7 +573,8 @@
     "timerPause": "Pause timer",
     "timerResume": "Resume timer",
     "timerPaused": "Paused",
-    "timerFailed": "Could not update the timer"
+    "timerFailed": "Could not update the timer",
+    "extraCostAtRate": "Adds ${amount} at your ${rate}/hr rate"
   },
   "payout": {
     "title": "Payout Methods",
@@ -607,16 +625,13 @@
     "category": "Category",
     "fldDescription": "Description",
     "descHint": "What this service includes",
-    "minPrice": "Min price ($)",
-    "maxPrice": "Max price ($)",
     "duration": "Duration (minutes)",
     "titleMin": "Title must be at least 3 characters",
     "descMin": "Description must be at least 10 characters",
-    "validPrices": "Enter valid prices",
     "validDuration": "Enter a valid duration",
     "bio": "Bio",
     "bioHint": "Tell customers about your experience",
-    "hourlyRate": "Hourly rate ($)",
+    "hourlyRate": "Your rate ($/hr)",
     "companyName": "Company name (optional)",
     "website": "Website (optional)",
     "state": "State",
@@ -666,7 +681,17 @@
     "policyNumber": "Policy number",
     "perOccurrence": "Each occurrence (USD)",
     "aggregate": "General aggregate (USD)",
-    "choosePdf": "Choose a PDF"
+    "choosePdf": "Choose a PDF",
+    "hourlyRateHint": "One rate for this category",
+    "validRate": "Enter your hourly rate",
+    "setRate": "Set rate",
+    "editRateTitle": "Edit your rate",
+    "rateUpdated": "Rate updated",
+    "updateRateFailed": "Couldn't update the rate",
+    "rateAppliesToNew": "Applies to new bookings. Jobs already booked keep the rate they were agreed at.",
+    "minimumBillable": "Shortest job you bill for",
+    "minimumBillableHint": "A shorter visit is billed at this minimum. Most trades charge one hour.",
+    "minShort": "min {}h"
   },
   "diagnose": {
     "title": "AI Diagnose",
@@ -686,7 +711,12 @@
     "routine": "Routine",
     "disclaimer": "Informational only — this is an AI estimate, not a professional diagnosis. A licensed pro should confirm the issue before any work is done. For a suspected gas leak, electrical hazard, or flooding, call 911 or a licensed pro now.",
     "tips": "Tips",
-    "postThisJob": "Post this job"
+    "postThisJob": "Post this job",
+    "ballparkLabel": "Rough ballpark",
+    "estimateLabel": "Estimated total",
+    "aboutTime": "about {} on site",
+    "priceNote": "Service fee included. Answer a few questions in Post a Job for a firmer price.",
+    "priceNoteAcrossPros": "Service fee included. Across {} pros — each sets their own rate, so your price depends on who you choose. Answer a few questions in Post a Job for a firmer price."
   },
   "handymanDetail": {
     "proFallback": "Pro",
@@ -788,7 +818,9 @@
     "estimate": "~ Estimate",
     "whatsIncluded": "What's included",
     "postThisJobArrow": "Post this job",
-    "editAnswers": "Edit answers"
+    "editAnswers": "Edit answers",
+    "allIn": "Service fee included. Materials, if any, are quoted separately by your pro.",
+    "allInAcrossPros": "Service fee included. Across {} pros — pros set their own rates, so your price depends on who you choose. Materials quoted separately."
   },
   "call": {
     "unavailable": "Calling isn't available right now. Try the chat instead.",
