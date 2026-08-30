@@ -36,6 +36,7 @@ export default function BrowsePage() {
   const [cat, setCat] = useState<string>("ALL");
   const [nearMe, setNearMe] = useState(false);
   const [sort, setSort] = useState<"best" | "rating" | "price">("best");
+  const [outsideRadius, setOutsideRadius] = useState(false);
 
   useEffect(() => {
     // Send the customer's position so the server can return pros within 60
@@ -44,7 +45,13 @@ export default function BrowsePage() {
     const load = (query = "") =>
       fetch(`/api/handyman/browse${query}`)
         .then((r) => r.json())
-        .then((d) => setPros(Array.isArray(d) ? d : d.handymen ?? d.pros ?? []))
+        .then((d) => {
+          setPros(Array.isArray(d) ? d : d.handymen ?? d.pros ?? []);
+          // The server says so when nobody was actually within range, so the
+          // list can be honest about it instead of implying these pros are
+          // nearby.
+          setOutsideRadius(!Array.isArray(d) && d.outsideRadius === true);
+        })
         .catch(() => setPros([]))
         .finally(() => setLoading(false));
 
@@ -100,6 +107,12 @@ export default function BrowsePage() {
         {pill("Top rated", sort === "rating", () => setSort(sort === "rating" ? "best" : "rating"))}
         {pill("Price", sort === "price", () => setSort(sort === "price" ? "best" : "price"))}
       </div>
+
+      {outsideRadius && !loading && (
+        <div className="mb-4 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+          No pros in your area yet — showing the nearest available. Distances are on each card.
+        </div>
+      )}
 
       {loading ? (
         <div className="flex items-center gap-2 text-[var(--text-muted)]">

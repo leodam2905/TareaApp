@@ -153,9 +153,19 @@ export async function GET(req: NextRequest) {
   // Premium placement is preserved as the first sort key: it is a paid position
   // and quietly demoting it to "whoever is closest" would change what those
   // pros bought. Distance orders within that.
-  const located = here
+  // Never return an empty list because of the radius.
+  //
+  // The radius is a preference, not a rule. With supply still thin a customer
+  // in a city with no pros yet gets an empty screen, which reads as a broken
+  // app rather than "nobody here yet" — and they are a customer who was
+  // expensive to acquire and will not come back to check. So when the filter
+  // would return nothing, fall back to everyone, ranked, and let the distance
+  // shown on each card tell the truth.
+  const withinRadius = here
     ? result.filter((r) => r.distanceKm === null || r.distanceKm <= BROWSE_RADIUS_KM)
     : result;
+  const located = withinRadius.length > 0 ? withinRadius : result;
+  const outsideRadius = withinRadius.length === 0 && result.length > 0;
 
   // Ranked by fit, using the same scorer as /api/match — one definition of
   // "best pro", so Browse and matching cannot show different orders for the
@@ -177,5 +187,9 @@ export async function GET(req: NextRequest) {
     return rank(b) - rank(a);
   });
 
-  return NextResponse.json(located);
+  // Flagged so the client can say "nearest available" rather than implying
+  // these pros are close by.
+  return NextResponse.json(
+    outsideRadius ? { handymen: located, outsideRadius: true } : located,
+  );
 }

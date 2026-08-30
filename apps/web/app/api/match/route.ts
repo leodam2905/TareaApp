@@ -127,8 +127,16 @@ export async function GET(req: NextRequest) {
       // This used to sort by distance and only break ties on score, so a
       // three-star pro two miles away outranked a 4.9-star pro six miles away.
       // Distance is now one weighted input rather than the sort key.
-      .filter((h) => h.availableAtRequestedTime)
-      .sort((a, b) => b.score - a.score);
+      // Availability sorts, it does not exclude.
+      //
+      // As a hard filter it can only ever reduce the list, and with supply
+      // still thin that means showing nobody — which is worse for the customer
+      // than showing a pro who may need a different time. Whoever is free when
+      // they asked comes first; everyone else is still reachable below.
+      .sort((a, b) => {
+        const avail = Number(b.availableAtRequestedTime) - Number(a.availableAtRequestedTime);
+        return avail !== 0 ? avail : b.score - a.score;
+      });
 
     return NextResponse.json(results);
   } catch (err) {
