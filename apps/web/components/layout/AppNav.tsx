@@ -6,8 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Search, CalendarCheck, User, Briefcase, DollarSign,
   LogOut, Bell, ClipboardList, Radar, Layers, CalendarDays, X, CheckCheck,
-  Heart, Sun, Moon, Gift, PieChart, HelpCircle, Menu, ListChecks, Wallet,
-} from "lucide-react";
+  Heart, Sun, Moon, Gift, PieChart, HelpCircle, Menu, ListChecks, Wallet, Receipt } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { useTheme } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
@@ -41,6 +40,7 @@ export default function AppNav({ role, userName }: NavProps) {
     { href: "/customer/requests",         label: t("nav_requests"),     icon: ClipboardList   },
     { href: "/customer/post-job",         label: t("nav_post_job"),     icon: Briefcase       },
     { href: "/customer/spending",         label: "Spending Report",     icon: PieChart        },
+    { href: "/customer/invoices",         label: "Invoices & Receipts", icon: Receipt         },
     { href: "/customer/referrals",        label: "Refer & Earn",        icon: Gift            },
     { href: "/customer/profile",          label: t("nav_profile"),      icon: User            },
   ];

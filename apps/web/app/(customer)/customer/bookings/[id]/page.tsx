@@ -207,6 +207,59 @@ export default function BookingDetailPage() {
     setSending(false);
   };
 
+  /// Approve the pro's quoted price and pay with the card already on file.
+  ///
+  /// Mirrors the app: no browser round trip, because the card was saved when
+  /// the pro was requested. startPayment (hosted checkout) stays as the
+  /// fallback for a booking with no card on file.
+  const approvePrice = async () => {
+    setPaying(true);
+    try {
+      const res = await fetch(`/api/bookings/${booking!.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ approvePrice: true }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        toast.success("Approved — your pro has been notified.");
+        location.reload();
+        return;
+      }
+      // A missing card is the one failure the customer can fix here, and the
+      // hosted checkout collects one — so send them there rather than only
+      // reporting it.
+      if (data?.reason === "no_card") {
+        toast("Add a payment method to continue.");
+        await startPayment();
+        return;
+      }
+      toast.error(data?.error ?? "Payment failed.");
+    } catch {
+      toast.error("Connection problem. Try again.");
+    } finally {
+      setPaying(false);
+    }
+  };
+
+  const declinePrice = async () => {
+    if (!confirm("Decline this price? The booking will be cancelled and you won't be charged anything.")) return;
+    setPaying(true);
+    try {
+      const res = await fetch(`/api/bookings/${booking!.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "CANCELLED", cancelReason: "Customer declined the quoted price" }),
+      });
+      if (res.ok) location.reload();
+      else toast.error("Could not cancel. Try again.");
+    } catch {
+      toast.error("Connection problem. Try again.");
+    } finally {
+      setPaying(false);
+    }
+  };
+
   const startPayment = async () => {
     setPaying(true);
     try {
@@ -448,17 +501,53 @@ export default function BookingDetailPage() {
       {/* Phases */}
       {isActive && <PhaseConfirm bookingId={booking.id} />}
 
-      {/* Actions */}
-      {/* Pay Now — shown for ACCEPTED and not yet paid */}
+      {/* The pro accepted and named their price. This is the approval step,
+          and the only point at which money moves — the same card the app
+          shows, so a customer sees the identical breakdown either place. */}
       {booking.status === "ACCEPTED" && !booking.isPaid && (
-        <button
-          onClick={startPayment}
-          disabled={paying}
-          className="w-full flex items-center justify-center gap-2 bg-tarea-sky text-tarea-ink font-bold py-4 rounded-2xl hover:bg-sky-300 transition-all disabled:opacity-50 text-base"
-        >
-          {paying ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
-          {paying ? "Redirecting to payment…" : `Pay ${formatCurrency(booking.totalPrice * 1.15 + (booking.materialsEstimate ?? 0))} to Confirm`}
-        </button>
+        <div className="rounded-2xl border border-sky-300 bg-sky-50 p-5">
+          <p className="font-extrabold text-gray-900">Approve the final price</p>
+          <div className="mt-3 space-y-1.5 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-500">Labour</span>
+              <span className="font-semibold text-gray-900">{formatCurrency(booking.totalPrice)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Service fee (15%)</span>
+              <span className="font-semibold text-gray-900">{formatCurrency(booking.totalPrice * 0.15)}</span>
+            </div>
+            {(booking.materialsEstimate ?? 0) > 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-500">Materials (quoted by your pro)</span>
+                <span className="font-semibold text-gray-900">{formatCurrency(booking.materialsEstimate ?? 0)}</span>
+              </div>
+            )}
+            <div className="flex justify-between border-t border-sky-200 pt-2 mt-2">
+              <span className="font-extrabold text-gray-900">Total</span>
+              <span className="font-extrabold text-gray-900 text-lg">
+                {formatCurrency(booking.totalPrice * 1.15 + (booking.materialsEstimate ?? 0))}
+              </span>
+            </div>
+          </div>
+          <p className="mt-3 text-xs text-gray-500 leading-relaxed">
+            Your card is charged only when you approve. Decline and the booking is cancelled at no cost.
+          </p>
+          <button
+            onClick={approvePrice}
+            disabled={paying}
+            className="mt-4 w-full flex items-center justify-center gap-2 bg-tarea-sky text-tarea-ink font-bold py-4 rounded-2xl hover:bg-sky-300 transition-all disabled:opacity-50 text-base"
+          >
+            {paying ? <Loader2 className="w-5 h-5 animate-spin" /> : <CreditCard className="w-5 h-5" />}
+            {paying ? "Approving…" : "Approve & pay"}
+          </button>
+          <button
+            onClick={declinePrice}
+            disabled={paying}
+            className="mt-1 w-full text-sm text-gray-500 hover:text-gray-700 py-2 disabled:opacity-50"
+          >
+            Decline this price
+          </button>
+        </div>
       )}
 
       {booking.status === "IN_PROGRESS" && booking.workDoneAt && (
