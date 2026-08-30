@@ -222,6 +222,16 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
           const SizedBox(height: 4),
           Text(q['duration'].toString(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w600)),
         ],
+        // The headline is the ONLY figure on this card, so it has to be the
+        // all-in price — an advertised price that grows at checkout is what
+        // SB 478 prohibits.
+        const SizedBox(height: 6),
+        Text(
+          q['proCount'] != null && (q['proCount'] as num) > 0
+              ? 'instantQuote.allInAcrossPros'.tr(args: ['${q['proCount']}'])
+              : 'instantQuote.allIn'.tr(),
+          style: const TextStyle(color: C.muted, fontSize: 12, height: 1.35),
+        ),
         if (includes.isNotEmpty) ...[
           const SizedBox(height: 20),
           Align(alignment: Alignment.centerLeft, child: Text('instantQuote.whatsIncluded'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16))),

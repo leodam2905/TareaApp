@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { rateLimit } from "@/lib/rate-limit";
+import { logAiUsage } from "@/lib/ai-usage";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -52,6 +53,14 @@ export async function POST(req: NextRequest) {
         }
       }
       controller.close();
+      // Usage arrives only once the stream finishes, so it is recorded here
+      // rather than beside the other routes' call sites. Awaited AFTER close()
+      // so accounting never delays a byte reaching the customer.
+      try {
+        logAiUsage("chat", await stream.finalMessage());
+      } catch {
+        /* the answer was already delivered — never fail on instrumentation */
+      }
     },
   });
 

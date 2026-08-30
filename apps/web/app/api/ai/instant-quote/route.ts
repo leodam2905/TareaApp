@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { rateLimit } from "@/lib/rate-limit";
-import { grossHourlyFor, grossTravel, grossMinimum } from "@/lib/pricing-config";
+import { quoteRange, resolveRate } from "@/lib/labor-pricing";
+import { rateRangeForCategory } from "@/lib/rate-range";
+import { logAiUsage } from "@/lib/ai-usage";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -47,7 +49,7 @@ Customer details:
 ${detailsText}
 </input>
 
-Estimate how long this job takes. Do NOT estimate a price — Tarea sets the rate.
+Estimate how long this job takes. Do NOT estimate a price — each pro sets their own rate.
 
 Return ONLY a JSON object with:
 - "laborHoursMin": low estimate of labour hours (number)
@@ -61,32 +63,67 @@ No markdown, no extra text — just valid JSON.`,
       }],
     });
 
+    logAiUsage("instant-quote", message);
     const text = message.content[0].type === "text" ? message.content[0].text : "";
     const ai = JSON.parse(text.replace(/```json|```/g, "").trim());
 
-    // The model estimates hours; the rate card sets the price. This endpoint
-    // used to ask the model for minPrice/maxPrice directly, with no rate, no
-    // travel and no floor — which is where prices a pro would not accept came
-    // from, and why the same job could be priced differently depending on which
-    // screen the customer used.
+    // Same pricing engine as Post a Job. This endpoint used to run its own
+    // model — platform rate card x AI hours, floored at the retired $120
+    // minimum — so the identical job could be quoted differently depending on
+    // which screen the customer opened, which is the exact bug this file was
+    // once rewritten to fix.
     const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
-    const round5 = (n: number) => Math.round(n / 5) * 5;
     const hMin = clamp(Number(ai.laborHoursMin) || 1, 0.5, 60);
     const hMax = clamp(Number(ai.laborHoursMax) || Math.max(hMin, 2), hMin, 80);
 
-    const rate = grossHourlyFor(category);
-    const priceFor = (h: number) => round5(Math.max(rate * h + grossTravel(), grossMinimum()));
+    // ONE estimated billable time, rounded to quarter hours — identical
+    // derivation to /api/ai/price-estimate so the two cannot disagree.
+    const estimatedBillableMinutes = Math.max(15, Math.round((((hMin + hMax) / 2) * 60) / 15) * 15);
 
-    const minPrice = priceFor(hMin);
-    const maxPrice = priceFor(hMax);
+    // The spread of what pros actually charge for this category. Tarea does not
+    // pick a number: the visitor sees real rates and chooses a pro later.
+    const range = await rateRangeForCategory(category).catch(() => null);
+
+    const quoted = range && range.count > 0
+      ? quoteRange({
+          minRate: range.min,
+          maxRate: range.max,
+          proCount: range.count,
+          estimatedBillableMinutes,
+        })
+      // Nobody serves this category yet — fall back to the rate card so a
+      // visitor still sees a number rather than a broken widget.
+      : quoteRange({
+          minRate: resolveRate({ category }).hourlyRate,
+          maxRate: resolveRate({ category }).hourlyRate,
+          proCount: 0,
+          estimatedBillableMinutes,
+        });
+
+    // minPrice/maxPrice keep their names but are now TOTALS with the 25%
+    // Service Fee already inside them.
+    //
+    // Both clients render "$min-$max" as the ONLY figure on the card — there is
+    // no fee line anywhere in either UI. Returning a labour subtotal therefore
+    // advertised one price and charged 25% more at checkout, which is precisely
+    // the drip pricing SB 478 prohibits. Keeping the field names means shipped
+    // builds show the corrected figure without a rebuild.
+    const minPrice = Math.round(quoted.lowTotal);
+    const maxPrice = Math.round(quoted.highTotal);
 
     return NextResponse.json({
       ...ai,
       minPrice,
       maxPrice,
-      // "Guaranteed" only when the hours are tight enough for a fixed price to
-      // be safe; otherwise the spread is real and the customer should see it.
-      confidence: maxPrice - minPrice <= minPrice * 0.3 ? "guaranteed" : "estimate",
+      estimatedBillableMinutes,
+      estimatedServiceTime: `${Math.floor(estimatedBillableMinutes / 60)}h ${estimatedBillableMinutes % 60}m`
+        .replace(/^0h /, "").replace(/ 0m$/, ""),
+      proCount: quoted.proCount,
+      feeIncluded: true,
+      // "Guaranteed" only when one pro qualifies, or when the spread is tight
+      // enough that a fixed price is safe. Across many pros the range is real.
+      confidence:
+        quoted.single || maxPrice - minPrice <= minPrice * 0.3 ? "guaranteed" : "estimate",
     });
   } catch {
     return NextResponse.json({ error: "Could not generate quote. Try again." }, { status: 500 });

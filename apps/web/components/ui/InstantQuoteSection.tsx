@@ -18,7 +18,7 @@ const POPULAR = [
 
 type DetailField = { key: string; label: string; options: string[] };
 type Task        = { label: string; details: DetailField[] };
-type Quote       = { minPrice: number; maxPrice: number; duration: string; includes: string[]; note: string; confidence: "guaranteed" | "estimate" };
+type Quote       = { minPrice: number; maxPrice: number; duration: string; includes: string[]; note: string; confidence: "guaranteed" | "estimate"; proCount?: number; feeIncluded?: boolean };
 
 const TASKS: Record<string, Task[]> = {
   Plumbing: [
@@ -444,6 +444,15 @@ export default function InstantQuoteSection() {
                       <div className="flex items-center gap-1.5 mt-2 text-gray-500 text-sm">
                         <Clock className="w-4 h-4" />{quote.duration}
                       </div>
+                      {/* The headline is the ONLY figure on this card, so it has
+                          to be the all-in price — an advertised price that grows
+                          at checkout is what SB 478 prohibits. */}
+                      <p className="mt-2 text-gray-500 text-xs">
+                        {quote.feeIncluded ? "Service fee included. " : ""}
+                        {quote.proCount ? `Across ${quote.proCount} pros — ` : ""}
+                        pros set their own rates, so your price depends on who you choose.
+                        Materials, if any, are quoted separately by your pro.
+                      </p>
                     </motion.div>
 
                     <div className="h-px bg-white/6" />

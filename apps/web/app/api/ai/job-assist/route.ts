@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
+import { logAiUsage } from "@/lib/ai-usage";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -37,6 +38,7 @@ No markdown, no explanation, just the JSON.`,
   });
 
   try {
+    logAiUsage("job-assist", message);
     const text = message.content[0].type === "text" ? message.content[0].text : "";
     const json = JSON.parse(text.replace(/```json|```/g, "").trim());
     return NextResponse.json(json);

@@ -208,6 +208,44 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
           ),
           const SizedBox(height: 14),
           Text((r['explanation'] ?? '').toString(), style: const TextStyle(color: C.ink, height: 1.5, fontSize: 15)),
+          // A ballpark, on the same engine as Post a Job — but priced off a
+          // photo rather than a guided question set, so it says so. A number
+          // that looks like a quote when it is a glance is worse than none.
+          if (r['priceRange'] != null) ...[
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(14)),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(
+                  r['priceConfidence'] == 'ballpark'
+                      ? 'diagnose.ballparkLabel'.tr()
+                      : 'diagnose.estimateLabel'.tr(),
+                  style: const TextStyle(color: C.muted, fontSize: 12, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  (r['priceRange']['single'] == true)
+                      ? '\$${r['priceRange']['low']}'
+                      : '\$${r['priceRange']['low']}–\$${r['priceRange']['high']}',
+                  style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w900, color: C.ink, height: 1.1),
+                ),
+                if ((r['estimatedServiceTime'] ?? '').toString().isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text('diagnose.aboutTime'.tr(args: [r['estimatedServiceTime'].toString()]),
+                      style: const TextStyle(color: C.muted, fontWeight: FontWeight.w600)),
+                ],
+                const SizedBox(height: 8),
+                Text(
+                  ((r['priceRange']['proCount'] ?? 0) as num) > 0
+                      ? 'diagnose.priceNoteAcrossPros'.tr(args: ['${r['priceRange']['proCount']}'])
+                      : 'diagnose.priceNote'.tr(),
+                  style: const TextStyle(color: C.muted, fontSize: 12, height: 1.35),
+                ),
+              ]),
+            ),
+          ],
           if (tips.isNotEmpty) ...[
             const SizedBox(height: 16),
             Text('diagnose.tips'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink)),
@@ -227,7 +265,17 @@ class _DiagnoseScreenState extends State<DiagnoseScreen> {
             child: FilledButton(
               style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-              onPressed: () => context.push('/post-job', extra: {'category': category}),
+              // Carry what the customer already gave us. Without this they
+              // upload a photo, describe the leak, get a diagnosis — and are
+              // then asked to describe it again from scratch, which is a poor
+              // reward for a flow whose whole pitch is "just show us".
+              onPressed: () => context.push('/post-job', extra: {
+                'category': category,
+                if (_desc.text.trim().isNotEmpty) 'description': _desc.text.trim(),
+                if (_imagePath != null) 'imagePath': _imagePath,
+                if ((r['explanation'] ?? '').toString().isNotEmpty)
+                  'diagnosis': r['explanation'].toString(),
+              }),
               child: Text('diagnose.postThisJob'.tr(), style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.white, fontSize: 16)),
             ),
           ),

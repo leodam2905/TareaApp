@@ -4,6 +4,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
 import { grossHourlyFor, grossTravel, grossMinimum, URGENCY_RATE } from "@/lib/pricing-config";
+import { resolveRate, quoteLabor, quoteRange, formatMinutes } from "@/lib/labor-pricing";
+import { rateRangeForCategory } from "@/lib/rate-range";
+import { logAiUsage } from "@/lib/ai-usage";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -40,7 +43,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Too many requests. Please wait a moment." }, { status: 429 });
   }
 
-  const { category, description, city, urgent } = await req.json();
+  const { category, description, city, urgent, proHourlyRate } = await req.json();
   if (!description?.trim()) return NextResponse.json({ error: "Description required" }, { status: 400 });
 
   const message = await client.messages.create({
@@ -73,29 +76,79 @@ No markdown, just the JSON.`,
   });
 
   try {
+    logAiUsage("price-estimate", message);
     const text = message.content[0].type === "text" ? message.content[0].text : "";
     const ai = JSON.parse(text.replace(/```json|```/g, "").trim());
 
     // The rate card decides, not the model. The AI's suggestion is kept only to
     // flag a category whose card looks badly out of line with the market.
     const aiSuggested = clamp(Number(ai.hourlyRate) || 0, 0, 300);
-    const hourlyRate = grossHourlyFor(category);
+
+    // Whose rate prices this job.
+    //
+    // A directed booking knows the pro, so it is quoted at THEIR rate. An open
+    // job request does not — nobody has applied yet — so the rate card stands in
+    // and each applicant's own rate produces their own total later.
+    const { hourlyRate, source: rateSource } = resolveRate({
+      serviceHourlyRate: typeof proHourlyRate === "number" ? proHourlyRate : null,
+      category,
+    });
+
     const hMin = clamp(Number(ai.laborHoursMin) || 1, 0.5, 60);
     const hMax = clamp(Number(ai.laborHoursMax) || Math.max(hMin, 2), hMin, 80);
     const materials = Math.max(0, Number(ai.materials) || 0);
 
+    // ONE estimated billable time, from the midpoint of the model's range.
+    //
+    // A range cannot be charged and cannot be approved — the customer has to see
+    // a single figure, and every later surface (invoice, extension, refund)
+    // reconciles against it. Rounded to a quarter hour because that is how the
+    // work is actually scheduled and billed, with 15 minutes as the smallest
+    // billable unit.
+    //
+    // This is an ESTIMATE of billable time. It does not oblige the pro to stay
+    // that long, and it does not cap them: running over is what a BookingExtension
+    // is for, and that needs the customer's approval before it costs anything.
+    const rawMinutes = ((hMin + hMax) / 2) * 60;
+    const estimatedBillableMinutes = Math.max(15, Math.round(rawMinutes / 15) * 15);
+
     // Service price (fee-able) = rate × hours + travel + urgency. Materials are
     // tracked SEPARATELY (passed through at cost, no fee) — like TaskRabbit
     // reimbursements. `price` becomes the job budget / booking totalPrice.
-    const priceFor = (hours: number) => {
-      const labor = hourlyRate * hours;
-      const urgency = urgent ? labor * URGENCY_RATE : 0;
-      // Never below the call-out floor: a price too low to be worth the trip is
-      // a job nobody takes, which is indistinguishable from having no pros.
-      return round5(Math.max(labor + TRAVEL_ADJUSTMENT + urgency, grossMinimum()));
-    };
-    const hMid = (hMin + hMax) / 2;
-    const price = priceFor(hMid);
+    // What pros actually charge for this category, as an interval.
+    //
+    // Tarea does not pick a number. The customer sees the spread of real rates
+    // among pros who could take the job and chooses one — which is both what a
+    // marketplace of independent contractors looks like and what keeps the
+    // platform out of setting anybody's compensation.
+    //
+    // A directed request skips it: the customer already picked their pro, so a
+    // range would be answering a question they have closed.
+    const range = proHourlyRate
+      ? null
+      : await rateRangeForCategory(category, { excludeUserId: user?.id }).catch(() => null);
+
+    const quotedRange =
+      range && range.count > 0
+        ? quoteRange({
+            minRate: range.min,
+            maxRate: range.max,
+            proCount: range.count,
+            estimatedBillableMinutes,
+            urgent,
+          })
+        : null;
+
+    // The quote is lib/labor-pricing, not a second copy of the formula here.
+    // The booking snapshots the same call, so what the customer approved and
+    // what the invoice reproduces are the same arithmetic.
+    const quote = quoteLabor({ hourlyRate, estimatedBillableMinutes, urgent });
+    const price = quote.initialLaborAmount;
+
+    // The range is kept only so build 48 and earlier still render something
+    // sensible; the single figure above is what is actually charged.
+    const priceFor = (hours: number) =>
+      round5(Math.max(hourlyRate * hours + TRAVEL_ADJUSTMENT + (urgent ? hourlyRate * hours * URGENCY_RATE : 0), grossMinimum()));
     const min = priceFor(hMin);
     const max = priceFor(hMax);
 
@@ -107,9 +160,9 @@ No markdown, just the JSON.`,
     const confidence = clamp(Math.round(Number(ai.confidence) || 70), 30, 99);
     const isFixed = ai.predictable === true && confidence >= 75;
 
-    // Breakdown at the midpoint. Urgency premium applies to labor only.
-    const labor = hourlyRate * hMid;
-    const urgency = urgent ? labor * URGENCY_RATE : 0;
+    // Breakdown at the agreed billable time. Urgency applies to labour only.
+    const labor = quote.labor;
+    const urgency = quote.urgency;
 
     // Materials are NOT in this quote.
     //
@@ -126,7 +179,37 @@ No markdown, just the JSON.`,
     return NextResponse.json({
       isFixed,
       price,                       // service price (fee-able, no materials) = budget
-      min, max,                    // service-price range (use when !isFixed)
+
+      // The new pricing model. `estimatedBillableMinutes` is Tarea AI's single
+      // estimate of billable time; `initialLaborAmount` is what it costs at the
+      // rate that priced it. The booking snapshots all three.
+      estimatedBillableMinutes,
+      estimatedServiceTime: formatMinutes(estimatedBillableMinutes),
+      initialLaborAmount: quote.initialLaborAmount,
+      proRate: hourlyRate,
+      rateSource,                  // pro_service | pro_profile | rate_card
+      // The pro's shortest billable job, and whether it lengthened this one.
+      // Shown beside the estimate: a bill longer than the estimate needs a
+      // stated reason, not a silently larger number.
+      minimumMinutes: quote.minimumMinutes,
+      billableMinutes: quote.billableMinutes,
+      minimumApplied: quote.minimumApplied,
+      pricingType: isFixed ? "service" : "hourly",
+
+      // The interval the customer is quoted before choosing a pro. Both ends
+      // are TOTALS with the fee already in them (SB 478). Null when the pro is
+      // already known, or when no pro in the area serves this category — the
+      // caller falls back to the single figure rather than showing an empty range.
+      priceRange: quotedRange && {
+        low: quotedRange.lowTotal,
+        high: quotedRange.highTotal,
+        lowRate: quotedRange.lowRate,
+        highRate: quotedRange.highRate,
+        proCount: quotedRange.proCount,
+        single: quotedRange.single,
+      },
+
+      min, max,                    // legacy range — pre-build-49 clients only
       // Kept for reference only — the app does not show it and the job request
       // does not carry it. The pro's quote at application is authoritative.
       materialsHint: materialsRounded,
@@ -142,7 +225,7 @@ No markdown, just the JSON.`,
       included: Array.isArray(ai.included) ? ai.included.slice(0, 6).map(String) : [],
       notIncluded: Array.isArray(ai.notIncluded) ? ai.notIncluded.slice(0, 6).map(String) : [],
       breakdown: {
-        hourlyRate, laborHours: workTime,
+        hourlyRate, laborHours: workTime, estimatedBillableMinutes,
         labor: Math.round(labor), materials: 0, materialsHint: Math.round(materials),
         travel: TRAVEL_ADJUSTMENT, urgency: Math.round(urgency),
         serviceFee, total,

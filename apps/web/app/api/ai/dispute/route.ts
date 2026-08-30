@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createNotification } from "@/lib/notify";
 import { rateLimit } from "@/lib/rate-limit";
+import { logAiUsage } from "@/lib/ai-usage";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -61,6 +62,7 @@ No markdown, just JSON.`,
   });
 
   try {
+    logAiUsage("dispute", message);
     const text = message.content[0].type === "text" ? message.content[0].text : "";
     const analysis = JSON.parse(text.replace(/```json|```/g, "").trim());
 

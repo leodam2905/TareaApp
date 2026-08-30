@@ -16,6 +16,9 @@ type Diagnosis = {
   explanation: string;
   urgency: "urgent" | "soon" | "routine";
   tips: string[];
+  estimatedServiceTime?: string;
+  priceConfidence?: "estimate" | "ballpark";
+  priceRange?: { low: number; high: number; proCount: number; single: boolean };
 };
 
 const urgencyConfig = {
@@ -309,6 +312,36 @@ export default function DiagnosePage() {
                   <p className="text-slate-300 text-sm leading-relaxed">{result.explanation}</p>
                 </div>
 
+                {/* Ballpark price — same engine as Post a Job, but priced off a
+                    photo rather than a guided question set, so it says so. A
+                    number that looks like a quote when it is a glance is worse
+                    than showing none. */}
+                {result.priceRange && (
+                  <>
+                    <div className="h-px bg-white/8" />
+                    <div className="space-y-1">
+                      <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider">
+                        {result.priceConfidence === "ballpark" ? "Rough ballpark" : "Estimated total"}
+                      </p>
+                      <p className="text-white text-3xl font-black leading-tight">
+                        {result.priceRange.single
+                          ? `$${result.priceRange.low}`
+                          : `$${result.priceRange.low}–$${result.priceRange.high}`}
+                      </p>
+                      {result.estimatedServiceTime && (
+                        <p className="text-slate-400 text-sm font-semibold">about {result.estimatedServiceTime} on site</p>
+                      )}
+                      <p className="text-slate-500 text-xs leading-relaxed pt-1">
+                        Service fee included.{" "}
+                        {result.priceRange.proCount > 0
+                          ? `Across ${result.priceRange.proCount} pros — each sets their own rate, so your price depends on who you choose. `
+                          : ""}
+                        Answer a few questions in Post a Job for a firmer price.
+                      </p>
+                    </div>
+                  </>
+                )}
+
                 <div className="h-px bg-white/8" />
 
                 {/* Tips */}
@@ -346,7 +379,13 @@ export default function DiagnosePage() {
               className="flex gap-3"
             >
               <Link
-                href={`/customer/post-job?category=${result.category}`}
+                // Carry what the customer already gave us, so they do not
+                // describe the same problem twice. The photo is deliberately
+                // NOT carried: base64 does not belong in a query string, and
+                // re-picking a file on web is one click.
+                href={`/customer/post-job?category=${result.category}`
+                  + (description.trim() ? `&description=${encodeURIComponent(description.trim())}` : "")
+                  + (result.explanation ? `&diagnosis=${encodeURIComponent(result.explanation)}` : "")}
                 className="flex-1 flex items-center justify-center gap-2 font-bold py-3.5 rounded-xl transition-colors text-sm"
                 style={{ background: accent, color: "#0F172A" }}
               >
