@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, Suspense } from "react";
+import ConfirmRequestSheet from "@/components/ui/ConfirmRequestSheet";
 import { cld } from "@/lib/cld";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Star, MapPin, Clock, Zap, ArrowLeft, Loader2, CheckCircle2, Calendar, Tag, X, ShieldCheck, Camera } from "lucide-react";
@@ -161,7 +162,14 @@ function ProfileInner() {
   const service = profile?.services.find(s => s.category === category) ?? profile?.services[0] ?? null;
   const isElite = profile && profile.rating >= 4.5 && profile.totalJobs >= 10;
 
+  // The sheet explains what saving a card does before it is asked for —
+  // saved now, charged only after the pro accepts and the customer approves.
+  const [confirming, setConfirming] = useState(false);
+
+  const requestPro = () => setConfirming(true);
+
   const submitBooking = async () => {
+    setConfirming(false);
     if (!form.scheduledAt) { toast.error("Please choose a date and time"); return; }
     if (!form.address || !form.city) { toast.error("Please enter your address"); return; }
     if (!form.totalPrice) { toast.error("Please enter the agreed price"); return; }
@@ -580,7 +588,16 @@ function ProfileInner() {
           {uploadingPhoto ? "Uploading photo…" : booking ? "Sending request…" : "Request Booking"}
         </button>
       </div>
+      {confirming && (
+        <ConfirmRequestSheet
+          proName={handyman?.name ?? "this pro"}
+          labour={parseFloat(form.totalPrice) || 0}
+          onConfirm={submitBooking}
+          onCancel={() => setConfirming(false)}
+        />
+      )}
     </div>
+
   );
 }
 

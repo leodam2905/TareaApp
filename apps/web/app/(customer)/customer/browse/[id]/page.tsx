@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import ConfirmRequestSheet from "@/components/ui/ConfirmRequestSheet";
 import { cld } from "@/lib/cld";
 import { useParams, useRouter } from "next/navigation";
 import { Star, MapPin, Clock, CheckCircle2, Loader2, ArrowLeft } from "lucide-react";
@@ -174,7 +175,14 @@ export default function ServiceDetailPage() {
     }
   }, [service, serviceId]);
 
+  // The sheet explains what saving a card does before it is asked for —
+  // saved now, charged only after the pro accepts and the customer approves.
+  const [confirming, setConfirming] = useState(false);
+
+  const requestPro = () => setConfirming(true);
+
   const submitBooking = async () => {
+    setConfirming(false);
     if (!selectedHandymanUserId) { toast.error("Please select a handyman"); return; }
     if (!form.scheduledAt) { toast.error("Please choose a date and time"); return; }
     if (!form.address || !form.city) { toast.error("Please enter your address"); return; }
@@ -411,6 +419,15 @@ export default function ServiceDetailPage() {
           {booking ? "Sending request…" : isPlatform && !selectedHandymanId ? "Select a handyman first" : "Request Booking"}
         </button>
       </div>
+      {confirming && (
+        <ConfirmRequestSheet
+          proName={selectedHandyman?.user?.name ?? "this pro"}
+          labour={parseFloat(form.totalPrice) || 0}
+          onConfirm={submitBooking}
+          onCancel={() => setConfirming(false)}
+        />
+      )}
     </div>
+
   );
 }
