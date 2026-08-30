@@ -68,6 +68,13 @@ export default function HandymanJobsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [acting, setActing] = useState<string | null>(null);
+  // The booking whose acceptance is being priced. Accepting names the
+  // materials the job needs; the customer approves that total before anything
+  // is charged, so the web pro needs the same step the app has — without it a
+  // pro who accepts here can never be reimbursed for parts they buy.
+  const [quoting, setQuoting] = useState<Booking | null>(null);
+  const [quoteAmount, setQuoteAmount] = useState("");
+  const [needsMaterials, setNeedsMaterials] = useState(false);
   const [tab, setTab] = useState<"pending" | "active" | "done">("pending");
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const { t } = useT();
@@ -80,12 +87,21 @@ export default function HandymanJobsPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const act = async (id: string, status: "ACCEPTED" | "CANCELLED", reason?: string) => {
+  const act = async (
+    id: string,
+    status: "ACCEPTED" | "CANCELLED",
+    reason?: string,
+    materialsQuote?: number,
+  ) => {
     setActing(id);
     const res = await fetch(`/api/bookings/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status, ...(reason && { cancelReason: reason }) }),
+      body: JSON.stringify({
+        status,
+        ...(reason && { cancelReason: reason }),
+        ...(materialsQuote !== undefined && { materialsQuote }),
+      }),
     });
     if (res.ok) {
       setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
@@ -235,7 +251,7 @@ export default function HandymanJobsPage() {
                       <XCircle className="w-4 h-4" /> Decline
                     </button>
                     <button
-                      onClick={() => act(b.id, "ACCEPTED")}
+                      onClick={() => setQuoting(b)}
                       disabled={acting === b.id}
                       className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-500 text-white hover:bg-emerald-400 transition-all text-sm font-semibold disabled:opacity-50"
                     >
@@ -266,6 +282,82 @@ export default function HandymanJobsPage() {
           })}
         </div>
       )}
+      {/* Accepting names the price.
+          The pro knows what parts a job needs and the customer does not, so the
+          quote is collected here and the customer approves the resulting total
+          before any charge. Closing without accepting is deliberate: a pro
+          unsure of parts costs should be able to back out and think. */}
+      {quoting && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+             onClick={() => { setQuoting(null); setNeedsMaterials(false); setQuoteAmount(""); }}>
+          <div className="w-full max-w-md rounded-2xl bg-slate-900 border border-white/10 p-6"
+               onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-white">Accept this job</h3>
+            <p className="mt-1 text-sm text-slate-400">
+              Tell the customer what parts you&apos;ll need. They approve the total before you start.
+            </p>
+
+            <label className="mt-5 flex items-center gap-3 text-sm text-white">
+              <input
+                type="checkbox"
+                checked={needsMaterials}
+                onChange={(e) => setNeedsMaterials(e.target.checked)}
+                className="h-4 w-4 accent-sky-400"
+              />
+              This job needs materials
+            </label>
+
+            {needsMaterials && (
+              <div className="mt-4">
+                <label className="block text-xs font-semibold text-slate-400">Materials cost</label>
+                <div className="mt-1 flex items-center gap-2">
+                  <span className="text-slate-400">$</span>
+                  <input
+                    type="number" min="0" step="0.01" autoFocus
+                    value={quoteAmount}
+                    onChange={(e) => setQuoteAmount(e.target.value)}
+                    className="w-full rounded-lg bg-slate-800 border border-white/10 px-3 py-2 text-white"
+                    placeholder="0.00"
+                  />
+                </div>
+                <p className="mt-2 text-xs text-slate-500">
+                  Quote what the parts will cost. You&apos;re reimbursed at cost up to this amount —
+                  spend less and the difference goes back to the customer.
+                </p>
+              </div>
+            )}
+
+            <div className="mt-5 flex items-center justify-between rounded-xl bg-slate-800/60 px-4 py-3">
+              <span className="text-xs text-slate-400">Customer approves</span>
+              <span className="text-lg font-bold text-white">
+                {formatCurrency(quoting.totalPrice * 1.15 + (needsMaterials ? Number(quoteAmount) || 0 : 0))}
+              </span>
+            </div>
+
+            <div className="mt-5 flex gap-3">
+              <button
+                className="btn-ghost flex-1"
+                onClick={() => { setQuoting(null); setNeedsMaterials(false); setQuoteAmount(""); }}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn-primary flex-1 disabled:opacity-50"
+                disabled={acting === quoting.id || (needsMaterials && !(Number(quoteAmount) > 0))}
+                onClick={async () => {
+                  const id = quoting.id;
+                  const quote = needsMaterials ? Number(quoteAmount) : 0;
+                  setQuoting(null); setNeedsMaterials(false); setQuoteAmount("");
+                  await act(id, "ACCEPTED", undefined, quote);
+                }}
+              >
+                Accept &amp; send price
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
