@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { matchScore } from "@/lib/matching";
 import { prisma } from "@/lib/prisma";
 import { BOOKABLE_USER_WHERE } from "@/lib/pro-bookable";
 import { milesFromKmOrNull } from "@/lib/units";
@@ -156,27 +157,25 @@ export async function GET(req: NextRequest) {
     ? result.filter((r) => r.distanceKm === null || r.distanceKm <= BROWSE_RADIUS_KM)
     : result;
 
-  if (here) {
-    located.sort((a, b) => {
-      // Whether we know where a pro is outranks everything else, including
-      // premium placement: a customer asked to see who is near them, and a pro
-      // of unknown location cannot answer that question at any price. Pros with
-      // coordinates fill the top of the list, those without sit below.
-      const aKnown = a.distanceKm !== null;
-      const bKnown = b.distanceKm !== null;
-      if (aKnown !== bKnown) return aKnown ? -1 : 1;
-
-      // Within each group the previous order still holds: paid placement first,
-      // then proximity, then rating.
-      const premium = Number(b.handymanProfile?.isPremium ?? false) - Number(a.handymanProfile?.isPremium ?? false);
-      if (premium !== 0) return premium;
-      if (aKnown) {
-        const d = (a.distanceKm as number) - (b.distanceKm as number);
-        if (d !== 0) return d;
-      }
-      return (b.handymanProfile?.rating ?? 0) - (a.handymanProfile?.rating ?? 0);
-    });
-  }
+  // Ranked by fit, using the same scorer as /api/match — one definition of
+  // "best pro", so Browse and matching cannot show different orders for the
+  // same people.
+  //
+  // Paid placement used to be the FIRST sort key, ahead of rating entirely: a
+  // premium pro with two stars sat above an unpromoted one with five. It is now
+  // a bounded boost inside the score, so it lifts a pro without letting them
+  // outrank being good — which is what keeps the list worth reading.
+  located.sort((a, b) => {
+    const rank = (r: (typeof located)[number]) =>
+      matchScore({
+        rating: r.handymanProfile?.rating ?? 0,
+        totalJobs: r.handymanProfile?.totalJobs ?? 0,
+        responseTime: 60,
+        isPremium: r.handymanProfile?.isPremium ?? false,
+        distanceKm: r.distanceKm,
+      });
+    return rank(b) - rank(a);
+  });
 
   return NextResponse.json(located);
 }

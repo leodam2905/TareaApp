@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { stateAliases } from "@/lib/us-states";
+import { matchScore, isAvailableAt } from "@/lib/matching";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -16,6 +18,10 @@ function haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
+  // When the customer has picked a time, only show pros who work then —
+  // matching on availability is the whole point of the flow.
+  const whenParam = searchParams.get("when");
+  const when = whenParam ? new Date(whenParam) : null;
     const category = searchParams.get("category");
 
     if (!category) return NextResponse.json({ error: "category is required" }, { status: 400 });
@@ -26,7 +32,13 @@ export async function GET(req: NextRequest) {
     // Restrict to active states (if any are configured)
     const activeStates = await prisma.activeState.findMany({ where: { isActive: true }, select: { state: true } });
     const activeStateList = activeStates.map((s) => s.state);
-    const stateFilter = activeStateList.length > 0 ? { in: activeStateList } : undefined;
+    // Match on every spelling a state is stored under. ActiveState holds
+    // two-letter codes while user.state holds whatever the signup form
+    // produced — production has both "pennsylvania" and "CA" — so comparing
+    // the raw values filtered out every pro saved with a full name, which was
+    // all of them in some states and made this endpoint return nothing at all.
+    const stateFilter =
+      activeStateList.length > 0 ? { in: stateAliases(activeStateList) } : undefined;
 
     const handymen = await prisma.handymanProfile.findMany({
       where: {
@@ -54,6 +66,7 @@ export async function GET(req: NextRequest) {
             companyLogoUrl: true,
           },
         },
+        availability: { select: { dayOfWeek: true, startHour: true, endHour: true } },
         services: {
           where: { category: category as never, isActive: true },
           select: { id: true, title: true, minPrice: true, maxPrice: true, duration: true },
@@ -92,7 +105,16 @@ export async function GET(req: NextRequest) {
           isPremium: h.isPremium,
           backgroundCheckStatus: h.backgroundCheckStatus,
           distanceKm,
-          score: h.rating * 8 + Math.min(h.totalJobs, 25) + (h.isPremium ? 25 : 0),
+          // See lib/matching.ts. Quality leads, distance decays, paid
+          // placement is capped so it cannot outrank being good.
+          score: matchScore({
+            rating: h.rating,
+            totalJobs: h.totalJobs,
+            responseTime: h.responseTime ?? 60,
+            isPremium: h.isPremium,
+            distanceKm,
+          }),
+          availableAtRequestedTime: when ? isAvailableAt(h.availability ?? [], when) : true,
           // Coordinates deliberately not returned — see the note in
           // /api/handyman/browse. distanceKm is what the client needs.
           service: h.services[0] ?? null,
@@ -100,7 +122,13 @@ export async function GET(req: NextRequest) {
       })
       // Only apply distance filter when customer location is known
       .filter((h) => h.distanceKm === null || h.distanceKm <= RADIUS_KM)
-      .sort((a, b) => (a.distanceKm ?? 999) - (b.distanceKm ?? 999) || b.score - a.score);
+      // Whoever can actually do it, best fit first.
+      //
+      // This used to sort by distance and only break ties on score, so a
+      // three-star pro two miles away outranked a 4.9-star pro six miles away.
+      // Distance is now one weighted input rather than the sort key.
+      .filter((h) => h.availableAtRequestedTime)
+      .sort((a, b) => b.score - a.score);
 
     return NextResponse.json(results);
   } catch (err) {
