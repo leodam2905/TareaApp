@@ -43,7 +43,7 @@ export default function ICAScreen() {
           {[
             ["1. Independent Contractor Status", "You are an independent contractor, not an employee of Tarea US LLC. You are free from Tarea's control, work outside Tarea's usual business, and operate your own independently established trade or business."],
             ["2. Platform Access", "You have full autonomy to set your own rates, hours, and service area. You may accept or decline any job request without penalty. You may work for other platforms simultaneously."],
-            ["3. Licensing & Insurance", "You warrant that you hold all required licenses (including CSLB for work valued at $500+ in California) and maintain General Liability Insurance with minimum $1M per occurrence coverage."],
+            ["3. Licensing & Insurance", "You warrant that you hold all required licenses (including CSLB for work valued at $1,000+ in labor and materials in California, and for any work requiring a building permit) and maintain General Liability Insurance with minimum $1M per occurrence coverage."],
             ["4. Compensation", "You earn 90% of your stated service rate. Tarea retains a 10% platform fee. Customers pay an additional 15% service fee. Payouts are processed via Stripe Connect within 30 minutes of job completion."],
             ["5. Taxes", "You are solely responsible for all federal, state, and local taxes. Tarea will issue IRS Form 1099-NEC for earnings of $600+."],
             ["6. Non-Solicitation", "During this agreement and for 12 months after termination, you agree not to solicit Tarea customers to transact outside the platform for the same or similar services."],

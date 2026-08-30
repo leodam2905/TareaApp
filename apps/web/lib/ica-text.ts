@@ -18,7 +18,7 @@
 //  - Bump AGREEMENT_VERSION on any substantive change, so a re-acceptance can
 //    be required later and it is possible to tell which text somebody signed.
 
-export const AGREEMENT_VERSION = "2026-08-17";
+export const AGREEMENT_VERSION = "2026-08-30";
 
 export type IcaBlock =
   | { kind: "p"; lead?: string; text: string }
@@ -110,6 +110,7 @@ export const ICA: IcaDocument = {
             { text: "Tarea does not and shall not direct, supervise, or control the manner, method, means, or details of the Pro's services." },
             { text: "The Pro may accept or decline any job request without penalty, deactivation, or negative consequence of any kind." },
             { text: "Tarea may not require the Pro to maintain specific hours, minimum bookings, or minimum availability." },
+            { text: "The Pro sets their own rates for each category of work. Tarea does not set, cap, or negotiate the price of the Pro's labor." },
           ],
         },
         { kind: "label", text: "(B) Work Outside Usual Course of Business — Test B:" },
@@ -168,7 +169,7 @@ export const ICA: IcaDocument = {
           kind: "p",
           lead: "3.1 — Required Licenses.",
           text:
-            "The Pro warrants they hold all required licenses including: California CSLB license for work valued at $500+ in labor and materials (Cal. Bus. & Prof. Code § 7028); any trade-specific license required by California or applicable municipality; and any local business license required where the Pro operates.",
+            "The Pro warrants they hold all required licenses including: a California CSLB license for work valued at $1,000 or more in labor and materials combined (Cal. Bus. & Prof. Code §§ 7028, 7048, as amended by AB 2622 effective January 1, 2025), and for any work requiring a building permit or forming part of a larger project regardless of value; any trade-specific license required by California or applicable municipality; and any local business license required where the Pro operates.",
         },
         {
           kind: "p",
@@ -192,13 +193,13 @@ export const ICA: IcaDocument = {
           kind: "p",
           lead: "4.1 — Fee Structure.",
           text:
-            "The Pro earns 90% of their stated service rate for each completed booking. Tarea retains a 10% platform fee from the Pro's earnings for marketplace technology, payment processing, and customer acquisition services. Customers are charged an additional 15% Service Fee on top of the Pro's rate. The Pro independently sets their own rates.",
+            "The Pro independently sets their own hourly rate for each category of work they offer, and earns 100% of the labor amount charged for a completed booking. Tarea deducts no commission from the Pro's earnings. Tarea is compensated by a Service Fee of 25% charged to the Customer in addition to the Pro's rate. Materials purchased by the Pro and reimbursed by the Customer are passed through at cost and carry no Service Fee.",
         },
         {
           kind: "p",
           lead: "4.2 — Payout Processing.",
           text:
-            "Payouts are processed via Stripe Connect. The Pro must maintain a Stripe Connect account and comply with Stripe's Terms of Service. Standard payout timing is within 30 minutes of job completion, subject to Stripe's processing schedule.",
+            "Payouts are processed via Stripe Connect on a daily schedule following job completion and the expiry of any applicable customer confirmation period. The Pro must maintain a Stripe Connect account and comply with Stripe's Terms of Service. Actual arrival of funds is subject to Stripe's processing schedule and the Pro's bank.",
         },
         {
           kind: "p",
@@ -211,6 +212,18 @@ export const ICA: IcaDocument = {
           lead: "4.4 — Cancellation Compensation.",
           text:
             "If a Customer cancels a confirmed booking within 24 hours of the scheduled time, the Pro receives 50% of the agreed service rate as compensation.",
+        },
+        {
+          kind: "p",
+          lead: "4.5 — Rate Setting and Rate Changes.",
+          text:
+            "The Pro sets their own rate and may change it at any time. Tarea does not set, cap, negotiate, or require approval of the Pro's rate. A rate change applies only to bookings created after the change; a booking is priced at the Pro's rate in effect when the Customer agreed to it, and that rate is recorded with the booking.",
+        },
+        {
+          kind: "p",
+          lead: "4.6 — Estimated Service Time.",
+          text:
+            "Tarea may provide the Customer with an estimated service time for a job. That estimate is informational only. It does not oblige the Pro to work for any minimum period, does not limit the time the Pro may spend, and does not fix the Pro's compensation. Where a job requires more time than estimated, the Pro may request additional time, which is billed at the Pro's own rate and requires the Customer's approval before any additional amount is charged.",
         },
       ],
     },

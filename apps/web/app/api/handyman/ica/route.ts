@@ -14,7 +14,9 @@ export async function POST(req: NextRequest) {
 
   await prisma.handymanProfile.update({
     where: { userId: user.id },
-    data: { icaSignedAt: new Date(), icaSignedIp: ip },
+    // Record WHICH text was accepted, not just when. Without this a later
+    // version bump silently rewrites what every existing pro agreed to.
+    data: { icaSignedAt: new Date(), icaSignedIp: ip, icaSignedVersion: AGREEMENT_VERSION },
   });
 
   return NextResponse.json({ ok: true });
@@ -26,7 +28,7 @@ export async function GET(req: NextRequest) {
 
   const profile = await prisma.handymanProfile.findUnique({
     where: { userId: user.id },
-    select: { icaSignedAt: true },
+    select: { icaSignedAt: true, icaSignedVersion: true },
   });
 
   // The agreement itself ships with the response so the mobile app renders the
@@ -35,6 +37,11 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     signed: !!profile?.icaSignedAt,
     signedAt: profile?.icaSignedAt ?? null,
+    signedVersion: profile?.icaSignedVersion ?? null,
+    // True when the pro accepted a text older than the one being served, so a
+    // re-acceptance can be asked for. Null signedVersion counts as outdated:
+    // it means they signed before versions were recorded.
+    outdated: !!profile?.icaSignedAt && profile.icaSignedVersion !== AGREEMENT_VERSION,
     version: AGREEMENT_VERSION,
     document: ICA,
   });

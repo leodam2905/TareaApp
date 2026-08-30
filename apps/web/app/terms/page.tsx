@@ -63,7 +63,7 @@ export default function TermsPage() {
             <h3>3.3 — No Employment Relationship</h3>
             <p>Nothing in these Terms shall be construed to create an employment relationship, partnership, joint venture, agency relationship, franchise, or any other form of legal association other than that of independent contracting parties. Tarea shall not withhold taxes on behalf of Pros, provide workers' compensation or employment benefits, or direct the manner in which Pros perform their services.</p>
             <h3>3.4 — Pro Licensing and Insurance Requirements</h3>
-            <p>Pros represent and warrant that they hold all required licenses (including any California CSLB license for work valued at $500 or more in labor and materials), carry general liability insurance of no less than $1,000,000 per occurrence, and comply with all applicable laws governing their trade.</p>
+            <p>Pros represent and warrant that they hold all required licenses (including any California CSLB license for work valued at $1,000 or more in labor and materials combined, and for any work requiring a building permit regardless of value), carry general liability insurance of no less than $1,000,000 per occurrence, and comply with all applicable laws governing their trade.</p>
           </Section>
 
           <Section title="4. User Accounts">
