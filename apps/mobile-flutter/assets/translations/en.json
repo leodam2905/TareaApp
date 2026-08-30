@@ -363,7 +363,9 @@
       "experienced": "Experienced",
       "fast_replies": "Replies fast",
       "nearby": "Nearby",
-      "new_pro": "New to Tarea"
+      "new_pro": "New to Tarea",
+      "years_in_trade": "Years in the trade",
+      "background_checked": "Background checked"
     }
   },
   "notifications": {

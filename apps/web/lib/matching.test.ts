@@ -119,3 +119,29 @@ describe("a licence only outranks quality where the trade is regulated", () => {
     expect(compareForCustomer(insuredAverage, uninsuredStar, false)).toBeLessThan(0);
   });
 });
+
+describe("a card is never left with a band and no reasons", () => {
+  it("falls back to background-checked when every threshold misses", () => {
+    // Live data hit exactly this: 4 jobs, mid rating, no credentials, no known
+    // distance — every reason unreachable, so the card asserted "Good match"
+    // and gave no reason to believe it.
+    const q = matchQuality(pro({
+      rating: 4.0, totalJobs: 4, responseTime: 60, distanceKm: null, yearsExperience: 1,
+    }));
+    expect(q.reasons).toEqual(["background_checked"]);
+  });
+
+  it("does not add the weak fallback when a real reason fired", () => {
+    // Background-checked is true of every listed pro, so showing it beside a
+    // stronger signal is noise.
+    const q = matchQuality(pro({ rating: 4.9, totalJobs: 60, licensed: true, insured: true }));
+    expect(q.reasons).not.toContain("background_checked");
+  });
+
+  it("credits years in the trade for a pro without many Tarea jobs", () => {
+    // Someone with 20 years and 3 bookings is experienced; the totalJobs
+    // threshold alone reads them as a novice.
+    const q = matchQuality(pro({ totalJobs: 3, yearsExperience: 20, responseTime: 60, distanceKm: null }));
+    expect(q.reasons).toContain("years_in_trade");
+  });
+});

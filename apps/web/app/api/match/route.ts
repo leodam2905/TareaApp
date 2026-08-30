@@ -72,7 +72,9 @@ export async function GET(req: NextRequest) {
         availability: { select: { dayOfWeek: true, startHour: true, endHour: true } },
         services: {
           where: { category: category as never, isActive: true },
-          select: { id: true, title: true, hourlyRate: true, duration: true },
+          // hourlyRate deliberately not selected — see the note in
+          // /api/handyman/browse. This is a list; the rate belongs on a detail view.
+          select: { id: true, title: true, duration: true },
           take: 1,
         },
       },
@@ -100,7 +102,6 @@ export async function GET(req: NextRequest) {
           bio: h.bio,
           rating: h.rating,
           totalJobs: h.totalJobs,
-          hourlyRate: h.hourlyRate,
           yearsExperience: h.yearsExperience,
           responseTime: h.responseTime,
           serviceRadius: h.serviceRadius,
@@ -114,6 +115,7 @@ export async function GET(req: NextRequest) {
               rating: h.rating,
               totalJobs: h.totalJobs,
               responseTime: h.responseTime ?? 60,
+              yearsExperience: h.yearsExperience,
               isPremium: h.isPremium,
               distanceKm,
               licensed,

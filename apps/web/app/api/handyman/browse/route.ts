@@ -62,11 +62,11 @@ export async function GET(req: NextRequest) {
       handymanProfile: {
         select: {
           bio: true,
-          hourlyRate: true,
           rating: true,
           totalJobs: true,
           isPremium: true,
           yearsExperience: true,
+          responseTime: true,
           backgroundCheckStatus: true,
           // The full credential set, so the badges can mean approved + unexpired
           // rather than "a file was uploaded". See lib/credentials.ts.
@@ -114,11 +114,23 @@ export async function GET(req: NextRequest) {
       handymanProfile: hp
         ? {
             bio: hp.bio,
-            hourlyRate: hp.hourlyRate,
+            // The rate is NOT in this payload.
+            //
+            // It came off the browse cards so that price is not the axis
+            // customers compare on. Leaving it in the response made that
+            // cosmetic: this endpoint is public and unauthenticated, so one
+            // request returned every pro's rate in a single list — easier to
+            // harvest than the UI ever was, and exactly the systematic exposure
+            // of competitors' prices that a rate-benchmarking widget would be.
+            // It is served on a pro's own detail page, one pro at a time.
             rating: hp.rating,
             totalJobs: hp.totalJobs,
             isPremium: hp.isPremium,
             yearsExperience: hp.yearsExperience,
+            // Returned so the sort below reads the pro's real figure. It was
+            // hardcoded to 60 in two places, which meant "replies fast" could
+            // never fire and responsiveness never actually affected the order.
+            responseTime: hp.responseTime,
           }
         : null,
       services: hp?.services ?? [],
@@ -139,7 +151,8 @@ export async function GET(req: NextRequest) {
       // Why this pro sits where they do, as codes the apps localise. Same
       // scorer as /api/match, so Browse and matching cannot disagree.
       match: matchQuality({
-        rating, totalJobs: jobs, responseTime: 60,
+        rating, totalJobs: jobs, responseTime: hp?.responseTime ?? 60,
+        yearsExperience: hp?.yearsExperience,
         isPremium: !!hp?.isPremium, distanceKm,
         licensed: hp ? credentialBadges(hp).licensed : false,
         insured: hp ? credentialBadges(hp).insured : false,
@@ -185,7 +198,7 @@ export async function GET(req: NextRequest) {
     const rankable = (r: (typeof located)[number]) => ({
       rating: r.handymanProfile?.rating ?? 0,
       totalJobs: r.handymanProfile?.totalJobs ?? 0,
-      responseTime: 60,
+      responseTime: r.handymanProfile?.responseTime ?? 60,
       isPremium: r.handymanProfile?.isPremium ?? false,
       distanceKm: r.distanceKm,
       licensed: !!r.match?.licensed,

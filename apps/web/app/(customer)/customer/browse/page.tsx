@@ -14,7 +14,6 @@ type Pro = {
   distanceMiles: number | null;
   handymanProfile: {
     bio: string | null;
-    hourlyRate: number | null;
     rating: number;
     totalJobs: number;
     yearsExperience: number | null;
@@ -46,6 +45,7 @@ const MATCH_REASON_LABEL: Record<string, string> = {
   licensed_insured: "Licensed & insured", licensed: "Licensed", insured: "Insured",
   highly_rated: "Highly rated", experienced: "Experienced",
   fast_replies: "Replies fast", nearby: "Nearby", new_pro: "New to Tarea",
+  years_in_trade: "Years in the trade", background_checked: "Background checked",
 };
 
 export default function BrowsePage() {

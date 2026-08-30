@@ -363,7 +363,9 @@
       "experienced": "Con experiencia",
       "fast_replies": "Responde rápido",
       "nearby": "Cerca",
-      "new_pro": "Nuevo en Tarea"
+      "new_pro": "Nuevo en Tarea",
+      "years_in_trade": "Años en el oficio",
+      "background_checked": "Antecedentes verificados"
     }
   },
   "notifications": {

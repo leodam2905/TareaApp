@@ -22,6 +22,8 @@ export interface Rankable {
   licensed?: boolean;
   /** Insurance certificate approved and unexpired. */
   insured?: boolean;
+  /** Years in the trade, for the reason list only — not scored. */
+  yearsExperience?: number | null;
 }
 
 /** Weight of the prior, in "pretend reviews". */
@@ -152,7 +154,9 @@ export type MatchReason =
   | "experienced"
   | "fast_replies"
   | "nearby"
-  | "new_pro";
+  | "years_in_trade"
+  | "new_pro"
+  | "background_checked";
 
 export interface MatchQuality {
   score: number;
@@ -180,9 +184,20 @@ export function matchQuality(h: Rankable): MatchQuality {
   if (h.totalJobs >= 25) reasons.push("experienced");
   if (h.responseTime <= 30) reasons.push("fast_replies");
   if (h.distanceKm != null && h.distanceKm <= 10) reasons.push("nearby");
+  if (h.yearsExperience != null && h.yearsExperience >= 3) reasons.push("years_in_trade");
   // Said plainly rather than hidden. A new pro has no record, and a customer
   // who chooses one should know that rather than infer it from a thin badge row.
   if (h.totalJobs === 0) reasons.push("new_pro");
+
+  // Never a bare band.
+  //
+  // Every threshold above can miss at once — a pro with 4 jobs, a mid rating,
+  // no credentials, no known distance — leaving a card that asserts "Good
+  // match" and gives no reason to believe it. Live data hit exactly that.
+  // Background-checked is true of every listed pro (it is a listing
+  // requirement), so it is a weak signal and deliberately used ONLY as the
+  // last resort rather than shown alongside stronger ones.
+  if (reasons.length === 0) reasons.push("background_checked");
 
   return { score, band, reasons, licensed, insured };
 }
