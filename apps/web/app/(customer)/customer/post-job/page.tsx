@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, Suspense } from "react";
+import { useState, useRef, Suspense, useEffect } from "react";
 import { cld } from "@/lib/cld";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, MapPin, LocateFixed, Camera, X, Sparkles, DollarSign, Zap, Clock } from "lucide-react";
@@ -30,6 +30,15 @@ function PostJobForm() {
   const [saving, setSaving] = useState(false);
   const [locating, setLocating] = useState(false);
   const [aiAssisting, setAiAssisting] = useState(false);
+  // The guided question set, same as the app's.
+  //
+  // This page used to be a free-text box and an "AI improve" button, so the
+  // model was asked to price whatever prose someone happened to type, while
+  // the app asked structured questions and priced the answers. Same job, two
+  // different quality of inputs.
+  const [tasks, setTasks] = useState<{ label: string; details: { key: string; label: string; options: string[] }[] }[]>([]);
+  const [task, setTask] = useState<string>("");
+  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [aiEstimating, setAiEstimating] = useState(false);
   const [priceNote, setPriceNote] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([]);
@@ -94,6 +103,36 @@ function PostJobForm() {
     }, () => { toast.error("Location access denied"); setLocating(false); });
   };
 
+  // Tasks follow the category. Changing category invalidates the task and its
+  // answers — they belong to a question set that no longer applies.
+  useEffect(() => {
+    let cancelled = false;
+    setTask(""); setAnswers({});
+    if (!form.category) { setTasks([]); return; }
+    fetch("/api/service-catalog")
+      .then((r) => r.json())
+      .then((d) => {
+        if (cancelled) return;
+        const name = (d.categories ?? []).find((c: { api: string }) => c.api === form.category)?.name;
+        setTasks(name ? (d.tasks?.[name] ?? []) : []);
+      })
+      .catch(() => setTasks([]));
+    return () => { cancelled = true; };
+  }, [form.category]);
+
+  const currentTask = tasks.find((t) => t.label === task);
+  const allAnswered = !!currentTask && currentTask.details.every((d) => answers[d.key]);
+
+  /** The description the pricing model sees: the task and the answers to it. */
+  const builtDescription = () => {
+    if (!currentTask) return form.description;
+    const parts = currentTask.details
+      .filter((d) => answers[d.key])
+      .map((d) => `${d.label}: ${answers[d.key]}`);
+    const extra = form.description.trim();
+    return `${currentTask.label}${parts.length ? ` (${parts.join(", ")})` : ""}${extra ? `. ${extra}` : ""}`;
+  };
+
   const aiAssist = async () => {
     if (!form.description.trim()) { toast.error("Write a description first"); return; }
     setAiAssisting(true);
@@ -114,12 +153,15 @@ function PostJobForm() {
   };
 
   const aiEstimate = async () => {
-    if (!form.description.trim()) { toast.error("Write a description first"); return; }
+    // Structured answers are the input now, so an unanswered question set is
+    // what blocks an estimate — not an empty prose box.
+    if (tasks.length > 0 && !allAnswered) { toast.error("Answer the questions above first"); return; }
+    if (tasks.length === 0 && !form.description.trim()) { toast.error("Write a description first"); return; }
     setAiEstimating(true);
     const res = await fetch("/api/ai/price-estimate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ category: form.category, description: form.description, city: `${form.city} ${form.zip}`.trim(), urgent: form.urgency === "URGENT" }),
+      body: JSON.stringify({ category: form.category, description: builtDescription(), city: `${form.city} ${form.zip}`.trim(), urgent: form.urgency === "URGENT" }),
     });
     if (res.ok) {
       const d = await res.json();
@@ -143,14 +185,28 @@ function PostJobForm() {
   };
 
   const submit = async () => {
-    if (!form.title || !form.description || !form.address || !form.city || !form.zip || !form.scheduledAt || !form.budgetMin || !form.budgetMax) {
+    // description is no longer typed by hand — builtDescription() composes it
+    // from the task and answers, so requiring the raw box would block a fully
+    // answered form.
+    if (!form.title || !form.address || !form.city || !form.zip || !form.scheduledAt || !form.budgetMin || !form.budgetMax) {
       toast.error("Please fill in all required fields"); return;
     }
     setSaving(true);
     const res = await fetch("/api/job-requests", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, address: form.zip ? `${form.address}, ${form.zip}` : form.address, materialsCost: estimate?.materials ?? 0, scheduledAt: new Date(form.scheduledAt).toISOString(), imageUrls }),
+      body: JSON.stringify({
+        ...form,
+        // The task and its answers, so a pro reads the same detail the price
+        // was based on rather than an empty box.
+        description: builtDescription(),
+        address: form.zip ? `${form.address}, ${form.zip}` : form.address,
+        // Zero on purpose: the pro quotes materials when they apply, and that
+        // quote is what the customer is charged.
+        materialsCost: 0,
+        scheduledAt: new Date(form.scheduledAt).toISOString(),
+        imageUrls,
+      }),
     });
     if (res.ok) {
       toast.success("Job posted! Handymen near you will be notified.");
@@ -211,10 +267,62 @@ function PostJobForm() {
           <input value={form.title} onChange={e => set("title", e.target.value)} placeholder="e.g. Fix leaking kitchen pipe" className="input" />
         </div>
 
-        {/* Description */}
+        {/* What the job is — the same guided questions the app asks.
+            Structured answers, not prose: the pricing model is given "Fix Leaky
+            Faucet (Location: Kitchen, Parts supplied by: Handyman)" instead of
+            whatever somebody typed, which is why the app's estimates were the
+            better ones. */}
+        {tasks.length > 0 && (
+          <div>
+            <label className="label">What do you need? <span className="text-red-400">*</span></label>
+            <div className="flex flex-wrap gap-2">
+              {tasks.map((t) => (
+                <button
+                  key={t.label}
+                  type="button"
+                  onClick={() => { setTask(t.label); setAnswers({}); }}
+                  className={`px-3 py-2 rounded-xl text-sm font-semibold border transition-colors ${
+                    task === t.label
+                      ? "bg-tarea-sky text-tarea-ink border-tarea-sky"
+                      : "border-[var(--card-border-2)] hover:border-tarea-sky"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {currentTask && currentTask.details.map((d) => (
+          <div key={d.key}>
+            <label className="label">{d.label} <span className="text-red-400">*</span></label>
+            <div className="flex flex-wrap gap-2">
+              {d.options.map((o) => (
+                <button
+                  key={o}
+                  type="button"
+                  onClick={() => setAnswers((a) => ({ ...a, [d.key]: o }))}
+                  className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
+                    answers[d.key] === o
+                      ? "bg-tarea-sky text-tarea-ink border-tarea-sky font-semibold"
+                      : "border-[var(--card-border-2)] hover:border-tarea-sky"
+                  }`}
+                >
+                  {o}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {/* Anything else. Optional now that the questions carry the detail —
+            it used to be the only input and therefore mandatory. */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="label mb-0">Description <span className="text-red-400">*</span></label>
+            <label className="label mb-0">
+              Anything else? <span className="text-gray-400 font-normal">(optional)</span>
+            </label>
             <button type="button" onClick={aiAssist} disabled={aiAssisting || !form.description.trim()}
               className="flex items-center gap-1.5 text-xs font-semibold text-orange-500 hover:text-orange-600 disabled:opacity-40 transition-colors">
               {aiAssisting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
@@ -224,8 +332,8 @@ function PostJobForm() {
           <textarea
             value={form.description}
             onChange={e => set("description", e.target.value)}
-            placeholder="Describe the problem in detail — what's broken, how long it's been an issue, any relevant details…"
-            rows={4}
+            placeholder="Anything the questions above didn't cover…"
+            rows={3}
             className="input resize-none"
           />
         </div>
