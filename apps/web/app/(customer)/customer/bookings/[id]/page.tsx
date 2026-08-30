@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { CUSTOMER_FEE_RATE } from "@/lib/fees";
 import { cld } from "@/lib/cld";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -426,7 +427,7 @@ export default function BookingDetailPage() {
           <div className="text-right">
             <p className="text-tarea-sky font-bold text-xl">
               {formatCurrency(
-                booking.totalPrice * 1.15 + (booking.materialsEstimate ?? 0) - (booking.materialsRefunded ?? 0),
+                booking.totalPrice * (1 + CUSTOMER_FEE_RATE) + (booking.materialsEstimate ?? 0) - (booking.materialsRefunded ?? 0),
               )}
             </p>
             <p className="text-slate-500 text-xs mt-0.5">
@@ -514,7 +515,7 @@ export default function BookingDetailPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">Service fee (15%)</span>
-              <span className="font-semibold text-gray-900">{formatCurrency(booking.totalPrice * 0.15)}</span>
+              <span className="font-semibold text-gray-900">{formatCurrency(booking.totalPrice * CUSTOMER_FEE_RATE)}</span>
             </div>
             {(booking.materialsEstimate ?? 0) > 0 && (
               <div className="flex justify-between">
@@ -525,7 +526,7 @@ export default function BookingDetailPage() {
             <div className="flex justify-between border-t border-sky-200 pt-2 mt-2">
               <span className="font-extrabold text-gray-900">Total</span>
               <span className="font-extrabold text-gray-900 text-lg">
-                {formatCurrency(booking.totalPrice * 1.15 + (booking.materialsEstimate ?? 0))}
+                {formatCurrency(booking.totalPrice * (1 + CUSTOMER_FEE_RATE) + (booking.materialsEstimate ?? 0))}
               </span>
             </div>
           </div>
@@ -788,14 +789,14 @@ export default function BookingDetailPage() {
                   <p className="text-amber-400 font-semibold text-sm">⚠ Late cancellation fee applies</p>
                   <p className="text-amber-500/80 text-xs">
                     Since you're cancelling within 24 hours of the scheduled time, a 50% cancellation fee applies.
-                    You'll receive a partial refund of {formatCurrency(booking.totalPrice * 1.15 * 0.5)} within 5–10 business days.
+                    You'll receive a partial refund of {formatCurrency(booking.totalPrice * (1 + CUSTOMER_FEE_RATE) * 0.5)} within 5–10 business days.
                   </p>
                 </div>
               ) : (
                 <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 space-y-1">
                   <p className="text-emerald-400 font-semibold text-sm">✓ Full refund</p>
                   <p className="text-emerald-600/80 text-xs">
-                    You'll receive a full refund of {formatCurrency(booking.totalPrice * 1.15)} within 5–10 business days.
+                    You'll receive a full refund of {formatCurrency(booking.totalPrice * (1 + CUSTOMER_FEE_RATE))} within 5–10 business days.
                   </p>
                 </div>
               );

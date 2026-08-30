@@ -1,3 +1,4 @@
+import '../fees.dart';
 import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../widgets/confirm_request_sheet.dart';
@@ -222,7 +223,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
         context,
         proName: _proName,
         labour: labourNum,
-        serviceFee: labourNum * 0.15,
+        serviceFee: serviceFee(labourNum),
       );
       if (!confirmed) return;
       if (!mounted) return;

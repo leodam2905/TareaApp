@@ -1,3 +1,4 @@
+import '../fees.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -492,7 +493,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
                       const SizedBox(height: 8),
                       _quoteLine('booking.approveLabour'.tr(), (_b['totalPrice'] ?? 0) as num),
                       const SizedBox(height: 5),
-                      _quoteLine('booking.approveFee'.tr(), ((_b['totalPrice'] ?? 0) as num) * 0.15),
+                      _quoteLine('booking.approveFee'.tr(), serviceFee((_b['totalPrice'] ?? 0) as num)),
                       if (((_b['materialsEstimate'] ?? 0) as num) > 0) ...[
                         const SizedBox(height: 5),
                         _quoteLine('booking.approveMaterials'.tr(), (_b['materialsEstimate'] ?? 0) as num),
@@ -504,7 +505,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                         Text('booking.approveTotal'.tr(),
                             style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 14)),
-                        Text('\$${(((_b['totalPrice'] ?? 0) as num) * 1.15 + ((_b['materialsEstimate'] ?? 0) as num)).toStringAsFixed(2)}',
+                        Text('\$${customerTotal((_b['totalPrice'] ?? 0) as num, (_b['materialsEstimate'] ?? 0) as num).toStringAsFixed(2)}',
                             style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 20)),
                       ]),
                       const SizedBox(height: 8),

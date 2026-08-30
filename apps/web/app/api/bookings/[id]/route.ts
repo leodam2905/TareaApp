@@ -362,7 +362,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
           : " Full refund issued within 5-10 days.";
       } else {
         // Customer cancels <24h before: 50% refund, handyman keeps 50% of their net
-        const refundAmount = Math.round(booking.totalPrice * 1.15 * 0.50 * 100);
+        const refundAmount = Math.round(booking.totalPrice * (1 + CUSTOMER_FEE_RATE) * 0.50 * 100);
         await stripe.refunds.create({
           payment_intent: booking.stripePaymentIntentId,
           amount: refundAmount,

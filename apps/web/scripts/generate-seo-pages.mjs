@@ -28,6 +28,7 @@ const require_ = createRequire(import.meta.url);
 const jiti = require_("jiti")(import.meta.url, { interopDefault: true, esmResolve: true });
 const { SEO_CITIES, SEO_PROBLEMS } = jiti("../lib/seo/catalog.ts");
 const { grossHourlyFor, grossTravel, grossMinimum } = jiti("../lib/pricing-config.ts");
+const { CUSTOMER_FEE_RATE } = jiti("../lib/fees.ts");
 const { SERVICE_CATEGORY_LABELS } = jiti("../lib/utils.ts");
 
 const OUT_DIR = path.join(process.cwd(), "content", "fix");
@@ -58,10 +59,23 @@ Rules that matter more than style:
 // Tarea to, so this has to be the same arithmetic, not a similar one.
 const round5 = (n) => Math.round(n / 5) * 5;
 
+// ALL-IN, including the service fee.
+//
+// These pages advertised the labour price and left the mandatory 15% off it —
+// a page said $130 while the customer paid $149.50. California's SB 478 (in
+// force since 1 July 2024) requires the advertised price to include every
+// mandatory fee, and a public price is a quote a customer can hold Tarea to
+// either way. Materials are excluded because they are not mandatory and not
+// known in advance — the pro quotes them.
 function priceRange(problem) {
   const hourly = grossHourlyFor(problem.category);
-  const quote = (h) => round5(Math.max(hourly * h + grossTravel(), grossMinimum()));
-  return { low: quote(problem.hoursLow), high: quote(problem.hoursHigh), hourly: Math.round(hourly) };
+  const allIn = (n) => n * (1 + CUSTOMER_FEE_RATE);
+  const quote = (h) => round5(allIn(Math.max(hourly * h + grossTravel(), grossMinimum())));
+  return {
+    low: quote(problem.hoursLow),
+    high: quote(problem.hoursHigh),
+    hourly: Math.round(allIn(hourly)),
+  };
 }
 
 const SCHEMA = {

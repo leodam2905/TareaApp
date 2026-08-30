@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { CUSTOMER_FEE_RATE } from "@/lib/fees";
 import { CheckCircle2, XCircle, Clock, MapPin, Calendar, DollarSign, Loader2, Navigation, MessageCircle, List, CalendarDays } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -330,7 +331,7 @@ export default function HandymanJobsPage() {
             <div className="mt-5 flex items-center justify-between rounded-xl bg-slate-800/60 px-4 py-3">
               <span className="text-xs text-slate-400">Customer approves</span>
               <span className="text-lg font-bold text-white">
-                {formatCurrency(quoting.totalPrice * 1.15 + (needsMaterials ? Number(quoteAmount) || 0 : 0))}
+                {formatCurrency(quoting.totalPrice * (1 + CUSTOMER_FEE_RATE) + (needsMaterials ? Number(quoteAmount) || 0 : 0))}
               </span>
             </div>
 

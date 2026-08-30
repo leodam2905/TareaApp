@@ -1,3 +1,4 @@
+import '../fees.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -25,7 +26,7 @@ Future<double?> showAcceptQuoteSheet(BuildContext context, {
     builder: (ctx) => StatefulBuilder(
       builder: (ctx, setSheet) {
         final quoted = double.tryParse(amount.text.trim()) ?? 0;
-        final total = labour * 1.15 + (needsMaterials ? quoted : 0);
+        final total = customerTotal(labour, needsMaterials ? quoted : 0);
         return Padding(
           padding: EdgeInsets.fromLTRB(20, 18, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
           child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
