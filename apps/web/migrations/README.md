@@ -59,28 +59,37 @@ npx prisma migrate diff \
 
 | # | Migration | Applied to production |
 |---|-----------|----------------------|
-| 001 | PostGIS service points | **No** |
-| 002 | FCM outbox | **No** |
+| 001 | PostGIS service points | **Yes** — 2026-08-30 |
+| 002 | FCM outbox | **Yes** — 2026-08-30 |
 | 003 | Job timer pause/resume | **Yes** — 2026-08-22 |
 | 004 | Licence + insurance credentials | **Yes** — 2026-08-25 |
 | 005 | Name on the licence | **Yes** — 2026-08-25 |
 | 006 | Insurance certificate detail | **Yes** — 2026-08-25 |
 | 007 | Booking → job request link | **Yes** — 2026-08-26 |
 | 008 | Actual materials spend + refund record | **Yes** — 2026-08-29 |
-| 009 | One hourly rate per category (range retired) | **No** |
-| 010 | Booking labour snapshot (rate, minutes, amount) | **No** |
-| 011 | Which ICA version a pro signed | **No** |
-| 012 | Estimated billable minutes on a job request | **No** |
-| 013 | Minimum billable TIME, replacing the price floor | **No** |
+| 009 | One hourly rate per category (range retired) | **Yes** — 2026-08-30 |
+| 010 | Booking labour snapshot (rate, minutes, amount) | **Yes** — 2026-08-30 |
+| 011 | Which ICA version a pro signed | **Yes** — 2026-08-30 |
+| 012 | Estimated billable minutes on a job request | **Yes** — 2026-08-30 |
+| 013 | Minimum billable TIME, replacing the price floor | **Yes** — 2026-08-30 |
 
-> 001, 002, 009, 010, 011, 012 and 013 are unapplied. `schema.prisma` describes them, so the
-> deploy script's drift gate will **refuse all deploys** until they are applied.
-> That is deliberate fail-closed behaviour, but it means the next deploy of
-> `apps/web` requires applying all seven first.
+> **All applied as of 2026-08-30.** The drift gate passes.
 >
-> 009 and 010 are the pricing-model change: a pro sets one rate per category,
-> Tarea AI estimates one billable time, and the booking freezes both. Apply 009
-> before 010 — 010's snapshot reads the rate 009 introduces.
+> 001 and 002 were recorded here as unapplied but their columns and tables were
+> already present — created by an earlier `prisma db push`, not by running these
+> files. The three GiST indexes 001 declares were therefore missing, because
+> `db push` cannot create an index on a column Prisma models as `Unsupported()`.
+> Re-running 001 (it is idempotent) added them.
+>
+> Those indexes now show in `migrate diff` as three `DROP INDEX` lines forever,
+> for the same reason: Prisma cannot express them, so it reports them as extra.
+> `scripts/deploy-web.sh` fails only on `CREATE TABLE` / `ADD COLUMN` — things
+> the code needs and the database lacks — and treats extra database objects as a
+> warning, so this does not block a deploy. Do not "fix" it by dropping them.
+>
+> Separately, `bookings_jobRequestId_idx` was created by 007 but never declared
+> in `schema.prisma`, so the two disagreed from 2026-08-26 until it was added to
+> the Booking model on 2026-08-30.
 
 ## Notes
 

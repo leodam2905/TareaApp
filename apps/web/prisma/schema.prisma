@@ -394,6 +394,11 @@ model Booking {
   extensions BookingExtension[]
   proxySessions ProxySession[]
 
+  // Created by migration 007 but never declared here, so schema and database
+  // have disagreed since 2026-08-26 and the deploy drift gate has been failing
+  // on it. The index is wanted — completion uses it to close the originating
+  // request — so the schema is corrected to match, not the database.
+  @@index([jobRequestId])
   @@map("bookings")
 }
 
