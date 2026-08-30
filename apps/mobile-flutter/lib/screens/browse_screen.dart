@@ -26,6 +26,15 @@ const _cats = [
 ];
 
 // [trust flag key, translation key, color]
+/// Match band colour. Deliberately not red at the bottom: "fair" describes a
+/// pro who is fine, often just new, and a warning colour would libel them.
+Color _bandColor(String band) => switch (band) {
+      'excellent' => const Color(0xFF059669),
+      'great' => const Color(0xFF2563EB),
+      'good' => const Color(0xFF64748B),
+      _ => const Color(0xFF94A3B8),
+    };
+
 const _trustDefs = {
   'licensed': ['browse.licensed', 0xFF2563EB],
   'insured': ['browse.insured', 0xFF10B981],
@@ -109,10 +118,11 @@ class _BrowseScreenState extends State<BrowseScreen> {
       final services = (h['services'] as List?) ?? const [];
       return services.any((s) => (s['category'] ?? '').toString() == _cat);
     }).toList();
-    double rate(h) => ((h['handymanProfile']?['hourlyRate']) as num?)?.toDouble() ?? 1e9;
+    // No price sort. Ranking by cheapest is the strongest possible incentive
+    // to undercut, and it would defeat the point of hiding the number on the
+    // card. The default order is match quality — see lib/matching.ts.
     double rating(h) => ((h['handymanProfile']?['rating']) as num?)?.toDouble() ?? 0;
     if (_sort == 'rating') list.sort((a, b) => rating(b).compareTo(rating(a)));
-    if (_sort == 'price') list.sort((a, b) => rate(a).compareTo(rate(b)));
     return list;
   }
 
@@ -158,7 +168,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
                   _pill('browse.within60'.tr(), on: _nearMe, icon: Icons.navigation_outlined, onTap: () => setState(() => _nearMe = !_nearMe)),
                   _pill('browse.availableNow'.tr(), on: true, dot: true),
                   _pill('browse.topRated'.tr(), on: _sort == 'rating', onTap: () => setState(() => _sort = _sort == 'rating' ? 'best' : 'rating')),
-                  _pill('browse.price'.tr(), on: _sort == 'price', trailing: Icons.keyboard_arrow_down, onTap: () => setState(() => _sort = _sort == 'price' ? 'best' : 'price')),
                 ],
               ),
             ),
@@ -234,7 +243,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
     final rating = hp['rating'];
     final totalJobs = hp['totalJobs'] ?? 0;
     final years = hp['yearsExperience'];
-    final hourly = hp['hourlyRate'];
     final bio = (hp['bio'] ?? '').toString();
     final services = (h['services'] as List?) ?? const [];
     final specialty = services.isNotEmpty
@@ -243,6 +251,13 @@ class _BrowseScreenState extends State<BrowseScreen> {
     final isVerified = h['isVerified'] == true;
     final trust = (h['trust'] as Map?) ?? const {};
     final badges = _trustDefs.entries.where((e) => trust[e.key] == true).take(3).toList();
+
+    // Why this pro is placed here. The list is ordered credentials-first and
+    // then by fit, so without saying so the order looks arbitrary — or worse,
+    // looks like paid placement.
+    final match = (h['match'] as Map?) ?? const {};
+    final band = (match['band'] ?? '').toString();
+    final reasons = ((match['reasons'] as List?) ?? const []).take(3).toList();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -307,6 +322,26 @@ class _BrowseScreenState extends State<BrowseScreen> {
               ),
             ],
           ),
+          if (band.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Row(children: [
+              Icon(Icons.verified_outlined, size: 15, color: _bandColor(band)),
+              const SizedBox(width: 5),
+              Text('browse.band.$band'.tr(),
+                  style: TextStyle(color: _bandColor(band), fontSize: 12, fontWeight: FontWeight.w800)),
+              if (reasons.isNotEmpty) ...[
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    reasons.map((r) => 'browse.reason.$r'.tr()).join(' · '),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: C.muted, fontSize: 12),
+                  ),
+                ),
+              ],
+            ]),
+          ],
           if (badges.isNotEmpty) ...[
             const SizedBox(height: 12),
             Wrap(spacing: 6, runSpacing: 6, children: badges.map((b) {
@@ -333,13 +368,15 @@ class _BrowseScreenState extends State<BrowseScreen> {
           const SizedBox(height: 14),
           const Divider(color: C.line, height: 1),
           const SizedBox(height: 12),
+          // The rate is NOT on the card, deliberately.
+          //
+          // A price on every tile makes price the axis customers compare on,
+          // and the cheapest pro wins by being cheapest — which is the race to
+          // the bottom a rate floor would otherwise be needed to stop, and a
+          // platform-set floor is price fixing under the Cartwright Act. Match
+          // quality is the visible axis instead; the rate is shown when a pro
+          // is opened, before anybody is asked to commit to anything.
           Row(children: [
-            if (hourly != null) ...[
-              Text('\$${(hourly as num).round()}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink)),
-              Text('browse.perHour'.tr(), style: const TextStyle(color: C.muted)),
-              const SizedBox(width: 8),
-              Text('browse.minHour'.tr(), style: const TextStyle(color: C.muted, fontSize: 12)),
-            ],
             const Spacer(),
             FilledButton(
               style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),

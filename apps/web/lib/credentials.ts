@@ -7,6 +7,35 @@
 
 export type CredentialKind = "license" | "insurance";
 
+/**
+ * Trades where the law requires a licence, so holding one is a real distinction
+ * between two pros rather than a nice-to-have.
+ *
+ * California's minor-work exemption (Cal. Bus. & Prof. Code § 7048) was raised
+ * from $500 to $1,000 by AB 2622, effective 1 January 2025. Above that figure —
+ * labour AND materials combined — the work is reserved for a CSLB-licensed
+ * contractor in these trades.
+ *
+ * The exemption is CONDITIONAL, which matters more than the number: it does not
+ * apply to work requiring a building permit, and it does not apply to a job
+ * split out of a larger project. A pro relying on "under $1,000" for permitted
+ * work is unlicensed regardless of price. See lib/materials-policy, which gates
+ * the same threshold from the materials side.
+ *
+ * Cleaning, moving, laundry and furniture assembly are not licensed occupations
+ * at all, so ranking an uncredentialed cleaner below a licensed one would be
+ * sorting on a document the job never needed.
+ *
+ * GENERAL is included because it covers repairs that cross the threshold.
+ */
+export const LICENSE_REQUIRED: ReadonlySet<string> = new Set([
+  "PLUMBING", "ELECTRICAL", "HVAC", "ROOFING", "GENERAL",
+]);
+
+/** Whether a licence is a meaningful signal for this category. */
+export const licenseMatters = (category?: string | null): boolean =>
+  !!category && LICENSE_REQUIRED.has(category);
+
 export const CREDENTIAL_KINDS: CredentialKind[] = ["license", "insurance"];
 
 /** Stored decision. `expired` is never stored — it is derived, see below. */

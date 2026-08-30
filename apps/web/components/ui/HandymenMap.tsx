@@ -42,7 +42,7 @@ type Handyman = {
   latitude: number | null;
   longitude: number | null;
   city: string | null;
-  service: { title: string; minPrice: number; maxPrice: number } | null;
+  service: { title: string; hourlyRate: number | null } | null;
 };
 
 function FitBounds({ handymen }: { handymen: Handyman[] }) {
@@ -88,13 +88,15 @@ export default function HandymenMap({
                   <p style={{ margin: 0, fontSize: 12, color: "#64748B" }}>{h.city}</p>
                 </div>
               </div>
+              {/* No rate in the pin. A map of prices turns browsing into
+                  shopping the cheapest pin — same reasoning as the browse card.
+                  The rate is on the pro's own page. */}
               <div style={{ display: "flex", gap: 12, fontSize: 12, color: "#475569", marginBottom: 10 }}>
                 <span>⭐ {h.rating.toFixed(1)} ({h.totalJobs} jobs)</span>
-                <span>{formatCurrency(h.hourlyRate)}/hr</span>
               </div>
               {h.service && (
                 <p style={{ margin: "0 0 10px", fontSize: 12, color: "#475569" }}>
-                  {h.service.title} · {formatCurrency(h.service.minPrice)}–{formatCurrency(h.service.maxPrice)}
+                  {h.service.title}
                 </p>
               )}
               <button

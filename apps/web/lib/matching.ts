@@ -18,6 +18,10 @@ export interface Rankable {
   responseTime: number;
   isPremium: boolean;
   distanceKm: number | null;
+  /** Licence approved by an admin and unexpired — see lib/credentials.ts. */
+  licensed?: boolean;
+  /** Insurance certificate approved and unexpired. */
+  insured?: boolean;
 }
 
 /** Weight of the prior, in "pretend reviews". */
@@ -93,4 +97,92 @@ export function isAvailableAt(
   const day = when.getDay();
   const hour = when.getHours();
   return slots.some((s) => s.dayOfWeek === day && hour >= s.startHour && hour < s.endHour);
+}
+
+
+/**
+ * Credentials sort ABOVE the score, not inside it.
+ *
+ * A boost, however large, is still a number another pro can out-accumulate:
+ * enough five-star reviews and an uninsured pro climbs back to the top. That is
+ * the wrong shape for this particular signal, because the risk it carries does
+ * not shrink as the ratings improve — an uninsured pro damaging a kitchen is
+ * the customer's problem no matter how well reviewed they are.
+ *
+ * So it is a tier. Licensed AND insured outranks one credential, which outranks
+ * none, and quality decides the order WITHIN each tier.
+ *
+ * The cost of this is real and worth stating: in categories where no licence is
+ * legally required — cleaning, moving, furniture assembly — an excellent
+ * uncredentialed pro is pushed below a mediocre credentialed one for a
+ * distinction the job does not turn on.
+ */
+/**
+ * @param licenseRelevant whether a licence is a real distinction for the work
+ *   in question — see licenseMatters() in lib/credentials. Insurance always
+ *   counts: a pro can damage a floor whether or not their trade is regulated.
+ *   A licence only counts where the law asks for one, otherwise an excellent
+ *   cleaner is sorted below a mediocre one over a document neither job needed.
+ */
+export const credentialTier = (h: Rankable, licenseRelevant = true): number =>
+  (h.insured ? 1 : 0) + (licenseRelevant && h.licensed ? 1 : 0);
+
+/** Sort comparator: credentials first, then fit. Highest first. */
+export function compareForCustomer(a: Rankable, b: Rankable, licenseRelevant = true): number {
+  const tier = credentialTier(b, licenseRelevant) - credentialTier(a, licenseRelevant);
+  if (tier !== 0) return tier;
+  return matchScore(b) - matchScore(a);
+}
+
+export type MatchBand = "excellent" | "great" | "good" | "fair";
+
+/**
+ * Why this pro is being shown, in terms a customer can act on.
+ *
+ * Codes, not sentences: the apps localise into four languages, so a server that
+ * returned English prose would be untranslatable. Deliberately no percentage —
+ * the raw score tops out at 105 and a realistic new pro already scores ~60, so
+ * "57% match" would read as a warning about somebody perfectly good.
+ */
+export type MatchReason =
+  | "licensed_insured"
+  | "licensed"
+  | "insured"
+  | "highly_rated"
+  | "experienced"
+  | "fast_replies"
+  | "nearby"
+  | "new_pro";
+
+export interface MatchQuality {
+  score: number;
+  band: MatchBand;
+  reasons: MatchReason[];
+  licensed: boolean;
+  insured: boolean;
+}
+
+export function matchQuality(h: Rankable): MatchQuality {
+  const score = matchScore(h);
+  const licensed = !!h.licensed;
+  const insured = !!h.insured;
+
+  const band: MatchBand =
+    score >= 85 ? "excellent" : score >= 72 ? "great" : score >= 60 ? "good" : "fair";
+
+  const reasons: MatchReason[] = [];
+  // Credentials lead, because they are why this pro is placed where they are.
+  if (licensed && insured) reasons.push("licensed_insured");
+  else if (licensed) reasons.push("licensed");
+  else if (insured) reasons.push("insured");
+
+  if (ratingScore(h.rating, h.totalJobs) >= 45) reasons.push("highly_rated");
+  if (h.totalJobs >= 25) reasons.push("experienced");
+  if (h.responseTime <= 30) reasons.push("fast_replies");
+  if (h.distanceKm != null && h.distanceKm <= 10) reasons.push("nearby");
+  // Said plainly rather than hidden. A new pro has no record, and a customer
+  // who chooses one should know that rather than infer it from a thin badge row.
+  if (h.totalJobs === 0) reasons.push("new_pro");
+
+  return { score, band, reasons, licensed, insured };
 }

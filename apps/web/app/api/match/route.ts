@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stateAliases } from "@/lib/us-states";
-import { matchScore, isAvailableAt } from "@/lib/matching";
+import { matchScore, matchQuality, credentialTier, isAvailableAt } from "@/lib/matching";
+// findMany uses `include`, which returns every scalar on the profile, so the
+// credential columns credentialBadges reads are already present.
+import { credentialBadges, licenseMatters } from "@/lib/credentials";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -69,7 +72,7 @@ export async function GET(req: NextRequest) {
         availability: { select: { dayOfWeek: true, startHour: true, endHour: true } },
         services: {
           where: { category: category as never, isActive: true },
-          select: { id: true, title: true, minPrice: true, maxPrice: true, duration: true },
+          select: { id: true, title: true, hourlyRate: true, duration: true },
           take: 1,
         },
       },
@@ -105,15 +108,31 @@ export async function GET(req: NextRequest) {
           isPremium: h.isPremium,
           backgroundCheckStatus: h.backgroundCheckStatus,
           distanceKm,
-          // See lib/matching.ts. Quality leads, distance decays, paid
-          // placement is capped so it cannot outrank being good.
-          score: matchScore({
-            rating: h.rating,
-            totalJobs: h.totalJobs,
-            responseTime: h.responseTime ?? 60,
-            isPremium: h.isPremium,
-            distanceKm,
-          }),
+          ...(() => {
+            const { licensed, insured } = credentialBadges(h);
+            const rankable = {
+              rating: h.rating,
+              totalJobs: h.totalJobs,
+              responseTime: h.responseTime ?? 60,
+              isPremium: h.isPremium,
+              distanceKm,
+              licensed,
+              insured,
+            };
+            // See lib/matching.ts. Credentials tier ABOVE the score; within a
+            // tier quality leads, distance decays, and paid placement is capped
+            // so it cannot outrank being good.
+            return {
+              licensed,
+              insured,
+              // A licence tiers only in a regulated trade; insurance always does.
+              credentialTier: credentialTier(rankable, licenseMatters(category)),
+              score: matchScore(rankable),
+              // What the customer is shown: a band and the reasons behind it,
+              // as codes the apps localise.
+              match: matchQuality(rankable),
+            };
+          })(),
           availableAtRequestedTime: when ? isAvailableAt(h.availability ?? [], when) : true,
           // Coordinates deliberately not returned — see the note in
           // /api/handyman/browse. distanceKm is what the client needs.
@@ -135,7 +154,11 @@ export async function GET(req: NextRequest) {
       // they asked comes first; everyone else is still reachable below.
       .sort((a, b) => {
         const avail = Number(b.availableAtRequestedTime) - Number(a.availableAtRequestedTime);
-        return avail !== 0 ? avail : b.score - a.score;
+        if (avail !== 0) return avail;
+        // Licensed and insured first — the credential outranks the score,
+        // because the risk it covers does not shrink as a rating improves.
+        const tier = b.credentialTier - a.credentialTier;
+        return tier !== 0 ? tier : b.score - a.score;
       });
 
     return NextResponse.json(results);

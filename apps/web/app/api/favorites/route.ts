@@ -20,7 +20,7 @@ export async function GET() {
           user: { select: { id: true, name: true, avatarUrl: true, city: true, isVerified: true } },
           services: {
             where: { isActive: true },
-            select: { id: true, title: true, category: true, minPrice: true, maxPrice: true },
+            select: { id: true, title: true, category: true, hourlyRate: true },
             take: 3,
           },
         },

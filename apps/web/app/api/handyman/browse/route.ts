@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { matchScore } from "@/lib/matching";
+import { matchScore, matchQuality, credentialTier } from "@/lib/matching";
 import { prisma } from "@/lib/prisma";
 import { BOOKABLE_USER_WHERE } from "@/lib/pro-bookable";
 import { milesFromKmOrNull } from "@/lib/units";
-import { credentialBadges, CREDENTIAL_SELECT } from "@/lib/credentials";
+import { credentialBadges, CREDENTIAL_SELECT, LICENSE_REQUIRED } from "@/lib/credentials";
 
 // Trades that legally require a license — "Licensed" badge only shows for these.
-const LICENSE_REQUIRED = new Set(["PLUMBING", "ELECTRICAL", "HVAC", "ROOFING", "GENERAL"]);
-
 // How far a customer will consider travelling to be served. Sixty miles, in km
 // because haversine works in km.
 const BROWSE_RADIUS_KM = 60 * 1.60934;
@@ -138,6 +136,14 @@ export async function GET(req: NextRequest) {
         topRated: rating >= 4.8 && jobs >= 10,
         topPro: !!hp?.isPremium,
       },
+      // Why this pro sits where they do, as codes the apps localise. Same
+      // scorer as /api/match, so Browse and matching cannot disagree.
+      match: matchQuality({
+        rating, totalJobs: jobs, responseTime: 60,
+        isPremium: !!hp?.isPremium, distanceKm,
+        licensed: hp ? credentialBadges(hp).licensed : false,
+        insured: hp ? credentialBadges(hp).insured : false,
+      }),
     };
   });
 
@@ -176,15 +182,26 @@ export async function GET(req: NextRequest) {
   // a bounded boost inside the score, so it lifts a pro without letting them
   // outrank being good — which is what keeps the list worth reading.
   located.sort((a, b) => {
-    const rank = (r: (typeof located)[number]) =>
-      matchScore({
-        rating: r.handymanProfile?.rating ?? 0,
-        totalJobs: r.handymanProfile?.totalJobs ?? 0,
-        responseTime: 60,
-        isPremium: r.handymanProfile?.isPremium ?? false,
-        distanceKm: r.distanceKm,
-      });
-    return rank(b) - rank(a);
+    const rankable = (r: (typeof located)[number]) => ({
+      rating: r.handymanProfile?.rating ?? 0,
+      totalJobs: r.handymanProfile?.totalJobs ?? 0,
+      responseTime: 60,
+      isPremium: r.handymanProfile?.isPremium ?? false,
+      distanceKm: r.distanceKm,
+      licensed: !!r.match?.licensed,
+      insured: !!r.match?.insured,
+    });
+    // Licensed and insured first, then fit. A credential is a tier rather than
+    // a boost: no amount of good reviews should lift an uninsured pro above an
+    // insured one, because the exposure it covers is the customer's either way.
+    // Browse spans categories, so a licence is relevant to a pro when ANY of
+    // the trades they list is one the law regulates — the same rule that
+    // decides whether their Licensed badge lights up.
+    const relevant = (r: (typeof located)[number]) =>
+      (r.services ?? []).some((sv) => LICENSE_REQUIRED.has(sv.category));
+    const tier =
+      credentialTier(rankable(b), relevant(b)) - credentialTier(rankable(a), relevant(a));
+    return tier !== 0 ? tier : matchScore(rankable(b)) - matchScore(rankable(a));
   });
 
   // Flagged so the client can say "nearest available" rather than implying

@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Star, Navigation, ShieldCheck, Loader2, Search } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
 import { SERVICE_CATEGORIES } from "@/lib/service-catalog";
 
 type Pro = {
@@ -22,6 +21,7 @@ type Pro = {
   } | null;
   services: { title: string; category: string }[];
   trust?: { licensed?: boolean; insured?: boolean; backgroundChecked?: boolean };
+  match?: { band: "excellent" | "great" | "good" | "fair"; reasons: string[] };
 };
 
 // Mirrors the app's Browse Pros.
@@ -30,12 +30,30 @@ type Pro = {
 // showed a directory: category chips, filter pills, and a card per pro. Two
 // different products for the same job. Web follows mobile, so this is the
 // directory — same filters, same card, same order.
+
+// Mirrors the app's browse.band / browse.reason keys, so the two clients
+// describe the same ranking in the same words.
+const MATCH_BAND_LABEL: Record<string, string> = {
+  excellent: "Excellent match", great: "Great match", good: "Good match", fair: "Match",
+};
+// Not red at the bottom: "fair" is often just a new pro, and a warning colour
+// would libel somebody perfectly capable.
+const MATCH_BAND_CLASS: Record<string, string> = {
+  excellent: "text-emerald-600", great: "text-blue-600",
+  good: "text-slate-500", fair: "text-slate-400",
+};
+const MATCH_REASON_LABEL: Record<string, string> = {
+  licensed_insured: "Licensed & insured", licensed: "Licensed", insured: "Insured",
+  highly_rated: "Highly rated", experienced: "Experienced",
+  fast_replies: "Replies fast", nearby: "Nearby", new_pro: "New to Tarea",
+};
+
 export default function BrowsePage() {
   const [pros, setPros] = useState<Pro[]>([]);
   const [loading, setLoading] = useState(true);
   const [cat, setCat] = useState<string>("ALL");
   const [nearMe, setNearMe] = useState(false);
-  const [sort, setSort] = useState<"best" | "rating" | "price">("best");
+  const [sort, setSort] = useState<"best" | "rating">("best");
   const [outsideRadius, setOutsideRadius] = useState(false);
 
   useEffect(() => {
@@ -63,17 +81,16 @@ export default function BrowsePage() {
     );
   }, []);
 
-  const rate = (p: Pro) => p.handymanProfile?.hourlyRate ?? 0;
-
   const filtered = useMemo(() => {
     let list = pros.filter((p) =>
       cat === "ALL" ? true : p.services?.some((s) => s.category === cat),
     );
     if (nearMe) list = list.filter((p) => p.distanceMiles == null || p.distanceMiles <= 60);
+    // No price sort. Ranking by cheapest is the strongest incentive to
+    // undercut there is, and it would defeat hiding the rate on the card. The
+    // default order is match quality — see lib/matching.ts.
     if (sort === "rating") {
       list = [...list].sort((a, b) => (b.handymanProfile?.rating ?? 0) - (a.handymanProfile?.rating ?? 0));
-    } else if (sort === "price") {
-      list = [...list].sort((a, b) => rate(a) - rate(b));
     }
     return list;
   }, [pros, cat, nearMe, sort]);
@@ -105,7 +122,6 @@ export default function BrowsePage() {
       <div className="flex flex-wrap gap-2 mb-6">
         {pill("Within 60 mi", nearMe, () => setNearMe((v) => !v), Navigation)}
         {pill("Top rated", sort === "rating", () => setSort(sort === "rating" ? "best" : "rating"))}
-        {pill("Price", sort === "price", () => setSort(sort === "price" ? "best" : "price"))}
       </div>
 
       {outsideRadius && !loading && (
@@ -155,6 +171,19 @@ export default function BrowsePage() {
                         {hp.yearsExperience}+ years experience
                       </p>
                     )}
+                    {/* Why this pro sits where they do. The list is ordered
+                        credentials-first then by fit, and an unexplained order
+                        reads as arbitrary — or as paid placement. */}
+                    {p.match?.band && (
+                      <p className={`text-xs font-bold mt-2 ${MATCH_BAND_CLASS[p.match.band]}`}>
+                        {MATCH_BAND_LABEL[p.match.band]}
+                        {p.match.reasons?.length > 0 && (
+                          <span className="font-normal text-[var(--text-muted)]">
+                            {" · "}{p.match.reasons.slice(0, 3).map(r => MATCH_REASON_LABEL[r] ?? r).join(" · ")}
+                          </span>
+                        )}
+                      </p>
+                    )}
                     {/* Badges mean approved and unexpired, not "a file was
                         uploaded" — same rule the app renders. */}
                     <div className="flex flex-wrap gap-2 mt-2">
@@ -177,11 +206,11 @@ export default function BrowsePage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
-                  <p className="text-sm">
-                    <span className="font-black text-lg">{formatCurrency(rate(p))}</span>
-                    <span className="text-[var(--text-muted)]">/hr · Min. 1 hour</span>
-                  </p>
+                {/* The rate is NOT on the card, deliberately.
+                    A price on every tile makes price the axis customers compare
+                    on, and the cheapest pro wins by being cheapest. The rate is
+                    shown when a pro is opened, before any commitment. */}
+                <div className="flex items-center justify-end mt-4 pt-4 border-t border-white/10">
                   <Link
                     href={`/customer/handymen/${p.id}`}
                     className="bg-tarea-sky text-tarea-ink font-bold px-5 py-2.5 rounded-xl hover:bg-sky-300 transition-all text-sm"
