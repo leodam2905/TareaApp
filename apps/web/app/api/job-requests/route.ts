@@ -43,6 +43,12 @@ import { ABSOLUTE_MINIMUM_CHARGE } from "@/lib/labor-pricing";
 // customer posts repeated jobs just below it.
 const CSLB_UNLICENSED_CAP = 1000;
 
+/** Human name for the trades that are licensed-only, for customer-facing copy. */
+const LICENSED_TRADE_LABEL: Record<string, string> = {
+  ROOFING: "Roofing",
+  HVAC: "Heating and cooling work",
+};
+
 const DEFAULT_RADIUS_MILES = 50;
 const MILES_TO_KM = 1.60934;
 const radiusKmFor = (miles?: number | null) =>
@@ -287,6 +293,35 @@ export async function POST(req: NextRequest) {
     geoLng = geo.coords.lng;
   }
 
+  // Can anybody actually take this job?
+  //
+  // For roofing and HVAC the fan-out below reaches licensed pros only, so where
+  // none exists the request is posted into silence: no applicants, no reason
+  // given, and a push that promises to tell the customer "when a pro applies".
+  // That is the same silent-empty failure the browse radius fallback exists to
+  // prevent, one surface over.
+  //
+  // The request is still CREATED. Refusing would throw away the one signal that
+  // says which trades to recruit into, and a customer told plainly that we are
+  // still onboarding licensed roofers in their area is a customer who might
+  // wait. A customer whose job sits untouched for a week is not.
+  let eligibleProCount: number | null = null;
+  if (licenseAlwaysRequired(category)) {
+    const candidates = await prisma.handymanProfile.findMany({
+      where: {
+        backgroundCheckStatus: "PASSED",
+        services: { some: { category: category as never, isActive: true } },
+      },
+      select: CREDENTIAL_SELECT,
+      take: 50,
+    });
+    eligibleProCount = candidates.filter((c) => {
+      const b = credentialBadges(c);
+      return b.licensed && b.insured;
+    }).length;
+  }
+  const noEligiblePros = eligibleProCount === 0;
+
   const jobRequest = await prisma.jobRequest.create({
     data: {
       customerId: user.id,
@@ -472,12 +507,31 @@ export async function POST(req: NextRequest) {
       refId: jobRequest.id,
     },
   });
+  // Do not promise applicants when nobody can apply.
   await sendPushToUser(
     user.id,
-    "Job posted ✅",
-    `Your "${title}" request is live — we'll notify you when a pro applies.`,
+    noEligiblePros ? "Job posted — finding a licensed pro" : "Job posted ✅",
+    noEligiblePros
+      ? `Your "${title}" request is live. ${LICENSED_TRADE_LABEL[category] ?? "This work"} needs a licensed pro, and we do not have one in your area yet — we will tell you the moment we do.`
+      : `Your "${title}" request is live — we'll notify you when a pro applies.`,
     { type: "booking_request", screen: "Requests", jobId: jobRequest.id }
   );
 
-  return NextResponse.json(jobRequest, { status: 201 });
+  // `notice` is additive: a client that does not know the field renders exactly
+  // what it rendered before, so this needs no coordinated app release.
+  return NextResponse.json(
+    {
+      ...jobRequest,
+      ...(noEligiblePros
+        ? {
+            noEligiblePros: true,
+            notice:
+              `${LICENSED_TRADE_LABEL[category] ?? "This work"} requires a licensed and insured pro. `
+              + "We do not have one in your area yet, so this may take longer than usual — "
+              + "we will notify you as soon as one joins.",
+          }
+        : {}),
+    },
+    { status: 201 },
+  );
 }
