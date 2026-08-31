@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -25,6 +26,8 @@ import '../theme.dart';
 Future<Map<String, dynamic>?> showMaterialsAtFinish(BuildContext context, num estimate) async {
   final amount = TextEditingController(text: estimate.toStringAsFixed(2));
   String? uploadedUrl;
+  num? receiptTotal;   // what the model read, null until a receipt is attached
+  bool reading = false;
 
   return showModalBottomSheet<Map<String, dynamic>>(
     context: context,
@@ -58,13 +61,42 @@ Future<Map<String, dynamic>?> showMaterialsAtFinish(BuildContext context, num es
           const SizedBox(height: 12),
           OutlinedButton.icon(
             style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(46)),
-            onPressed: () async {
-              final url = await _pickReceipt(context);
-              if (url != null) setSheet(() => uploadedUrl = url);
+            onPressed: reading ? null : () async {
+              final shot = await _pickReceipt(context);
+              if (shot == null) return;
+              setSheet(() { uploadedUrl = shot['url'] as String?; reading = true; });
+              final total = await _readReceiptTotal(shot['bytes'] as String, shot['mediaType'] as String);
+              setSheet(() {
+                receiptTotal = total;
+                reading = false;
+                // Fill the amount from the receipt rather than leaving the
+                // estimate sitting there. The estimate pre-fill is the reason
+                // an underspend was easy to keep: it was already the right
+                // shape, so the honest answer took typing and the other did not.
+                if (total != null) amount.text = total.toStringAsFixed(2);
+              });
             },
             icon: Icon(uploadedUrl == null ? Icons.camera_alt_outlined : Icons.check_circle, size: 18),
             label: Text(uploadedUrl == null ? 'proJobs.receiptPrompt'.tr() : 'proJobs.receiptAttached'.tr()),
           ),
+          if (reading) ...[
+            const SizedBox(height: 8),
+            Row(children: [
+              const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2)),
+              const SizedBox(width: 8),
+              Text('proJobs.receiptReading'.tr(), style: const TextStyle(color: C.muted, fontSize: 12)),
+            ]),
+          ],
+          if (!reading && uploadedUrl != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              receiptTotal == null
+                  ? 'proJobs.receiptUnread'.tr()
+                  : 'proJobs.receiptRead'.tr(args: [receiptTotal!.toStringAsFixed(2)]),
+              style: TextStyle(
+                color: receiptTotal == null ? const Color(0xFFB45309) : C.muted, fontSize: 12, height: 1.4),
+            ),
+          ],
           const SizedBox(height: 12),
           Row(children: [
             Expanded(child: TextButton(
@@ -73,11 +105,16 @@ Future<Map<String, dynamic>?> showMaterialsAtFinish(BuildContext context, num es
             )),
             Expanded(child: FilledButton(
               style: FilledButton.styleFrom(backgroundColor: C.blue),
-              onPressed: () => Navigator.pop(ctx, <String, dynamic>{
+              // The server refuses a finish without one, so refusing here too
+              // saves a round trip and says why before the pro taps.
+              onPressed: (uploadedUrl == null || reading) ? null : () => Navigator.pop(ctx, <String, dynamic>{
                 'receiptUrl': uploadedUrl,
                 // Left out entirely when unparseable, so the server keeps the
                 // estimate rather than reading a typo as "spent nothing".
                 'materialsActual': num.tryParse(amount.text.trim()),
+                // Evidence for the server's comparison. It never decides the
+                // refund — that is always computed from the figure above.
+                'materialsReceiptTotal': receiptTotal,
               }),
               child: Text('proJobs.finishJob'.tr(), style: const TextStyle(fontWeight: FontWeight.w800)),
             )),
@@ -88,8 +125,9 @@ Future<Map<String, dynamic>?> showMaterialsAtFinish(BuildContext context, num es
   );
 }
 
-/// Camera or gallery, uploaded; null if the pro backed out.
-Future<String?> _pickReceipt(BuildContext context) async {
+/// Camera or gallery, uploaded. Returns the stored url and the raw bytes so the
+/// receipt can be read without asking for the photo twice. Null if backed out.
+Future<Map<String, dynamic>?> _pickReceipt(BuildContext context) async {
   final choice = await showModalBottomSheet<String>(
     context: context,
     builder: (_) => SafeArea(
@@ -123,6 +161,24 @@ Future<String?> _pickReceipt(BuildContext context) async {
     }
     return null;
   }
-  return (jsonDecode(up.body)['url'] ?? '').toString();
+  return {
+    'url': (jsonDecode(up.body)['url'] ?? '').toString(),
+    'bytes': base64Encode(await File(shot.path).readAsBytes()),
+    'mediaType': shot.path.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg',
+  };
+}
+
+/// Ask the model what the receipt says. Advisory only — the server compares it
+/// with what the pro typed and routes a disagreement to a human. A failure here
+/// must never stop a pro finishing their job, so everything returns null.
+Future<num?> _readReceiptTotal(String base64, String mediaType) async {
+  try {
+    final res = await Api.post('/ai/receipt', {'imageBase64': base64, 'mediaType': mediaType});
+    if (res.statusCode < 200 || res.statusCode >= 300) return null;
+    final d = jsonDecode(res.body);
+    return d['readable'] == true ? d['total'] as num? : null;
+  } catch (_) {
+    return null;
+  }
 }
 

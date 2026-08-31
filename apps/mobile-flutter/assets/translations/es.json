@@ -510,7 +510,10 @@
     "materialsSpent": "Gasto real",
     "receiptAttached": "Recibo adjunto",
     "finishJob": "Finalizar",
-    "awaitingPayment": "Esperando el pago"
+    "awaitingPayment": "Esperando el pago",
+    "receiptReading": "Leyendo el recibo…",
+    "receiptRead": "El recibo indica \\${}",
+    "receiptUnread": "No se pudo leer el recibo — introduzca el importe. Se revisará."
   },
   "proEarnings": {
     "totalEarned": "Total ganado",

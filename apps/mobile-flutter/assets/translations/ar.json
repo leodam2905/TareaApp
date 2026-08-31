@@ -510,7 +510,10 @@
     "materialsSpent": "المبلغ المنفق فعليًا",
     "receiptAttached": "تم إرفاق الإيصال",
     "finishJob": "إنهاء المهمة",
-    "awaitingPayment": "في انتظار الدفع"
+    "awaitingPayment": "في انتظار الدفع",
+    "receiptReading": "جارٍ قراءة الإيصال…",
+    "receiptRead": "الإيصال يُظهر \\${}",
+    "receiptUnread": "تعذّرت قراءة الإيصال — أدخل المبلغ بنفسك. ستتم مراجعته."
   },
   "proEarnings": {
     "totalEarned": "إجمالي الأرباح",

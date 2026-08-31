@@ -158,12 +158,14 @@ class _ProJobDetailState extends State<ProJobDetail> {
     // the estimate whatever the pro actually spent.
     String? receiptUrl;
     num? materialsActual;
+    num? receiptTotal;
     final estimate = (_b['materialsEstimate'] ?? 0) as num;
     if (estimate > 0) {
       final out = await showMaterialsAtFinish(context, estimate);
       if (out == null) return; // cancelled — do not finish half-reported
       receiptUrl = out['receiptUrl'] as String?;
       materialsActual = out['materialsActual'] as num?;
+      receiptTotal = out['materialsReceiptTotal'] as num?;
     }
 
     setState(() => _busy = true);
@@ -172,6 +174,7 @@ class _ProJobDetailState extends State<ProJobDetail> {
         'workDone': true,
         if (receiptUrl != null) 'receiptUrl': receiptUrl,
         if (materialsActual != null) 'materialsActual': materialsActual,
+        if (receiptTotal != null) 'materialsReceiptTotal': receiptTotal,
       });
       if (res.statusCode >= 200 && res.statusCode < 300) { await _load(); }
       else { _toast('proJobs.updateFailed'.tr()); }

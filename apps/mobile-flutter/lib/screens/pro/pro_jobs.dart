@@ -99,12 +99,14 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
     // right answer, and the pro learns to dismiss the prompt.
     String? receiptUrl;
     num? materialsActual;
+    num? receiptTotal;
     final estimate = (b['materialsEstimate'] ?? 0) as num;
     if (estimate > 0) {
       final out = await showMaterialsAtFinish(context, estimate);
       if (out == null) return; // cancelled — do not finish the job half-reported
       receiptUrl = out['receiptUrl'] as String?;
       materialsActual = out['materialsActual'] as num?;
+      receiptTotal = out['materialsReceiptTotal'] as num?;
     }
 
     try {
@@ -112,6 +114,7 @@ class _ProJobsState extends State<ProJobs> with TabRefreshMixin {
         'workDone': true,
         if (receiptUrl != null) 'receiptUrl': receiptUrl,
         if (materialsActual != null) 'materialsActual': materialsActual,
+        if (receiptTotal != null) 'materialsReceiptTotal': receiptTotal,
       });
       if (res.statusCode >= 200 && res.statusCode < 300) {
         setState(() => b['workDoneAt'] = DateTime.now().toIso8601String());

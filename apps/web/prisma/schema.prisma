@@ -359,6 +359,13 @@ model Booking {
   // Null means no figure was given, and the estimate stands.
   materialsActual   Float?
   materialsRefunded Float?        // what was actually returned, once refunded
+  // What the model read off the receipt photo. EVIDENCE, not a decision — the
+  // refund is always computed from materialsActual. Migration 015.
+  materialsReceiptTotal Float?
+  // none | verified | review. `review` means the reading and the pro's figure
+  // disagree, or the receipt was unreadable; an admin settles it rather than a
+  // model moving money toward the customer out of the pro's pocket.
+  materialsVerified String   @default("none")
   jobStartedAt     DateTime?
   // The on-site timer is informational — the price is fixed before the pro is
   // chosen, so pausing never changes what anyone is paid. It exists so both
@@ -399,6 +406,7 @@ model Booking {
   // on it. The index is wanted — completion uses it to close the originating
   // request — so the schema is corrected to match, not the database.
   @@index([jobRequestId])
+  @@index([materialsVerified])
   @@map("bookings")
 }
 

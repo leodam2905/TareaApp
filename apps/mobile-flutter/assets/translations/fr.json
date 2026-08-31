@@ -510,7 +510,10 @@
     "materialsSpent": "Dépense réelle",
     "receiptAttached": "Reçu joint",
     "finishJob": "Terminer",
-    "awaitingPayment": "En attente du paiement"
+    "awaitingPayment": "En attente du paiement",
+    "receiptReading": "Lecture du reçu…",
+    "receiptRead": "Le reçu indique \\${}",
+    "receiptUnread": "Reçu illisible — saisissez le montant vous-même. Il sera vérifié."
   },
   "proEarnings": {
     "totalEarned": "Total gagné",

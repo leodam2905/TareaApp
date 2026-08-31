@@ -53,7 +53,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const {
-    status, cancelReason, receiptUrl, workDone, timer, materialsActual,
+    status, cancelReason, receiptUrl, workDone, timer, materialsActual, materialsReceiptTotal,
     // Set by the PRO when accepting: what they will need for parts. The
     // customer approves the resulting total before any money moves.
     materialsQuote,
@@ -160,14 +160,70 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       actual = n;
     }
 
+    // A receipt is REQUIRED once materials were quoted.
+    //
+    // It was optional, and materialsActual was optional too — "null means no
+    // figure was given, and the estimate stands". So the cap-at-estimate rule
+    // only ever refunded a customer when a pro volunteered that they had
+    // underspent. Quote $150, spend $80, leave the field blank, keep $70.
+    const quoted = booking.materialsEstimate ?? 0;
+    if (quoted > 0 && !proReceipt && !booking.receiptUrl) {
+      return NextResponse.json(
+        { error: "Attach a photo of the materials receipt to finish this job." },
+        { status: 400 },
+      );
+    }
+    if (quoted > 0 && actual === undefined) {
+      return NextResponse.json(
+        { error: "Enter what the materials actually cost, as shown on the receipt." },
+        { status: 400 },
+      );
+    }
+
+    // What the model read, if the client ran /api/ai/receipt. Advisory: the
+    // refund is computed from the pro's own figure either way.
+    const readTotal =
+      typeof materialsReceiptTotal === "number" && Number.isFinite(materialsReceiptTotal) && materialsReceiptTotal >= 0
+        ? Math.round(materialsReceiptTotal * 100) / 100
+        : null;
+
+    // Tolerance absorbs OCR noise and a receipt that includes something small
+    // and unrelated; beyond it, a human looks. Deliberately two-sided — a pro
+    // who UNDER-reports is not defrauding anyone (they absorb it), but the two
+    // figures still disagree, and a booking whose paperwork disagrees with
+    // itself is worth an admin's eye either way.
+    const TOLERANCE = 2.0;
+    let verified: "none" | "verified" | "review" = "none";
+    if (quoted > 0 && actual !== undefined) {
+      verified =
+        readTotal === null ? "review"
+        : Math.abs(readTotal - actual) <= TOLERANCE ? "verified"
+        : "review";
+    }
+
     await prisma.booking.update({
       where: { id: params.id },
       data: {
         workDoneAt: new Date(),
         ...(proReceipt ? { receiptUrl: proReceipt, receiptUploadedAt: new Date() } : {}),
         ...(actual !== undefined ? { materialsActual: actual } : {}),
+        ...(readTotal !== null ? { materialsReceiptTotal: readTotal } : {}),
+        materialsVerified: verified,
       },
     });
+
+    if (verified === "review") {
+      const admins = await prisma.user.findMany({ where: { role: "ADMIN" }, select: { id: true } });
+      await Promise.allSettled(admins.map((a) => createNotification({
+        userId: a.id,
+        title: "Materials receipt needs review",
+        body: readTotal === null
+          ? `Could not read the receipt on "${booking.service.title}". The pro reported $${actual?.toFixed(2)} against a $${quoted.toFixed(2)} quote.`
+          : `Receipt reads $${readTotal.toFixed(2)} but the pro reported $${actual?.toFixed(2)} on "${booking.service.title}".`,
+        type: "booking_request",
+        refId: params.id,
+      })));
+    }
     await createNotification({
       userId: booking.customerId,
       title: "Work finished — please confirm",
