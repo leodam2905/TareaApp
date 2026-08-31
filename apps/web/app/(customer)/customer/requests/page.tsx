@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { cld } from "@/lib/cld";
-import { Star, MapPin, Clock, CheckCircle2, XCircle, Loader2, Plus, Zap, Trash2 } from "lucide-react";
+import { Star, MapPin, Clock, CheckCircle2, XCircle, Loader2, Plus, Zap, Trash2, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { formatCurrency, formatDate, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
@@ -16,7 +16,12 @@ type Application = {
   proposedPrice: number | null;
   createdAt: string;
   user: { name: string; avatarUrl: string | null };
-  handyman: { rating: number; totalJobs: number; bio: string | null };
+  handyman: { rating: number; totalJobs: number; bio: string | null; yearsExperience?: number };
+  /** Approved and unexpired, computed server-side by credentialBadges(). */
+  licensed?: boolean;
+  insured?: boolean;
+  /** Whether a licence distinguishes anyone in this trade. */
+  licenseRelevant?: boolean;
   /** Priced server-side through hireAmounts, so this preview and the charge
    *  cannot disagree. Materials are whatever THIS pro quoted. */
   effectiveMaterials?: number;
@@ -201,6 +206,24 @@ export default function CustomerRequestsPage() {
                           </span>
                           <span className="text-slate-500 text-xs">{a.handyman.totalJobs} jobs</span>
                         </div>
+                        {/* Credentials sit ABOVE the price, because that is the
+                            order they matter in and the order browse already
+                            sorts by. A licence is shown only where the trade
+                            needs one — a licensed cleaner is not a safer one. */}
+                        {((a.licenseRelevant && a.licensed) || a.insured) && (
+                          <div className="flex gap-1.5 flex-wrap mt-1">
+                            {a.licenseRelevant && a.licensed && (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
+                                <ShieldCheck className="w-3 h-3" />Licensed
+                              </span>
+                            )}
+                            {a.insured && (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
+                                <ShieldCheck className="w-3 h-3" />Insured
+                              </span>
+                            )}
+                          </div>
+                        )}
                         {a.message && <p className="text-gray-500 text-xs mt-0.5 truncate">"{a.message}"</p>}
                         {a.proposedPrice && (
                           <p className="text-orange-500 text-xs font-semibold mt-0.5">Offers: {formatCurrency(a.proposedPrice)}</p>
@@ -212,7 +235,7 @@ export default function CustomerRequestsPage() {
                         {!!a.customerTotal && (
                           <p className="text-xs mt-1">
                             <span className="text-gray-500">Materials {formatCurrency(a.effectiveMaterials ?? 0)} · </span>
-                            <span className="font-bold text-gray-900">You&apos;d pay {formatCurrency(a.customerTotal)}</span>
+                            <span className="font-semibold text-gray-700">You&apos;d pay {formatCurrency(a.customerTotal)}</span>
                           </p>
                         )}
                       </div>

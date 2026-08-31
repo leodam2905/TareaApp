@@ -146,6 +146,11 @@ class _RequestsScreenState extends State<RequestsScreen> {
     final name = (u['name'] ?? 'Pro').toString();
     final rating = ((hp['rating']) as num?)?.toDouble() ?? 0;
     final jobs = (hp['totalJobs'] ?? 0);
+    final licensed = a['licensed'] == true;
+    final insured = a['insured'] == true;
+    // A licence only distinguishes anyone in a trade that needs one; badging a
+    // licensed cleaner implies a difference that does not exist.
+    final licenceCounts = a['licenseRelevant'] == true;
     final st = (a['status'] ?? '').toString();
     final accepted = st == 'ACCEPTED';
     final rejected = st == 'REJECTED';
@@ -173,6 +178,16 @@ class _RequestsScreenState extends State<RequestsScreen> {
           ]),
           if (rejected) Text('requests.declined'.tr(), style: const TextStyle(color: C.muted, fontWeight: FontWeight.w700, fontSize: 12)),
         ]),
+        if ((licenceCounts && licensed) || insured) ...[
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Wrap(spacing: 6, runSpacing: 6, children: [
+              if (licenceCounts && licensed) _credBadge('pro.licensed'.tr(), Icons.verified_outlined),
+              if (insured) _credBadge('pro.insured'.tr(), Icons.shield_outlined),
+            ]),
+          ),
+        ],
         if ((hp['bio'] ?? '') != '') ...[
           const SizedBox(height: 6),
           Text((hp['bio']).toString(), maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: C.muted, fontSize: 12)),
@@ -194,7 +209,10 @@ class _RequestsScreenState extends State<RequestsScreen> {
                 Text('requests.priceTotal'.tr(),
                     style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 13)),
                 Text('\$${((a['customerTotal'] ?? 0) as num).toStringAsFixed(2)}',
-                    style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+                    // Was 16pt w900, the largest text in the row, which made
+                    // price the headline on a screen meant to compare pros.
+                    // It is one attribute among several now, not the answer.
+                    style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink, fontSize: 14)),
               ]),
             ]),
           ),
@@ -232,6 +250,21 @@ class _RequestsScreenState extends State<RequestsScreen> {
   }
 
   String _pretty(String c) => c.isEmpty ? 'Job' : c[0].toUpperCase() + c.substring(1).toLowerCase().replaceAll('_', ' ');
+
+  static Widget _credBadge(String label, IconData icon) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFFECFDF3),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: const Color(0xFFBBF7D0)),
+        ),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(icon, size: 12, color: const Color(0xFF15803D)),
+          const SizedBox(width: 4),
+          Text(label, style: const TextStyle(
+            fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF15803D))),
+        ]),
+      );
 
   static Widget _priceRow(String label, String value) =>
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [

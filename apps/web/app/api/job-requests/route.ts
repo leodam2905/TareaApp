@@ -9,7 +9,7 @@ import { sendSms } from "@/lib/sms";
 import { smsBody, createNotification } from "@/lib/notify";
 import { geocodeAddress } from "@/lib/geo/geocode";
 import { milesFromKmOrNull } from "@/lib/units";
-import { CREDENTIAL_SELECT, credentialBadges, licenseAlwaysRequired } from "@/lib/credentials";
+import { CREDENTIAL_SELECT, credentialBadges, licenseAlwaysRequired, licenseMatters } from "@/lib/credentials";
 import { materialsTier, validateMaterials } from "@/lib/materials-policy";
 import { ABSOLUTE_MINIMUM_CHARGE } from "@/lib/labor-pricing";
 import { notifyProsOfJob, haversine, radiusKmFor } from "@/lib/job-fanout";
@@ -64,7 +64,19 @@ export async function GET() {
         applications: {
           include: {
             user: { select: { name: true, avatarUrl: true } },
-            handyman: { select: { rating: true, totalJobs: true, bio: true } },
+            // Credentials travel with the applicant. This is the screen where a
+            // customer picks who comes to their house, and it showed name,
+            // stars and a bold total — so the loudest differentiator was price
+            // and a licence was invisible. Browse sorts licensed-and-insured
+            // above everything precisely because that risk does not shrink as a
+            // rating improves; the comparison screen was the one place that
+            // reasoning had not reached.
+            handyman: {
+              select: {
+                rating: true, totalJobs: true, bio: true, yearsExperience: true,
+                ...CREDENTIAL_SELECT,
+              },
+            },
           },
           orderBy: { createdAt: "desc" },
         },
@@ -85,8 +97,24 @@ export async function GET() {
       applications: r.applications.map((a) => {
         const materials = a.materialsEstimate ?? r.materialsCost ?? 0;
         const amounts = hireAmounts(r.budgetMin, materials);
+        // Approved and unexpired, not "a file was uploaded" — the same
+        // predicate the ranking, the fan-out gate and the invoice all use.
+        const badges = a.handyman ? credentialBadges(a.handyman) : { licensed: false, insured: false };
         return {
           ...a,
+          handyman: a.handyman
+            ? {
+                rating: a.handyman.rating,
+                totalJobs: a.handyman.totalJobs,
+                bio: a.handyman.bio,
+                yearsExperience: a.handyman.yearsExperience,
+              }
+            : a.handyman,
+          // Whether a licence is a MEANINGFUL distinction here. A licensed
+          // cleaner is not a safer cleaner, and badging one implies otherwise.
+          licenseRelevant: licenseMatters(r.category),
+          licensed: badges.licensed,
+          insured: badges.insured,
           // What THIS pro quoted for parts, falling back to the figure on the
           // request when they did not name one.
           effectiveMaterials: Math.round(amounts.materials * 100) / 100,
