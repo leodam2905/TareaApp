@@ -94,10 +94,10 @@ describe("quoteRange", () => {
 
   it("quotes the spread of what pros charge, fee included", () => {
     const r = quoteRange({ ...base, minRate: 60, maxRate: 120 });
-    // Low end: 60/60*90 = 90, +30 travel = 120, x1.25 = 150
-    expect(r.lowTotal).toBe(150);
-    // High end: 120/60*90 = 180, +30 travel = 210, x1.25 = 262.5
-    expect(r.highTotal).toBe(262.5);
+    // Low end: 60/60*90 = 90, +30 travel = 120, then the customer fee
+    expect(r.lowTotal).toBeCloseTo(120 * (1 + CUSTOMER_FEE_RATE), 2);
+    // High end: 120/60*90 = 180, +30 travel = 210, then the customer fee
+    expect(r.highTotal).toBeCloseTo(210 * (1 + CUSTOMER_FEE_RATE), 2);
     expect(r.single).toBe(false);
   });
 
@@ -144,8 +144,8 @@ describe("applicants quoted on the same job", () => {
     // Applicants' labour subtotals, before the customer fee the range includes.
     for (const rate of [60, 85, 95, 120]) {
       const labour = quoteFor(rate);
-      expect(labour * 1.25).toBeGreaterThanOrEqual(shown.lowTotal - 0.01);
-      expect(labour * 1.25).toBeLessThanOrEqual(shown.highTotal + 0.01);
+      expect(labour * (1 + CUSTOMER_FEE_RATE)).toBeGreaterThanOrEqual(shown.lowTotal - 0.01);
+      expect(labour * (1 + CUSTOMER_FEE_RATE)).toBeLessThanOrEqual(shown.highTotal + 0.01);
     }
   });
 

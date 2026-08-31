@@ -7,7 +7,7 @@
 // It still has to be kept in step with the server by hand — the honest fix is
 // serving the rate alongside the service catalogue so the app reads it, which
 // needs a build to adopt either way.
-const double kCustomerFeeRate = 0.25;
+const double kCustomerFeeRate = 0.2778;
 
 /// What the customer pays for a job: labour plus the fee, plus materials at
 /// cost. Materials carry NO fee — they pass through, as reimbursements do.

@@ -18,7 +18,9 @@
 //  - Bump AGREEMENT_VERSION on any substantive change, so a re-acceptance can
 //    be required later and it is possible to tell which text somebody signed.
 
-export const AGREEMENT_VERSION = "2026-08-30";
+import { CUSTOMER_FEE_RATE } from "./fees";
+
+export const AGREEMENT_VERSION = "2026-08-31";
 
 export type IcaBlock =
   | { kind: "p"; lead?: string; text: string }
@@ -54,6 +56,11 @@ export interface IcaDocument {
     footer: string;
   };
 }
+
+// The fee the contract states is the fee the platform charges, by construction.
+// Spelling it out as a literal is how §4.1 came to promise something the code
+// did not do; a signed agreement that misstates the rate is worse than none.
+const FEE_PCT = `${+(CUSTOMER_FEE_RATE * 100).toFixed(2)}%`;
 
 export const ICA: IcaDocument = {
   version: AGREEMENT_VERSION,
@@ -193,7 +200,7 @@ export const ICA: IcaDocument = {
           kind: "p",
           lead: "4.1 — Fee Structure.",
           text:
-            "The Pro independently sets their own hourly rate for each category of work they offer, and earns 100% of the labor amount charged for a completed booking. Tarea deducts no commission from the Pro's earnings. Tarea is compensated by a Service Fee of 25% charged to the Customer in addition to the Pro's rate. Materials purchased by the Pro and reimbursed by the Customer are passed through at cost and carry no Service Fee.",
+            `The Pro independently sets their own hourly rate for each category of work they offer, and earns 100% of the labor amount charged for a completed booking. Tarea deducts no commission from the Pro's earnings. Tarea is compensated by a Service Fee of ${FEE_PCT} charged to the Customer in addition to the Pro's rate. Materials purchased by the Pro and reimbursed by the Customer are passed through at cost and carry no Service Fee.`,
         },
         {
           kind: "p",
