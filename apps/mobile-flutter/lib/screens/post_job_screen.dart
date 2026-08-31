@@ -892,7 +892,10 @@ class _PostJobScreenState extends State<PostJobScreen> {
     final total = _n(e['total'] ?? bd['total']) > 0
         ? _n(e['total'] ?? bd['total'])
         : ((priceVal ?? 0) + serviceFee);
-    final feePct = (((e['feeRate'] is num ? e['feeRate'] as num : 0.15)) * 100).round();
+    // Falls back to the app's own constant, not a literal. The literal was
+    // 0.15, two fee changes stale, so any response without feeRate showed a
+    // percentage the customer was never charged.
+    final feePct = (((e['feeRate'] is num ? e['feeRate'] as num : kCustomerFeeRate)) * 100).round();
 
     // The headline is an INTERVAL, not a figure Tarea picked.
     //

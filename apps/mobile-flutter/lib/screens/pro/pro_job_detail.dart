@@ -461,7 +461,12 @@ class _ProJobDetailState extends State<ProJobDetail> {
               Text('jobDetail.jobCompleted'.tr(), style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFF16A34A), fontSize: 16)),
               if (_b['completedAt'] != null) Text('jobDetail.finishedAt'.tr(args: [_clock(_b['completedAt'])]), style: const TextStyle(color: C.muted, fontSize: 13)),
               const SizedBox(height: 6),
-              Text('jobDetail.earnings'.tr(args: ['\$${(price * 0.9).toStringAsFixed(2)}']), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
+              // The pro keeps the whole labour amount. This multiplied by 0.9
+              // for the retired 10% pro-side fee, which is now zero — so a
+              // finished job under-reported what the pro was actually paid, on
+              // the one screen that tells them. Tarea's fee is charged to the
+              // customer on top and never comes out of this number.
+              Text('jobDetail.earnings'.tr(args: ['\$${price.toStringAsFixed(2)}']), style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
               if (_b['review'] != null)
                 Padding(padding: const EdgeInsets.only(top: 6), child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Text('jobDetail.customerRated'.tr(), style: const TextStyle(color: Color(0xFFF59E0B))),
