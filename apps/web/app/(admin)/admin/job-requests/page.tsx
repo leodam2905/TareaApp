@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { licenseAlwaysRequired } from "@/lib/credentials";
+import PublishDraft from "./PublishDraft";
 
 // Everything a customer has posted, with the photos they attached.
 //
@@ -142,10 +143,17 @@ export default async function AdminJobRequestsPage() {
 
                 <p className="text-slate-300 text-sm line-clamp-2">{r.description}</p>
 
-                {r.status === "DRAFT" && r.geocodeError && (
-                  <p className="text-amber-400/80 text-xs">
-                    Geocode failed: {r.geocodeError}
-                  </p>
+                {r.status === "DRAFT" && (
+                  <div className="space-y-2 pt-1">
+                    <p className="text-amber-400/80 text-xs">
+                      Not published — {r.geocodeError ?? "the address could not be located"}.
+                      Pros cannot see or apply to this job.
+                    </p>
+                    <p className="text-slate-500 text-xs">
+                      Customer typed: <span className="text-slate-300">{r.address}, {r.city}</span>
+                    </p>
+                    <PublishDraft jobId={r.id} address={r.address} city={r.city} />
+                  </div>
                 )}
 
                 <div className="flex gap-x-6 gap-y-1 flex-wrap text-xs text-slate-400 pt-1">
