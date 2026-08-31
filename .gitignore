@@ -69,3 +69,6 @@ apps/mobile-flutter/ios/certs/
 supabase/.temp/
 supabase/.branches/
 scripts/.deploy-env
+
+# Transient: a rolled Stripe webhook secret on its way to Secret Manager.
+.whsec
