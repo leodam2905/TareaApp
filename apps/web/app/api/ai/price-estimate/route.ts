@@ -205,6 +205,12 @@ No markdown, just the JSON.`,
         high: quotedRange.highTotal,
         lowRate: quotedRange.lowRate,
         highRate: quotedRange.highRate,
+        // Labour only, for the job request's budget. `low`/`high` above carry
+        // the fee and must never be stored as a budget — budgetMax is multiplied
+        // by the fee again in the CSLB cap, and budgetMin is what hireAmounts
+        // falls back to as labour.
+        lowLabour: quotedRange.lowLabour,
+        highLabour: quotedRange.highLabour,
         proCount: quotedRange.proCount,
         single: quotedRange.single,
       },

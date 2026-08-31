@@ -183,7 +183,18 @@ function PostJobForm() {
       const d = await res.json();
       // Exact single price (AI fixed price, else range midpoint).
       const price = d.price ?? (d.min != null && d.max != null ? Math.round((d.min + d.max) / 2) : null);
-      if (price != null) { set("budgetMin", String(price)); set("budgetMax", String(price)); }
+      // The budget is the span of RATES that could take this job. Every
+      // applicant is quoted on the same estimated minutes at their own rate, so
+      // the rate is what varies between them — and the charge now comes from the
+      // applicant's own figure, which a single midpoint could not describe.
+      //
+      // lowLabour/highLabour, never priceRange.low/high: those carry the
+      // customer fee, and budgetMax is multiplied by the fee again in the CSLB
+      // cap check. Falls back to the midpoint when no range came back — one pro,
+      // or none yet in this category.
+      const lo = d.priceRange?.lowLabour ?? price;
+      const hi = d.priceRange?.highLabour ?? price;
+      if (lo != null && hi != null) { set("budgetMin", String(lo)); set("budgetMax", String(hi)); }
       setEstimate({
         price: price ?? 0,
         urgency: d.breakdown?.urgency ?? 0,

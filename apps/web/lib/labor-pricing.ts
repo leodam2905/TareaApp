@@ -186,6 +186,16 @@ export type QuotedRange = {
   /** Dearest. Equal to the low pair when only one pro qualifies. */
   highRate: number;
   highTotal: number;
+  /** The same two ends as LABOUR, before the customer fee.
+   *
+   *  Both are needed and they are not interchangeable. The totals are what a
+   *  customer is shown, fee included, because SB 478 makes an advertised range
+   *  a price. These are what a job request stores as its budget: budgetMax is
+   *  multiplied by the fee again in the CSLB cap check, and budgetMin is the
+   *  labour figure hireAmounts falls back to, so a fee-inclusive number in
+   *  either place would be charged the fee twice. */
+  lowLabour: number;
+  highLabour: number;
   /** How many pros the interval is drawn from. */
   proCount: number;
   /** True when one pro qualifies, so there is a price rather than a range. */
@@ -214,15 +224,16 @@ export function quoteRange(opts: {
    *  because it is quoted before any pro is chosen. */
   minimumMinutes?: number;
 }): QuotedRange {
-  const total = (rate: number) => {
-    const q = quoteLabor({
-      hourlyRate: rate,
-      estimatedBillableMinutes: opts.estimatedBillableMinutes,
-      minimumMinutes: opts.minimumMinutes,
-      urgent: opts.urgent,
-    });
-    return round2(q.initialLaborAmount * (1 + CUSTOMER_FEE_RATE));
-  };
+  const labourAt = (rate: number) =>
+    round2(
+      quoteLabor({
+        hourlyRate: rate,
+        estimatedBillableMinutes: opts.estimatedBillableMinutes,
+        minimumMinutes: opts.minimumMinutes,
+        urgent: opts.urgent,
+      }).initialLaborAmount,
+    );
+  const total = (rate: number) => round2(labourAt(rate) * (1 + CUSTOMER_FEE_RATE));
 
   // Guard the ordering rather than trusting the caller: a swapped pair would
   // render as "$225 - $142", which reads as a bug to a customer and is one.
@@ -231,6 +242,8 @@ export function quoteRange(opts: {
 
   const lowTotal = total(lowRate);
   const highTotal = total(highRate);
+  const lowLabour = labourAt(lowRate);
+  const highLabour = labourAt(highRate);
 
   return {
     estimatedBillableMinutes: opts.estimatedBillableMinutes,
@@ -238,6 +251,8 @@ export function quoteRange(opts: {
     lowTotal,
     highRate,
     highTotal,
+    lowLabour,
+    highLabour,
     proCount: opts.proCount,
     // The floor can collapse two different rates onto the same total. Showing
     // "$150 - $150" is a range in name only, so it is reported as a single.

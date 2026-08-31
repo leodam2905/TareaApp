@@ -197,3 +197,28 @@ describe("the dollar floor no longer decides prices", () => {
     expect(q.initialLaborAmount).toBe(120);
   });
 });
+describe("quoteRange labour ends", () => {
+  const base = { proCount: 4, estimatedBillableMinutes: 120 };
+
+  // budgetMax is multiplied by the fee AGAIN in the CSLB cap check, and
+  // budgetMin is the labour hireAmounts falls back to. A fee-inclusive figure
+  // in either place is charged the fee twice.
+  it("reports labour WITHOUT the customer fee", () => {
+    const r = quoteRange({ ...base, minRate: 60, maxRate: 120 });
+    expect(r.lowLabour).toBeLessThan(r.lowTotal);
+    expect(r.highLabour).toBeLessThan(r.highTotal);
+    expect(r.lowTotal).toBeCloseTo(r.lowLabour * (1 + CUSTOMER_FEE_RATE), 2);
+    expect(r.highTotal).toBeCloseTo(r.highLabour * (1 + CUSTOMER_FEE_RATE), 2);
+  });
+
+  it("orders the labour ends the same way as the rates", () => {
+    const r = quoteRange({ ...base, minRate: 120, maxRate: 60 });
+    expect(r.lowLabour).toBeLessThanOrEqual(r.highLabour);
+  });
+
+  it("collapses to one figure when a single pro qualifies", () => {
+    const r = quoteRange({ ...base, proCount: 1, minRate: 90, maxRate: 90 });
+    expect(r.lowLabour).toBe(r.highLabour);
+    expect(r.single).toBe(true);
+  });
+});

@@ -320,8 +320,20 @@ class _PostJobScreenState extends State<PostJobScreen> {
               // Persist the AI's service price as the budget (fee-able, no
               // materials) + materials separately (pass-through, no fee).
               if (_estimate?['price'] != null || _estimate?['min'] != null) ...{
-                'budgetMin': _estimate?['price'] ?? _estimate?['min'],
-                'budgetMax': _estimate?['price'] ?? _estimate?['max'] ?? _estimate?['min'],
+                // The budget is the span of RATES that could take this job, not
+                // the span of the AI's hour guess. Every applicant is quoted on
+                // the same estimated minutes at their own rate, so what actually
+                // varies between them is the rate — and since the charge comes
+                // from the applicant's own figure, a budget built from hours
+                // described a spread nobody would ever be billed.
+                //
+                // lowLabour/highLabour, never priceRange.low/high: those carry
+                // the customer fee, and budgetMax is multiplied by the fee again
+                // in the CSLB cap check.
+                'budgetMin': _estimate?['priceRange']?['lowLabour']
+                    ?? _estimate?['price'] ?? _estimate?['min'],
+                'budgetMax': _estimate?['priceRange']?['highLabour']
+                    ?? _estimate?['price'] ?? _estimate?['max'] ?? _estimate?['min'],
                 // Zero on purpose: the pro quotes materials when they apply,
                 // and that quote is what the customer is charged.
                 'materialsCost': 0,
