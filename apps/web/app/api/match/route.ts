@@ -3,7 +3,7 @@ import { stateAliases } from "@/lib/us-states";
 import { matchScore, matchQuality, credentialTier, isAvailableAt } from "@/lib/matching";
 // findMany uses `include`, which returns every scalar on the profile, so the
 // credential columns credentialBadges reads are already present.
-import { credentialBadges, licenseMatters } from "@/lib/credentials";
+import { credentialBadges, licenseMatters, licenseAlwaysRequired } from "@/lib/credentials";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -143,6 +143,18 @@ export async function GET(req: NextRequest) {
       })
       // Only apply distance filter when customer location is known
       .filter((h) => h.distanceKm === null || h.distanceKm <= RADIUS_KM)
+      // For roofing and HVAC, an unlicensed pro is not a worse match — they
+      // cannot lawfully take the job at all, and POST /bookings refuses them.
+      // Ranking them lower would list somebody the customer can pick and only
+      // be turned away at checkout, which is the refusal-at-the-last-step
+      // failure the apply route already avoids. This is the one place a
+      // credential excludes rather than sorts.
+      //
+      // Note this CAN empty the list where no licensed pro exists yet. That is
+      // the honest answer for permitted work, and better than a lineup nobody
+      // in it may accept — the radius fallback below deliberately does not
+      // cover it.
+      .filter((h) => !licenseAlwaysRequired(category) || (h.licensed && h.insured))
       // Whoever can actually do it, best fit first.
       //
       // This used to sort by distance and only break ties on score, so a
