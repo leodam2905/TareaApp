@@ -202,8 +202,18 @@ class _RequestsScreenState extends State<RequestsScreen> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(color: C.bg, borderRadius: BorderRadius.circular(12)),
             child: Column(children: [
+              // Labour first: it is the pro's own rate applied to the job's
+              // estimated time, and now that pros set their rates it is the
+              // main reason two applicants differ. Showing only materials and a
+              // total left the customer unable to see why.
+              _priceRow('requests.priceLabour'.tr(),
+                  '\$${((a['effectiveLabour'] ?? 0) as num).toStringAsFixed(2)}'),
+              const SizedBox(height: 6),
               _priceRow('requests.priceMaterials'.tr(),
                   '\$${((a['effectiveMaterials'] ?? 0) as num).toStringAsFixed(2)}'),
+              const SizedBox(height: 6),
+              _priceRow('requests.priceServiceFee'.tr(),
+                  '\$${((a['serviceFee'] ?? 0) as num).toStringAsFixed(2)}'),
               const SizedBox(height: 6),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 Text('requests.priceTotal'.tr(),

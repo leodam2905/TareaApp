@@ -445,7 +445,9 @@
     "cancelBody": "Esto elimina tu trabajo publicado. No se puede deshacer.",
     "cancelled": "Solicitud cancelada",
     "priceMaterials": "Materiales cotizados",
-    "priceTotal": "Pagarías"
+    "priceTotal": "Pagarías",
+    "priceLabour": "Mano de obra",
+    "priceServiceFee": "Tarifa de servicio"
   },
   "proProfile": {
     "title": "Perfil Pro",

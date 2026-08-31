@@ -445,7 +445,9 @@
     "cancelBody": "This removes your posted job. This can't be undone.",
     "cancelled": "Request cancelled",
     "priceMaterials": "Materials quoted",
-    "priceTotal": "You'd pay"
+    "priceTotal": "You'd pay",
+    "priceLabour": "Labour",
+    "priceServiceFee": "Service fee"
   },
   "proProfile": {
     "title": "Pro Profile",

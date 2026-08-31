@@ -96,7 +96,12 @@ export async function GET() {
       ...r,
       applications: r.applications.map((a) => {
         const materials = a.materialsEstimate ?? r.materialsCost ?? 0;
-        const amounts = hireAmounts(r.budgetMin, materials);
+        // THIS applicant's labour, in the same order materializeHire resolves
+        // it. Passing r.budgetMin here priced every applicant identically, so
+        // the only thing that moved between rows was materials — and the number
+        // shown was not the number charged for anyone whose rate differed.
+        const labour = a.proposedPrice ?? r.budgetMin;
+        const amounts = hireAmounts(labour, materials);
         // Approved and unexpired, not "a file was uploaded" — the same
         // predicate the ranking, the fan-out gate and the invoice all use.
         const badges = a.handyman ? credentialBadges(a.handyman) : { licensed: false, insured: false };
@@ -118,6 +123,12 @@ export async function GET() {
           // What THIS pro quoted for parts, falling back to the figure on the
           // request when they did not name one.
           effectiveMaterials: Math.round(amounts.materials * 100) / 100,
+          // Labour and fee as their own numbers. The row showed materials and a
+          // total, so a customer could see two applicants differ and had no way
+          // to see why — and once labour varies by pro, materials is no longer
+          // even the main reason it does.
+          effectiveLabour: Math.round(amounts.labour * 100) / 100,
+          serviceFee: Math.round(amounts.serviceFee * 100) / 100,
           // What hiring this pro would cost, all in.
           customerTotal:
             Math.round((amounts.labour + amounts.serviceFee + amounts.materials) * 100) / 100,

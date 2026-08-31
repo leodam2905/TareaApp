@@ -445,7 +445,9 @@
     "cancelBody": "Cela supprime votre annonce. Action irréversible.",
     "cancelled": "Demande annulée",
     "priceMaterials": "Matériaux estimés",
-    "priceTotal": "Vous paieriez"
+    "priceTotal": "Vous paieriez",
+    "priceLabour": "Main-d'œuvre",
+    "priceServiceFee": "Frais de service"
   },
   "proProfile": {
     "title": "Profil Pro",

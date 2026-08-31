@@ -24,14 +24,18 @@ import { resolveRate, quoteLabor, resolveMinimumMinutes } from "./labor-pricing"
  *
  * Materials are never discounted — they are a pass-through at cost, and a promo
  * that ate into them would take the difference out of the pro's reimbursement.
+ *
+ * The first argument is THIS APPLICANT'S labour, not the job's budget. It was
+ * named budgetMin and both callers duly passed jobRequest.budgetMin, which is
+ * how every applicant came to cost the same.
  */
-export function hireAmounts(budgetMin: number, materials: number, discount = 0): {
+export function hireAmounts(labourAmount: number, materials: number, discount = 0): {
   labour: number;
   serviceFee: number;
   materials: number;
   discount: number;
 } {
-  const full = Math.max(0, budgetMin);
+  const full = Math.max(0, labourAmount);
   const applied = Math.min(Math.max(0, discount), full);
   const labour = full - applied;
   return {
@@ -162,6 +166,11 @@ export async function materializeHire(opts: {
       })
     : null;
 
+  // The labour this applicant agreed to, in the order of what is most
+  // authoritative: what they quoted, then the same arithmetic recomputed here,
+  // then the job's budget for requests that predate per-applicant pricing.
+  const agreedLabour = application.proposedPrice ?? laborQuote?.initialLaborAmount ?? price;
+
   const booking = await prisma.booking.create({
     data: {
       customerId: jobRequest.customerId,
@@ -178,13 +187,22 @@ export async function materializeHire(opts: {
       scheduledAt: jobRequest.scheduledAt,
       address: jobRequest.address,
       city: jobRequest.city,
-      // What the customer paid. The pro's own rate produced it — their
-      // application was quoted at rate x the job's estimated minutes — and the
-      // charge has already gone through, so this figure is settled, not derived.
-      totalPrice: price,
+      // What the customer paid, from THIS pro's rate.
+      //
+      // This said `price` — jobRequest.budgetMin — while the comment above it
+      // described the applicant's own figure, and initialLaborAmount on the next
+      // line used the right one. So the snapshot moved with the pro's rate and
+      // the charge did not: every applicant cost the same labour, the interval
+      // the customer was quoted described nothing, and the `Offers: $X` on the
+      // applicant row was a number nobody paid.
+      //
+      // proposedPrice first because it is what this pro agreed to at apply time,
+      // including a voluntary undercut, which the recomputed quote cannot know
+      // about. Both are written the same so an invoice cannot contradict a charge.
+      totalPrice: agreedLabour,
       proRateSnapshot: ratePriced,
       estimatedBillableMinutes: jobRequest.estimatedBillableMinutes,
-      initialLaborAmount: laborQuote?.initialLaborAmount ?? price,
+      initialLaborAmount: agreedLabour,
       minimumMinutesSnapshot: minimumMinutes,
       pricingType: "hourly",
       ...(promoCodeId ? { promoCodeId } : {}),

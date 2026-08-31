@@ -25,6 +25,8 @@ type Application = {
   /** Priced server-side through hireAmounts, so this preview and the charge
    *  cannot disagree. Materials are whatever THIS pro quoted. */
   effectiveMaterials?: number;
+  effectiveLabour?: number;
+  serviceFee?: number;
   customerTotal?: number;
 };
 
@@ -225,16 +227,22 @@ export default function CustomerRequestsPage() {
                           </div>
                         )}
                         {a.message && <p className="text-gray-500 text-xs mt-0.5 truncate">"{a.message}"</p>}
-                        {a.proposedPrice && (
-                          <p className="text-orange-500 text-xs font-semibold mt-0.5">Offers: {formatCurrency(a.proposedPrice)}</p>
-                        )}
+                        {/* "Offers: $X" is gone: proposedPrice IS the labour
+                            line below now, so showing it twice invited the
+                            reading that they were different numbers. */}
                         {/* Pros quote their own materials, so two applicants on
                             the same job are not the same price. Without this a
                             customer compares names and ratings while the amount
                             they pay differs silently. */}
                         {!!a.customerTotal && (
                           <p className="text-xs mt-1">
-                            <span className="text-gray-500">Materials {formatCurrency(a.effectiveMaterials ?? 0)} · </span>
+                            {/* Labour leads: it is this pro's own rate on the
+                                job's estimated time, and now that pros set
+                                their rates it is the main reason two applicants
+                                differ. Materials alone could not explain it. */}
+                            <span className="text-gray-500">
+                              Labour {formatCurrency(a.effectiveLabour ?? 0)} · Materials {formatCurrency(a.effectiveMaterials ?? 0)} · Fee {formatCurrency(a.serviceFee ?? 0)} ·{" "}
+                            </span>
                             <span className="font-semibold text-gray-700">You&apos;d pay {formatCurrency(a.customerTotal)}</span>
                           </p>
                         )}
