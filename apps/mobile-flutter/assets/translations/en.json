@@ -332,7 +332,9 @@
     "rangeAcrossPros": "Estimated total across {} pros",
     "youChoosePro": "Pros set their own rates. Your final price depends on which pro you choose.",
     "laborServiceLowest": "Labor & service (lowest pro)",
-    "billedAtMinimum": "Billed at this pro’s {}h minimum"
+    "billedAtMinimum": "Billed at this pro’s {}h minimum",
+    "licensedOnly": "Licensed & insured pros only",
+    "licensedOnlyDesc": "Only pros with a verified licence and insurance certificate can apply. Fewer pros may be available."
   },
   "browse": {
     "title": "Browse Pros",

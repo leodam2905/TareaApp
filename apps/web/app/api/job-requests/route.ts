@@ -222,7 +222,10 @@ export async function GET() {
       // work almost by definition — a $400 roof repair is no more lawful for an
       // unlicensed pro than a $4,000 one. Checked FIRST so price cannot excuse
       // it. See LICENSE_ALWAYS in lib/credentials.
-      if (licenseAlwaysRequired(r.category) && !licensedInsured) return false;
+      // Two reasons a job is licensed-only, one gate. The category rule is the
+      // law's and cannot be switched off; requiresLicensed is the customer's.
+      // Either alone is sufficient; neither widens the other.
+      if ((licenseAlwaysRequired(r.category) || r.requiresLicensed) && !licensedInsured) return false;
 
       const total = r.budgetMax * (1 + CUSTOMER_FEE_RATE) + (r.materialsCost ?? 0);
       if (total > CSLB_UNLICENSED_CAP && !licensedInsured) return false;
@@ -258,7 +261,7 @@ export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { category, title, description, address, city, scheduledAt, budgetMin, budgetMax, materialsCost, latitude, longitude, imageUrls, urgency, estimatedBillableMinutes } = await req.json();
+  const { category, title, description, address, city, scheduledAt, budgetMin, budgetMax, materialsCost, latitude, longitude, imageUrls, urgency, estimatedBillableMinutes, requiresLicensed } = await req.json();
 
   if (!category || !title || !description || !address || !city || !scheduledAt) {
     return NextResponse.json({ error: "All fields are required" }, { status: 400 });
@@ -338,8 +341,12 @@ export async function POST(req: NextRequest) {
   // says which trades to recruit into, and a customer told plainly that we are
   // still onboarding licensed roofers in their area is a customer who might
   // wait. A customer whose job sits untouched for a week is not.
+  // Only offered where a licence distinguishes anyone — a licensed cleaner is
+  // not a safer cleaner. Coerced rather than trusted: the field is a boolean.
+  const wantsLicensed = requiresLicensed === true && licenseMatters(category);
+
   let eligibleProCount: number | null = null;
-  if (licenseAlwaysRequired(category)) {
+  if (licenseAlwaysRequired(category) || wantsLicensed) {
     const candidates = await prisma.handymanProfile.findMany({
       where: {
         backgroundCheckStatus: "PASSED",
@@ -359,6 +366,7 @@ export async function POST(req: NextRequest) {
     data: {
       customerId: user.id,
       status: isDraft ? "DRAFT" : "OPEN",
+      requiresLicensed: wantsLicensed,
       // Why it failed, so an admin sees which address to fix rather than
       // guessing. Recorded on success too, so a bad rooftop match is traceable.
       geocodeError: rejected ? rejected.message : null,
@@ -453,10 +461,14 @@ export async function POST(req: NextRequest) {
       ...(noEligiblePros
         ? {
             noEligiblePros: true,
-            notice:
-              `${LICENSED_TRADE_LABEL[category] ?? "This work"} requires a licensed and insured pro. `
-              + "We do not have one in your area yet, so this may take longer than usual — "
-              + "we will notify you as soon as one joins.",
+            notice: licenseAlwaysRequired(category)
+              ? `${LICENSED_TRADE_LABEL[category] ?? "This work"} requires a licensed and insured pro. `
+                + "We do not have one in your area yet, so this may take longer than usual — "
+                + "we will notify you as soon as one joins."
+              // Their own restriction, so say so — and say it is theirs to lift.
+              : "You asked for licensed and insured pros only, and we do not have one "
+                + "in your area yet. We will notify you as soon as one joins, or you can "
+                + "reopen this job to all background-checked pros.",
           }
         : {}),
     },

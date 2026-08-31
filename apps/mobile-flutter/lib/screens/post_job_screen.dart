@@ -36,6 +36,10 @@ class PostJobScreen extends StatefulWidget {
 class _PostJobScreenState extends State<PostJobScreen> {
   int _step = 0;
   String _urgency = 'STANDARD';
+  /// The customer's own requirement. Only offered where a licence distinguishes
+  /// anyone — roofing and HVAC are licensed-only regardless, and a licensed
+  /// cleaner is not a safer cleaner.
+  bool _requiresLicensed = false;
 
   // Structured service picker shared with Instant Quote so both flows ask the
   // exact same questions (service_catalog.dart).
@@ -304,6 +308,7 @@ class _PostJobScreenState extends State<PostJobScreen> {
               'title': _jobTitle(),
               'description': _builtDescription(),
               'urgency': _urgency,
+              if (_requiresLicensed) 'requiresLicensed': true,
               'scheduledAt': _scheduledAt().toIso8601String(),
               'address': _addressLine(),
               'city': _city.text.trim(),
@@ -575,6 +580,12 @@ class _PostJobScreenState extends State<PostJobScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: children),
       );
 
+  /// Mirrors LICENSE_REQUIRED in apps/web/lib/credentials.ts, minus the trades
+  /// that are licensed-only regardless — offering a choice there would imply the
+  /// customer could switch it off, and they cannot.
+  static bool _licenceOptional(String category) =>
+      const {'PLUMBING', 'ELECTRICAL', 'GENERAL'}.contains(category);
+
   Widget _details() {
     return Column(
       children: [
@@ -624,6 +635,27 @@ class _PostJobScreenState extends State<PostJobScreen> {
               );
             }).toList(),
           ),
+          if (_cat != null && _licenceOptional(_cat!.api)) ...[
+            const SizedBox(height: 16),
+            const Divider(height: 1),
+            const SizedBox(height: 12),
+            GestureDetector(
+              onTap: () => setState(() => _requiresLicensed = !_requiresLicensed),
+              behavior: HitTestBehavior.opaque,
+              child: Row(children: [
+                Icon(_requiresLicensed ? Icons.check_box : Icons.check_box_outline_blank,
+                    color: _requiresLicensed ? C.blue : C.muted, size: 22),
+                const SizedBox(width: 10),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('postjob.licensedOnly'.tr(),
+                      style: const TextStyle(fontWeight: FontWeight.w800, color: C.ink, fontSize: 14)),
+                  const SizedBox(height: 2),
+                  Text('postjob.licensedOnlyDesc'.tr(),
+                      style: const TextStyle(fontSize: 12, color: C.muted, height: 1.25)),
+                ])),
+              ]),
+            ),
+          ],
         ]),
         _card([
           Text('postjob.needTitle'.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),

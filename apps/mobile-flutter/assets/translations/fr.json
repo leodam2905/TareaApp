@@ -332,7 +332,9 @@
     "rangeAcrossPros": "Total estimé pour {} pros",
     "youChoosePro": "Les pros fixent leurs propres tarifs. Votre prix final dépend du pro que vous choisissez.",
     "laborServiceLowest": "Main-d’œuvre et service (pro le moins cher)",
-    "billedAtMinimum": "Facturé au minimum de {}h de ce pro"
+    "billedAtMinimum": "Facturé au minimum de {}h de ce pro",
+    "licensedOnly": "Pros licenciés et assurés uniquement",
+    "licensedOnlyDesc": "Seuls les pros avec une licence et une attestation d'assurance vérifiées peuvent postuler. Moins de pros peuvent être disponibles."
   },
   "browse": {
     "title": "Parcourir les pros",

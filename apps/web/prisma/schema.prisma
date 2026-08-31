@@ -494,12 +494,19 @@ model JobRequest {
   geocodeError      String?   @map("geocode_error")
   geocodedAt        DateTime? @map("geocoded_at")
   imageUrls   String[]        @default([])
+  // The CUSTOMER's own requirement, distinct from the law's. Roofing and HVAC
+  // are licence-only whatever this says (see licenseAlwaysRequired); this lets a
+  // customer impose the same restriction on a trade where it is optional. It
+  // only ever narrows who may apply — it cannot admit an unlicensed pro to a
+  // trade that requires one. Migration 014.
+  requiresLicensed Boolean     @default(false)
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
   customer     User             @relation("CustomerJobRequests", fields: [customerId], references: [id])
   applications JobApplication[]
 
+  @@index([requiresLicensed])
   @@map("job_requests")
 }
 

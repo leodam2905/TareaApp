@@ -65,6 +65,13 @@ function PostJobForm() {
     longitude: "",
   });
 
+  // The customer's own requirement, separate from `form` because that state is
+  // string-typed. Only offered where a licence distinguishes anyone — roofing
+  // and HVAC are licensed-only regardless, and a licensed cleaner is not a
+  // safer cleaner. Mirrors LICENSE_REQUIRED in lib/credentials, minus those two.
+  const [requiresLicensed, setRequiresLicensed] = useState(false);
+  const licenceOptional = ["PLUMBING", "ELECTRICAL", "GENERAL"].includes(form.category);
+
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
   // Urgent = ASAP: preselect now so the job lands in a ~3h window. Changing
@@ -229,6 +236,7 @@ function PostJobForm() {
         // customer's comparison between them is like-for-like.
         ...(estimate?.minutes ? { estimatedBillableMinutes: estimate.minutes } : {}),
         scheduledAt: new Date(form.scheduledAt).toISOString(),
+        ...(licenceOptional && requiresLicensed ? { requiresLicensed: true } : {}),
         imageUrls,
       }),
     });
@@ -282,6 +290,22 @@ function PostJobForm() {
             <p className="text-xs font-semibold text-red-600 mt-2 flex items-center gap-1">
               <Zap className="w-3 h-3 flex-shrink-0" /> A pro aims to arrive within ~3 hours. We set the earliest time — you can adjust it.
             </p>
+          )}
+          {licenceOptional && (
+            <label className="flex items-start gap-3 mt-4 pt-4 border-t border-gray-100 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={requiresLicensed}
+                onChange={e => setRequiresLicensed(e.target.checked)}
+                className="mt-0.5 w-4 h-4 accent-orange-500"
+              />
+              <span>
+                <span className="block text-sm font-bold text-gray-900">Licensed &amp; insured pros only</span>
+                <span className="block text-xs text-gray-500 mt-0.5">
+                  Only pros with a verified licence and insurance certificate can apply. Fewer pros may be available.
+                </span>
+              </span>
+            </label>
           )}
         </div>
 

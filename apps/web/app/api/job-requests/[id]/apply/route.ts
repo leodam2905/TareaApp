@@ -65,16 +65,19 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   // their licence lapsed, or straight from the API. Unlike the materials rule
   // there is no quote to adjust — the answer is a licence or a different job,
   // so say that rather than offering a number to change.
-  if (licenseAlwaysRequired(jobRequest.category)) {
+  if (licenseAlwaysRequired(jobRequest.category) || jobRequest.requiresLicensed) {
     const docs = await prisma.handymanProfile.findUnique({
       where: { id: profile.id }, select: CREDENTIAL_SELECT,
     });
     const badges = docs ? credentialBadges(docs) : { licensed: false, insured: false };
     if (!badges.licensed || !badges.insured) {
       return NextResponse.json({
-        error: `${jobRequest.category === "ROOFING" ? "Roofing" : "HVAC"} work requires a permit, `
-             + "so it is open to Licensed & Insured pros only — the under-$1,000 exemption does not "
-             + "apply to permitted work at any price. Add an approved licence and insurance certificate to take these jobs.",
+        error: licenseAlwaysRequired(jobRequest.category)
+          ? `${jobRequest.category === "ROOFING" ? "Roofing" : "HVAC"} work requires a permit, `
+            + "so it is open to Licensed & Insured pros only — the under-$1,000 exemption does not "
+            + "apply to permitted work at any price. Add an approved licence and insurance certificate to take these jobs."
+          : "This customer asked for Licensed & Insured pros only. Add an approved licence and "
+            + "insurance certificate to apply to jobs like this one.",
       }, { status: 403 });
     }
   }

@@ -11,6 +11,7 @@ import { sendEmail } from "@/lib/email";
 import { sendPushToUser } from "@/lib/push";
 import { sendSms } from "@/lib/sms";
 import { smsBody } from "@/lib/notify";
+import { credentialBadges, licenseAlwaysRequired } from "@/lib/credentials";
 
 const DEFAULT_RADIUS_MILES = 50;
 const MILES_TO_KM = 1.60934;
@@ -41,6 +42,8 @@ export interface FanoutJob {
   budgetMax: number;
   latitude: number | null;
   longitude: number | null;
+  /** The customer asked for licensed & insured only. */
+  requiresLicensed?: boolean;
 }
 
 /** Notifies every eligible pro. Returns how many were reached. */
@@ -81,8 +84,17 @@ export async function notifyProsOfJob(job: FanoutJob): Promise<number> {
   // coordinates or a blank city are gaps in our own data, not a signal the pro
   // is far away — treating them as a mismatch meant an open job could notify
   // nobody at all while still appearing in every pro's Find Jobs list.
+  // Never push a job the pro would be refused on. Both gates that stop an
+  // application also have to stop the notification, or the pro gets a text about
+  // work they cannot take and learns the rule by being turned away.
+  const licensedOnly = licenseAlwaysRequired(job.category) || job.requiresLicensed === true;
+
   const { latitude: jLat, longitude: jLng } = job;
   const nearby = handymen.filter((h) => {
+    if (licensedOnly) {
+      const b = credentialBadges(h);
+      if (!b.licensed || !b.insured) return false;
+    }
     const u = h.user;
     if (jLat != null && jLng != null && u.latitude != null && u.longitude != null) {
       // The pro's own limit, not a global one.
