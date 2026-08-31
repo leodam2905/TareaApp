@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutDashboard, Users, Briefcase, Wrench, LogOut, AlertTriangle, DollarSign, Hammer, BarChart2, Tag, Settings, Zap, Sun, Moon, MapPin, Lock, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, Wrench, LogOut, AlertTriangle, DollarSign, Hammer, BarChart2, Tag, Settings, Zap, Sun, Moon, MapPin, Lock, Menu, X, ImageIcon } from "lucide-react";
 import Logo from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
@@ -24,6 +24,9 @@ export default function AdminNav({ userName }: { userName: string }) {
     { href: "/admin/users",     label: t("nav_users"),     icon: Users },
     { href: "/admin/bookings",  label: t("nav_bookings"),  icon: Briefcase },
     { href: "/admin/services",  label: t("nav_services"),  icon: Wrench },
+    // Sits next to Bookings because it is the other half of the same funnel:
+    // Bookings are jobs that found a pro, these are jobs still looking.
+    { href: "/admin/job-requests", label: "Posted Jobs",     icon: ImageIcon },
     { href: "/admin/analytics", label: "Analytics",        icon: BarChart2 },
     { href: "/admin/disputes",  label: "Disputes",         icon: AlertTriangle },
     { href: "/admin/payouts",   label: "Payouts",          icon: DollarSign },
