@@ -72,8 +72,10 @@ npx prisma migrate diff \
 | 011 | Which ICA version a pro signed | **Yes** — 2026-08-30 |
 | 012 | Estimated billable minutes on a job request | **Yes** — 2026-08-30 |
 | 013 | Minimum billable TIME, replacing the price floor | **Yes** — 2026-08-30 |
+| 014 | Customer can require a licensed & insured pro | **Yes** — 2026-08-31 |
+| 015 | Materials receipt read + verification state | **Yes** — 2026-08-31 |
 
-> **All applied as of 2026-08-30.** The drift gate passes.
+> **All applied as of 2026-08-31.** The drift gate passes.
 >
 > 001 and 002 were recorded here as unapplied but their columns and tables were
 > already present — created by an earlier `prisma db push`, not by running these
@@ -86,6 +88,13 @@ npx prisma migrate diff \
 > `scripts/deploy-web.sh` fails only on `CREATE TABLE` / `ADD COLUMN` — things
 > the code needs and the database lacks — and treats extra database objects as a
 > warning, so this does not block a deploy. Do not "fix" it by dropping them.
+>
+> 014 and 015 create **partial** indexes (`WHERE "requiresLicensed" = true`,
+> `WHERE "materialsVerified" = 'review'`). Prisma cannot express those either,
+> so they are deliberately NOT declared in `schema.prisma` — the same treatment
+> as the GiST indexes above. They were briefly declared as full `@@index` lines,
+> which made the gate ask for a second, redundant index on each column; the
+> declarations were removed rather than the partial indexes widened.
 >
 > Separately, `bookings_jobRequestId_idx` was created by 007 but never declared
 > in `schema.prisma`, so the two disagreed from 2026-08-26 until it was added to

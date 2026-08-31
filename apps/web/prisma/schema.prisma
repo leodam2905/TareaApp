@@ -406,7 +406,12 @@ model Booking {
   // on it. The index is wanted — completion uses it to close the originating
   // request — so the schema is corrected to match, not the database.
   @@index([jobRequestId])
-  @@index([materialsVerified])
+  // The review queue's index is PARTIAL (WHERE "materialsVerified" = 'review')
+  // and lives in migration 015, because a full index on a column that is
+  // 'none' for almost every booking buys nothing and costs every write.
+  // Prisma cannot express a partial index, so it is not declared here —
+  // the same arrangement as the PostGIS GiST indexes. Declaring the full
+  // index instead would make the drift gate ask for a second, redundant one.
   @@map("bookings")
 }
 
@@ -514,7 +519,9 @@ model JobRequest {
   customer     User             @relation("CustomerJobRequests", fields: [customerId], references: [id])
   applications JobApplication[]
 
-  @@index([requiresLicensed])
+  // Partial index (WHERE "requiresLicensed" = true) in migration 014, for the
+  // same reason as bookings.materialsVerified above: restricted jobs are the
+  // minority and the only rows the eligibility gate reasons about separately.
   @@map("job_requests")
 }
 
