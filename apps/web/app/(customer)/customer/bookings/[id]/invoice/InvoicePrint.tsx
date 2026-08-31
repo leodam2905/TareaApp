@@ -4,6 +4,7 @@ import { Printer, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
 import Logo from "@/components/ui/Logo";
+import { INVOICE_PLATFORM, invoiceNumber, type ProIdentity } from "@/lib/invoice-config";
 
 type Booking = {
   id: string;
@@ -20,12 +21,15 @@ type Booking = {
 
 export default function InvoicePrint({
   booking,
+  pro,
   serviceFee,
   materials = 0,
   materialsRefunded = 0,
   total,
 }: {
   booking: Booking;
+  /** Resolved server-side — see proIdentity() in lib/invoice-config. */
+  pro: ProIdentity;
   serviceFee: number;
   materials?: number;
   materialsRefunded?: number;
@@ -34,7 +38,7 @@ export default function InvoicePrint({
   const fmt = (n: number) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
 
-  const invoiceNum = `INV-${booking.id.slice(-8).toUpperCase()}`;
+  const invoiceNum = invoiceNumber(booking.id);
   const paidDate = new Date(booking.scheduledAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -75,8 +79,20 @@ export default function InvoicePrint({
           {/* Header */}
           <div className="flex items-start justify-between mb-10">
             <div>
-              <Logo size={44} />
-              <p className="text-sm text-gray-500 mt-0.5">taptarea.com</p>
+              {/* The PRO leads, because the pro supplied the work. Tarea
+                  supplied the service fee and is named on that line and in the
+                  footer. A single-name invoice misstates one or the other:
+                  Tarea-only contradicts the ICA's own representation that Tarea
+                  is not a home services company, and pro-only misstates who
+                  took the payment, since Tarea is merchant of record. */}
+              <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
+                Services performed by
+              </p>
+              <p className="text-lg font-bold text-gray-900">{pro.name}</p>
+              {pro.license && <p className="text-sm text-gray-600">{pro.license}</p>}
+              {pro.licenseeNote && (
+                <p className="text-xs text-gray-500">{pro.licenseeNote}</p>
+              )}
             </div>
             <div className="text-right">
               <p className="text-2xl font-bold text-gray-900">Invoice</p>
@@ -97,7 +113,7 @@ export default function InvoicePrint({
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Service Provider</p>
-              <p className="font-bold text-gray-900">{booking.handyman.name}</p>
+              <p className="font-bold text-gray-900">{pro.name}</p>
               {/* The pro's phone is deliberately omitted — contact goes through
                   the masked proxy, and the invoice would otherwise leak it. */}
               <p className="text-sm text-gray-600">{booking.handyman.email}</p>
@@ -143,14 +159,16 @@ export default function InvoicePrint({
               <tr className="border-b border-gray-100">
                 <td className="py-3">
                   <p className="font-semibold text-gray-900">{booking.service.title}</p>
-                  <p className="text-xs text-gray-500">Professional service fee</p>
+                  <p className="text-xs text-gray-500">Labour — supplied by {pro.name}</p>
                 </td>
                 <td className="py-3 text-right font-semibold text-gray-900">{fmt(booking.totalPrice)}</td>
               </tr>
               <tr className="border-b border-gray-100">
                 <td className="py-3">
                   <p className="font-semibold text-gray-900">Service Fee</p>
-                  <p className="text-xs text-gray-500">{Math.round(CUSTOMER_FEE_RATE * 100)}% of service price</p>
+                  <p className="text-xs text-gray-500">
+                    {(CUSTOMER_FEE_RATE * 100).toFixed(2).replace(/\.00$/, "")}% of labour — supplied by {INVOICE_PLATFORM.legalName}
+                  </p>
                 </td>
                 <td className="py-3 text-right font-semibold text-gray-900">{fmt(serviceFee)}</td>
               </tr>
@@ -158,7 +176,7 @@ export default function InvoicePrint({
                 <tr className="border-b border-gray-100">
                   <td className="py-3">
                     <p className="font-semibold text-gray-900">Materials</p>
-                    <p className="text-xs text-gray-500">Passed through at cost — no fee</p>
+                    <p className="text-xs text-gray-500">At cost, no fee — supplied by {pro.name}</p>
                   </td>
                   <td className="py-3 text-right font-semibold text-gray-900">{fmt(materials)}</td>
                 </tr>
@@ -197,7 +215,15 @@ export default function InvoicePrint({
 
           {/* Footer */}
           <div className="border-t border-gray-100 pt-6 text-xs text-gray-400 text-center space-y-1">
-            <p>Tarea US LLC · taptarea.com · support@taptarea.com</p>
+            <p>
+              Payment collected by {INVOICE_PLATFORM.legalName} on behalf of {pro.name}.
+            </p>
+            <p>
+              {INVOICE_PLATFORM.legalName} · {INVOICE_PLATFORM.address}
+            </p>
+            <p>
+              {INVOICE_PLATFORM.site} · {INVOICE_PLATFORM.supportEmail}
+            </p>
             <p>This invoice is auto-generated and serves as your official payment receipt.</p>
           </div>
         </div>

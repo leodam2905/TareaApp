@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
+import { invoiceNumber } from "@/lib/invoice-config";
 import { materialsOwed } from "@/lib/pro-payout";
 import { invoiceToken } from "@/lib/invoice-link";
 
@@ -54,7 +55,7 @@ export async function GET() {
       return {
         id: b.id,
         // What the invoice is called on screen and in the email.
-        number: b.id.slice(-8).toUpperCase(),
+        number: invoiceNumber(b.id),
         service: b.service.title,
         category: b.service.category,
         handyman: b.handyman.name,

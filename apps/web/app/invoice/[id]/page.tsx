@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
+import { proIdentity } from "@/lib/invoice-config";
 import { verifyInvoiceToken } from "@/lib/invoice-link";
 import InvoicePrint from "../../(customer)/customer/bookings/[id]/invoice/InvoicePrint";
 
@@ -30,7 +31,19 @@ export default async function PublicInvoicePage({
     include: {
       service: true,
       customer: { select: { id: true, name: true, email: true, phone: true } },
-      handyman: { select: { id: true, name: true, email: true } },
+      handyman: {
+        select: {
+          id: true, name: true, email: true,
+          accountType: true, companyName: true,
+          // Printed as the performer of the work — see proIdentity().
+          handymanProfile: {
+            select: {
+              licenseNumber: true, licenseeName: true,
+              licenseIssuer: true, licenseStatus: true,
+            },
+          },
+        },
+      },
     },
   });
   if (!booking || !booking.isPaid) notFound();
@@ -39,9 +52,19 @@ export default async function PublicInvoicePage({
   const materials = booking.materialsEstimate ?? 0;
   const refunded = booking.materialsRefunded ?? 0;
   const total = Math.round((booking.totalPrice + serviceFee + materials - refunded) * 100) / 100;
+  // The name on the invoice is the pro's trading name and, where verified,
+  // their licence — not the account's display name. See lib/invoice-config.
+  const pro = proIdentity({
+    name: booking.handyman.name,
+    accountType: booking.handyman.accountType,
+    companyName: booking.handyman.companyName,
+    ...(booking.handyman.handymanProfile ?? {}),
+  });
+
 
   return (
     <InvoicePrint
+      pro={pro}
       booking={booking}
       serviceFee={serviceFee}
       materials={materials}
