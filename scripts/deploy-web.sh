@@ -28,6 +28,19 @@ SERVICE="tarea-web"
 HEALTH_URL="https://taptarea.com/"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+# Local, uncommitted deploy settings — chiefly the smoke-test credentials.
+#
+# In a file rather than a shell profile so the password is scoped to this repo
+# instead of exported into every process the user runs, and so it is covered by
+# .gitignore rather than depending on nobody ever pasting their dotfiles.
+# Optional: absent, the script behaves exactly as before and warns that the
+# authenticated smoke test was skipped.
+DEPLOY_ENV="$REPO_ROOT/scripts/.deploy-env"
+if [[ -f "$DEPLOY_ENV" ]]; then
+  # shellcheck disable=SC1090
+  set -a; source "$DEPLOY_ENV"; set +a
+fi
+
 # The personal account expires under a reauth policy mid-session; the deployer
 # service account does not. Override with --account when needed.
 ACCOUNT="tarea-deployer@${PROJECT}.iam.gserviceaccount.com"
