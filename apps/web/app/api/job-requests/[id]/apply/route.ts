@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { unmetSteps, unmetStepsMessage } from "@/lib/pro-bookable";
 import { syncPayoutStatus } from "@/lib/payout-account";
 import { validateMaterials, materialsTier } from "@/lib/materials-policy";
-import { credentialBadges, CREDENTIAL_SELECT } from "@/lib/credentials";
+import { credentialBadges, CREDENTIAL_SELECT, licenseAlwaysRequired } from "@/lib/credentials";
 import { resolveRate, quoteLabor } from "@/lib/labor-pricing";
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
@@ -56,6 +56,27 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   });
   if (missing.length > 0) {
     return NextResponse.json({ error: unmetStepsMessage(missing), missing }, { status: 400 });
+  }
+
+  // Roofing and HVAC are licensed-only whatever the job is worth.
+  //
+  // Checked here as well as in the browse filter for the same reason the
+  // materials tier is: a pro can reach this route with an id they saw before
+  // their licence lapsed, or straight from the API. Unlike the materials rule
+  // there is no quote to adjust — the answer is a licence or a different job,
+  // so say that rather than offering a number to change.
+  if (licenseAlwaysRequired(jobRequest.category)) {
+    const docs = await prisma.handymanProfile.findUnique({
+      where: { id: profile.id }, select: CREDENTIAL_SELECT,
+    });
+    const badges = docs ? credentialBadges(docs) : { licensed: false, insured: false };
+    if (!badges.licensed || !badges.insured) {
+      return NextResponse.json({
+        error: `${jobRequest.category === "ROOFING" ? "Roofing" : "HVAC"} work requires a permit, `
+             + "so it is open to Licensed & Insured pros only — the under-$1,000 exemption does not "
+             + "apply to permitted work at any price. Add an approved licence and insurance certificate to take these jobs.",
+      }, { status: 403 });
+    }
   }
 
   const { message, proposedPrice, materialsEstimate } = await req.json();

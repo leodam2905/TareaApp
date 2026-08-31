@@ -9,6 +9,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { assertPromoUsable, hasPriorPaidOrder } from "@/lib/promo";
 import { canCall } from "@/lib/voice";
+import { CREDENTIAL_SELECT, credentialBadges, licenseAlwaysRequired } from "@/lib/credentials";
 
 const createSchema = z.object({
   // Optional: a customer requesting a pro from their profile has not chosen a
@@ -128,6 +129,25 @@ export async function POST(req: NextRequest) {
     if (service.handyman && service.handyman.userId !== data.handymanUserId) {
       return NextResponse.json({ error: "Service does not belong to this handyman" }, { status: 400 });
     }
+    // Roofing and HVAC need a licence whatever the job is worth, and a customer
+    // choosing a pro directly bypasses the job-request fan-out where that is
+    // otherwise enforced. Without this, "request this pro" was a way to book an
+    // unlicensed pro onto permitted work — the one path with no credential
+    // check at all. See LICENSE_ALWAYS in lib/credentials.
+    const bookedCategory = data.category ?? service.category;
+    if (licenseAlwaysRequired(bookedCategory)) {
+      const target = await prisma.handymanProfile.findFirst({
+        where: { userId: data.handymanUserId }, select: CREDENTIAL_SELECT,
+      });
+      const badges = target ? credentialBadges(target) : { licensed: false, insured: false };
+      if (!badges.licensed || !badges.insured) {
+        return NextResponse.json({
+          error: `${bookedCategory === "ROOFING" ? "Roofing" : "HVAC"} work requires a licensed and `
+               + "insured pro. This pro is not currently licensed for it — please choose another.",
+        }, { status: 403 });
+      }
+    }
+
     // What this pro charges, and what that makes the job cost.
     //
     // resolveRate is most-specific-wins: their rate for this category, then

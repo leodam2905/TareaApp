@@ -9,7 +9,7 @@ import { sendSms } from "@/lib/sms";
 import { smsBody, createNotification } from "@/lib/notify";
 import { geocodeAddress } from "@/lib/geo/geocode";
 import { milesFromKmOrNull } from "@/lib/units";
-import { CREDENTIAL_SELECT, credentialBadges } from "@/lib/credentials";
+import { CREDENTIAL_SELECT, credentialBadges, licenseAlwaysRequired } from "@/lib/credentials";
 import { materialsTier, validateMaterials } from "@/lib/materials-policy";
 import { ABSOLUTE_MINIMUM_CHARGE } from "@/lib/labor-pricing";
 
@@ -195,6 +195,13 @@ export async function GET() {
     // Materials are an estimate at posting and can grow during a job, so this
     // is a floor on exposure rather than a guarantee.
     .filter(r => {
+      // Some trades are licensed-only whatever the job is worth. The cap below
+      // is a ceiling on unpermitted work, and roofing and HVAC are permitted
+      // work almost by definition — a $400 roof repair is no more lawful for an
+      // unlicensed pro than a $4,000 one. Checked FIRST so price cannot excuse
+      // it. See LICENSE_ALWAYS in lib/credentials.
+      if (licenseAlwaysRequired(r.category) && !licensedInsured) return false;
+
       const total = r.budgetMax * (1 + CUSTOMER_FEE_RATE) + (r.materialsCost ?? 0);
       if (total > CSLB_UNLICENSED_CAP && !licensedInsured) return false;
       // Second, independent reason to reserve a job: the parts bill alone.

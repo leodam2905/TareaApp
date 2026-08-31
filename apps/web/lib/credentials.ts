@@ -36,6 +36,35 @@ export const LICENSE_REQUIRED: ReadonlySet<string> = new Set([
 export const licenseMatters = (category?: string | null): boolean =>
   !!category && LICENSE_REQUIRED.has(category);
 
+/**
+ * Categories an unlicensed pro may NEVER take, at any price.
+ *
+ * The $1,000 minor-work exemption is a ceiling on *unpermitted* work — it was
+ * never a licence to do permitted work cheaply, as the note above already said
+ * and nothing enforced. What actually triggers licensing in these two trades is
+ * the work itself:
+ *
+ *   ROOFING (C-39) — permits, fall-protection and workers' comp obligations
+ *     attach to essentially all of it. There is no meaningful unlicensed roof
+ *     job to carve out.
+ *   HVAC (C-20) — furnace, central AC and heat pump work needs a mechanical
+ *     permit and Title 24 compliance, and that is very nearly the whole trade.
+ *
+ * Deliberately NOT here: ELECTRICAL and PLUMBING. Both have real unlicensed
+ * work — replacing a switch or a faucet washer — so they need a task-level
+ * allowlist rather than a category ban, and that boundary is a legal question
+ * we have not had answered. They stay on the price cap until it is.
+ *
+ * Also not here: GENERAL. It is in LICENSE_REQUIRED because a licence is a
+ * useful RANKING signal for general work, which is a different question from
+ * whether the job is lawful — banning it would delete the core product.
+ */
+export const LICENSE_ALWAYS: ReadonlySet<string> = new Set(["ROOFING", "HVAC"]);
+
+/** True when this category is licensed-only regardless of contract price. */
+export const licenseAlwaysRequired = (category?: string | null): boolean =>
+  !!category && LICENSE_ALWAYS.has(category);
+
 export const CREDENTIAL_KINDS: CredentialKind[] = ["license", "insurance"];
 
 /** Stored decision. `expired` is never stored — it is derived, see below. */
