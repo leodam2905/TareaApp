@@ -60,6 +60,16 @@ export async function rateRangeForCategory(
       handyman: {
         backgroundCheckStatus: "PASSED",
         user: {
+          // A deleted account must not price a job. DELETE /api/account
+          // anonymizes rather than erases (App Store 5.1.1), so the profile,
+          // the PASSED background check and every priced service survive it —
+          // and production holds a deleted pro in exactly that state. It sets
+          // isActive:false, but nothing outside login has ever read that, so
+          // the only thing keeping those rates out of a customer's quote was
+          // the avatarUrl null that deletion also happens to write. That is a
+          // coincidence, not a guard, and it fails the moment the avatar rule
+          // is relaxed.
+          isActive: true,
           avatarUrl: { not: null },
           ...(opts.excludeUserId ? { id: { not: opts.excludeUserId } } : {}),
           ...(stateFilter ? { state: stateFilter } : {}),

@@ -48,6 +48,9 @@ export async function GET(req: NextRequest) {
         backgroundCheckStatus: "PASSED",
         services: { some: { category: category as never, isActive: true } },
         user: {
+          // Deletion anonymizes rather than erases, leaving a PASSED profile
+          // with live services behind. See lib/rate-range.ts.
+          isActive: true,
           avatarUrl: { not: null },
           // A dual-role account shouldn't see itself as a bookable handyman.
           ...(user ? { id: { not: user.id } } : {}),
