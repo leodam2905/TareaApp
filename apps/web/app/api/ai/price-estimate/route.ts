@@ -84,13 +84,30 @@ No markdown, just the JSON.`,
     // flag a category whose card looks badly out of line with the market.
     const aiSuggested = clamp(Number(ai.hourlyRate) || 0, 0, 300);
 
+    // What pros actually charge for this category, as an interval.
+    //
+    // Fetched BEFORE the rate is resolved, because it decides the rate. It
+    // needs only the category, so nothing here waits on the model.
+    //
+    // A directed request skips it: the customer already picked their pro, so a
+    // range would answer a question they have closed.
+    const range = proHourlyRate
+      ? null
+      : await rateRangeForCategory(category, { excludeUserId: user?.id }).catch(() => null);
+
     // Whose rate prices this job.
     //
     // A directed booking knows the pro, so it is quoted at THEIR rate. An open
-    // job request does not — nobody has applied yet — so the rate card stands in
-    // and each applicant's own rate produces their own total later.
+    // request does not — but that does not make the price unknowable, which is
+    // what the old rate-card fallback assumed. The pros who could take it have
+    // published rates, so the quote is built from the cheapest of those and the
+    // card is left for the case it was written for: nobody serves this category.
+    //
+    // This keeps the displayed price and the stored budget in agreement —
+    // budgetMin comes from quoteRange().lowLabour, the same pro's rate.
     const { hourlyRate, source: rateSource } = resolveRate({
       serviceHourlyRate: typeof proHourlyRate === "number" ? proHourlyRate : null,
+      marketRate: range && range.count > 0 ? range.min : null,
       category,
     });
 
@@ -115,19 +132,11 @@ No markdown, just the JSON.`,
     // Service price (fee-able) = rate × hours + travel + urgency. Materials are
     // tracked SEPARATELY (passed through at cost, no fee) — like TaskRabbit
     // reimbursements. `price` becomes the job budget / booking totalPrice.
-    // What pros actually charge for this category, as an interval.
-    //
     // Tarea does not pick a number. The customer sees the spread of real rates
     // among pros who could take the job and chooses one — which is both what a
     // marketplace of independent contractors looks like and what keeps the
-    // platform out of setting anybody's compensation.
-    //
-    // A directed request skips it: the customer already picked their pro, so a
-    // range would be answering a question they have closed.
-    const range = proHourlyRate
-      ? null
-      : await rateRangeForCategory(category, { excludeUserId: user?.id }).catch(() => null);
-
+    // platform out of setting anybody's compensation. `range` is fetched above,
+    // where the rate is resolved from it.
     const quotedRange =
       range && range.count > 0
         ? quoteRange({

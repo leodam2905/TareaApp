@@ -15,6 +15,31 @@ describe("resolveRate", () => {
     expect(r).toEqual({ hourlyRate: 70, source: "pro_profile" });
   });
 
+  it("prefers the cheapest real pro rate over the rate card", () => {
+    // The bug this exists for: an open request quoted at the $85 card while the
+    // only eligible plumber charged $100, so the customer saw $201.50 for a job
+    // that would cost $230 and the budget was filed at the pro's figure.
+    const r = resolveRate({ serviceHourlyRate: null, marketRate: 100, category: "PLUMBING" });
+    expect(r.hourlyRate).toBe(100);
+    expect(r.source).toBe("market_low");
+  });
+
+  it("still lets a pro's own rate beat the market", () => {
+    const r = resolveRate({ serviceHourlyRate: 120, marketRate: 100, category: "PLUMBING" });
+    expect(r.hourlyRate).toBe(120);
+    expect(r.source).toBe("pro_service");
+  });
+
+  it("uses the rate card only when no pro serves the category", () => {
+    const r = resolveRate({ serviceHourlyRate: null, marketRate: null, category: "PLUMBING" });
+    expect(r.source).toBe("rate_card");
+  });
+
+  it("ignores a zero or negative market rate rather than quoting free work", () => {
+    expect(resolveRate({ marketRate: 0, category: "PLUMBING" }).source).toBe("rate_card");
+    expect(resolveRate({ marketRate: -5, category: "PLUMBING" }).source).toBe("rate_card");
+  });
+
   it("falls back to the rate card when the pro has set nothing", () => {
     const r = resolveRate({ serviceHourlyRate: null, profileHourlyRate: null, category: "PLUMBING" });
     expect(r).toEqual({ hourlyRate: grossHourlyFor("PLUMBING"), source: "rate_card" });

@@ -45,7 +45,7 @@ export const MAX_MINIMUM_MINUTES = 240;
  */
 export const ABSOLUTE_MINIMUM_CHARGE = 25;
 
-export type RateSource = "pro_service" | "pro_profile" | "rate_card";
+export type RateSource = "pro_service" | "pro_profile" | "market_low" | "rate_card";
 
 export type ResolvedRate = {
   /** Customer-facing hourly rate in dollars. */
@@ -57,21 +57,43 @@ export type ResolvedRate = {
  * Whose rate prices this job.
  *
  * Most specific wins: the rate the pro set for THIS category, then their
- * profile rate, then the rate card. A pro who has never touched either is
- * quoted at the card rather than at zero — a $0 rate is not a cheap pro, it is
- * a booking that fails the minimum check and looks like the pro is broken.
+ * profile rate, then the cheapest rate any eligible pro actually charges, then
+ * the rate card. A pro who has never touched either is quoted at the card
+ * rather than at zero — a $0 rate is not a cheap pro, it is a booking that
+ * fails the minimum check and looks like the pro is broken.
+ *
+ * `marketRate` exists because the card was standing in far too often. On an
+ * open request nobody has applied yet, so the card was used even when the real
+ * rates were already known — and the customer was then quoted a number Tarea
+ * invented while the job was filed at a real pro's. Measured on production:
+ * a plumbing job showed $201.50 from the $85 card while the only eligible pro
+ * charged $100/hr, making the true price $230. Understating an advertised
+ * price by 14% is the concern SB 478 exists for, and the whole rate-card
+ * fallback is what lib/rate-range.ts means by "nobody is quoted a number Tarea
+ * invented".
+ *
+ * It is the LOW end deliberately. It matches the budget stored from
+ * quoteRange().lowLabour, so the card the customer approves and the job filed
+ * underneath it agree, and it matches the "labour (lowest)" row the app
+ * already renders beside a range. The card now applies only where it was
+ * always meant to: no pro serves this category at all.
  */
 export function resolveRate(opts: {
   serviceHourlyRate?: number | null;
   profileHourlyRate?: number | null;
+  /** Cheapest rate among pros who could actually take this job, if any. */
+  marketRate?: number | null;
   category?: string | null;
 }): ResolvedRate {
-  const { serviceHourlyRate, profileHourlyRate, category } = opts;
+  const { serviceHourlyRate, profileHourlyRate, marketRate, category } = opts;
   if (serviceHourlyRate && serviceHourlyRate > 0) {
     return { hourlyRate: serviceHourlyRate, source: "pro_service" };
   }
   if (profileHourlyRate && profileHourlyRate > 0) {
     return { hourlyRate: profileHourlyRate, source: "pro_profile" };
+  }
+  if (marketRate && marketRate > 0) {
+    return { hourlyRate: marketRate, source: "market_low" };
   }
   return { hourlyRate: grossHourlyFor(category), source: "rate_card" };
 }
