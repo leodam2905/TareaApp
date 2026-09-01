@@ -953,6 +953,15 @@ class _PostJobScreenState extends State<PostJobScreen> {
     // is older than this and sends no range.
     final range = e['priceRange'] as Map?;
     final hasRange = range != null && range['single'] != true;
+    // A range that collapsed because exactly ONE pro qualifies is not the same
+    // as no range at all, and the two must not read the same. The old code
+    // treated both as "no range" and fell through to the isFixed branch, which
+    // labelled a single pro's rate "Fixed price" — a claim that Tarea set it.
+    // isFixed says nothing of the sort: server-side it is
+    // `ai.predictable && confidence >= 75`, a statement about how confidently
+    // the job was estimated. Saying the platform fixed a price it did not set
+    // is the exact control signal the pro-set rate model exists to avoid.
+    final singlePro = range != null && range['single'] == true;
     final headline = hasRange
         ? '\$${_n(range['low'])}–\$${_n(range['high'])}'
         : '\$$total';
@@ -963,10 +972,18 @@ class _PostJobScreenState extends State<PostJobScreen> {
         child: Text(
             hasRange
                 ? 'postjob.rangeAcrossPros'.tr(args: ['${_n(range['proCount'])}'])
-                : (fixed ? 'postjob.fixedPrice'.tr() : 'postjob.estimatedPrice'.tr()),
+                : singlePro
+                    ? 'postjob.singleProRate'.tr()
+                    : (fixed ? 'postjob.fixedPrice'.tr() : 'postjob.estimatedPrice'.tr()),
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: C.muted)),
       ),
+      if (singlePro) ...[
+        const SizedBox(height: 6),
+        Center(child: Text('postjob.singleProNote'.tr(),
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 13, color: C.muted, height: 1.3))),
+      ],
       if (hasRange) ...[
         const SizedBox(height: 6),
         Center(child: Text('postjob.youChoosePro'.tr(),

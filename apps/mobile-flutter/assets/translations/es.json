@@ -330,6 +330,8 @@
     "materialsByPro": "Los materiales no están incluidos. Cada profesional añade su propio presupuesto de materiales al postularse, y verás el precio completo antes de contratar.",
     "estimatedServiceTime": "Tiempo de servicio estimado por Tarea AI",
     "rangeAcrossPros": "Total estimado entre {} pros",
+    "singleProRate": "Un profesional disponible a esta tarifa",
+    "singleProNote": "Los profesionales fijan sus propias tarifas. Por ahora solo uno cubre este trabajo.",
     "youChoosePro": "Los pros fijan sus propias tarifas. Tu precio final depende del pro que elijas.",
     "laborServiceLowest": "Mano de obra y servicio (pro más económico)",
     "billedAtMinimum": "Cobrado al mínimo de {}h de este pro",
