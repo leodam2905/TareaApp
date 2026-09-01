@@ -76,18 +76,35 @@ export async function rateRangeForCategory(
         },
       },
     },
-    select: { hourlyRate: true },
+    select: { hourlyRate: true, handymanId: true },
   });
 
-  const rates = rows
-    .map((r) => r.hourlyRate)
-    .filter((r): r is number => typeof r === "number" && r > 0);
+  const priced = rows.filter(
+    (r): r is typeof r & { hourlyRate: number } =>
+      typeof r.hourlyRate === "number" && r.hourlyRate > 0,
+  );
 
-  if (rates.length === 0) return { min: 0, max: 0, count: 0 };
+  if (priced.length === 0) return { min: 0, max: 0, count: 0 };
+
+  const rates = priced.map((r) => r.hourlyRate);
+
+  // Count PROS, not service rows.
+  //
+  // Nothing stops one pro listing two services in the same category, and
+  // production has exactly that: a pro with "Plumbing" at $100 and a second
+  // plumbing row at $80. Counting rows reported three pros for plumbing when
+  // two exist, and the app renders that number verbatim — "Estimated total
+  // across 3 pros" is a factual claim to a customer, and it was false. It also
+  // inflates without limit, since a single pro adding rows raises the count of
+  // people the customer can supposedly choose between.
+  //
+  // min/max still span every priced row: those really are prices this job can
+  // resolve to, whoever holds them.
+  const count = new Set(priced.map((r) => r.handymanId)).size;
 
   return {
     min: Math.min(...rates),
     max: Math.max(...rates),
-    count: rates.length,
+    count,
   };
 }
