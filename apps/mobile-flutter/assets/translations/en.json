@@ -333,7 +333,7 @@
     "singleProRate": "One pro available at this rate",
     "singleProNote": "Pros set their own rates. Only one pro currently covers this job.",
     "youChoosePro": "Pros set their own rates. Your final price depends on which pro you choose.",
-    "laborServiceLowest": "Labor & service (lowest pro)",
+    "rangeFeeIncluded": "Both figures include the {}% Service Fee.",
     "billedAtMinimum": "Billed at this pro’s {}h minimum",
     "licensedOnly": "Licensed & insured pros only",
     "licensedOnlyDesc": "Only pros with a verified licence and insurance certificate can apply. Fewer pros may be available."

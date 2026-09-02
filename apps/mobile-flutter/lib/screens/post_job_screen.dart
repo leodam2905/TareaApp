@@ -991,13 +991,33 @@ class _PostJobScreenState extends State<PostJobScreen> {
             style: const TextStyle(fontSize: 13, color: C.muted, height: 1.3))),
       ],
       const SizedBox(height: 16),
+      // No single-figure breakdown under a range.
+      //
+      // The headline is an interval, and the rows below asserted one number
+      // from its cheapest end: "Labor & service (lowest pro)" and a bold
+      // "Total" that was the LOW total. So a card headed $182–$325 finished
+      // with "Total $182", which reads as the price and contradicts the thing
+      // directly above it. There is no single total to state until the customer
+      // picks a pro — that is what the range means.
+      //
+      // The fee still has to be disclosed, so it is said in words: SB 478 is
+      // satisfied by the interval carrying the fee, not by itemising it.
+      if (hasRange)
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(14)),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Text('postjob.rangeFeeIncluded'.tr(args: ['$feePct']),
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 13, height: 1.4, color: C.muted, fontWeight: FontWeight.w600)),
+        )
+      else
       Container(
         decoration: BoxDecoration(color: C.surface, borderRadius: BorderRadius.circular(14)),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Column(children: [
           // Labor + travel = the service price minus the (separately shown) rush fee.
-          _feeRow(
-              hasRange ? 'postjob.laborServiceLowest'.tr() : 'postjob.laborService'.tr(),
+          _feeRow('postjob.laborService'.tr(),
               '\$${_n(e['price']) - _n(bd['urgency'])}'),
           if (_n(bd['urgency']) > 0) ...[
             const SizedBox(height: 10),

@@ -333,7 +333,7 @@
     "singleProRate": "Un seul pro disponible à ce tarif",
     "singleProNote": "Les pros fixent leurs propres tarifs. Un seul pro couvre ce travail pour le moment.",
     "youChoosePro": "Les pros fixent leurs propres tarifs. Votre prix final dépend du pro que vous choisissez.",
-    "laborServiceLowest": "Main-d’œuvre et service (pro le moins cher)",
+    "rangeFeeIncluded": "Les deux montants incluent les {} % de frais de service.",
     "billedAtMinimum": "Facturé au minimum de {}h de ce pro",
     "licensedOnly": "Pros licenciés et assurés uniquement",
     "licensedOnlyDesc": "Seuls les pros avec une licence et une attestation d'assurance vérifiées peuvent postuler. Moins de pros peuvent être disponibles."
