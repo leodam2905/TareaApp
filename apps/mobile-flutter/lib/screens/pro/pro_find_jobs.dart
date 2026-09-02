@@ -114,7 +114,17 @@ class _ProFindJobsState extends State<ProFindJobs> with WidgetsBindingObserver {
   Future<void> _applySheet(dynamic job) async {
     final id = (job['id'] ?? '').toString();
     final matCtl = TextEditingController(text: _numText(job['materialsCost']));
-    final labour = _numText(job['budgetMin']);
+    // THIS pro's labour for this job, from the server, which derives it the same
+    // way /apply does: their own rate on the job's estimated minutes.
+    //
+    // This used to show budgetMin under "Labour price (set by Tarea)". Tarea
+    // does not set it and that was not the pro's number either — budgetMin is
+    // the CHEAPEST eligible pro's labour, so anyone dearer was quoted less than
+    // they would be paid. Falls back to the budget only for pre-migration-012
+    // requests that carry no estimated minutes.
+    final mineRaw = job['myLabour'];
+    final hasMine = mineRaw != null;
+    final labour = _numText(hasMine ? mineRaw : job['budgetMin']);
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => StatefulBuilder(builder: (ctx, setDialog) {
@@ -126,18 +136,31 @@ class _ProFindJobsState extends State<ProFindJobs> with WidgetsBindingObserver {
       final needsCredentials = typed > 300 && !overMax;
       return AlertDialog(
         title: Text('proFind.applyTitle'.tr()),
-        content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+        // Scrollable because AlertDialog's content is not.
+        //
+        // When the keyboard opens the dialog shrinks to fit above it, and this
+        // column — labour box, a TextField with a three-line helper, and a
+        // conditional warning banner — overflows. A release build clips that
+        // silently, with no overflow stripe, so the materials field simply was
+        // not there. That is the whole bug: it rendered, off-screen.
+        content: SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           // Read-only on purpose: shown so the pro knows what they are accepting.
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(color: C.bg, borderRadius: BorderRadius.circular(12)),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('proFind.labourPriceFixed'.tr(),
+              Text(hasMine ? 'proFind.labourPriceMine'.tr() : 'proFind.labourPriceFixed'.tr(),
                   style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: C.muted)),
               const SizedBox(height: 4),
               Text(labour.isEmpty ? '—' : '\$$labour',
                   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
+              if (hasMine) ...[
+                const SizedBox(height: 4),
+                Text('proFind.labourPriceMineNote'.tr(),
+                    style: const TextStyle(fontSize: 11, height: 1.35, color: C.muted)),
+              ],
             ]),
           ),
           const SizedBox(height: 14),
@@ -162,6 +185,7 @@ class _ProFindJobsState extends State<ProFindJobs> with WidgetsBindingObserver {
             ),
           ],
         ]),
+        ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('common.cancel'.tr())),
           FilledButton(

@@ -491,6 +491,8 @@
     "materialsHint": "El cliente paga esto a precio de costo, sin comisión. Queda fijado cuando te contrata, así que estima con cuidado y adjunta el recibo al terminar.",
     "updatedAt": "Actualizado a las {}",
     "labourPriceFixed": "Precio de mano de obra (fijado por Tarea)",
+    "labourPriceMine": "Tu precio de mano de obra para este trabajo",
+    "labourPriceMineNote": "Tu tarifa × el tiempo estimado. Los materiales van aparte.",
     "milesAway": "a {} mi",
     "materialsLicensedOnly": "Más de $300 en materiales: este trabajo está reservado a profesionales con licencia y seguro. Añade una licencia aprobada y un certificado de seguro, o cotiza $300 o menos.",
     "materialsOverMax": "Los materiales tienen un límite de $1,000. Para un trabajo que necesite más, el cliente compra los materiales directamente e indica el costo en la solicitud."

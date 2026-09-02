@@ -491,6 +491,8 @@
     "materialsHint": "Le client paie ce montant au prix coûtant, sans commission. Il est fixé dès qu'il vous engage : estimez soigneusement et joignez le reçu à la fin.",
     "updatedAt": "Mis à jour à {}",
     "labourPriceFixed": "Prix de la main-d'œuvre (fixé par Tarea)",
+    "labourPriceMine": "Votre prix de main-d'œuvre pour ce travail",
+    "labourPriceMineNote": "Votre tarif × la durée estimée. Les fournitures sont à part.",
     "milesAway": "à {} mi",
     "materialsLicensedOnly": "Plus de 300 $ de matériaux — cette mission est réservée aux pros licenciés et assurés. Ajoutez une licence approuvée et une attestation d'assurance, ou proposez 300 $ ou moins.",
     "materialsOverMax": "Les matériaux sont plafonnés à 1 000 $. Au-delà, le client achète les fournitures lui-même et indique le montant sur la demande."

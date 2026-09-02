@@ -11,7 +11,7 @@ import { geocodeAddress } from "@/lib/geo/geocode";
 import { milesFromKmOrNull } from "@/lib/units";
 import { CREDENTIAL_SELECT, credentialBadges, licenseAlwaysRequired, licenseMatters } from "@/lib/credentials";
 import { materialsTier, validateMaterials } from "@/lib/materials-policy";
-import { ABSOLUTE_MINIMUM_CHARGE } from "@/lib/labor-pricing";
+import { ABSOLUTE_MINIMUM_CHARGE, resolveRate, quoteLabor } from "@/lib/labor-pricing";
 import { notifyProsOfJob, haversine, radiusKmFor } from "@/lib/job-fanout";
 
 // Fallback only. Each pro sets their own serviceRadius in miles, and that is
@@ -144,9 +144,17 @@ export async function GET() {
 
   const myServices = await prisma.service.findMany({
     where: { handymanId: profile.id, isActive: true },
-    select: { category: true },
+    select: { category: true, hourlyRate: true, minimumMinutes: true },
   });
   const myCategories = myServices.map(s => s.category);
+  // Their own rate for each category, so the feed can tell a pro what THIS job
+  // pays THEM. findFirst order is mirrored by taking the first row per category.
+  const myRateFor = new Map<string, { hourlyRate: number | null; minimumMinutes: number | null }>();
+  for (const svc of myServices) {
+    if (!myRateFor.has(svc.category)) {
+      myRateFor.set(svc.category, { hourlyRate: svc.hourlyRate, minimumMinutes: svc.minimumMinutes });
+    }
+  }
 
   // Jobs at or over the CSLB unlicensed cap are reserved for Licensed & Insured
   // pros (license + insurance on file). See the filter below for the rule.
@@ -204,10 +212,44 @@ export async function GET() {
       const { address: _address, latitude: _lat, longitude: _lng, ...safe } = r;
       // distanceKm stays for older app builds that read it; distanceMiles is
       // what every UI shows.
+      // What THIS job pays THIS pro.
+      //
+      // The apply dialog showed jobRequest.budgetMin under the caption "Labour
+      // price (set by Tarea)". Both halves were wrong. Tarea does not set it —
+      // the pro's own rate does, and /apply proves it: it resolves the
+      // applicant's rate and derives the price from that, on the same estimated
+      // minutes for every applicant. And budgetMin is the CHEAPEST eligible
+      // pro's labour, so any pro who is not the cheapest was shown less than
+      // they would actually be paid.
+      //
+      // Telling a pro the platform fixed their pay, at a number that is not
+      // theirs, is the control signal the pro-set rate model exists to avoid.
+      // Same arithmetic as /apply so the dialog and the application agree.
+      const mine = myRateFor.get(r.category);
+      const { hourlyRate: myHourlyRate } = resolveRate({
+        serviceHourlyRate: mine?.hourlyRate,
+        profileHourlyRate: profile.hourlyRate,
+        category: r.category,
+      });
+      const myLabour = r.estimatedBillableMinutes
+        ? Math.round(
+            quoteLabor({
+              hourlyRate: myHourlyRate,
+              estimatedBillableMinutes: r.estimatedBillableMinutes,
+              minimumMinutes: mine?.minimumMinutes ?? undefined,
+              urgent: r.urgency === "URGENT",
+            }).initialLaborAmount * 100,
+          ) / 100
+        : null;
+
       return {
         ...safe,
         distanceKm,
         distanceMiles: milesFromKmOrNull(distanceKm),
+        // Null for requests predating migration 012, which carry no estimated
+        // minutes — the app falls back to the budget rather than inventing one.
+        myLabour,
+        myHourlyRate,
         // Server-owned, so the badge survives an app restart — it used to live
         // in one screen's in-memory Set.
         applied: r.applications.some(a => a.handymanId === profile.id),

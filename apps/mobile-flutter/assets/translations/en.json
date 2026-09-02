@@ -491,6 +491,8 @@
     "materialsHint": "The customer pays this at cost, with no service fee. It is fixed once they hire you, so estimate carefully — attach the receipt when you finish.",
     "updatedAt": "Updated {}",
     "labourPriceFixed": "Labour price (set by Tarea)",
+    "labourPriceMine": "Your labour price for this job",
+    "labourPriceMineNote": "Your rate × the estimated time. Materials are separate.",
     "milesAway": "{} mi away",
     "materialsLicensedOnly": "Over $300 in materials — this job is open to Licensed & Insured pros only. Add an approved licence and insurance certificate, or quote $300 or under.",
     "materialsOverMax": "Materials are capped at $1,000. For a job needing more, the customer buys the parts directly and notes the cost on the request."
