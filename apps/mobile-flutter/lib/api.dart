@@ -49,7 +49,14 @@ class Api {
     final t = await token();
     final req = http.MultipartRequest('POST', Uri.parse('$apiBase/api/upload/avatar'));
     if (t != null) req.headers['Authorization'] = 'Bearer $t';
-    req.files.add(await http.MultipartFile.fromPath('file', filePath));
+    // The content type is NOT optional, for exactly the reason spelled out on
+    // uploadImage below — and this is the function that comment was written
+    // about. MultipartFile.fromPath defaults to application/octet-stream, the
+    // server allows only jpeg/png/webp/gif, so EVERY avatar upload from the app
+    // came back 400 "Only JPEG, PNG, WebP, or GIF images allowed" and the user
+    // saw "Could not upload photo". The fix reached uploadImage and never got
+    // copied here.
+    req.files.add(await http.MultipartFile.fromPath('file', filePath, contentType: _imageType(filePath)));
     return http.Response.fromStream(await req.send());
   }
 
