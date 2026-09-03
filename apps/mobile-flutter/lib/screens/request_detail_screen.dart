@@ -221,7 +221,19 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     final st = (a['status'] ?? '').toString();
     final accepted = st == 'ACCEPTED';
     final rejected = st == 'REJECTED';
-    return Container(
+    // Tapping an applicant opens the full breakdown.
+    //
+    // The card can only show a couple of lines before it crowds out hire and
+    // decline, so it kept materials and the total — but the payload already
+    // carries this pro's labour and the service fee, and requests.priceLabour
+    // and requests.priceServiceFee were already translated in all four
+    // languages with nothing rendering them. The customer was comparing
+    // applicants on a total whose composition they could not see, on the one
+    // screen where they choose who comes to their house.
+    return InkWell(
+      onTap: () => _showApplicantPrice(a),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
       margin: const EdgeInsets.only(top: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(12)),
@@ -268,6 +280,12 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                 Text('\$${((a['customerTotal'] ?? 0) as num).toStringAsFixed(2)}',
                     style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 16)),
               ]),
+              const SizedBox(height: 6),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Text('requests.priceDetails'.tr(),
+                    style: const TextStyle(color: C.blue, fontSize: 12, fontWeight: FontWeight.w800)),
+                const Icon(Icons.chevron_right, size: 16, color: C.blue),
+              ]),
             ]),
           ),
         ],
@@ -298,8 +316,96 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
           ]),
         ],
       ]),
+      ),
     );
   }
+
+  /// The full price of hiring THIS applicant, and who they are.
+  ///
+  /// Every figure here comes from the server, which prices each applicant with
+  /// hireAmounts — the same call that runs at checkout. Recomputing any of it
+  /// in the app is how a preview and a charge end up disagreeing.
+  void _showApplicantPrice(Map a) {
+    final u = (a['user'] ?? {}) as Map;
+    final hp = (a['handyman'] ?? {}) as Map;
+    final labour = ((a['effectiveLabour'] ?? 0) as num).toDouble();
+    final materials = ((a['effectiveMaterials'] ?? 0) as num).toDouble();
+    final fee = ((a['serviceFee'] ?? 0) as num).toDouble();
+    final total = ((a['customerTotal'] ?? 0) as num).toDouble();
+    final years = hp['yearsExperience'];
+    // Only badge a licence where it is a MEANINGFUL distinction — the server
+    // decides that per category, because a licensed cleaner is not a safer
+    // cleaner and badging one implies otherwise.
+    final relevant = a['licenseRelevant'] == true;
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: C.bg,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              roundAvatar(url: (u['avatarUrl'] ?? '').toString(), radius: 24),
+              const SizedBox(width: 12),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text((u['name'] ?? 'Pro').toString(),
+                    style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 17)),
+                if (years != null)
+                  Text('requests.experienceYears'.tr(args: ['$years']),
+                      style: const TextStyle(color: C.muted, fontSize: 12)),
+              ])),
+            ]),
+            if (relevant && (a['licensed'] == true || a['insured'] == true)) ...[
+              const SizedBox(height: 10),
+              Wrap(spacing: 8, children: [
+                if (a['licensed'] == true) _badge('browse.licensed'.tr()),
+                if (a['insured'] == true) _badge('browse.insured'.tr()),
+              ]),
+            ],
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(color: C.white, borderRadius: BorderRadius.circular(14)),
+              child: Column(children: [
+                _priceRow('requests.priceLabour'.tr(), '\$${labour.toStringAsFixed(2)}'),
+                const SizedBox(height: 8),
+                _priceRow('requests.priceMaterials'.tr(), '\$${materials.toStringAsFixed(2)}'),
+                const SizedBox(height: 8),
+                _priceRow('requests.priceServiceFee'.tr(), '\$${fee.toStringAsFixed(2)}'),
+                const SizedBox(height: 12),
+                const Divider(color: C.line, height: 1),
+                const SizedBox(height: 12),
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Text('requests.priceTotal'.tr(),
+                      style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 14)),
+                  Text('\$${total.toStringAsFixed(2)}',
+                      style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink, fontSize: 20)),
+                ]),
+              ]),
+            ),
+            const SizedBox(height: 12),
+            Text('requests.priceBreakdownNote'.tr(),
+                style: const TextStyle(color: C.muted, fontSize: 12, height: 1.4)),
+            const SizedBox(height: 8),
+          ]),
+        ),
+      ),
+    );
+  }
+
+  static Widget _badge(String label) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(999)),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.verified, size: 13, color: Color(0xFF15803D)),
+          const SizedBox(width: 4),
+          Text(label, style: const TextStyle(color: Color(0xFF15803D), fontWeight: FontWeight.w800, fontSize: 11)),
+        ]),
+      );
 
   static Widget _priceRow(String label, String value) =>
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [

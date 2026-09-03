@@ -448,6 +448,9 @@
     "cancelled": "Solicitud cancelada",
     "priceMaterials": "Materiales cotizados",
     "priceTotal": "Pagarías",
+    "priceDetails": "Detalle del precio",
+    "priceBreakdownNote": "Cada profesional cotiza sus propios materiales, así que el total depende de a quién contrates.",
+    "experienceYears": "{} años de experiencia",
     "priceLabour": "Mano de obra",
     "priceServiceFee": "Tarifa de servicio"
   },

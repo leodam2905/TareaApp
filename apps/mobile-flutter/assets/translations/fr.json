@@ -448,6 +448,9 @@
     "cancelled": "Demande annulée",
     "priceMaterials": "Matériaux estimés",
     "priceTotal": "Vous paieriez",
+    "priceDetails": "Détail du prix",
+    "priceBreakdownNote": "Chaque pro chiffre ses propres fournitures : le total dépend de qui vous engagez.",
+    "experienceYears": "{} ans d'expérience",
     "priceLabour": "Main-d'œuvre",
     "priceServiceFee": "Frais de service"
   },

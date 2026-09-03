@@ -448,6 +448,9 @@
     "cancelled": "تم إلغاء الطلب",
     "priceMaterials": "المواد المقدَّرة",
     "priceTotal": "ستدفع",
+    "priceDetails": "تفاصيل السعر",
+    "priceBreakdownNote": "يحدّد كل متخصص تكلفة المواد بنفسه، لذا يختلف الإجمالي حسب من تختاره.",
+    "experienceYears": "{} سنوات خبرة",
     "priceLabour": "أجرة العمل",
     "priceServiceFee": "رسوم الخدمة"
   },

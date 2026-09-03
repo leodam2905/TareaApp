@@ -448,6 +448,9 @@
     "cancelled": "Request cancelled",
     "priceMaterials": "Materials quoted",
     "priceTotal": "You'd pay",
+    "priceDetails": "Price details",
+    "priceBreakdownNote": "Each pro quotes their own materials, so the total differs by who you hire.",
+    "experienceYears": "{} yrs experience",
     "priceLabour": "Labour",
     "priceServiceFee": "Service fee"
   },
