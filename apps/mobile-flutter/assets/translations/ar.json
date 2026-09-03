@@ -636,6 +636,7 @@
     "fldTitle": "العنوان",
     "titleHint": "مثال: إصلاح صنبور وحوض",
     "category": "الفئة",
+    "pickCategory": "اختر فئة",
     "fldDescription": "الوصف",
     "descHint": "ما تشمله هذه الخدمة",
     "duration": "المدة (دقائق)",

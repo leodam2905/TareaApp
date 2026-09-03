@@ -636,6 +636,7 @@
     "fldTitle": "Titre",
     "titleHint": "ex. Réparation de robinet & évier",
     "category": "Catégorie",
+    "pickCategory": "Choisissez une catégorie",
     "fldDescription": "Description",
     "descHint": "Ce que comprend ce service",
     "duration": "Durée (minutes)",

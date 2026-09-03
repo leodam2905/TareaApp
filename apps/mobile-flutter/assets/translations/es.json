@@ -636,6 +636,7 @@
     "fldTitle": "Título",
     "titleHint": "ej. Reparación de grifo y fregadero",
     "category": "Categoría",
+    "pickCategory": "Elige una categoría",
     "fldDescription": "Descripción",
     "descHint": "Qué incluye este servicio",
     "duration": "Duración (minutos)",

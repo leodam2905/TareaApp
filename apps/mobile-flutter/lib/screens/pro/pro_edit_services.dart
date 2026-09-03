@@ -176,7 +176,19 @@ class _AddServiceSheetState extends State<_AddServiceSheet> {
   final _desc = TextEditingController();
   final _rate = TextEditingController();
   final _duration = TextEditingController(text: '60');
-  String _category = kServiceCategories.first;
+  // Starts EMPTY, and the form refuses to submit without it.
+  //
+  // It used to default to kServiceCategories.first — PLUMBING — so a pro who
+  // filled in the title and rate and never opened the dropdown silently
+  // published a plumbing service. Production has one: a listing titled "light
+  // electric" filed under PLUMBING, which put an electrical rate into the
+  // plumbing price range and left Electrical with no second pro.
+  //
+  // Every other field here is validated. This one was not, precisely because
+  // the default guaranteed a value — so the field that decides which jobs a pro
+  // is offered, and which price range they sit in, was the only one nobody was
+  // asked to confirm.
+  String? _category;
   bool _saving = false;
 
   void _toast(String m) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
@@ -190,6 +202,7 @@ class _AddServiceSheetState extends State<_AddServiceSheet> {
     if (desc.length < 10) return _toast('proEdit.descMin'.tr());
     if (rate == null || rate <= 0) return _toast('proEdit.validRate'.tr());
     if (dur == null || dur <= 0) return _toast('proEdit.validDuration'.tr());
+    if (_category == null) return _toast('proEdit.pickCategory'.tr());
     setState(() => _saving = true);
     try {
       final res = await Api.post('/services', {
@@ -230,6 +243,8 @@ class _AddServiceSheetState extends State<_AddServiceSheet> {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: _category, isExpanded: true,
+                  hint: Text('proEdit.pickCategory'.tr(),
+                      style: const TextStyle(color: C.muted, fontSize: 14)),
                   items: kServiceCategories.map((c) => DropdownMenuItem(value: c, child: Text(prettyCategory(c)))).toList(),
                   onChanged: (v) => setState(() => _category = v ?? _category),
                 ),

@@ -636,6 +636,7 @@
     "fldTitle": "Title",
     "titleHint": "e.g. Faucet & sink repair",
     "category": "Category",
+    "pickCategory": "Choose a category",
     "fldDescription": "Description",
     "descHint": "What this service includes",
     "duration": "Duration (minutes)",
