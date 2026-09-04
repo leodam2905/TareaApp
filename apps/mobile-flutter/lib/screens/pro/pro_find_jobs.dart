@@ -73,7 +73,7 @@ class _ProFindJobsState extends State<ProFindJobs> with WidgetsBindingObserver {
     if (_inFlight) return;
     _inFlight = true;
     try {
-      final res = await Api.get('/job-requests');
+      final res = await Api.get('/job-requests?role=handyman');
       if (res.statusCode == 200) {
         final d = jsonDecode(res.body);
         final next = d is List ? d : (d['requests'] ?? d['jobRequests'] ?? []);

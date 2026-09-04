@@ -159,7 +159,7 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
       }
     } catch (_) {}
     try {
-      final r = await Api.get('/job-requests');
+      final r = await Api.get('/job-requests?role=handyman');
       if (r.statusCode == 200) {
         final d = jsonDecode(r.body);
         _requests = (d is List ? d : (d['requests'] ?? d['jobRequests'] ?? [])).take(3).toList();

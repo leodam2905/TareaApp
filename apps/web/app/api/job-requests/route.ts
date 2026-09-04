@@ -53,11 +53,30 @@ const LICENSED_TRADE_LABEL: Record<string, string> = {
 
 
 // Customer: get own requests  |  Handyman: get matching open requests
-export async function GET() {
+export async function GET(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  if (user.role === "CUSTOMER") {
+  // Which side is asking, not who the account is.
+  //
+  // This branched on user.role alone, which made the endpoint unusable for an
+  // account that both hires and works: /api/handyman/become-pro flips role to
+  // HANDYMAN, and from that moment this returned the pro job feed instead of
+  // the customer's own posted jobs — their open requests and every applicant on
+  // them became unreachable, with nothing to say why.
+  //
+  // /api/bookings solved this already and the Home app has been passing
+  // `?role=customer` to it on five screens. Same contract here: the Home app
+  // asks as a customer, the Pro app as a handyman, and the stored role is the
+  // fallback for clients that send nothing — so existing builds are unaffected.
+  //
+  // Every other role check in the API is a permissive `role !== "HANDYMAN"`
+  // guard, which a converted customer passes. This was the only one that
+  // excluded them.
+  const roleParam = req.nextUrl.searchParams.get("role");
+  const viewAsCustomer = roleParam ? roleParam === "customer" : user.role === "CUSTOMER";
+
+  if (viewAsCustomer) {
     const requests = await prisma.jobRequest.findMany({
       where: { customerId: user.id },
       include: {

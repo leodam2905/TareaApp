@@ -30,7 +30,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
 
   Future<void> _load() async {
     try {
-      final res = await Api.get('/job-requests');
+      final res = await Api.get('/job-requests?role=customer');
       if (res.statusCode == 200) {
         final d = jsonDecode(res.body);
         _reqs = d is List ? d : (d['requests'] ?? d['jobRequests'] ?? []);

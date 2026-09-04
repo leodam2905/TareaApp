@@ -132,7 +132,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
       }
     } catch (_) {}
     try {
-      final res = await Api.get('/job-requests');
+      final res = await Api.get('/job-requests?role=customer');
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
         final list = (data is List ? data : (data['requests'] ?? data['jobRequests'] ?? [])) as List;

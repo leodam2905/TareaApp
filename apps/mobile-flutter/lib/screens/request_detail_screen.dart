@@ -28,7 +28,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
 
   Future<void> _reload() async {
     try {
-      final res = await Api.get('/job-requests');
+      final res = await Api.get('/job-requests?role=customer');
       if (res.statusCode == 200) {
         final d = jsonDecode(res.body);
         final list = d is List ? d : (d['requests'] ?? d['jobRequests'] ?? []);
