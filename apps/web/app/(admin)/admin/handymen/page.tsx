@@ -20,6 +20,7 @@ type Credential = {
   status: "none" | "pending" | "approved" | "rejected" | "expired";
   docUrl: string | null;
   expiresAt: string | null;
+  aiExtract?: unknown;
   reviewNote: string | null;
   valid: boolean;
   expiringSoon: boolean;
@@ -95,6 +96,9 @@ export default function AdminHandymenPage() {
   // A rejection has to say why — the pro is shown the note — so rejecting opens
   // an inline box rather than firing straight off the button.
   const [rejecting, setRejecting] = useState<{ id: string; kind: "license" | "insurance" } | null>(null);
+  // Keyed by `${handymanId}:${kind}` so two credentials on the same pro, and
+  // two pros expanded in turn, cannot share a date box.
+  const [expiryDraft, setExpiryDraft] = useState<Record<string, string>>({});
   const [note, setNote] = useState("");
 
   useEffect(() => {
@@ -131,11 +135,15 @@ export default function AdminHandymenPage() {
     kind: "license" | "insurance",
     decision: "approve" | "reject",
     reason?: string,
+    expiresAt?: string,
   ) => {
     const res = await fetch(`/api/admin/credentials/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ kind, decision, note: reason }),
+      // Only send expiresAt when there is one. parseExpiry treats "not sent"
+      // and "sent empty" differently on purpose — absent leaves the stored
+      // value alone, empty clears it — so an untouched field must be absent.
+      body: JSON.stringify({ kind, decision, note: reason, ...(expiresAt ? { expiresAt } : {}) }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -353,13 +361,48 @@ export default function AdminHandymenPage() {
                               {c.expiresAt ? new Date(c.expiresAt).toLocaleDateString() : "—"}
                             </span>
                           </div>
+
+                          {/* The expiry, typed by the person looking at the document.
+                              There was no input here at all, so licenseExpiresAt was
+                              unreachable and every approved credential lived for ever —
+                              effectiveStatus can only downgrade to `expired` from a date
+                              nobody could record. Pre-filled from what the model read,
+                              which is a proposal, not a decision: it is editable, and
+                              approving is what commits it. */}
+                          {c.docUrl && (() => {
+                            const key = `${h.id}:${kind}`;
+                            const ai = c.aiExtract as { expiresAt?: string | null; number?: string | null; confidence?: number; notes?: string | null } | null;
+                            const suggested = ai?.expiresAt ?? "";
+                            const value = expiryDraft[key] ?? (c.expiresAt ? String(c.expiresAt).slice(0, 10) : suggested);
+                            return (
+                              <div className="space-y-1 pt-1">
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="text-slate-400 text-sm">Set expiry</span>
+                                  <input
+                                    type="date"
+                                    value={value}
+                                    onChange={e => setExpiryDraft(p => ({ ...p, [key]: e.target.value }))}
+                                    className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-white text-xs"
+                                  />
+                                </div>
+                                {ai && (
+                                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                                    Read from the document{typeof ai.confidence === "number" ? ` (${ai.confidence}% confident)` : ""}
+                                    {ai.number ? ` · #${ai.number}` : ""}
+                                    {ai.notes ? <span className="text-amber-400"> · {ai.notes}</span> : ""}
+                                    <br />Check it against the document before approving.
+                                  </p>
+                                )}
+                              </div>
+                            );
+                          })()}
                           {c.status === "rejected" && c.reviewNote && (
                             <p className="text-red-400 text-xs">{c.reviewNote}</p>
                           )}
 
                           {c.docUrl && !isRejecting && (
                             <div className="flex gap-2 pt-1">
-                              <button onClick={() => reviewCredential(h.id, kind, "approve")}
+                              <button onClick={() => reviewCredential(h.id, kind, "approve", undefined, expiryDraft[`${h.id}:${kind}`] ?? ((c.aiExtract as { expiresAt?: string | null } | null)?.expiresAt ?? undefined))}
                                 className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 text-xs font-semibold transition-all">
                                 <CheckCircle2 className="w-3.5 h-3.5" /> Approve
                               </button>

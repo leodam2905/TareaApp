@@ -83,6 +83,7 @@ export interface CredentialFields {
   licenseExpiresAt: Date | null;
   licenseReviewedAt: Date | null;
   licenseReviewNote: string | null;
+  licenseAiExtract?: unknown;
   insuranceDocUrl: string | null;
   insuranceProvider: string | null;
   insurancePolicyNumber: string | null;
@@ -93,6 +94,7 @@ export interface CredentialFields {
   insuranceExpiresAt: Date | null;
   insuranceReviewedAt: Date | null;
   insuranceReviewNote: string | null;
+  insuranceAiExtract?: unknown;
 }
 
 /** What a client gets back for one credential. */
@@ -103,6 +105,9 @@ export interface CredentialView {
   expiresAt: string | null;
   reviewedAt: string | null;
   reviewNote: string | null;
+  /** What the model read off the document. A proposal for the approver to
+   *  confirm — never a credential field. Null when nothing was readable. */
+  aiExtract: unknown;
   /** Drives the badge. True only when approved AND not past its expiry. */
   valid: boolean;
   /** Approved, unexpired, but inside the renewal window — nudge the pro. */
@@ -134,6 +139,7 @@ export const CREDENTIAL_SELECT = {
   licenseExpiresAt: true,
   licenseReviewedAt: true,
   licenseReviewNote: true,
+  licenseAiExtract: true,
   insuranceDocUrl: true,
   insuranceProvider: true,
   insurancePolicyNumber: true,
@@ -144,6 +150,7 @@ export const CREDENTIAL_SELECT = {
   insuranceExpiresAt: true,
   insuranceReviewedAt: true,
   insuranceReviewNote: true,
+  insuranceAiExtract: true,
 } as const;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -191,6 +198,7 @@ function view(
   kind: CredentialKind,
   stored: string,
   docUrl: string | null,
+  aiExtract: unknown,
   expiresAt: Date | null,
   reviewedAt: Date | null,
   reviewNote: string | null,
@@ -209,6 +217,7 @@ function view(
     // approved document would show the pro why their last attempt failed
     // next to a green tick.
     reviewNote: status === "rejected" ? reviewNote : null,
+    aiExtract: aiExtract ?? null,
     valid: status === "approved",
     expiringSoon: status === "approved" && days !== null && days <= EXPIRY_WARNING_DAYS,
     daysUntilExpiry: days,
@@ -222,12 +231,12 @@ export function credentialViews(p: CredentialFields, now: Date = new Date()): {
   insurance: CredentialView;
 } {
   return {
-    license: view("license", p.licenseStatus, p.licenseDocUrl, p.licenseExpiresAt, p.licenseReviewedAt, p.licenseReviewNote, {
+    license: view("license", p.licenseStatus, p.licenseDocUrl, p.licenseAiExtract, p.licenseExpiresAt, p.licenseReviewedAt, p.licenseReviewNote, {
       number: p.licenseNumber,
       licenseeName: p.licenseeName,
       issuer: p.licenseIssuer,
     }, now),
-    insurance: view("insurance", p.insuranceStatus, p.insuranceDocUrl, p.insuranceExpiresAt, p.insuranceReviewedAt, p.insuranceReviewNote, {
+    insurance: view("insurance", p.insuranceStatus, p.insuranceDocUrl, p.insuranceAiExtract, p.insuranceExpiresAt, p.insuranceReviewedAt, p.insuranceReviewNote, {
       provider: p.insuranceProvider,
       policyNumber: p.insurancePolicyNumber,
       namedInsured: p.insuranceNamedInsured,

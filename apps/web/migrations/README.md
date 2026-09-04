@@ -74,8 +74,9 @@ npx prisma migrate diff \
 | 013 | Minimum billable TIME, replacing the price floor | **Yes** — 2026-08-30 |
 | 014 | Customer can require a licensed & insured pro | **Yes** — 2026-08-31 |
 | 015 | Materials receipt read + verification state | **Yes** — 2026-08-31 |
+| 016 | AI reading of a credential document (proposal) | **Yes** — 2026-09-04 |
 
-> **All applied as of 2026-08-31.** The drift gate passes.
+> **All applied as of 2026-09-04.** The drift gate passes.
 >
 > 001 and 002 were recorded here as unapplied but their columns and tables were
 > already present — created by an earlier `prisma db push`, not by running these

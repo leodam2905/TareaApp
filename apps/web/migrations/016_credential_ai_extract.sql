@@ -1,0 +1,31 @@
+-- 016 · What the model read off a credential document
+--
+-- EXPAND-ONLY: two nullable JSONB columns on handyman_profiles.
+--
+-- These are PROPOSALS, not the credential. They deliberately do NOT share the
+-- columns an approval writes (licenseExpiresAt, licenseNumber, …), because the
+-- two facts are different: what a model believes it saw, and what a human
+-- decided. Collapsing them would make an OCR reading indistinguishable from an
+-- admin's judgement the moment either is wrong.
+--
+-- Why that separation is load-bearing here. `effectiveStatus` downgrades an
+-- approved credential to `expired` from licenseExpiresAt, and credentialBadges
+-- is what gates who may take work at or over the CSLB $1,000 cap. An expiry
+-- read one year long keeps a lapsed licence clearing that gate, silently, with
+-- nobody notified — the model is good enough to find the date on a certificate
+-- and not good enough to be the only thing that ever read it.
+--
+-- So an approval still writes the real columns, from whatever the admin
+-- confirms while looking at the document. This just means they are no longer
+-- typing it from scratch — before this, the admin panel had no input for an
+-- expiry at all, so the field was unreachable and every credential lived
+-- forever.
+--
+-- JSONB rather than a column per field because the shape will move: today the
+-- licence carries an expiry, a number and a name, insurance adds a policy
+-- number and cover limits, and a confidence per field. A dozen nullable
+-- ai_* columns would encode this session's guess about that shape into the
+-- table.
+ALTER TABLE handyman_profiles
+  ADD COLUMN IF NOT EXISTS "licenseAiExtract"   JSONB,
+  ADD COLUMN IF NOT EXISTS "insuranceAiExtract" JSONB;

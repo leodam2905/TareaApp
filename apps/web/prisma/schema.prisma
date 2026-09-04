@@ -239,6 +239,9 @@ model HandymanProfile {
   licenseIssuer         String?   // issuing authority, e.g. "CSLB" / "TX TDLR"
   licenseStatus         String    @default("none")
   licenseExpiresAt      DateTime?
+  /// What the model read off the document (migration 016). A PROPOSAL the
+  /// admin confirms — never the credential itself. See lib/credential-extract.
+  licenseAiExtract      Json?
   licenseReviewedAt     DateTime?
   licenseReviewNote     String?   // why it was rejected — shown to the pro
   insuranceDocUrl       String?
@@ -254,6 +257,8 @@ model HandymanProfile {
   insuranceAggregate     Int?
   insuranceStatus       String    @default("none")
   insuranceExpiresAt    DateTime?
+  /// See licenseAiExtract.
+  insuranceAiExtract    Json?
   insuranceReviewedAt   DateTime?
   insuranceReviewNote   String?
   createdAt       DateTime @default(now())

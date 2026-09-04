@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { extractCredential } from "@/lib/credential-extract";
 import { getCurrentUser } from "@/lib/auth";
 import {
   CREDENTIAL_KINDS,
@@ -68,9 +69,16 @@ export async function POST(req: NextRequest) {
   }
 
   const data: Record<string, unknown> = {};
+  // Read the document before it reaches the queue, so the admin opens a row
+  // that is already filled in rather than one they must transcribe. This is a
+  // PROPOSAL — approving is still what writes licenseExpiresAt, and a failed
+  // reading returns null and changes nothing.
+  const aiExtract = await extractCredential(kind, docUrl);
+
   if (kind === "license") {
     data.licenseDocUrl = docUrl;
     data.licenseStatus = "pending";
+    data.licenseAiExtract = aiExtract ?? undefined;
     data.licenseReviewedAt = null;
     data.licenseReviewNote = null;
     if (!expiry.absent) data.licenseExpiresAt = expiry.value;
@@ -82,6 +90,7 @@ export async function POST(req: NextRequest) {
   } else {
     data.insuranceDocUrl = docUrl;
     data.insuranceStatus = "pending";
+    data.insuranceAiExtract = aiExtract ?? undefined;
     data.insuranceReviewedAt = null;
     data.insuranceReviewNote = null;
     if (!expiry.absent) data.insuranceExpiresAt = expiry.value;
