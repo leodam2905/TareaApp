@@ -209,8 +209,15 @@ export default function AdminHandymenPage() {
 
           return (
             <div key={h.id} className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden transition-all">
-              {/* Main row */}
-              <div className="p-5 flex items-center gap-4">
+              {/* Main row
+                  Wraps rather than overflowing. The row ends in the expand
+                  chevron, and the card is overflow-hidden for its rounded
+                  corners — so on a narrower window everything past the
+                  checklist chips was CLIPPED, not scrollable, and the only
+                  control that opens the credentials section could not be
+                  reached or even seen. Reported from a 2000px-wide screenshot
+                  where the row was cut mid-status-badge. */}
+              <div className="p-5 flex flex-wrap items-center gap-4">
                 {/* Avatar */}
                 <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden bg-tarea-sky/20 flex items-center justify-center">
                   {h.user.avatarUrl
