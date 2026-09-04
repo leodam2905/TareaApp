@@ -333,10 +333,6 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     final fee = ((a['serviceFee'] ?? 0) as num).toDouble();
     final total = ((a['customerTotal'] ?? 0) as num).toDouble();
     final years = hp['yearsExperience'];
-    // Only badge a licence where it is a MEANINGFUL distinction — the server
-    // decides that per category, because a licensed cleaner is not a safer
-    // cleaner and badging one implies otherwise.
-    final relevant = a['licenseRelevant'] == true;
 
     showModalBottomSheet<void>(
       context: context,
@@ -358,7 +354,15 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                       style: const TextStyle(color: C.muted, fontSize: 12)),
               ])),
             ]),
-            if (relevant && (a['licensed'] == true || a['insured'] == true)) ...[
+            // Shown for EVERY category, not just the ones where a licence is
+            // legally material. Browse still ranks on relevance, but here the
+            // customer has already chosen the trade and is choosing a person:
+            // a pro who went and got licensed and insured has earned the badge
+            // on a cleaning job as much as on a roofing one.
+            //
+            // Still gated on credentialBadges, which means approved by an admin
+            // and unexpired — never "a document was uploaded".
+            if (a['licensed'] == true || a['insured'] == true) ...[
               const SizedBox(height: 10),
               Wrap(spacing: 8, children: [
                 if (a['licensed'] == true) _badge('browse.licensed'.tr()),
