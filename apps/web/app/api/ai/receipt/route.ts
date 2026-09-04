@@ -43,7 +43,10 @@ export async function POST(req: NextRequest) {
 
   try {
     const message = await client.messages.create({
-      model: "claude-sonnet-4-6",
+      // Sonnet 5 is both newer and cheaper than the 4.6 this used to
+      // run: $2/$10 per Mtok against $3/$15. Nothing about the task
+      // changed — this is the same vision call at a third less.
+      model: "claude-sonnet-5",
       max_tokens: 300,
       messages: [{
         role: "user",
