@@ -77,18 +77,43 @@ function isRetryable(err: unknown): boolean {
  * this returns null and the fallback is simply unavailable in local dev —
  * which is correct, rather than reaching for a key to paper over it.
  */
+let lastTokenError = "";
+
+/** The last reason a token could not be obtained — surfaced by the self test,
+ *  because "no token" alone is not enough to fix anything. */
+export function lastVertexTokenError(): string {
+  return lastTokenError;
+}
+
 async function vertexToken(): Promise<string | null> {
-  try {
-    const res = await fetch(
-      "http://metadata.google.internal/computeMetadata/v1/instance/service-account/token",
-      { headers: { "Metadata-Flavor": "Google" }, signal: AbortSignal.timeout(2000) },
-    );
-    if (!res.ok) return null;
-    const data = (await res.json()) as { access_token?: string };
-    return data.access_token ?? null;
-  } catch {
-    return null;
+  // Two addresses, because DNS for metadata.google.internal is the part that
+  // most often is not there; 169.254.169.254 is the same server by IP and
+  // needs no resolver. Ten seconds, not two: the first call on a cold instance
+  // was being cut off before it answered.
+  const hosts = ["metadata.google.internal", "169.254.169.254"];
+  const errors: string[] = [];
+  for (const host of hosts) {
+    try {
+      const res = await fetch(
+        `http://${host}/computeMetadata/v1/instance/service-account/token`,
+        { headers: { "Metadata-Flavor": "Google" }, signal: AbortSignal.timeout(10_000) },
+      );
+      if (!res.ok) {
+        errors.push(`${host}: HTTP ${res.status}`);
+        continue;
+      }
+      const data = (await res.json()) as { access_token?: string };
+      if (data.access_token) {
+        lastTokenError = "";
+        return data.access_token;
+      }
+      errors.push(`${host}: no access_token in body`);
+    } catch (e) {
+      errors.push(`${host}: ${(e as Error)?.name ?? "error"} ${(e as Error)?.message ?? ""}`.trim());
+    }
   }
+  lastTokenError = errors.join(" | ").slice(0, 300);
+  return null;
 }
 
 async function askGemini(ask: Ask): Promise<string | null> {
@@ -141,7 +166,7 @@ export async function geminiSelfTest(): Promise<{
   const token = await vertexToken();
   if (!token) {
     return { ok: false, token: false, model: GEMINI_MODEL,
-      detail: "no metadata-server token — expected off Cloud Run, a problem on it" };
+      detail: `no metadata-server token — ${lastVertexTokenError() || "expected off Cloud Run, a problem on it"}` };
   }
   try {
     const text = await askGemini({
