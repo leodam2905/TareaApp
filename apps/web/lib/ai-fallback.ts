@@ -96,10 +96,11 @@ async function vertexToken(): Promise<string | null> {
   for (const host of hosts) {
     try {
       const res = await fetch(
-        // NOTE the `default/` segment. Without it the path lists the available
-      // service accounts rather than issuing a token, and answers 404 — which
-      // reads like a network problem and is not.
-      `http://${host}/computeMetadata/v1/instance/service-account/default/token`,
+        // service-accountS, plural, then `default/token`. Both halves matter and
+      // both were wrong here in turn: the singular form and the missing
+      // `default` segment each return Go's bare "404 page not found", which
+      // reads like DNS or a firewall and is neither.
+      `http://${host}/computeMetadata/v1/instance/service-accounts/default/token`,
         { headers: { "Metadata-Flavor": "Google" }, signal: AbortSignal.timeout(10_000) },
       );
       if (!res.ok) {
