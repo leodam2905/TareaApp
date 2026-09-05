@@ -91,6 +91,7 @@ async function vertexToken(): Promise<string | null> {
   // needs no resolver. Ten seconds, not two: the first call on a cold instance
   // was being cut off before it answered.
   const hosts = ["metadata.google.internal", "169.254.169.254"];
+  const rt = typeof (globalThis as { EdgeRuntime?: unknown }).EdgeRuntime !== "undefined" ? "edge" : "nodejs";
   const errors: string[] = [];
   for (const host of hosts) {
     try {
@@ -102,7 +103,10 @@ async function vertexToken(): Promise<string | null> {
         { headers: { "Metadata-Flavor": "Google" }, signal: AbortSignal.timeout(10_000) },
       );
       if (!res.ok) {
-        errors.push(`${host}: HTTP ${res.status}`);
+        // The metadata server explains itself in the body; a bare status has
+        // twice sent me after the wrong cause.
+        const body = await res.text().catch(() => "");
+        errors.push(`${host}: HTTP ${res.status} ${body.slice(0, 90).replace(/\s+/g, " ")}`);
         continue;
       }
       const data = (await res.json()) as { access_token?: string };
@@ -115,7 +119,7 @@ async function vertexToken(): Promise<string | null> {
       errors.push(`${host}: ${(e as Error)?.name ?? "error"} ${(e as Error)?.message ?? ""}`.trim());
     }
   }
-  lastTokenError = errors.join(" | ").slice(0, 300);
+  lastTokenError = `[runtime=${rt}] ` + errors.join(" | ").slice(0, 260);
   return null;
 }
 
