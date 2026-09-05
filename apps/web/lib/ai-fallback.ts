@@ -95,7 +95,10 @@ async function vertexToken(): Promise<string | null> {
   for (const host of hosts) {
     try {
       const res = await fetch(
-        `http://${host}/computeMetadata/v1/instance/service-account/token`,
+        // NOTE the `default/` segment. Without it the path lists the available
+      // service accounts rather than issuing a token, and answers 404 — which
+      // reads like a network problem and is not.
+      `http://${host}/computeMetadata/v1/instance/service-account/default/token`,
         { headers: { "Metadata-Flavor": "Google" }, signal: AbortSignal.timeout(10_000) },
       );
       if (!res.ok) {
