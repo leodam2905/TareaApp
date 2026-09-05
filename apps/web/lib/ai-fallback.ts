@@ -122,6 +122,40 @@ async function askGemini(ask: Ask): Promise<string | null> {
   return data.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
 }
 
+/**
+ * Prove the fallback path works, from inside the container, on demand.
+ *
+ * The fallback is dormant by design — it only runs when Anthropic is failing,
+ * which is the worst moment to discover that the Vertex half was never
+ * reachable. IAM, API enablement and the metadata server are all things that
+ * can be silently wrong for weeks. This exercises exactly the code the fallback
+ * uses, so a green result means the real path works, not an approximation.
+ */
+export async function geminiSelfTest(): Promise<{
+  ok: boolean;
+  token: boolean;
+  model: string;
+  reply?: string;
+  detail?: string;
+}> {
+  const token = await vertexToken();
+  if (!token) {
+    return { ok: false, token: false, model: GEMINI_MODEL,
+      detail: "no metadata-server token — expected off Cloud Run, a problem on it" };
+  }
+  try {
+    const text = await askGemini({
+      route: "selftest", model: "", maxTokens: 32,
+      text: "Reply with exactly: fallback-ready",
+    });
+    return text === null
+      ? { ok: false, token: true, model: GEMINI_MODEL, detail: "Vertex call failed — check roles/aiplatform.user on the runtime service account" }
+      : { ok: true, token: true, model: GEMINI_MODEL, reply: text.trim().slice(0, 40) };
+  } catch (e) {
+    return { ok: false, token: true, model: GEMINI_MODEL, detail: String(e).slice(0, 140) };
+  }
+}
+
 export async function askWithFallback(ask: Ask): Promise<FallbackResult> {
   const content: Anthropic.MessageParam["content"] = [];
   if (ask.image) {
