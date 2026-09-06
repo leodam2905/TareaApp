@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Export options for App Store archives, for BOTH flavours.
+
+  Kept in the repo rather than /tmp, where it lived until 2026-09-05 and was
+  cleaned away mid-release: the export then failed with "no such file", which
+  looks like a signing problem and is not.
+
+  signingStyle automatic + the App Store Connect API key (AuthKey_54F786QLW9)
+  means no provisioning profile is checked in; Xcode fetches what it needs.
+  teamID is TAREA US LLC.
+-->
+<plist version="1.0"><dict>
+  <key>method</key><string>app-store-connect</string>
+  <key>teamID</key><string>GZT8C3C2A2</string>
+  <key>uploadSymbols</key><true/>
+  <key>signingStyle</key><string>automatic</string>
+</dict></plist>
