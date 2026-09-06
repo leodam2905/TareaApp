@@ -5,6 +5,7 @@ import { quoteRange, resolveRate } from "@/lib/labor-pricing";
 import { rateRangeForCategory } from "@/lib/rate-range";
 import { askWithFallback } from "@/lib/ai-fallback";
 import { clientIp } from "@/lib/client-ip";
+import { reserveAiBudget } from "@/lib/ai-budget";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -13,6 +14,15 @@ export async function POST(req: NextRequest) {
   const ip = clientIp(req);
   if (!rateLimit(`ai:${ip}`, 8, 60_000).ok) {
     return NextResponse.json({ error: "Too many requests. Please wait a moment." }, { status: 429 });
+  }
+
+  // Global daily ceiling. The per-IP limit above divides the budget between
+  // callers; it cannot cap the total, so a spread-out flood stays under every
+  // per-caller limit and still runs up the bill. This route takes no auth.
+  const budget = await reserveAiBudget("instant-quote");
+  if (!budget.ok) {
+    console.warn(JSON.stringify({ kind: "ai_budget_exceeded", route: "instant-quote", used: budget.used, cap: budget.cap }));
+    return NextResponse.json({ error: "AI is at today's limit. Please try again tomorrow." }, { status: 503 });
   }
 
   const { category, task, details } = await req.json();

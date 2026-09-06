@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { streamWithFallback } from "@/lib/ai-fallback";
 import { clientIp } from "@/lib/client-ip";
+import { reserveAiBudget } from "@/lib/ai-budget";
 
 
 const SYSTEM = `You are Tarea's friendly AI assistant. Tarea is a US-based handyman marketplace connecting customers with vetted, background-checked independent service providers for home services.
@@ -25,6 +26,14 @@ export async function POST(req: NextRequest) {
   const ip = clientIp(req);
   if (!rateLimit(`ai:${ip}`, 20, 60_000).ok) {
     return new Response("Too many requests", { status: 429 });
+  }
+
+  // Global daily ceiling -- see lib/ai-budget.ts. The per-IP limit divides the
+  // budget between callers; only a shared counter can cap the total.
+  const budget = await reserveAiBudget("chat");
+  if (!budget.ok) {
+    console.warn(JSON.stringify({ kind: "ai_budget_exceeded", route: "chat", used: budget.used, cap: budget.cap }));
+    return new Response("AI is at today's limit. Please try again tomorrow.", { status: 503 });
   }
 
   const { messages } = await req.json();

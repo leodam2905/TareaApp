@@ -4,6 +4,7 @@ import { quoteRange, resolveRate, formatMinutes } from "@/lib/labor-pricing";
 import { rateRangeForCategory } from "@/lib/rate-range";
 import { askWithFallback } from "@/lib/ai-fallback";
 import { clientIp } from "@/lib/client-ip";
+import { reserveAiBudget } from "@/lib/ai-budget";
 
 
 const CATEGORIES = [
@@ -19,6 +20,15 @@ export async function POST(req: NextRequest) {
   const ip = clientIp(req);
   if (!rateLimit(`ai:${ip}`, 20, 60_000).ok) {
     return NextResponse.json({ error: "Too many requests. Please wait a moment." }, { status: 429 });
+  }
+
+  // Global daily ceiling. The per-IP limit above divides the budget between
+  // callers; it cannot cap the total, so a spread-out flood stays under every
+  // per-caller limit and still runs up the bill. This route takes no auth.
+  const budget = await reserveAiBudget("diagnose");
+  if (!budget.ok) {
+    console.warn(JSON.stringify({ kind: "ai_budget_exceeded", route: "diagnose", used: budget.used, cap: budget.cap }));
+    return NextResponse.json({ error: "AI is at today's limit. Please try again tomorrow." }, { status: 503 });
   }
 
   const { imageBase64, mediaType, description } = await req.json();
