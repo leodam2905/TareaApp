@@ -22,6 +22,12 @@ const KEY = '/Users/monsegueadah/TareaApp/apps/mobile/google-service-account.jso
 // is reviewable in a diff instead of being retyped at the prompt each release.
 // Keep these in step with the App Store "what's new" for the same build.
 const NOTES = {
+  '1.0.27': {
+    'com.taptarea.customer':
+      "You can now open any pro who applied and see exactly what they'd charge — labour, materials and the service fee, broken down. Licence and insurance badges show on every pro who has them.",
+    'com.taptarea.handyman':
+      "Applying to a job now shows YOUR labour price for it, not someone else's, and the materials field no longer disappears behind the keyboard. Adding a service asks which category it is instead of assuming plumbing.",
+  },
   '1.0.26': {
     'com.taptarea.customer':
       "You can now require a licensed & insured pro when you post a job, and see each pro's credentials while you choose. Job budgets show the range of rates that could take the work, and your invoices name the pro who did it.",
