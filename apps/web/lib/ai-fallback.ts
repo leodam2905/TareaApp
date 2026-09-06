@@ -189,6 +189,98 @@ export async function geminiSelfTest(): Promise<{
   }
 }
 
+
+/** One turn of a conversation, in the shape the chat route already uses. */
+export interface Turn { role: "user" | "assistant"; content: string }
+
+/**
+ * The chat route's shape: multi-turn, a system prompt, and a streamed reply.
+ *
+ * Returns a ReadableStream of UTF-8 text either way, so the route hands the
+ * client the same thing it always did.
+ *
+ * ONE DELIBERATE ASYMMETRY. Claude streams token by token; the Gemini fallback
+ * does not — it answers in full and is emitted as a single chunk. Streaming
+ * Vertex means parsing SSE for a path that runs only while Anthropic is down,
+ * and a reply that arrives whole a second later is a far smaller degradation
+ * than no reply at all. If the fallback ever becomes the common path, this is
+ * the first thing to revisit.
+ */
+export async function streamWithFallback(opts: {
+  route: string;
+  model: string;
+  maxTokens: number;
+  system: string;
+  messages: Turn[];
+}): Promise<ReadableStream<Uint8Array>> {
+  const encoder = new TextEncoder();
+  try {
+    const stream = anthropic.messages.stream({
+      model: opts.model,
+      max_tokens: opts.maxTokens,
+      system: opts.system,
+      messages: opts.messages,
+    });
+    // Await the first event so a 529 surfaces HERE, where it can still be
+    // caught, rather than mid-stream once headers are already sent.
+    const iterator = stream[Symbol.asyncIterator]();
+    const first = await iterator.next();
+    return new ReadableStream({
+      async start(controller) {
+        const emit = (chunk: { type: string; delta?: { type: string; text?: string } }) => {
+          if (chunk?.type === "content_block_delta" && chunk.delta?.type === "text_delta") {
+            controller.enqueue(encoder.encode(chunk.delta.text ?? ""));
+          }
+        };
+        try {
+          if (!first.done) emit(first.value as never);
+          for (let n = await iterator.next(); !n.done; n = await iterator.next()) emit(n.value as never);
+        } catch (err) {
+          console.error(`[${opts.route}] stream broke mid-flight:`, err);
+        } finally {
+          controller.close();
+        }
+      },
+    });
+  } catch (err) {
+    if (!isRetryable(err)) throw err;
+    const reason = `${(err as { status?: number })?.status ?? "network"}`;
+
+    // Gemini takes the system prompt as systemInstruction, and calls the
+    // assistant role "model".
+    const token = await vertexToken();
+    if (!token) throw err;
+    const url =
+      `https://${LOCATION}-aiplatform.googleapis.com/v1/projects/${PROJECT}` +
+      `/locations/${LOCATION}/publishers/google/models/${GEMINI_MODEL}:generateContent`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: opts.system }] },
+        contents: opts.messages.map(m => ({
+          role: m.role === "assistant" ? "model" : "user",
+          parts: [{ text: m.content }],
+        })),
+        generationConfig: { maxOutputTokens: opts.maxTokens },
+      }),
+      signal: AbortSignal.timeout(60_000),
+    });
+    if (!res.ok) throw err;
+    const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    if (!text) throw err;
+
+    console.log(JSON.stringify({ kind: "ai_fallback", route: opts.route, reason, model: GEMINI_MODEL }));
+    return new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode(text));
+        controller.close();
+      },
+    });
+  }
+}
+
 export async function askWithFallback(ask: Ask): Promise<FallbackResult> {
   const content: Anthropic.MessageParam["content"] = [];
   if (ask.image) {

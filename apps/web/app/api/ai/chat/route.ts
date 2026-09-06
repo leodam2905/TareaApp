@@ -1,9 +1,7 @@
 import { NextRequest } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import { rateLimit } from "@/lib/rate-limit";
-import { logAiUsage } from "@/lib/ai-usage";
+import { streamWithFallback } from "@/lib/ai-fallback";
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const SYSTEM = `You are Tarea's friendly AI assistant. Tarea is a US-based handyman marketplace connecting customers with vetted, background-checked independent service providers for home services.
 
@@ -37,31 +35,21 @@ export async function POST(req: NextRequest) {
     return new Response("Conversation too long", { status: 400 });
   }
 
-  const stream = await client.messages.stream({
+  // Claude first, Gemini if Claude cannot answer.
+  //
+  // The helper owns the streaming so the fallback can be reached before any
+  // byte is sent: it awaits the first event, so a 529 surfaces while it can
+  // still be caught rather than mid-stream with headers already on the wire.
+  //
+  // The fallback does not stream — it answers in full and arrives as one
+  // chunk. Parsing Vertex SSE for a path that only runs while Anthropic is
+  // down is not worth it, and a whole reply a second later beats no reply.
+  const readable = await streamWithFallback({
+    route: "chat",
     model: "claude-haiku-4-5-20251001",
-    max_tokens: 512,
+    maxTokens: 512,
     system: SYSTEM,
     messages,
-  });
-
-  const encoder = new TextEncoder();
-  const readable = new ReadableStream({
-    async start(controller) {
-      for await (const chunk of stream) {
-        if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
-          controller.enqueue(encoder.encode(chunk.delta.text));
-        }
-      }
-      controller.close();
-      // Usage arrives only once the stream finishes, so it is recorded here
-      // rather than beside the other routes' call sites. Awaited AFTER close()
-      // so accounting never delays a byte reaching the customer.
-      try {
-        logAiUsage("chat", await stream.finalMessage());
-      } catch {
-        /* the answer was already delivered — never fail on instrumentation */
-      }
-    },
   });
 
   return new Response(readable, {

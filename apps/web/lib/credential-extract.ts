@@ -1,8 +1,7 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { askWithFallback } from "@/lib/ai-fallback";
 import { logAiUsage } from "@/lib/ai-usage";
 import type { CredentialKind } from "@/lib/credentials";
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 /** Same bound as /api/ai/receipt and /api/ai/diagnose: ~5MB image. */
 const MAX_BYTES = 5_000_000;
@@ -70,37 +69,35 @@ export async function extractCredential(
     // Structured outputs (output_config) would fit here, but the pinned SDK is
     // ^0.39.0 and does not type it. The JSON contract lives in the prompt and
     // is parsed below, the same way /api/ai/receipt and /api/ai/diagnose work.
-    const message = await client.messages.create({
+    // Claude first, Gemini if Claude cannot answer.
+    //
+    // This is the one place the fallback lowers quality rather than only
+    // keeping the lights on. Opus 5 is here deliberately: a misread expiry
+    // keeps a lapsed licence clearing the CSLB $1,000 gate. A weaker reading
+    // is still better than none, because every value is confirmed by an admin
+    // against the same document either way, and a failed extraction returns
+    // null and simply leaves them typing the date.
+    const answer = await askWithFallback({
+      route: "credential-extract",
       model: "claude-opus-5",
-      max_tokens: 1000,
-      messages: [{
-        role: "user",
-        content: [
-          { type: "image", source: { type: "base64", media_type: declared as MediaType, data: buf.toString("base64") } },
-          {
-            type: "text",
-            text:
-              `${PROMPT[kind]}\n\n` +
-              "Report ONLY what is printed on the document. Rules:\n" +
-              "- If a field is not visible, or you are unsure you are reading it correctly, return null for it rather than a guess. A null costs an admin ten seconds; a wrong date can keep an expired credential valid.\n" +
-              "- Do NOT infer an expiry from an issue date, a print date, or a term length. Return the expiry only if the document states it.\n" +
-              "- If the document is not the kind of document described above, set confidence to 0 and say so in notes.\n" +
-              "- Note in `notes` anything an approver should check by eye: alterations, a date already in the past, a name that looks like a company rather than a person, or poor legibility.\n\n" +
-              'Reply with JSON only, no prose and no code fence: {"expiresAt":"YYYY-MM-DD or null","number":"string or null","name":"string or null","confidence":0-100,"notes":"string or null"}',
-          },
-        ],
-      }],
+      maxTokens: 1000,
+      text:
+        `${PROMPT[kind]}\n\n` +
+"Report ONLY what is printed on the document. Rules:\n" +
+"- If a field is not visible, or you are unsure you are reading it correctly, return null for it rather than a guess. A null costs an admin ten seconds; a wrong date can keep an expired credential valid.\n" +
+"- Do NOT infer an expiry from an issue date, a print date, or a term length. Return the expiry only if the document states it.\n" +
+"- If the document is not the kind of document described above, set confidence to 0 and say so in notes.\n" +
+"- Note in `notes` anything an approver should check by eye: alterations, a date already in the past, a name that looks like a company rather than a person, or poor legibility.\n\n" +
+'Reply with JSON only, no prose and no code fence: {"expiresAt":"YYYY-MM-DD or null","number":"string or null","name":"string or null","confidence":0-100,"notes":"string or null"}',
+      image: { base64: buf.toString("base64"), mediaType: declared },
     });
 
-    logAiUsage("credential-extract", message);
 
-    const text = message.content.find(b => b.type === "text");
-    if (!text || text.type !== "text") return null;
 
     // Tolerate a code fence even though the prompt forbids one — a fence is a
     // formatting slip, not a failed reading, and discarding the whole result
     // over it would send the admin back to typing the date by hand.
-    const raw = text.text.trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+    const raw = answer.text.trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
     const parsed = JSON.parse(raw) as Omit<CredentialExtract, "readAt">;
 
     // A date the model invented in the wrong century, or one already past, is

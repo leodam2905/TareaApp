@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
-import { logAiUsage } from "@/lib/ai-usage";
+import { askWithFallback } from "@/lib/ai-fallback";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -42,26 +42,16 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const message = await client.messages.create({
-      // Sonnet 5 is both newer and cheaper than the 4.6 this used to
-      // run: $2/$10 per Mtok against $3/$15. Nothing about the task
-      // changed — this is the same vision call at a third less.
+    // Claude first, Gemini if Claude cannot answer. A pro cannot finish a job
+    // while this is down -- completion asks for the receipt -- so an outage
+    // here blocks work rather than degrading a nicety.
+    //
+    // Sonnet 5 is newer and cheaper than the 4.6 this used to run.
+    const answer = await askWithFallback({
+      route: "receipt",
       model: "claude-sonnet-5",
-      max_tokens: 300,
-      messages: [{
-        role: "user",
-        content: [
-          {
-            type: "image",
-            source: {
-              type: "base64",
-              media_type: (mediaType || "image/jpeg") as "image/jpeg" | "image/png" | "image/gif" | "image/webp",
-              data: imageBase64,
-            },
-          },
-          {
-            type: "text",
-            text: `This is a photo of a purchase receipt for materials bought for a home repair job.
+      maxTokens: 300,
+      text: `This is a photo of a purchase receipt for materials bought for a home repair job.
 
 Return ONLY a valid JSON object:
 - "total": the GRAND TOTAL actually paid, as a number, including tax. Null if you cannot read it.
@@ -74,13 +64,10 @@ Return ONLY a valid JSON object:
 Read the printed total. Do not add up line items yourself, and do not infer a total that is not shown — return null instead. If several totals appear, take the final amount paid.
 
 Return nothing but the JSON. No markdown fences, no explanation.`,
-          },
-        ],
-      }],
+      image: { base64: String(imageBase64), mediaType: String(mediaType || "image/jpeg") },
     });
 
-    logAiUsage("receipt", message);
-    const text = message.content[0].type === "text" ? message.content[0].text : "";
+    const text = answer.text;
     const json = JSON.parse(text.replace(/```json|```/g, "").trim());
 
     // Never let a model hand back something unusable as a number.
