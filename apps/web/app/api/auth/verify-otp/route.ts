@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { verifyPendingToken, signToken, setAuthCookie } from "@/lib/auth";
 import { verifyOtp } from "@/lib/otp";
 import { rateLimit } from "@/lib/rate-limit";
+import { clientIp } from "@/lib/client-ip";
 
 const schema = z.object({
   pendingToken: z.string().min(1),
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Throttle OTP guesses to make brute-forcing the 6-digit code infeasible.
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+    const ip = clientIp(req);
     const rlUser = rateLimit(`otp-verify:${userId}`, 5, 10 * 60_000);
     const rlIp = rateLimit(`otp-verify-ip:${ip}`, 20, 10 * 60_000);
     if (!rlUser.ok || !rlIp.ok) {

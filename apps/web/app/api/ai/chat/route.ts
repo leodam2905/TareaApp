@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { streamWithFallback } from "@/lib/ai-fallback";
+import { clientIp } from "@/lib/client-ip";
 
 
 const SYSTEM = `You are Tarea's friendly AI assistant. Tarea is a US-based handyman marketplace connecting customers with vetted, background-checked independent service providers for home services.
@@ -21,7 +22,7 @@ Be helpful, warm, and concise. Answer in 1–3 sentences when possible. If you d
 
 export async function POST(req: NextRequest) {
   // Public endpoint — rate limit per IP to prevent API-key cost abuse.
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ip = clientIp(req);
   if (!rateLimit(`ai:${ip}`, 20, 60_000).ok) {
     return new Response("Too many requests", { status: 429 });
   }

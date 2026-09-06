@@ -5,6 +5,7 @@ import { hashPassword, signPendingToken } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { sendEmail } from "@/lib/email";
 import { createAndSendOtp } from "@/lib/otp";
+import { clientIp } from "@/lib/client-ip";
 
 const schema = z.object({
   name: z.string().min(2),
@@ -26,7 +27,7 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  const ip = clientIp(req);
   const rl = rateLimit(`register:${ip}`, 5, 3_600_000);
   if (!rl.ok) {
     return NextResponse.json({ error: "Too many registrations from this IP. Try again later." }, { status: 429 });

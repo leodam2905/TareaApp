@@ -4,11 +4,12 @@ import { prisma } from "@/lib/prisma";
 import { verifyPendingToken, signPendingToken } from "@/lib/auth";
 import { createAndSendOtp } from "@/lib/otp";
 import { rateLimit } from "@/lib/rate-limit";
+import { clientIp } from "@/lib/client-ip";
 
 const schema = z.object({ pendingToken: z.string().min(1) });
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  const ip = clientIp(req);
   const rl = rateLimit(`resend-otp:${ip}`, 5, 900_000); // 5 per 15 min
   if (!rl.ok) return NextResponse.json({ error: "Too many resend attempts. Wait a few minutes." }, { status: 429 });
 

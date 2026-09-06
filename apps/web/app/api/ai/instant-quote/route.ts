@@ -4,12 +4,13 @@ import { rateLimit } from "@/lib/rate-limit";
 import { quoteRange, resolveRate } from "@/lib/labor-pricing";
 import { rateRangeForCategory } from "@/lib/rate-range";
 import { askWithFallback } from "@/lib/ai-fallback";
+import { clientIp } from "@/lib/client-ip";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
   // Public endpoint — rate limit per IP to prevent API-key cost abuse.
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ip = clientIp(req);
   if (!rateLimit(`ai:${ip}`, 8, 60_000).ok) {
     return NextResponse.json({ error: "Too many requests. Please wait a moment." }, { status: 429 });
   }

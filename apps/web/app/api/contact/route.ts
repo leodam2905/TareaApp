@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { sendEmail } from "@/lib/email";
 import { rateLimit } from "@/lib/rate-limit";
+import { clientIp } from "@/lib/client-ip";
 
 const schema = z.object({
   name:    z.string().min(2).max(100),
@@ -16,7 +17,7 @@ function esc(s: string) {
 }
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  const ip = clientIp(req);
   const rl = rateLimit(`contact:${ip}`, 5, 3_600_000); // 5 per hour
   if (!rl.ok) return NextResponse.json({ error: "Too many requests. Try again later." }, { status: 429 });
 

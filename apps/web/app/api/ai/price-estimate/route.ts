@@ -7,6 +7,7 @@ import { grossHourlyFor, grossTravel, grossMinimum, URGENCY_RATE } from "@/lib/p
 import { resolveRate, quoteLabor, quoteRange, formatMinutes } from "@/lib/labor-pricing";
 import { rateRangeForCategory } from "@/lib/rate-range";
 import { askWithFallback } from "@/lib/ai-fallback";
+import { clientIp } from "@/lib/client-ip";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
   // who it is, per-IP and tighter when we do not, since an unauthenticated
   // endpoint that calls Anthropic spends real money.
   const user = await getCurrentUser();
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ip = clientIp(req);
   const { ok: withinLimit } = user
     ? rateLimit(`ai-user:${user.id}`, 30, 60_000)
     : rateLimit(`ai:${ip}`, 8, 60_000);

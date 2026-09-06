@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ICA, AGREEMENT_VERSION } from "@/lib/ica-text";
+import { clientIp } from "@/lib/client-ip";
 
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0] ?? req.headers.get("x-real-ip") ?? "unknown";
+  const ip = clientIp(req);
 
   const profile = await prisma.handymanProfile.findUnique({ where: { userId: user.id } });
   if (!profile) return NextResponse.json({ error: "Profile not found" }, { status: 404 });
