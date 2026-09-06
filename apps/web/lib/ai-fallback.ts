@@ -124,6 +124,12 @@ async function vertexToken(): Promise<string | null> {
   return null;
 }
 
+/** Raw status+body of the last failed Vertex call, for the health endpoint. */
+let lastGeminiFailure: string | null = null;
+export function lastGeminiError(): string | null {
+  return lastGeminiFailure;
+}
+
 async function askGemini(ask: Ask): Promise<string | null> {
   const token = await vertexToken();
   if (!token) return null;
@@ -147,7 +153,14 @@ async function askGemini(ask: Ask): Promise<string | null> {
     }),
     signal: AbortSignal.timeout(60_000),
   });
-  if (!res.ok) return null;
+  if (!res.ok) {
+    // Never discard this. The fallback is dormant, so a swallowed Vertex error
+    // is only discovered during the outage it exists to survive -- and a guessed
+    // cause ("check IAM") sent a whole evening chasing the wrong thing once.
+    lastGeminiFailure = `HTTP ${res.status} ${await res.text().catch(() => "")}`.slice(0, 300);
+    return null;
+  }
+  lastGeminiFailure = null;
 
   const data = (await res.json()) as {
     candidates?: { content?: { parts?: { text?: string }[] } }[];
@@ -182,7 +195,8 @@ export async function geminiSelfTest(): Promise<{
       text: "Reply with exactly: fallback-ready",
     });
     return text === null
-      ? { ok: false, token: true, model: GEMINI_MODEL, detail: "Vertex call failed — check roles/aiplatform.user on the runtime service account" }
+      ? { ok: false, token: true, model: GEMINI_MODEL,
+          detail: `Vertex call failed — ${lastGeminiError() || "no response body captured"}` }
       : { ok: true, token: true, model: GEMINI_MODEL, reply: text.trim().slice(0, 40) };
   } catch (e) {
     return { ok: false, token: true, model: GEMINI_MODEL, detail: String(e).slice(0, 140) };
