@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { logAiUsage } from "@/lib/ai-usage";
+import { recordAiTokens } from "@/lib/ai-budget";
 
 /**
  * Run a prompt on Claude, and on Gemini when Claude cannot answer.
@@ -329,6 +330,17 @@ export async function askWithFallback(ask: Ask): Promise<FallbackResult> {
       messages: [{ role: "user", content }],
     });
     logAiUsage(ask.route, message);
+    // Also into ai_daily_usage, where the cap lives. logAiUsage goes to Cloud
+    // Logging, which cannot be read synchronously to weight a budget by cost --
+    // per-route REQUEST counts say which route is busy, tokens say which is
+    // expensive, and a vision call is worth many text ones. Awaited, not
+    // fire-and-forget: a floating promise on Cloud Run can be dropped when the
+    // instance is reclaimed, and it never throws, so it cannot break the reply.
+    await recordAiTokens(
+      ask.route,
+      message.usage?.input_tokens ?? 0,
+      message.usage?.output_tokens ?? 0,
+    );
     const block = message.content.find(b => b.type === "text");
     return { text: block && block.type === "text" ? block.text : "", provider: "anthropic" };
   } catch (err) {
