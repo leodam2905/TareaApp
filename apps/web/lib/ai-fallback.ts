@@ -190,13 +190,26 @@ export async function geminiSelfTest(): Promise<{
       detail: `no metadata-server token — ${lastVertexTokenError() || "expected off Cloud Run, a problem on it"}` };
   }
   try {
-    const text = await askGemini({
-      route: "selftest", model: "", maxTokens: 32,
-      text: "Reply with exactly: fallback-ready",
-    });
+    // Three attempts, spaced, before declaring the fallback dead.
+    // 2026-09-06: a single transient Vertex failure at 08:17 sent an alarming
+    // "the AI fallback is not working" email; the path was healthy again minutes
+    // later, with nothing changed. A daily check that pages on one failed call is
+    // the worst of both -- 24h blind to a real breakage, yet noisy on a blip.
+    // A genuine outage survives three tries; a hiccup does not.
+    let text: string | null = null;
+    let attempts = 0;
+    for (let i = 0; i < 3; i++) {
+      attempts = i + 1;
+      text = await askGemini({
+        route: "selftest", model: "", maxTokens: 32,
+        text: "Reply with exactly: fallback-ready",
+      });
+      if (text !== null) break;
+      if (i < 2) await new Promise((r) => setTimeout(r, 2_000));
+    }
     return text === null
       ? { ok: false, token: true, model: GEMINI_MODEL,
-          detail: `Vertex call failed — ${lastGeminiError() || "no response body captured"}` }
+          detail: `Vertex call failed after ${attempts} attempts — ${lastGeminiError() || "no response body captured"}` }
       : { ok: true, token: true, model: GEMINI_MODEL, reply: text.trim().slice(0, 40) };
   } catch (e) {
     return { ok: false, token: true, model: GEMINI_MODEL, detail: String(e).slice(0, 140) };
