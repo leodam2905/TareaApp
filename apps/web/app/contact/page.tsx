@@ -83,7 +83,7 @@ export default function ContactPage() {
   const input = "w-full bg-tarea-paper border border-tarea-border rounded-xl px-4 py-3 text-tarea-ink text-sm placeholder:text-tarea-ink-subtle focus:outline-none focus:border-tarea-sky transition-colors";
 
   return (
-    <div className="min-h-screen bg-tarea-cream text-tarea-ink-muted">
+    <div className="day-only min-h-screen bg-tarea-cream text-tarea-ink-muted">
       {/* Nav */}
       <header className="border-b border-tarea-border px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">

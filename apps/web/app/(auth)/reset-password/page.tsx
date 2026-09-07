@@ -121,7 +121,7 @@ function ResetForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen bg-tarea-surface flex">
+    <div className="day-only min-h-screen bg-tarea-surface flex">
       <div className="hidden lg:flex lg:w-1/2 bg-hero-gradient flex-col justify-between p-12">
         <Logo size={40} light />
         <div className="space-y-4">

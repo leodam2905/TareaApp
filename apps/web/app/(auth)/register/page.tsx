@@ -201,7 +201,7 @@ function RegisterForm() {
 
   if (pendingToken) {
     return (
-      <div className="min-h-screen bg-tarea-surface flex items-center justify-center px-4">
+      <div className="day-only min-h-screen bg-tarea-surface flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-tarea-sky/10 border border-tarea-sky/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -239,7 +239,7 @@ function RegisterForm() {
   }
 
   return (
-    <div className="min-h-screen bg-tarea-surface flex">
+    <div className="day-only min-h-screen bg-tarea-surface flex">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-hero-gradient flex-col justify-between p-12">
         <Logo variant="upright" size={44} light />

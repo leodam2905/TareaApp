@@ -120,6 +120,43 @@ html.dark {
   transition: background-color 0.3s ease;
 }
 
+/* ── Day-only pages ──────────────────────────────────────────────────────────
+   The auth and legal pages are built entirely in the FIXED day palette --
+   bg-tarea-surface, text-tarea-ink, border-tarea-border and friends, 188 class
+   uses across 13 files. Those Tailwind tokens are constants; they do not follow
+   html.dark. Their .card and .input siblings DO, because those read CSS
+   variables.
+
+   In night mode that split rendered a light mint page with navy inputs and pale
+   labels on near-white -- not a dark theme, a broken one.
+
+   Rewriting 188 classes into dark: variants is 188 chances to miss one and ship
+   invisible text on the signup form. Instead these pages pin the day palette, so
+   the variable-driven components agree with the constants around them. A night-
+   mode visitor gets a light auth page: consistent and readable, which beats
+   half-converted. Making them genuinely dark-capable is a design job, not a
+   find-and-replace, and this does not stand in its way.  */
+.day-only {
+  --app-bg:        #FBF6EC;
+  --app-bg-body:   #FBF6EC;
+  --card-bg:       #FFFDF8;
+  --card-bg-alt:   #F4FAF6;
+  --card-border:   #DBE7E2;
+  --card-border-2: #C5E7DC;
+  --text-primary:  #143F3A;
+  --text-muted:    #54706C;
+  --text-subtle:   #627572;
+  --input-bg:      #FFFFFF;
+}
+
+/* `html.dark .input` sets colour directly rather than through a variable, so
+   redeclaring the variables above cannot reach it. Needs to outrank it. */
+html.dark .day-only .input,
+html.dark .day-only select.input {
+  color: #0F172A;
+  border-color: #DBE7E2;
+}
+
 /* Day mode: override the dark inline patterns used in page components */
 html:not(.dark) main .bg-white\/5  { background-color: var(--card-bg) !important; }
 html:not(.dark) main .bg-white\/10 { background-color: var(--card-bg-alt) !important; }

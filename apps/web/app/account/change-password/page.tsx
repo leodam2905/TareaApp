@@ -68,7 +68,7 @@ export default function ChangePasswordPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen bg-tarea-surface flex items-center justify-center">
+      <div className="day-only min-h-screen bg-tarea-surface flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-tarea-sky animate-spin" />
       </div>
     );
@@ -76,7 +76,7 @@ export default function ChangePasswordPage() {
 
   if (done) {
     return (
-      <div className="min-h-screen bg-tarea-surface flex items-center justify-center p-6">
+      <div className="day-only min-h-screen bg-tarea-surface flex items-center justify-center p-6">
         <div className="w-full max-w-md card text-center space-y-5">
           <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-8 h-8 text-emerald-500" />
@@ -99,7 +99,7 @@ export default function ChangePasswordPage() {
   const inputClass = "input pr-12";
 
   return (
-    <div className="min-h-screen bg-tarea-surface flex items-center justify-center p-6">
+    <div className="day-only min-h-screen bg-tarea-surface flex items-center justify-center p-6">
       <div className="w-full max-w-md space-y-6">
         <Link href="#" onClick={() => router.back()} className="flex items-center gap-2 text-tarea-ink-muted hover:text-tarea-ink text-sm transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back

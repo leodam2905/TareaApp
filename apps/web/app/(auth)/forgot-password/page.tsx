@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-tarea-surface flex">
+    <div className="day-only min-h-screen bg-tarea-surface flex">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-hero-gradient flex-col justify-between p-12">
         <Logo size={40} light />

@@ -216,7 +216,7 @@ export default function LoginPage() {
   // ── Add-phone screen ────────────────────────────────────────────────────
   if (requiresPhone) {
     return (
-      <div className="min-h-screen bg-tarea-surface flex">
+      <div className="day-only min-h-screen bg-tarea-surface flex">
         {leftPanel}
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="w-full max-w-md">
@@ -270,7 +270,7 @@ export default function LoginPage() {
   // ── OTP screen ──────────────────────────────────────────────────────────
   if (pendingToken) {
     return (
-      <div className="min-h-screen bg-tarea-surface flex">
+      <div className="day-only min-h-screen bg-tarea-surface flex">
         {leftPanel}
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="w-full max-w-md">
@@ -336,7 +336,7 @@ export default function LoginPage() {
 
   // ── Credentials screen ──────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-tarea-surface flex">
+    <div className="day-only min-h-screen bg-tarea-surface flex">
       {leftPanel}
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
