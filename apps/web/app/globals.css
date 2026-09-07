@@ -157,6 +157,21 @@ html.dark .day-only select.input {
   border-color: #DBE7E2;
 }
 
+/* Chrome paints autofilled fields itself, and in night mode it picks a dark
+   ground with light text -- which no variable of ours can reach, so a saved
+   email rendered as one navy field in an otherwise white form. The inset
+   box-shadow is the only way to repaint an autofilled background, and
+   -webkit-text-fill-color the only way to recolour its text. */
+.day-only .input:-webkit-autofill,
+.day-only .input:-webkit-autofill:hover,
+.day-only .input:-webkit-autofill:focus,
+.day-only .input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+  box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+  -webkit-text-fill-color: #0F172A !important;
+  caret-color: #0F172A;
+}
+
 /* Day mode: override the dark inline patterns used in page components */
 html:not(.dark) main .bg-white\/5  { background-color: var(--card-bg) !important; }
 html:not(.dark) main .bg-white\/10 { background-color: var(--card-bg-alt) !important; }
