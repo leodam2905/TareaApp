@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
-import { proOwedFor, proOwedForAll, payoutIdempotencyKey } from "@/lib/pro-payout";
+import { proOwedFor, proOwedForAll, payoutIdempotencyKey, unpaidTipsWhere, tipTotal } from "@/lib/pro-payout";
 import { createNotification } from "@/lib/notify";
 import { BACKGROUND_CHECK_FEE, bgCheckDeductionFor } from "@/lib/background-check";
 import { checkInstantEligibility, instantBlockedMessage } from "@/lib/instant-payout";
@@ -32,7 +32,7 @@ export async function GET() {
       take: 20,
     }),
     prisma.tip.findMany({
-      where: { booking: { handymanId: user.id, handymanPaidOut: false } },
+      where: unpaidTipsWhere(user.id),
       select: { amount: true },
     }),
     prisma.booking.count({
@@ -46,7 +46,7 @@ export async function GET() {
   ]);
 
   const bookingEarnings = proOwedForAll(unpaid);
-  const tipEarnings = pendingTips.reduce((s, t) => s + t.amount, 0);
+  const tipEarnings = tipTotal(pendingTips);
   const available = bookingEarnings + tipEarnings;
 
   // Asked BEFORE the pro commits to anything. Offering instant cash-out and
@@ -103,8 +103,8 @@ export async function POST(_req: NextRequest) {
     }),
     prisma.booking.count({ where: { handymanId: user.id, status: "DISPUTED" } }),
     prisma.tip.findMany({
-      where: { booking: { handymanId: user.id, handymanPaidOut: false } },
-      select: { amount: true },
+      where: unpaidTipsWhere(user.id),
+      select: { id: true, amount: true },
     }),
   ]);
 
@@ -115,15 +115,19 @@ export async function POST(_req: NextRequest) {
     );
   }
 
-  if (pending.length === 0) {
+  // Tips count as earnings on their own. Requiring an unpaid BOOKING as well
+  // refused every pro whose only outstanding money was tips — which, since a
+  // completed booking pays out immediately and only a completed booking can be
+  // tipped, is the ordinary case rather than an edge one.
+  if (pending.length === 0 && pendingTips.length === 0) {
     return NextResponse.json({ error: "No earnings available to cash out." }, { status: 400 });
   }
 
-  const tipTotal = pendingTips.reduce((s, t) => s + t.amount, 0);
+  const tips = tipTotal(pendingTips);
   // Everything the pro is owed: labour net, materials at cost, and tips.
   // The instant fee is charged on this whole total, per the pricing rule
   // that the pro bears the cost of the amount they choose to move.
-  const gross = proOwedForAll(pending) + tipTotal;
+  const gross = proOwedForAll(pending) + tips;
 
   if (gross < MIN_CASHOUT) {
     return NextResponse.json(
@@ -185,6 +189,9 @@ export async function POST(_req: NextRequest) {
   }
 
   const bookingIds = pending.map(b => b.id);
+  const tipIds = pendingTips.map(t => t.id);
+  // Tips are part of what moves, so they are part of what the key identifies.
+  const payoutIds = [...bookingIds, ...tipIds.map(id => `tip:${id}`)];
   await stripe.transfers.create(
     {
       amount: Math.round((gross - bgCheckDeduction) * 100),
@@ -193,7 +200,7 @@ export async function POST(_req: NextRequest) {
       description: `Tarea instant cashout — ${pending.length} job${pending.length > 1 ? "s" : ""}`,
       metadata: { handymanId: user.id },
     },
-    { idempotencyKey: payoutIdempotencyKey(bookingIds, "instant") },
+    { idempotencyKey: payoutIdempotencyKey(payoutIds, "instant") },
   );
 
   // Marked paid HERE, on the transfer, not after the payout below.
@@ -209,6 +216,12 @@ export async function POST(_req: NextRequest) {
     where: { id: { in: bookingIds } },
     data: { handymanPaidOut: true, paidOutAt: now },
   });
+  // Same reasoning as the bookings above: the transfer is what moved the money,
+  // so the transfer is what the flag records. Without this the same tips are
+  // swept and sent a second time on the pro's next cashout.
+  if (tipIds.length > 0) {
+    await prisma.tip.updateMany({ where: { id: { in: tipIds } }, data: { paidOutAt: now } });
+  }
 
   // Push net (after fee) from connected account balance → debit card instantly.
   // Non-fatal: the money is already the pro's inside Stripe, so a failure here
@@ -225,7 +238,7 @@ export async function POST(_req: NextRequest) {
       },
       {
         stripeAccount: user.stripeAccountId,
-        idempotencyKey: payoutIdempotencyKey(bookingIds, "instant-payout"),
+        idempotencyKey: payoutIdempotencyKey(payoutIds, "instant-payout"),
       },
     );
   } catch (err) {

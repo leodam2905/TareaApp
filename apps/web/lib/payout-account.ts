@@ -37,7 +37,11 @@ export type PayoutBlockReason =
   | "lookup_failed";
 
 export type PayoutAccountCheck =
-  | { ok: true }
+  // Carries the id back so callers transfer to the account that was actually
+  // verified, already narrowed to non-null. Callers used to re-read a nullable
+  // `stripeAccountId` off the user afterwards and assert it non-null by hand,
+  // which type-checks a fact this function is the one that established.
+  | { ok: true; accountId: string }
   | { ok: false; reason: PayoutBlockReason; detail: string };
 
 /**
@@ -89,7 +93,7 @@ export async function checkPayoutAccount(accountId?: string | null): Promise<Pay
     };
   }
 
-  return { ok: true };
+  return { ok: true, accountId };
 }
 
 /**

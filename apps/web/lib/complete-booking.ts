@@ -201,7 +201,7 @@ export async function completeBooking(bookingId: string, opts?: { receiptUrl?: s
           {
             amount: Math.round(payout * 100),
             currency: "usd",
-            destination: handymanUser!.stripeAccountId!,
+            destination: check.accountId,
             transfer_group: booking.id,
             ...(sourceTransaction ? { source_transaction: sourceTransaction } : {}),
           },

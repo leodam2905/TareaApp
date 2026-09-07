@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { proOwedForAll, payoutIdempotencyKey } from "@/lib/pro-payout";
+import { proOwedForAll, payoutIdempotencyKey, unpaidTipsWhere, tipTotal } from "@/lib/pro-payout";
 import { checkPayoutAccount, alertPayoutFailure } from "@/lib/payout-account";
 import { createNotification } from "@/lib/notify";
 import { isAuthorizedCron } from "@/lib/cron-auth";
@@ -34,19 +34,65 @@ export async function GET(_req: NextRequest) {
     },
   });
 
-  const byHandyman = new Map<string, { handyman: typeof unpaid[0]["handyman"]; bookings: typeof unpaid }>();
+  // Tips are swept here too, and this — not instant cashout — is the path that
+  // has to work. A customer may only tip a booking that is COMPLETED and paid,
+  // and completeBooking() transfers the pro's money and sets handymanPaidOut at
+  // the moment of completion. So a tip is essentially never attached to a
+  // booking still flagged unpaid, which is exactly what the old tip query
+  // required. Nothing here transferred tips at all, and this cron SET that flag
+  // — permanently hiding any tip that had squeezed through.
+  //
+  // A tip now carries its own paidOutAt (migration 018) and is asked directly.
+  const unpaidTips = await prisma.tip.findMany({
+    where: unpaidTipsWhere(),
+    select: {
+      id: true,
+      amount: true,
+      booking: {
+        select: {
+          handymanId: true,
+          handyman: {
+        select: {
+          id: true, name: true, stripeAccountId: true, stripeAccountStatus: true,
+          handymanProfile: { select: { backgroundCheckStatus: true } },
+        },
+          },
+        },
+      },
+    },
+  });
+
+  type Slot = {
+    handyman: typeof unpaid[0]["handyman"];
+    bookings: typeof unpaid;
+    tips: typeof unpaidTips;
+  };
+  const byHandyman = new Map<string, Slot>();
+  const slotFor = (key: string, handyman: Slot["handyman"]): Slot => {
+    if (!byHandyman.has(key)) byHandyman.set(key, { handyman, bookings: [], tips: [] });
+    return byHandyman.get(key)!;
+  };
   for (const b of unpaid) {
-    const key = b.handymanId;
-    if (!byHandyman.has(key)) byHandyman.set(key, { handyman: b.handyman, bookings: [] });
-    byHandyman.get(key)!.bookings.push(b);
+    slotFor(b.handymanId, b.handyman).bookings.push(b);
+  }
+  // Keyed off the tips as well, or a pro whose only outstanding money is tips —
+  // every job already paid out at completion — is never visited at all.
+  for (const t of unpaidTips) {
+    slotFor(t.booking.handymanId, t.booking.handyman).tips.push(t);
   }
 
   let paid = 0;
   let skipped = 0;
   const now = new Date();
 
-  for (const { handyman, bookings } of byHandyman.values()) {
-    const total = proOwedForAll(bookings);
+  // Array.from, not the iterator directly: this tsconfig has no
+  // downlevelIteration, so iterating the Map made every destructured binding
+  // implicitly `any` — which silently switched off type checking for the whole
+  // payout loop, the last place that should be unchecked.
+  for (const { handyman, bookings, tips } of Array.from(byHandyman.values())) {
+    // Tips ride in the same transfer but carry no commission — 100% of a tip is
+    // the pro's, so it is added to the payout, never to the fee base.
+    const total = Math.round((proOwedForAll(bookings) + tipTotal(tips)) * 100) / 100;
     if (total < 1) { skipped++; continue; }
 
     // Ask Stripe whether this destination is payable, rather than believing
@@ -77,6 +123,11 @@ export async function GET(_req: NextRequest) {
     const payable = total - bg.amount;
 
     const bookingIds = bookings.map(b => b.id);
+    const tipIds = tips.map(t => t.id);
+    // Prefixed so a tip id cannot collide with a booking id, and included so a
+    // tips-only payout does not hash the empty set — which would give every
+    // such payout the same key and make Stripe replay the first transfer.
+    const payoutIds = [...bookingIds, ...tipIds.map(id => `tip:${id}`)];
     try {
       // STEP 1 — transfer, platform → connected account. This is the step that
       // discharges Tarea's obligation: once it lands, the money is the pro's.
@@ -88,11 +139,13 @@ export async function GET(_req: NextRequest) {
         {
           amount: Math.round(payable * 100),
           currency: "usd",
-          destination: handyman.stripeAccountId,
-          description: `Tarea payout — ${bookings.length} job${bookings.length > 1 ? "s" : ""}`,
+          destination: check.accountId,
+          description: bookings.length > 0
+            ? `Tarea payout — ${bookings.length} job${bookings.length > 1 ? "s" : ""}`
+            : `Tarea payout — ${tips.length} tip${tips.length > 1 ? "s" : ""}`,
           metadata: { handymanId: handyman.id },
         },
-        { idempotencyKey: payoutIdempotencyKey(bookingIds, "weekly") },
+        { idempotencyKey: payoutIdempotencyKey(payoutIds, "weekly") },
       );
 
       // Recorded IMMEDIATELY, before the payout is attempted.
@@ -107,6 +160,11 @@ export async function GET(_req: NextRequest) {
         where: { id: { in: bookingIds } },
         data: { handymanPaidOut: true, paidOutAt: now },
       });
+      // Marked on the same terms as the bookings, and for the same reason: the
+      // transfer has already moved this money.
+      if (tipIds.length > 0) {
+        await prisma.tip.updateMany({ where: { id: { in: tipIds } }, data: { paidOutAt: now } });
+      }
 
       // Mark the check paid only after the money actually moved. Doing it
       // earlier would drop the charge if the transfer threw.
@@ -133,8 +191,8 @@ export async function GET(_req: NextRequest) {
             metadata: { handymanId: handyman.id },
           },
           {
-            stripeAccount: handyman.stripeAccountId,
-            idempotencyKey: payoutIdempotencyKey(bookingIds, "weekly-payout"),
+            stripeAccount: check.accountId,
+            idempotencyKey: payoutIdempotencyKey(payoutIds, "weekly-payout"),
           },
         );
       } catch (err) {
@@ -145,12 +203,17 @@ export async function GET(_req: NextRequest) {
       const bgNote = bg.amount > 0
         ? ` (includes a $${bg.amount.toFixed(2)} background check deduction)`
         : "";
+      // Named explicitly: a pro who was tipped weeks ago and is only now seeing
+      // the money should be able to tell what this payment is.
+      const tipNote = tips.length > 0
+        ? ` Includes $${tipTotal(tips).toFixed(2)} in tips — tips are yours in full.`
+        : "";
       await createNotification({
         userId: handyman.id,
         title: "Payout Sent",
         body: payoutSent
-          ? `$${payable.toFixed(2)} is on its way to your bank account. It arrives in 1–2 business days.${bgNote}`
-          : `$${payable.toFixed(2)} has been added to your Tarea balance.${bgNote} It will reach your bank on your next scheduled payout.`,
+          ? `$${payable.toFixed(2)} is on its way to your bank account. It arrives in 1–2 business days.${bgNote}${tipNote}`
+          : `$${payable.toFixed(2)} has been added to your Tarea balance.${bgNote} It will reach your bank on your next scheduled payout.${tipNote}`,
         type: "payout",
       });
 

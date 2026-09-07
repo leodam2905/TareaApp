@@ -441,6 +441,11 @@ model Tip {
   amount           Float
   stripeSessionId  String?
   createdAt        DateTime @default(now())
+  /// When this tip was transferred to the pro. NULL means still owed.
+  /// A tip used to have no flag of its own and was matched through the
+  /// BOOKING's handymanPaidOut, which flips at completion -- before a customer
+  /// is even allowed to tip. See migrations/018_tip_payout_tracking.sql.
+  paidOutAt        DateTime?
 
   booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 

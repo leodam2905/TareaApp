@@ -75,8 +75,23 @@ npx prisma migrate diff \
 | 014 | Customer can require a licensed & insured pro | **Yes** — 2026-08-31 |
 | 015 | Materials receipt read + verification state | **Yes** — 2026-08-31 |
 | 016 | AI reading of a credential document (proposal) | **Yes** — 2026-09-04 |
+| 017 | Rate limit counters | **Yes** — verified in production 2026-09-07 |
+| 018 | Tip payout tracking (`tips.paidOutAt`) | **NO — apply before deploying** |
 
-> **All applied as of 2026-09-04.** The drift gate passes.
+> ⚠️ **018 is unapplied.** `schema.prisma` declares `Tip.paidOutAt`, so
+> `scripts/deploy-web.sh` will refuse the deploy until this runs — which is the
+> gate working. Apply it first. Until it is applied AND the code deployed, tips
+> are still not being paid out to pros; the money is safe in the platform
+> balance and the Tip rows are intact. Verified 2026-09-07: `SELECT count(*) FROM
+> tips` is **0**, so there is no backlog to collect and this ships as a pure
+> forward-fix — which is what being pre-launch buys you.
+>
+> 017 was added to this directory without a row here. Its table was confirmed
+> present on 2026-09-07 (`SELECT to_regclass('rate_limit_counters')`) and the row
+> above now records that — but the gap is the lesson: add the row when you add
+> the file, or this table quietly stops being the record it claims to be.
+
+> **001–016 applied as of 2026-09-04.** The drift gate passes for those.
 >
 > 001 and 002 were recorded here as unapplied but their columns and tables were
 > already present — created by an earlier `prisma db push`, not by running these

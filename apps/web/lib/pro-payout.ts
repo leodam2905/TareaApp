@@ -57,20 +57,50 @@ export function proOwedForAll(bookings: PayableBooking[]): number {
 }
 
 /**
- * A stable Stripe idempotency key for paying out a specific set of bookings.
+ * The tips a pro is still owed: charged to the customer, never transferred.
+ *
+ * Tips used to be located through the BOOKING's handymanPaidOut flag, because a
+ * tip had no flag of its own. That flag flips at completion — and a customer may
+ * only tip a booking that is already COMPLETED and paid — so by the time a tip
+ * could exist, the condition that made it payable was already false. Tips
+ * reached a pro only when the completion transfer had failed.
+ *
+ * Asking the tip itself is the whole fix, and it lives here so the weekly cron
+ * and instant cashout cannot answer it differently — the same reason
+ * proOwedFor() exists.
+ */
+export function unpaidTipsWhere(handymanId?: string) {
+  return {
+    paidOutAt: null,
+    booking: { isPaid: true, ...(handymanId ? { handymanId } : {}) },
+  };
+}
+
+/** Tip money, summed and rounded once. 100% goes to the pro — never commissioned. */
+export function tipTotal(tips: { amount: number }[]): number {
+  return Math.round(tips.reduce((s, t) => s + t.amount, 0) * 100) / 100;
+}
+
+/**
+ * A stable Stripe idempotency key for paying out a specific set of items.
  *
  * The durable guard against double-paying is booking.handymanPaidOut, but there
  * is a window between the transfer landing and that flag being written: if the
  * process dies, or a later step in the same handler throws, the money has moved
  * and nothing recorded it. A retry then transfers a second time.
  *
- * Keying on the booking ids closes that window from Stripe's side — the same
- * set of jobs cannot be transferred twice, whichever path asks (weekly cron,
- * instant cashout, or completion), because Stripe returns the original transfer
- * instead of creating another. Stripe retains these keys for 24 hours, which
- * covers the retry window; the database flag covers everything after it.
+ * Keying on the ids closes that window from Stripe's side — the same set of
+ * jobs cannot be transferred twice, whichever path asks (weekly cron, instant
+ * cashout, or completion), because Stripe returns the original transfer instead
+ * of creating another. Stripe retains these keys for 24 hours, which covers the
+ * retry window; the database flag covers everything after it.
+ *
+ * Tips must go in this list too, prefixed so they cannot collide with a booking
+ * id. A payout of tips alone would otherwise hash the empty set — one key for
+ * every tips-only payout a pro ever receives, and Stripe would silently return
+ * the first transfer instead of sending the second.
  */
-export function payoutIdempotencyKey(bookingIds: string[], purpose: string): string {
-  const digest = createHash("sha256").update([...bookingIds].sort().join(",")).digest("hex");
+export function payoutIdempotencyKey(ids: string[], purpose: string): string {
+  const digest = createHash("sha256").update([...ids].sort().join(",")).digest("hex");
   return `tarea-${purpose}-${digest.slice(0, 32)}`;
 }
