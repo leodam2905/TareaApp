@@ -219,8 +219,8 @@ export default function PrivacyPage() {
         .prose-custom p { margin-bottom: 12px; line-height: 1.7; }
         .prose-custom ul { list-style: disc; padding-left: 20px; margin: 8px 0 12px; }
         .prose-custom li { margin-bottom: 6px; }
-        .prose-custom strong { color: #e2e8f0; font-weight: 600; }
-        .prose-custom h3 { color: #cbd5e1; font-weight: 600; font-size: 0.95rem; margin: 16px 0 8px; }
+        .prose-custom strong { color: var(--text-primary); font-weight: 600; }
+        .prose-custom h3 { color: var(--text-primary); font-weight: 600; font-size: 0.95rem; margin: 16px 0 8px; }
       ` }} />
     </div>
   );
