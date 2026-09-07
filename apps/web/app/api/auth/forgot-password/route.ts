@@ -2,19 +2,47 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
+import { clientIp } from "@/lib/client-ip";
+import { rateLimitDb } from "@/lib/rate-limit-db";
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json();
   if (!email) return NextResponse.json({ error: "Email required" }, { status: 400 });
 
-  const user = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
+  const normalized = email.toLowerCase().trim();
+
+  // Both limits are applied BEFORE the user lookup, and identically whether or
+  // not the address exists -- otherwise throttling would itself answer the
+  // enumeration question the constant `ok: true` below exists to hide.
+  //
+  // This route had no limit at all: every request sends an email on our Resend
+  // account, so it was an unmetered bill, a way to burn sender reputation, and a
+  // way to bury any address someone names in reset mail.
+  const ip = clientIp(req);
+  if (!(await rateLimitDb(`forgot-password-ip:${ip}`, 5, 900_000)).ok) {
+    return NextResponse.json({ error: "Too many reset requests. Wait a few minutes." }, { status: 429 });
+  }
+  // Per-address as well as per-IP: the IP tier alone does not stop a distributed
+  // flood aimed at ONE inbox. Hashed, so a counters table never holds addresses.
+  const emailKey = crypto.createHash("sha256").update(normalized).digest("hex").slice(0, 32);
+  if (!(await rateLimitDb(`forgot-password-email:${emailKey}`, 3, 3_600_000)).ok) {
+    return NextResponse.json({ error: "Too many reset requests. Wait a few minutes." }, { status: 429 });
+  }
+
+  const user = await prisma.user.findUnique({ where: { email: normalized } });
 
   // Always return success to prevent email enumeration
   if (!user) return NextResponse.json({ ok: true });
 
-  // Invalidate any existing reset tokens for this user
+  // Invalidate existing RESET tokens only.
+  //
+  // This used to match every unused otpCode for the user, which silently
+  // consumed a pending LOGIN code too: request a reset while a 6-digit sign-in
+  // code is outstanding and that code stops working, with nothing to explain
+  // why. It reads as "the code didn't work". Reset tokens are the RESET_-prefixed
+  // rows (lib/otp.ts writes bare 6-digit codes), so the prefix separates them.
   await prisma.otpCode.updateMany({
-    where: { userId: user.id, used: false },
+    where: { userId: user.id, used: false, code: { startsWith: "RESET_" } },
     data: { used: true },
   });
 
