@@ -5,6 +5,7 @@ import { verifyPendingToken, signToken, setAuthCookie } from "@/lib/auth";
 import { verifyOtp } from "@/lib/otp";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/client-ip";
+import { rateLimitDb } from "@/lib/rate-limit-db";
 
 const schema = z.object({
   pendingToken: z.string().min(1),
@@ -23,8 +24,8 @@ export async function POST(req: NextRequest) {
 
     // Throttle OTP guesses to make brute-forcing the 6-digit code infeasible.
     const ip = clientIp(req);
-    const rlUser = rateLimit(`otp-verify:${userId}`, 5, 10 * 60_000);
-    const rlIp = rateLimit(`otp-verify-ip:${ip}`, 20, 10 * 60_000);
+    const rlUser = await rateLimitDb(`otp-verify:${userId}`, 5, 10 * 60_000);
+    const rlIp = await rateLimitDb(`otp-verify-ip:${ip}`, 20, 10 * 60_000);
     if (!rlUser.ok || !rlIp.ok) {
       return NextResponse.json(
         { error: "Too many attempts. Please request a new code and try again later." },

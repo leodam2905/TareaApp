@@ -6,6 +6,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { sendEmail } from "@/lib/email";
 import { createAndSendOtp } from "@/lib/otp";
 import { clientIp } from "@/lib/client-ip";
+import { rateLimitDb } from "@/lib/rate-limit-db";
 
 const schema = z.object({
   name: z.string().min(2),
@@ -28,7 +29,7 @@ const schema = z.object({
 
 export async function POST(req: NextRequest) {
   const ip = clientIp(req);
-  const rl = rateLimit(`register:${ip}`, 5, 3_600_000);
+  const rl = await rateLimitDb(`register:${ip}`, 5, 3_600_000);
   if (!rl.ok) {
     return NextResponse.json({ error: "Too many registrations from this IP. Try again later." }, { status: 429 });
   }

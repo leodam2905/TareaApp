@@ -5,12 +5,13 @@ import { verifyPendingToken, signPendingToken } from "@/lib/auth";
 import { createAndSendOtp } from "@/lib/otp";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/client-ip";
+import { rateLimitDb } from "@/lib/rate-limit-db";
 
 const schema = z.object({ pendingToken: z.string().min(1) });
 
 export async function POST(req: NextRequest) {
   const ip = clientIp(req);
-  const rl = rateLimit(`resend-otp:${ip}`, 5, 900_000); // 5 per 15 min
+  const rl = await rateLimitDb(`resend-otp:${ip}`, 5, 900_000); // 5 per 15 min
   if (!rl.ok) return NextResponse.json({ error: "Too many resend attempts. Wait a few minutes." }, { status: 429 });
 
   try {

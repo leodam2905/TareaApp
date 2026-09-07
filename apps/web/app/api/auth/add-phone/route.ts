@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { verifyPendingToken, signPendingToken } from "@/lib/auth";
 import { createAndSendOtp } from "@/lib/otp";
 import { rateLimit } from "@/lib/rate-limit";
+import { rateLimitDb } from "@/lib/rate-limit-db";
 
 const schema = z.object({
   pendingToken: z.string().min(1),
@@ -19,7 +20,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Session expired. Please log in again." }, { status: 401 });
     }
 
-    if (!rateLimit(`add-phone:${userId}`, 5, 10 * 60_000).ok) {
+    if (!(await rateLimitDb(`add-phone:${userId}`, 5, 10 * 60_000)).ok) {
       return NextResponse.json({ error: "Too many attempts. Please try again later." }, { status: 429 });
     }
 

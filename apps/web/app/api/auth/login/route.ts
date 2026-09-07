@@ -5,6 +5,7 @@ import { comparePassword, signPendingToken, signToken, setAuthCookie } from "@/l
 import { createAndSendOtp } from "@/lib/otp";
 import { rateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/client-ip";
+import { rateLimitDb } from "@/lib/rate-limit-db";
 
 const schema = z.object({
   email: z.string().email(),
@@ -17,7 +18,7 @@ const DUMMY_HASH = "$2a$12$m5QYcHRW4qswFvJbEnKGyeLZ.IE.PqQoBYc1yg0mQN5ft8LolUAXa
 
 export async function POST(req: NextRequest) {
   const ip = clientIp(req);
-  const rl = rateLimit(`login:${ip}`, 10, 60_000);
+  const rl = await rateLimitDb(`login:${ip}`, 10, 60_000);
   if (!rl.ok) {
     return NextResponse.json({ error: "Too many login attempts. Try again in a minute." }, { status: 429 });
   }
