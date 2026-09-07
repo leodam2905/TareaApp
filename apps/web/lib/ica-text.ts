@@ -18,7 +18,7 @@
 //  - Bump AGREEMENT_VERSION on any substantive change, so a re-acceptance can
 //    be required later and it is possible to tell which text somebody signed.
 
-import { CUSTOMER_FEE_RATE } from "./fees";
+import { CUSTOMER_FEE_RATE, FEE_PCT } from "./fees";
 
 export const AGREEMENT_VERSION = "2026-08-31";
 
@@ -57,10 +57,9 @@ export interface IcaDocument {
   };
 }
 
-// The fee the contract states is the fee the platform charges, by construction.
-// Spelling it out as a literal is how §4.1 came to promise something the code
-// did not do; a signed agreement that misstates the rate is worse than none.
-const FEE_PCT = `${+(CUSTOMER_FEE_RATE * 100).toFixed(2)}%`;
+// FEE_PCT now lives in fees.ts, next to the rate it formats, because the
+// Checkout page and the Terms need exactly the same guarantee this comment
+// makes: the fee the document states is the fee the platform charges.
 
 export const ICA: IcaDocument = {
   version: AGREEMENT_VERSION,

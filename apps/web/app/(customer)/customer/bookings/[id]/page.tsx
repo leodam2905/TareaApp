@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { CUSTOMER_FEE_RATE } from "@/lib/fees";
+import { CUSTOMER_FEE_RATE, FEE_PCT } from "@/lib/fees";
 import { cld } from "@/lib/cld";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -431,7 +431,7 @@ export default function BookingDetailPage() {
               )}
             </p>
             <p className="text-slate-500 text-xs mt-0.5">
-              Labor {formatCurrency(booking.totalPrice)} + 15% fee
+              Labor {formatCurrency(booking.totalPrice)} + {FEE_PCT} fee
             </p>
             {(booking.materialsEstimate ?? 0) > 0 && (
               <p className="text-slate-500 text-xs">
@@ -514,7 +514,7 @@ export default function BookingDetailPage() {
               <span className="font-semibold text-gray-900">{formatCurrency(booking.totalPrice)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500">Service fee (15%)</span>
+              <span className="text-gray-500">Service fee ({FEE_PCT})</span>
               <span className="font-semibold text-gray-900">{formatCurrency(booking.totalPrice * CUSTOMER_FEE_RATE)}</span>
             </div>
             {(booking.materialsEstimate ?? 0) > 0 && (

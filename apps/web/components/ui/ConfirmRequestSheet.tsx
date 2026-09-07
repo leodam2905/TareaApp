@@ -2,6 +2,7 @@
 
 import { CreditCard, UserCheck, CheckCircle2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { FEE_PCT } from "@/lib/fees";
 
 // Mirrors the app's pre-request confirmation sheet.
 //
@@ -45,7 +46,7 @@ export default function ConfirmRequestSheet({
             <span className="font-semibold text-gray-900">{formatCurrency(labour)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500">Service fee (15%)</span>
+            <span className="text-gray-500">Service fee ({FEE_PCT})</span>
             <span className="font-semibold text-gray-900">{formatCurrency(serviceFee)}</span>
           </div>
           <div className="flex justify-between border-t border-gray-200 pt-2 mt-2">

@@ -6,6 +6,7 @@ import { unmetSteps } from "@/lib/pro-bookable";
 import { stripe } from "@/lib/stripe";
 import { hireAmounts } from "@/lib/hire";
 import { assertPromoUsable, hasPriorPaidOrder } from "@/lib/promo";
+import { FEE_PCT } from "@/lib/fees";
 import { hireReturnUrls, returnTarget } from "@/lib/stripe-return-urls";
 
 export async function PATCH(
@@ -169,7 +170,7 @@ export async function PATCH(
           price_data: {
             currency: "usd",
             unit_amount: Math.round(serviceFee * 100),
-            product_data: { name: "Service Fee (15%)" },
+            product_data: { name: `Service Fee (${FEE_PCT})` },
           },
           quantity: 1,
         },

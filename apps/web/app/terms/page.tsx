@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { FEE_PCT } from "@/lib/fees";
 
 export const metadata: Metadata = {
   title: "Terms of Service – Tarea",
@@ -80,7 +81,7 @@ export default function TermsPage() {
             <h3>5.1 — Pricing</h3>
             <p>Pros independently set their own service rates. Tarea does not set, control, or influence Pro pricing. The service price at checkout reflects the Pro's rate plus a Service Fee.</p>
             <h3>5.2 — Platform Fee</h3>
-            <p>Customers pay the Pro's service price plus a <strong>15% Service Fee</strong>. Pros receive 90% of the agreed service price. Payouts are processed via Stripe Connect and subject to Stripe's Terms of Service. The Service Fee funds platform operations and the <a href="/guarantee" className="text-tarea-sky hover:underline">ZenTarea Guarantee</a>, a capped reimbursement program of up to $5,000 per job. <strong>ZenTarea is not insurance.</strong></p>
+            <p>Customers pay the Pro's service price plus a <strong>{FEE_PCT} Service Fee</strong>. Pros receive 100% of the agreed service price — Tarea deducts no commission from a Pro's earnings, and materials are reimbursed at cost with no Service Fee. Payouts are processed via Stripe Connect and subject to Stripe's Terms of Service. The Service Fee funds platform operations and the <a href="/guarantee" className="text-tarea-sky hover:underline">ZenTarea Guarantee</a>, a capped reimbursement program of up to $5,000 per job. <strong>ZenTarea is not insurance.</strong></p>
             <h3>5.3 — Payment Processing</h3>
             <p>All payments are processed by Stripe, Inc. Tarea does not store credit card or bank account information. By using the Platform, you also agree to <a href="https://stripe.com/legal" target="_blank" rel="noopener noreferrer" className="text-tarea-sky hover:underline">Stripe's Terms of Service</a>.</p>
           </Section>

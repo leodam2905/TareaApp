@@ -20,6 +20,13 @@ export const CUSTOMER_FEE_RATE = 0.2778;
 // refactor.
 export const HANDYMAN_FEE_RATE = 0;
 
+// The rate as customers must SEE it. Every fee percentage shown to a customer
+// — the Stripe Checkout line item, the Terms, the ICA — derives from here.
+// Three of those used to be hardcoded "15%" strings left over from the old
+// split, so Checkout printed "Service Fee (15%)" beside a 27.78% amount. A
+// percentage the customer reads must be the percentage the card is charged.
+export const FEE_PCT = `${+(CUSTOMER_FEE_RATE * 100).toFixed(2)}%`;
+
 export const customerTotal = (price: number) => price * (1 + CUSTOMER_FEE_RATE);
 export const handymanNet = (price: number) => price * (1 - HANDYMAN_FEE_RATE);
 export const platformRevenue = (price: number) => price * (CUSTOMER_FEE_RATE + HANDYMAN_FEE_RATE);

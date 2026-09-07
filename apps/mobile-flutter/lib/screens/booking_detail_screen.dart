@@ -493,7 +493,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
                       const SizedBox(height: 8),
                       _quoteLine('booking.approveLabour'.tr(), (_b['totalPrice'] ?? 0) as num),
                       const SizedBox(height: 5),
-                      _quoteLine('booking.approveFee'.tr(), serviceFee((_b['totalPrice'] ?? 0) as num)),
+                      _quoteLine('booking.approveFee'.tr(namedArgs: {'pct': kFeePct}),
+                          serviceFee((_b['totalPrice'] ?? 0) as num)),
                       if (((_b['materialsEstimate'] ?? 0) as num) > 0) ...[
                         const SizedBox(height: 5),
                         _quoteLine('booking.approveMaterials'.tr(), (_b['materialsEstimate'] ?? 0) as num),

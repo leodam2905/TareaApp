@@ -14,5 +14,13 @@ const double kCustomerFeeRate = 0.2778;
 double customerTotal(num labour, [num materials = 0]) =>
     labour * (1 + kCustomerFeeRate) + materials;
 
+/// The rate as the customer must SEE it, for the "Service fee (x)" labels.
+///
+/// Those labels said "15%" in all four languages while the amount beside them
+/// was computed from kCustomerFeeRate — so the app printed a percentage the
+/// card was never charged. Derived here so the two can never disagree again.
+final String kFeePct =
+    '${(kCustomerFeeRate * 100).toStringAsFixed(2).replaceFirst(RegExp(r'\.?0+$'), '')}%';
+
 /// The fee alone, for showing as its own line.
 double serviceFee(num labour) => labour * kCustomerFeeRate;

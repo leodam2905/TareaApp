@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../fees.dart' show kFeePct;
 import 'package:easy_localization/easy_localization.dart';
 
 import '../theme.dart';
@@ -54,7 +55,7 @@ Future<bool> showConfirmRequestSheet(BuildContext context, {
           child: Column(children: [
             _line('confirmRequest.labour'.tr(), labour),
             const SizedBox(height: 8),
-            _line('confirmRequest.serviceFee'.tr(), serviceFee),
+            _line('confirmRequest.serviceFee'.tr(namedArgs: {'pct': kFeePct}), serviceFee),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
               child: Divider(color: C.line, height: 1),

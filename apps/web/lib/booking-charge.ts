@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { createNotification } from "@/lib/notify";
-import { CUSTOMER_FEE_RATE } from "@/lib/fees";
+import { CUSTOMER_FEE_RATE, FEE_PCT } from "@/lib/fees";
 import { assertPromoUsable, hasPriorPaidOrder } from "@/lib/promo";
 
 // What a booking costs and how it gets collected — in one place, because the
@@ -79,7 +79,7 @@ export function bookingLineItems(
       price_data: {
         currency: "usd",
         unit_amount: Math.round(amounts.serviceFee * 100),
-        product_data: { name: "Service Fee (15%)" },
+        product_data: { name: `Service Fee (${FEE_PCT})` },
       },
       quantity: 1,
     },

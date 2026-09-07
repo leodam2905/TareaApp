@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Loader2, DollarSign, Receipt, TrendingUp, BarChart3 } from "lucide-react";
 import { formatCurrency, SERVICE_CATEGORY_LABELS } from "@/lib/utils";
+import { FEE_PCT } from "@/lib/fees";
 import CategoryIcon from "@/components/ui/CategoryIcon";
 
 const fadeUp = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } } };
@@ -60,14 +61,14 @@ export default function SpendingPage() {
           The headline figure is what left the customer's card, so the parts
           have to be visible — a total that cannot be reconciled against a card
           statement is the first thing somebody opens a support ticket about,
-          and the 15% fee is better read here than discovered later. */}
+          and the fee is better read here than discovered later. */}
       {data.breakdown && (
         <motion.div variants={fadeUp} className="bg-white/5 border border-white/10 rounded-2xl p-5">
           <h2 className="text-sm font-bold text-tarea-ink-muted mb-3">What you paid for</h2>
           <div className="space-y-2 text-sm">
             {[
               ["Labour", data.breakdown.labour],
-              ["Service fee (15%)", data.breakdown.serviceFee],
+              [`Service fee (${FEE_PCT})`, data.breakdown.serviceFee],
               ["Materials", data.breakdown.materials],
               ["Extra time approved", data.breakdown.extensions],
               ["Tips", data.breakdown.tips],
