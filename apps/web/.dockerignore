@@ -6,3 +6,11 @@ node_modules
 .env*.local
 README.md
 .dockerignore
+
+# The builder stage does `COPY . .`, so anything here lands in a build layer even
+# though the final stage only copies public/ and .next/.
+deploy-sa-key.json
+*-sa-key.json
+*-key.json
+*.pem
+*.p8
