@@ -343,3 +343,11 @@
    things that actually win a booking. */
 .tareaLanding .footerTrust { flex-basis: 100%; margin-top: 6px; font-size: 12px; line-height: 1.6; opacity: .7; }
 @media (max-width: 700px) { .tareaLanding .footerTrust { text-align: center; } }
+
+/* Rotating diagnosis examples. Dots sit below the quote panel so they never
+   overlap the price, and stay reachable by keyboard. */
+.tareaLanding .demoDots { position: absolute; left: 0; bottom: -26px; display: flex; gap: 7px; }
+.tareaLanding .demoDot { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%; cursor: pointer; background: rgba(255,255,255,.35); transition: background .2s ease, transform .2s ease; }
+.tareaLanding .demoDot:hover { background: rgba(255,255,255,.6); }
+.tareaLanding .demoDotOn { background: var(--coral); transform: scale(1.25); }
+.tareaLanding .demoDot:focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; }

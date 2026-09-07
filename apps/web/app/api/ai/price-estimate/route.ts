@@ -237,8 +237,11 @@ No markdown, just the JSON.`,
       // does not carry it. The pro's quote at application is authoritative.
       materialsHint: materialsRounded,
       materials: 0,                // quoted by the pro, not estimated here
-      serviceFee,                  // 15% Service Fee (on service only)
-      feeRate: CUSTOMER_FEE_RATE,  // 0.15
+      serviceFee,                  // Service Fee (on service only) -- 27.78%
+      feeRate: CUSTOMER_FEE_RATE,  // 0.2778. Read it from fees.ts, never inline
+                                   // the number: these comments said 15% long
+                                   // after the rate moved, and fee arithmetic is
+                                   // where a wrong belief gets expensive.
       total,                       // service + fee; materials added by the pro
       materialsByPro: true,
       workTime,

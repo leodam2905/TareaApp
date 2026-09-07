@@ -1,4 +1,5 @@
 import Link from "next/link";
+import DiagnosisDemo from "@/components/DiagnosisDemo";
 
 // Landing page ported from the Sites export (tarea-claude-export-v1-2).
 //
@@ -194,31 +195,16 @@ export default function Home() {
           <div className="diagnosisCopy">
             <p className="sectionKicker coralKicker">AI DIAGNOSIS + INSTANT QUOTE</p>
             <h2 id="diagnosis-title">Show Tarea what&apos;s wrong.</h2>
-            <p>Add a description and photos. Tarea identifies the likely issue, estimates the minimum time, and prepares a fixed labor price before your request reaches Pros.</p>
+            <p>Add a description and photos. Tarea identifies the likely issue, estimates the billable time, and shows the price range built from Pros&apos; own hourly rates — service fee included, materials quoted separately by the Pro.</p>
             <ul className="featurePills" aria-label="Diagnosis features">
               <li>Photo-assisted diagnosis</li>
-              <li>Fixed labor price</li>
+              <li>Price range up front</li>
               <li>Materials separate</li>
             </ul>
             <Link className="button buttonCoral" href="/diagnose">Start a diagnosis <Arrow /></Link>
           </div>
 
-          <div className="quoteDemo" aria-label="Example Tarea diagnosis">
-            <div className="issuePhoto">
-              <img src="/broken-faucet-cartridge.png" alt="A worn kitchen faucet cartridge being inspected beside a faucet" />
-              <span className="photoTag">Photo added</span>
-            </div>
-            <div className="quotePanel">
-              <div className="quoteTop"><span>✦ DIAGNOSIS READY</span><span>HIGH CONFIDENCE</span></div>
-              <small>LIKELY ISSUE</small>
-              <h3>Kitchen faucet cartridge leak</h3>
-              <p>Plumbing · Standard complexity · About 1.5 hours</p>
-              <div className="quoteTotal">
-                <div><small>FIXED LABOR</small><strong>$142</strong></div>
-                <span>Materials separate</span>
-              </div>
-            </div>
-          </div>
+          <DiagnosisDemo />
         </div>
       </section>
 
