@@ -109,8 +109,8 @@ export default function ContactPage() {
         {/* Quick contact options */}
         <div className="grid md:grid-cols-3 gap-4 mb-16">
           {[
-            { icon: Mail, title: "Email support", body: "support@taptarea.com", sub: "Replies within 1 business day" },
-            { icon: MessageSquare, title: "Call us", body: "+1 (530) 439-1054", sub: "Monday – Friday, 9am–6pm ET", href: "tel:+15304391054" },
+            { icon: Mail, title: "Email support", body: "support@taptarea.com", sub: "Replies within 1 business day", href: "mailto:support@taptarea.com" },
+            { icon: MessageSquare, title: "Call us", body: "+1 (626) 628-1659", sub: "Monday – Friday, 9am–6pm ET", href: "tel:+16266281659" },
             { icon: Clock, title: "Response time", body: "< 24 hours", sub: "Monday – Friday" },
           ].map(({ icon: Icon, title, body, sub, href }) => (
             <div key={title} className="bg-tarea-paper border border-tarea-border rounded-2xl p-6 text-center">

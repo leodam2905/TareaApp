@@ -92,6 +92,7 @@ export default function DeleteAccountPage() {
             <ul>
               <li><strong>Company:</strong> Tarea US LLC</li>
               <li><strong>Email:</strong> <a href="mailto:support@taptarea.com" className="text-tarea-sky hover:underline">support@taptarea.com</a></li>
+              <li><strong>Phone:</strong> <a href="tel:+16266281659" className="text-tarea-sky hover:underline">+1 (626) 628-1659</a></li>
               <li><strong>Mailing Address:</strong> 400 N Oakland Avenue, Apt 209, Pasadena, California 91101</li>
             </ul>
           </Section>

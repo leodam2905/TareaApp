@@ -197,7 +197,7 @@ export default function PrivacyPage() {
               <li><strong>Email:</strong> <a href="mailto:support@taptarea.com" className="text-tarea-sky hover:underline">support@taptarea.com</a></li>
               <li><strong>Legal Email:</strong> <a href="mailto:legal@taptarea.com" className="text-tarea-sky hover:underline">legal@taptarea.com</a></li>
               <li><strong>Mailing Address:</strong> 400 N Oakland Avenue, Apt 209, Pasadena, California 91101</li>
-              <li><strong>Phone:</strong> <a href="tel:+18005555555" className="text-tarea-sky hover:underline">+1 (800) 555-5555</a></li>
+              <li><strong>Phone:</strong> <a href="tel:+16266281659" className="text-tarea-sky hover:underline">+1 (626) 628-1659</a></li>
             </ul>
             <p>For California privacy rights requests, use subject line: <strong>"California Privacy Rights Request."</strong> We will acknowledge receipt within 10 business days.</p>
           </Section>
