@@ -242,7 +242,7 @@ function RegisterForm() {
     <div className="min-h-screen bg-tarea-surface flex">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-hero-gradient flex-col justify-between p-12">
-        <Logo size={36} light />
+        <Logo variant="upright" size={44} light />
         <div className="space-y-6">
           <h2 className="text-4xl font-extrabold text-white leading-tight">
             {role === "HANDYMAN"
@@ -275,7 +275,7 @@ function RegisterForm() {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
           <div className="lg:hidden mb-8">
-            <Logo size={36} />
+            <Logo variant="upright" size={40} />
           </div>
 
           <div className="card">

@@ -25,8 +25,8 @@ export default function GuaranteePage() {
             Book with peace of mind. If a Pro damages your property on a job booked and paid through
             Tarea, ZenTarea reimburses you up to <strong className="text-tarea-ink">$5,000</strong>.
           </p>
-          <p className="text-tarea-ink-subtle text-sm mt-4">Effective Date: August 8, 2026 &nbsp;|&nbsp; Version 1.0</p>
-          <p className="text-tarea-ink-subtle text-sm">Governing Law: State of California</p>
+          <p className="text-red-700 text-sm mt-4">Effective Date: August 8, 2026 &nbsp;|&nbsp; Version 1.0</p>
+          <p className="text-red-700 text-sm">Governing Law: State of California</p>
 
           <div className="mt-6 p-4 bg-amber-400/10 border border-amber-400/20 rounded-xl">
             <p className="text-amber-300 text-xs font-semibold leading-relaxed">
@@ -156,7 +156,7 @@ export default function GuaranteePage() {
         </div>
 
         {/* Footer */}
-        <div className="mt-16 pt-8 border-t border-tarea-border flex flex-wrap gap-6 text-sm text-tarea-ink-subtle">
+        <div className="mt-16 pt-8 border-t border-tarea-border flex flex-wrap gap-6 text-sm text-red-700">
           <Link href="/terms" className="hover:text-tarea-ink transition-colors">Terms of Service</Link>
           <Link href="/privacy" className="hover:text-tarea-ink transition-colors">Privacy Policy</Link>
           <Link href="/" className="hover:text-tarea-ink transition-colors">Home</Link>
