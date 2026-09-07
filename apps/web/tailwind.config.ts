@@ -23,7 +23,10 @@ const config: Config = {
           white: "#FFFFFF",
           ink: "#143F3A",
           "ink-muted": "#54706C",
-          "ink-subtle": "#7B938F",  // derived: the landing has no third tone
+          "ink-subtle": "#627572",  // derived: the landing has no third tone.
+          // Darkened from #7B938F 2026-09-07: that measured 3.04:1 on the cream
+          // ground (#FBF6EC), under the 4.5:1 WCAG AA needs for normal text, and it
+          // was in use at text-sm. #627572 is the same hue at 4.53:1.
           surface: "#DFF2E9",       // mint
           border: "#DBE7E2",        // line
           teal: "#0D746B",          // the landing's brand green, for accents

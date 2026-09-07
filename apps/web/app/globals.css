@@ -64,7 +64,7 @@ button:focus-visible,
   --card-border-2: #C5E7DC;
   --text-primary:  #143F3A;
   --text-muted:    #54706C;
-  --text-subtle:   #7B938F;
+  --text-subtle:   #627572;  /* was #7B938F: 3.04:1 on cream, failed WCAG AA */
   --input-bg:      #FFFFFF;
   --scrollbar-track: #DFF2E9;
   --scrollbar-thumb: #0D746B;
@@ -80,7 +80,7 @@ html.dark {
   --card-border-2: rgba(255, 255, 255, 0.20);
   --text-primary:  #FFFFFF;
   --text-muted:    #94A3B8;
-  --text-subtle:   #64748B;
+  --text-subtle:   #70829C;  /* was #64748B: 3.75:1 on the night ground, failed AA */
   --input-bg:      #1E293B;
   --input-text:    #F1F5F9;
   --scrollbar-track: #0F172A;
