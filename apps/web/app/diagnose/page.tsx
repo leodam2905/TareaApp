@@ -1,3 +1,5 @@
+import CustomerDiagnose from "../(customer)/customer/diagnose/page";
+
 // Public diagnose.
 //
 // The tool itself never needed an account — /api/ai/diagnose is public and
@@ -8,5 +10,12 @@
 // up prompt lands exactly there — and middleware now carries ?next= so they
 // return to posting the job they diagnosed.
 //
-// Re-exported rather than copied: one implementation, two routes.
-export { default } from "../(customer)/customer/diagnose/page";
+// Re-exported rather than copied: one implementation, two routes. The <main>
+// wrapper is required for day mode — see the note in app/browse/page.tsx.
+export default function PublicDiagnosePage() {
+  return (
+    <main className="p-4 lg:p-8">
+      <CustomerDiagnose />
+    </main>
+  );
+}

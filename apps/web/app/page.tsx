@@ -113,7 +113,7 @@ export default function Home() {
           <p className="heroLead">Tarea identifies the work, sets a fixed labor price, and introduces qualified local Pros. Compare profiles and choose who comes to your home.</p>
           <div className="heroActions">
             <Link className="button buttonCoral" href="/diagnose">Diagnose my issue <Arrow /></Link>
-            <Link className="button buttonLight" href="/browse">Browse services</Link>
+            <Link className="button buttonLight" href="/browse">Browse Pros</Link>
           </div>
           <ul className="heroProof" aria-label="Tarea benefits">
             <li><span>✓</span> Start before signup</li>
@@ -312,7 +312,7 @@ export default function Home() {
         <p>Describe the issue, know the labor price, and choose the right Pro for your home.</p>
         <div>
           <Link className="button buttonCoral" href="/diagnose">Diagnose my issue <Arrow /></Link>
-          <Link className="button buttonLight" href="/browse">Browse services</Link>
+          <Link className="button buttonLight" href="/browse">Browse Pros</Link>
         </div>
       </section>
 
@@ -340,7 +340,7 @@ export default function Home() {
       <footer className="footer">
         <div className="shell footerMain">
           <div className="footerBrand"><Logo /><p>The smarter way to get home repairs done.<br />Fixed labor prices. Qualified local Pros.<br />You&apos;re in control.</p></div>
-          <div><strong>Customers</strong><Link href="/diagnose">Diagnose an issue</Link><Link href="/browse">Browse services</Link><a href="#choice">Choose a Pro</a></div>
+          <div><strong>Customers</strong><Link href="/diagnose">Diagnose an issue</Link><Link href="/browse">Browse Pros</Link><a href="#choice">Choose a Pro</a></div>
           <div><strong>Pros</strong><Link href="/register?role=handyman">Become a Pro</Link><a href="#pros">How matching works</a><Link href="/handyman/onboarding">Pro resources</Link></div>
           <div><strong>Company</strong><Link href="/contact">About Tarea</Link><Link href="/guarantee">Trust &amp; safety</Link><Link href="/guarantee">Disputes &amp; resolutions</Link><Link href="/contact">Help center</Link></div>
         </div>
