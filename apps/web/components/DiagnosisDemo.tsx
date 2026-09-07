@@ -28,35 +28,35 @@ interface Example {
 
 const EXAMPLES: Example[] = [
   {
-    img: "/broken-faucet-cartridge.png",
+    img: "/broken-faucet-cartridge.webp",
     alt: "A worn kitchen faucet cartridge being inspected beside a faucet",
     issue: "Kitchen faucet cartridge leak",
     meta: "Plumbing · Standard complexity · About 1.5 hours",
     low: 125, high: 163,
   },
   {
-    img: "/diagnosis-outlet.png",
+    img: "/diagnosis-outlet.webp",
     alt: "A scorched electrical outlet being examined",
     issue: "Scorched outlet needs replacing",
     meta: "Electrical · Standard complexity · About 1 hour",
     low: 89, high: 121,
   },
   {
-    img: "/diagnosis-hvac.png",
+    img: "/diagnosis-hvac.webp",
     alt: "A clogged HVAC filter being removed from a return vent",
     issue: "Blocked return vent and clogged filter",
     meta: "HVAC · Simple · About 1 hour",
     low: 96, high: 128,
   },
   {
-    img: "/diagnosis-drywall.png",
+    img: "/diagnosis-drywall.webp",
     alt: "A hole in drywall beside patching tools",
     issue: "Drywall hole needs patch and paint",
     meta: "Carpentry · Standard complexity · About 2 hours",
     low: 153, high: 204,
   },
   {
-    img: "/diagnosis-door.png",
+    img: "/diagnosis-door.webp",
     alt: "A door that no longer closes flush against its frame",
     issue: "Door out of alignment, will not latch",
     meta: "General repair · Simple · About 1 hour",
