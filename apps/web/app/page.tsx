@@ -111,14 +111,14 @@ export default function Home() {
             <span className="coralText">Choose your Pro.</span>
             <span className="tealText">Get it done.</span>
           </h1>
-          <p className="heroLead">Tarea identifies the work, sets a fixed labor price, and introduces qualified local Pros. Compare profiles and choose who comes to your home.</p>
+          <p className="heroLead">Tarea identifies the work, shows the price range from local Pros&apos; own rates, and introduces qualified Pros near you. Compare profiles and choose who comes to your home.</p>
           <div className="heroActions">
             <Link className="button buttonCoral" href="/diagnose">Diagnose my issue <Arrow /></Link>
             <Link className="button buttonLight" href="/browse">Browse Pros</Link>
           </div>
           <ul className="heroProof" aria-label="Tarea benefits">
             <li><span>✓</span> Start before signup</li>
-            <li><span>✓</span> Fixed labor price</li>
+            <li><span>✓</span> Price range up front</li>
             <li><span>✓</span> You choose</li>
           </ul>
         </div>
@@ -149,7 +149,7 @@ export default function Home() {
           </div>
           <div className="floatCard priceCard">
             <span className="checkBadge">✓</span>
-            <div><small>YOUR QUOTE</small><strong>Fixed labor price</strong></div>
+            <div><small>YOUR QUOTE</small><strong>Price range up front</strong></div>
           </div>
         </div>
       </section>
@@ -162,7 +162,7 @@ export default function Home() {
           </article>
           <article className="promiseCard featuredPromise">
             <span className="promiseIcon" aria-hidden="true">$</span>
-            <div><strong>Know the price<br />before you book.</strong><small>See a fixed labor price and estimated minimum time upfront.</small></div>
+            <div><strong>Know the price<br />before you book.</strong><small>See the price range and estimated time before you book.</small></div>
           </article>
           <article className="promiseCard">
             <span className="promiseIcon" aria-hidden="true">✓</span>
@@ -325,7 +325,7 @@ export default function Home() {
 
       <footer className="footer">
         <div className="shell footerMain">
-          <div className="footerBrand"><Logo /><p>The smarter way to get home repairs done.<br />Fixed labor prices. Qualified local Pros.<br />You&apos;re in control.</p></div>
+          <div className="footerBrand"><Logo /><p>The smarter way to get home repairs done.<br />Clear price ranges. Qualified local Pros.<br />You&apos;re in control.</p></div>
           <div><strong>Customers</strong><Link href="/diagnose">Diagnose an issue</Link><Link href="/browse">Browse Pros</Link><a href="#choice">Choose a Pro</a></div>
           <div><strong>Pros</strong><Link href="/register?role=handyman">Become a Pro</Link><a href="#pros">How matching works</a><Link href="/handyman/onboarding">Pro resources</Link></div>
           <div><strong>Company</strong><Link href="/contact">About Tarea</Link><Link href="/guarantee">Trust &amp; safety</Link><Link href="/guarantee">Disputes &amp; resolutions</Link><Link href="/contact">Help center</Link></div>
