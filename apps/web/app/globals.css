@@ -186,6 +186,29 @@ html:not(.dark) main .text-slate-300 { color: #475569 !important; }
 html:not(.dark) main .placeholder\:text-slate-500::placeholder { color: #94A3B8 !important; }
 html:not(.dark) main [class*="bg-white/10"][class*="border"] { border-color: var(--card-border) !important; }
 
+/* .day-only pins the palette by VARIABLE, which is enough for components that
+   read variables (.card, .input) and for pages built from fixed day tokens.
+   It is NOT enough for pages built from dark-mode Tailwind CONSTANTS --
+   bg-white/5, text-white, text-slate-400 -- because a constant never reads a
+   variable. Those are made light only by the html:not(.dark) rules above, which
+   stop applying the moment the visitor is in night mode.
+   Mirror them so a day-only region is genuinely day in BOTH themes. Without
+   this, /browse stayed dark while every other public page was light. */
+.day-only { background-color: var(--app-bg-body); }
+html.dark .day-only .bg-white\/5  { background-color: var(--card-bg) !important; }
+html.dark .day-only .bg-white\/10 { background-color: var(--card-bg-alt) !important; }
+html.dark .day-only .bg-white\/20 { background-color: rgba(255,255,255,0.7) !important; }
+html.dark .day-only .border-white\/10 { border-color: var(--card-border) !important; }
+html.dark .day-only .border-white\/20 { border-color: var(--card-border-2) !important; }
+html.dark .day-only .text-white   { color: var(--text-primary) !important; }
+html.dark .day-only .text-slate-400 { color: var(--text-muted) !important; }
+html.dark .day-only .text-slate-500 { color: var(--text-subtle) !important; }
+html.dark .day-only .text-slate-300 { color: #475569 !important; }
+html.dark .day-only .placeholder\:text-slate-500::placeholder { color: #94A3B8 !important; }
+html.dark .day-only [class*="bg-white/10"][class*="border"] { border-color: var(--card-border) !important; }
+html.dark .day-only .btn-primary, html.dark .day-only .btn-primary * { color: #FFFFFF !important; }
+
+
 /* Input fields in day mode */
 html:not(.dark) main .bg-white\/10.border { background-color: #FFFFFF !important; }
 

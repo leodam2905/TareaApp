@@ -17,8 +17,10 @@ import CustomerBrowse from "../(customer)/customer/browse/page";
 // page component, so /customer/* keeps its dark mode.
 export default function PublicBrowsePage() {
   return (
-    <main className="day-only min-h-screen mx-auto w-full max-w-6xl p-4 lg:p-8">
-      <CustomerBrowse />
+    <main className="day-only min-h-screen">
+      <div className="mx-auto w-full max-w-6xl p-4 lg:p-8">
+        <CustomerBrowse />
+      </div>
     </main>
   );
 }
