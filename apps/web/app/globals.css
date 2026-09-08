@@ -58,6 +58,9 @@ button:focus-visible,
      like arriving at a different product. */
   --app-bg:        #FBF6EC;
   --app-bg-body:   #FBF6EC;
+  /* The day ground as a CONSTANT: html.dark deliberately does NOT override
+     this, so a pinned region can reach a light value from inside night mode. */
+  --day-bg:        #FBF6EC;
   --card-bg:       #FFFDF8;
   --card-bg-alt:   #F4FAF6;
   --card-border:   #DBE7E2;
@@ -136,6 +139,12 @@ html.dark {
    mode visitor gets a light auth page: consistent and readable, which beats
    half-converted. Making them genuinely dark-capable is a design job, not a
    find-and-replace, and this does not stand in its way.  */
+/* A day-only region is a CHILD of body, so when the document is taller than the
+   region body keeps painting the night ground below it and the page looks cut
+   off halfway down. :has() lets the page opt body into daylight, which nothing
+   applied to the region itself can do from inside. */
+html.dark:has(.day-only) body { background-color: var(--day-bg); }
+
 .day-only {
   --app-bg:        #FBF6EC;
   --app-bg-body:   #FBF6EC;
