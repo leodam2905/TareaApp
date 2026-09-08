@@ -23,8 +23,13 @@ export default function Logo({ variant = "full", size = 36, light = false }: Log
       <img
         src={light ? "/tarea-logo-upright-white.svg" : "/tarea-logo-upright.svg"}
         alt="Tarea"
-        style={{ height: size, width: "auto" }}
-        className="object-contain"
+        // w-fit, not the default: a flex column stretches its children, so an
+        // <img> with width:auto spans the whole panel and object-contain then
+        // centres the artwork inside it -- the logo drifts to the middle while
+        // everything below it stays flush left. Fixing the width stops the
+        // stretch in any flex direction.
+        style={{ height: size }}
+        className="object-contain w-fit"
       />
     );
   }
