@@ -356,5 +356,8 @@
    direct children -- these sit inside their own wrapper. Brighter and heavier
    than the nav links because a phone number people need is not a footnote. */
 .tareaLanding .footerContact { display: grid; gap: 7px; margin-top: 16px; }
-.tareaLanding .footerContact a { color: #d9e8e4; font-size: 11px; font-weight: 700; text-decoration: none; }
+.tareaLanding .footerContact a { display: inline-flex; align-items: center; gap: 8px; color: #d9e8e4; font-size: 11px; font-weight: 700; text-decoration: none; }
+/* Fixed size and no shrink: the icons sit next to text that wraps on narrow
+   screens, and an svg with no width collapses or stretches when it does. */
+.tareaLanding .footerContact svg { width: 14px; height: 14px; flex: 0 0 14px; stroke-width: 2; }
 .tareaLanding .footerContact a:hover { color: #fff; text-decoration: underline; }

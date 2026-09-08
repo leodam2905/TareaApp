@@ -1,4 +1,7 @@
 import Link from "next/link";
+// Smartphone rather than Phone (a desk handset), and Send -- the paper plane
+// reads as mail in flight, which no envelope glyph in this set does.
+import { Smartphone, Send } from "lucide-react";
 import DiagnosisDemo from "@/components/DiagnosisDemo";
 
 // Landing page ported from the Sites export (tarea-claude-export-v1-2).
@@ -331,8 +334,8 @@ export default function Home() {
               {/* Reachable contact in the footer: both app stores expect it, and a
                   customer chasing a job should not have to find the contact page. */}
               <div className="footerContact">
-                <a href="tel:+16266281659">(626) 628-1659</a>
-                <a href="mailto:support@taptarea.com">support@taptarea.com</a>
+                <a href="tel:+16266281659"><Smartphone aria-hidden="true" /> (626) 628-1659</a>
+                <a href="mailto:support@taptarea.com"><Send aria-hidden="true" /> support@taptarea.com</a>
               </div>
             </div>
           <div><strong>Customers</strong><Link href="/diagnose">Diagnose an issue</Link><Link href="/browse">Browse Pros</Link><a href="#choice">Choose a Pro</a></div>
