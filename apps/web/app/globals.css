@@ -147,6 +147,10 @@ html.dark {
   --text-muted:    #54706C;
   --text-subtle:   #627572;
   --input-bg:      #FFFFFF;
+  /* The category row's horizontal scrollbar reads these; without them it
+     stayed a dark navy bar across an otherwise light page. */
+  --scrollbar-track: #DFF2E9;
+  --scrollbar-thumb: #0D746B;
 }
 
 /* `html.dark .input` sets colour directly rather than through a variable, so
