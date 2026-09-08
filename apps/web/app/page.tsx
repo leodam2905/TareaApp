@@ -325,7 +325,16 @@ export default function Home() {
 
       <footer className="footer">
         <div className="shell footerMain">
-          <div className="footerBrand"><Logo /><p>The smarter way to get home repairs done.<br />Clear price ranges. Qualified local Pros.<br />You&apos;re in control.</p></div>
+          <div className="footerBrand">
+              <Logo />
+              <p>The smarter way to get home repairs done.<br />Clear price ranges. Qualified local Pros.<br />You&apos;re in control.</p>
+              {/* Reachable contact in the footer: both app stores expect it, and a
+                  customer chasing a job should not have to find the contact page. */}
+              <div className="footerContact">
+                <a href="tel:+16266281659">(626) 628-1659</a>
+                <a href="mailto:support@taptarea.com">support@taptarea.com</a>
+              </div>
+            </div>
           <div><strong>Customers</strong><Link href="/diagnose">Diagnose an issue</Link><Link href="/browse">Browse Pros</Link><a href="#choice">Choose a Pro</a></div>
           <div><strong>Pros</strong><Link href="/register?role=handyman">Become a Pro</Link><a href="#pros">How matching works</a><Link href="/handyman/onboarding">Pro resources</Link></div>
           <div><strong>Company</strong><Link href="/contact">About Tarea</Link><Link href="/guarantee">Trust &amp; safety</Link><Link href="/guarantee">Disputes &amp; resolutions</Link><Link href="/contact">Help center</Link></div>
