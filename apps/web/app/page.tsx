@@ -1,7 +1,7 @@
 import Link from "next/link";
-// Smartphone rather than Phone (a desk handset), and Send -- the paper plane
-// reads as mail in flight, which no envelope glyph in this set does.
-import { Smartphone, Send } from "lucide-react";
+// Smartphone rather than Phone, which is a desk handset. The mail mark is
+// hand-drawn below: no glyph in lucide is an envelope in motion.
+import { Smartphone } from "lucide-react";
 import DiagnosisDemo from "@/components/DiagnosisDemo";
 
 // Landing page ported from the Sites export (tarea-claude-export-v1-2).
@@ -15,6 +15,21 @@ import DiagnosisDemo from "@/components/DiagnosisDemo";
 import "./landing.css";
 
 const Arrow = () => <span aria-hidden="true">↗</span>;
+
+/** An envelope with motion lines -- a letter travelling, rather than a plane.
+ *  Drawn to lucide's conventions (24 grid, currentColor, 2px round strokes) so
+ *  it sits beside Smartphone without looking like a different set. The envelope
+ *  is pushed right to leave room for the wind. */
+const MailInMotion = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+       strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="9" y="5.5" width="14" height="13" rx="2" />
+    <path d="M9 7.5l7 5 7-5" />
+    <path d="M2 8.5h4" />
+    <path d="M0.5 12h5" />
+    <path d="M2 15.5h4" />
+  </svg>
+);
 
 const services = [
   { icon: "plumbing", title: "Plumbing", copy: "Leaks, faucets, toilets & fixtures" },
@@ -335,7 +350,7 @@ export default function Home() {
                   customer chasing a job should not have to find the contact page. */}
               <div className="footerContact">
                 <a href="tel:+16266281659"><Smartphone aria-hidden="true" /> (626) 628-1659</a>
-                <a href="mailto:support@taptarea.com"><Send aria-hidden="true" /> support@taptarea.com</a>
+                <a href="mailto:support@taptarea.com"><MailInMotion /> support@taptarea.com</a>
               </div>
             </div>
           <div><strong>Customers</strong><Link href="/diagnose">Diagnose an issue</Link><Link href="/browse">Browse Pros</Link><a href="#choice">Choose a Pro</a></div>
