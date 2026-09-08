@@ -195,7 +195,7 @@ export default function LoginPage() {
       {/* Grouped so the copy sits under the logo; only the copyright is pushed
           down. Matches the signup panel. */}
       <div className="space-y-10">
-      <Logo size={96} light />
+      <Logo variant="upright" size={56} light />
       <div className="space-y-6">
         <h2 className="text-4xl font-extrabold text-white leading-tight">Your trusted handyman platform</h2>
         <p className="text-blue-100 text-lg leading-relaxed">

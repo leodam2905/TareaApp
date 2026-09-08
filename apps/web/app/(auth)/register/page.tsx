@@ -260,7 +260,7 @@ function RegisterForm() {
           </p>
           <div className="space-y-4">
             {(role === "HANDYMAN"
-              ? ["Set your own schedule", "Earn $50–$150/hr", "Free to join", "Get paid instantly"]
+              ? ["Set your own rate", "Keep 100% of it", "Free to join", "Get paid instantly"]
               : ["Verified professionals", "Upfront pricing", "On-time guarantee", "Easy booking"]
             ).map((item) => (
               <div key={item} className="flex items-center gap-3">
