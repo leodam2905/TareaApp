@@ -18,7 +18,7 @@ import CustomerDiagnose from "../(customer)/customer/diagnose/page";
 // page component, so /customer/* keeps its dark mode.
 export default function PublicDiagnosePage() {
   return (
-    <main className="day-only min-h-screen p-4 lg:p-8">
+    <main className="day-only min-h-screen mx-auto w-full max-w-6xl p-4 lg:p-8">
       <CustomerDiagnose />
     </main>
   );
