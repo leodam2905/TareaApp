@@ -194,7 +194,15 @@ html:not(.dark) main [class*="bg-white/10"][class*="border"] { border-color: var
    stop applying the moment the visitor is in night mode.
    Mirror them so a day-only region is genuinely day in BOTH themes. Without
    this, /browse stayed dark while every other public page was light. */
-.day-only { background-color: var(--app-bg-body); }
+.day-only {
+  background-color: var(--app-bg-body);
+  /* AND re-establish colour. body sets `color: var(--text-primary)`, which in
+     night mode COMPUTES to white at body level; descendants then inherit that
+     computed white, not the variable. Redeclaring --text-primary here does not
+     reach them, so the text stayed white on a light ground -- invisible.
+     Inheritance passes computed values, not variable references. */
+  color: var(--text-primary);
+}
 html.dark .day-only .bg-white\/5  { background-color: var(--card-bg) !important; }
 html.dark .day-only .bg-white\/10 { background-color: var(--card-bg-alt) !important; }
 html.dark .day-only .bg-white\/20 { background-color: rgba(255,255,255,0.7) !important; }
