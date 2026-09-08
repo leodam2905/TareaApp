@@ -192,6 +192,9 @@ export default function LoginPage() {
   // ────────────────────────────────────────────────────────────────────────
   const leftPanel = (
     <div className="hidden lg:flex lg:w-1/2 bg-hero-gradient flex-col justify-between p-12">
+      {/* Grouped so the copy sits under the logo; only the copyright is pushed
+          down. Matches the signup panel. */}
+      <div className="space-y-10">
       <Logo size={96} light />
       <div className="space-y-6">
         <h2 className="text-4xl font-extrabold text-white leading-tight">Your trusted handyman platform</h2>
@@ -208,6 +211,7 @@ export default function LoginPage() {
             </div>
           ))}
         </div>
+      </div>
       </div>
       <p className="text-blue-300 text-sm">© 2026 <span className="logo-script">Tarea</span>. All rights reserved.</p>
     </div>

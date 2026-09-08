@@ -242,8 +242,12 @@ function RegisterForm() {
     <div className="day-only min-h-screen bg-tarea-surface flex">
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-hero-gradient flex-col justify-between p-12">
-        <Logo variant="upright" size={44} light />
-        <div className="space-y-6">
+        {/* Logo and copy travel together at the top; only the copyright is
+            pushed to the bottom by justify-between. Previously all three were
+            spread apart, which left the headline stranded mid-panel. */}
+        <div className="space-y-10">
+          <Logo variant="upright" size={44} light />
+          <div className="space-y-6">
           <h2 className="text-4xl font-extrabold text-white leading-tight">
             {role === "HANDYMAN"
               ? "Turn your skills into income"
@@ -266,6 +270,7 @@ function RegisterForm() {
                 <span className="text-blue-100">{item}</span>
               </div>
             ))}
+            </div>
           </div>
         </div>
         <p className="text-blue-300 text-sm">© 2026 <span className="logo-script">Tarea</span>. All rights reserved.</p>
