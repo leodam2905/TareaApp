@@ -11,9 +11,13 @@ import CustomerBrowse from "../(customer)/customer/browse/page";
 // that element; the root layout does not, so re-exporting the page alone
 // rendered it dark in day mode. No lg:ml-64 here -- that offset exists for the
 // customer sidebar, which this route has no sidebar to clear.
+// day-only: every other public page is pinned to the day palette, so without
+// this Browse was the only one following the system theme -- dark while the
+// rest of the site was light. Pinned on the PUBLIC wrapper, not the shared
+// page component, so /customer/* keeps its dark mode.
 export default function PublicBrowsePage() {
   return (
-    <main className="p-4 lg:p-8">
+    <main className="day-only min-h-screen p-4 lg:p-8">
       <CustomerBrowse />
     </main>
   );

@@ -12,9 +12,13 @@ import CustomerDiagnose from "../(customer)/customer/diagnose/page";
 //
 // Re-exported rather than copied: one implementation, two routes. The <main>
 // wrapper is required for day mode — see the note in app/browse/page.tsx.
+// day-only: every other public page is pinned to the day palette, so without
+// this Browse was the only one following the system theme -- dark while the
+// rest of the site was light. Pinned on the PUBLIC wrapper, not the shared
+// page component, so /customer/* keeps its dark mode.
 export default function PublicDiagnosePage() {
   return (
-    <main className="p-4 lg:p-8">
+    <main className="day-only min-h-screen p-4 lg:p-8">
       <CustomerDiagnose />
     </main>
   );
