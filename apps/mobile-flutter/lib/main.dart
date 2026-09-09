@@ -11,6 +11,7 @@ import 'flavor.dart';
 import 'payment_method.dart';
 import 'deep_links.dart';
 import 'route_observer.dart';
+import 'screens/animated_splash.dart';
 import 'screens/disputes_screen.dart';
 import 'screens/landing_screen.dart';
 import 'screens/pro/pro_landing.dart';
@@ -59,7 +60,11 @@ import 'push_service.dart';
 /// rather than being added on top. On a slow device that finishes init in 2.5s
 /// the splash holds 0.5s longer; on one that takes 4s it is already past and
 /// nothing is added.
-const _kSplashMinimum = Duration(seconds: 3);
+/// The native splash now hands over as soon as Flutter can paint, because
+/// AnimatedSplash takes the screen on the SAME ground colour and does the
+/// waiting with something to look at. This used to be three seconds of a static
+/// image; that budget moved into the animation rather than being added to it.
+const _kSplashMinimum = Duration(milliseconds: 200);
 
 Future<void> bootstrap(Flavor flavor) async {
   final launchedAt = DateTime.now();
@@ -236,9 +241,43 @@ class TareaApp extends StatelessWidget {
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: child!,
+          child: _SplashGate(child: child!),
         ),
       ),
+    );
+  }
+}
+
+
+/// Holds AnimatedSplash over the app until it finishes.
+///
+/// An overlay, not a route: the router keeps its own initial route and redirect
+/// logic, so auth still decides where the user lands while the animation plays
+/// on top. Once done it removes itself and never returns for the life of the
+/// process -- a splash that reappears on a rebuild is worse than no splash.
+class _SplashGate extends StatefulWidget {
+  const _SplashGate({required this.child});
+  final Widget child;
+
+  @override
+  State<_SplashGate> createState() => _SplashGateState();
+}
+
+class _SplashGateState extends State<_SplashGate> {
+  bool _done = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (_done) return widget.child;
+    return Stack(
+      children: [
+        widget.child,
+        Positioned.fill(
+          child: AnimatedSplash(
+            onDone: () { if (mounted) setState(() => _done = true); },
+          ),
+        ),
+      ],
     );
   }
 }
