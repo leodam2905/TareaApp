@@ -63,7 +63,7 @@ function copyFor(to: string, stripe: string) {
   if (to === "bgcheck") {
     return {
       title: "Background check paid",
-      body: "Certn will email you a secure link to complete your screening. It usually takes 1–3 business days.",
+      body: "Checkr will email you a secure link to complete your screening. It usually takes 1–3 business days.",
       escrow: false,
     };
   }

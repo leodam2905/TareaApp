@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { createCertnInvitation } from "@/lib/certn";
+import { createCheckrInvitation } from "@/lib/checkr";
 import { BACKGROUND_CHECK_FEE } from "@/lib/background-check";
 import { backgroundCheckReturnUrls, returnTarget } from "@/lib/stripe-return-urls";
 
@@ -50,28 +50,44 @@ export async function POST(req: NextRequest) {
   const firstName = parts[0];
   const lastName = parts.slice(1).join(" ") || parts[0];
 
-  // Create Certn invitation regardless of payment method —
-  // Certn emails the handyman a link to submit their personal info
-  let certnRef: string | null = null;
-  if (process.env.CERTN_API_KEY) {
-    try {
-      const invitation = await createCertnInvitation({ email: user.email, firstName, lastName });
-      certnRef = invitation.id;
-    } catch (err) {
-      console.error("[background-check] Certn invitation failed:", err);
-      // Don't block the handyman — log and continue
-    }
-  }
-
+  // DEFERRED first: deferring means the Pro pays later, so there is nothing to
+  // charge and nothing to order yet. Gating this path on the screening provider
+  // would block onboarding entirely whenever Checkr is unreachable, which is a
+  // worse failure than a check ordered a few minutes later.
   if (method === "deferred") {
     await prisma.handymanProfile.update({
       where: { userId: user.id },
-      data: {
-        backgroundCheckStatus: "DEFERRED",
-        backgroundCheckRef: certnRef,
-      },
+      data: { backgroundCheckStatus: "DEFERRED", backgroundCheckRef: null },
     });
     return NextResponse.json({ status: "DEFERRED" });
+  }
+
+  // Paid path: order the screening BEFORE taking any money.
+  //
+  // This used to swallow the failure and continue, so a Pro could be charged
+  // $29.99 for "Background Check (powered by Certn)" while no check was ever
+  // ordered -- and with no API key configured that was the NORMAL path, not an
+  // edge case. Charging for a service we never requested is not something to log
+  // and move past, so both failures now refuse before Stripe is touched.
+  let checkrRef: string | null = null;
+  if (!process.env.CHECKR_API_KEY) {
+    console.error("[background-check] CHECKR_API_KEY not configured — refusing to charge");
+    return NextResponse.json(
+      { error: "Background checks are temporarily unavailable. Please try again later." },
+      { status: 503 },
+    );
+  }
+  try {
+    const invitation = await createCheckrInvitation({ email: user.email, firstName, lastName });
+    // The CANDIDATE id, not the invitation id: a candidate outlives any single
+    // report, and the webhook keys on it.
+    checkrRef = invitation.candidateId;
+  } catch (err) {
+    console.error("[background-check] Checkr invitation failed:", err);
+    return NextResponse.json(
+      { error: "We could not start your background check. Please try again shortly." },
+      { status: 502 },
+    );
   }
 
   // method === "now" — create Stripe Checkout for the fee
@@ -83,8 +99,8 @@ export async function POST(req: NextRequest) {
         price_data: {
           currency: "usd",
           product_data: {
-            name: "Background Check — Tarea (powered by Certn)",
-            description: "One-time mandatory background check. Certn will email you a secure link to complete your screening.",
+            name: "Background Check — Tarea (powered by Checkr)",
+            description: "One-time mandatory background check. Checkr will email you a secure link to complete your screening.",
           },
           unit_amount: Math.round(BACKGROUND_CHECK_FEE * 100),
         },
@@ -92,14 +108,14 @@ export async function POST(req: NextRequest) {
       },
     ],
     ...backgroundCheckReturnUrls(target),
-    metadata: { userId: user.id, type: "background_check", certnRef: certnRef ?? "" },
+    metadata: { userId: user.id, type: "background_check", checkrRef: checkrRef ?? "" },
   });
 
-  // Optimistically store Certn ref
-  if (certnRef) {
+  // Store the Checkr candidate ref
+  if (checkrRef) {
     await prisma.handymanProfile.update({
       where: { userId: user.id },
-      data: { backgroundCheckRef: certnRef },
+      data: { backgroundCheckRef: checkrRef },
     });
   }
 

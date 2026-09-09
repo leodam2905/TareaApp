@@ -22,7 +22,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { handymanId
     where: { id: params.handymanId },
     data: {
       verificationStatus: decision === "approve" ? "approved" : "rejected",
-      // Manually approve background check while Certn API access is pending
+      // ⚠️ Admin override: marks the SCREENING passed, not just the ID docs.
+      // Written when no screening provider was wired at all. Now that Checkr
+      // runs the check, approving someone's ID here still records them as
+      // background-checked without a report existing. Keep it as a deliberate
+      // override, but it should not ride along with an ID decision.
       ...(decision === "approve" && { backgroundCheckStatus: "PASSED" }),
     },
   });
