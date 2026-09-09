@@ -915,7 +915,7 @@
     "chooseFile": "Choisir un fichier",
     "add": "Ajouter",
     "feeTitle": "Frais de vérification",
-    "feeDesc": "Vérification unique de {} $, réalisée par Certn. Payez maintenant ou sur votre premier virement.",
+    "feeDesc": "Vérification unique de {} $, réalisée par Checkr. Payez maintenant ou sur votre premier virement.",
     "payNow": "Payer {} $",
     "deferPay": "Prélever sur mon premier virement",
     "deferHint": "Rien à payer aujourd'hui. {} $ seront prélevés sur votre premier virement.",
@@ -927,7 +927,7 @@
     "statusDeferred": "Différé",
     "statusPassed": "Validé",
     "statusFailed": "Non validé",
-    "paidNote": "Votre vérification est en cours. Certn vous enverra un lien sécurisé par e-mail.",
+    "paidNote": "Votre vérification est en cours. Checkr vous enverra un lien sécurisé par e-mail.",
     "deferredNote": "Commencé. {} $ seront déduits de votre premier virement.",
     "deferredDone": "Vérification lancée",
     "failed": "Une erreur est survenue. Réessayez."

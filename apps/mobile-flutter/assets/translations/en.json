@@ -915,7 +915,7 @@
     "chooseFile": "Choose a file",
     "add": "Add",
     "feeTitle": "Background check fee",
-    "feeDesc": "A one-time ${} check, run by Certn. You can pay now or have it taken from your first payout.",
+    "feeDesc": "A one-time ${} check, run by Checkr. You can pay now or have it taken from your first payout.",
     "payNow": "Pay ${} now",
     "deferPay": "Take it from my first payout",
     "deferHint": "Nothing to pay today. ${} comes out of your first payout.",
@@ -927,7 +927,7 @@
     "statusDeferred": "Deferred",
     "statusPassed": "Passed",
     "statusFailed": "Not passed",
-    "paidNote": "Your background check is under way. Certn will email you a secure link.",
+    "paidNote": "Your background check is under way. Checkr will email you a secure link.",
     "deferredNote": "Started. ${} will be deducted from your first payout.",
     "deferredDone": "Background check started",
     "failed": "Something went wrong. Please try again."
