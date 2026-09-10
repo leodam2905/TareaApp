@@ -217,7 +217,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
                 children: [
                   for (int i = 0; i < _actions.length; i++) ...[
                     if (i > 0) const SizedBox(height: 12),
-                    _actionCard(_actions[i]),
+                    _actionCard(_actions[i], i),
                   ],
                 ],
               ),
@@ -292,39 +292,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
   }
 
 
-  Widget _actionCard(_Action a) {
-    return Semantics(
-      button: true,
-      // The words live inside the JPEG, where a screen reader cannot reach
-      // them. These keys are the same strings the artwork shows.
-      label: '${a.titleKey.tr()}. ${a.descKey.tr()}',
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(18),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => context.push(a.route),
-          child: AspectRatio(
-            // The art's own 3:2. Anything wider crops the top and bottom off
-            // the photo, which cut the phones in half -- these are pictures,
-            // not textures, so they get shown whole.
-            aspectRatio: 1536 / 1024,
-            child: Image.asset(
-              'assets/images/${a.img}',
-              fit: BoxFit.contain,
-              // A missing card should not blow a hole in the dashboard.
-              errorBuilder: (_, _, _) => Container(
-                color: C.surface,
-                alignment: Alignment.center,
-                child: Text(a.titleKey.tr(),
-                    style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink)),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  Widget _actionCard(_Action a, int index) => _ActionCard(action: a, index: index);
 
   Widget _catItem(_Cat c) {
     return SizedBox(
@@ -510,4 +478,106 @@ class _ActivityStatus {
   final Color fg;
   final Color bg;
   const _ActivityStatus(this.label, this.fg, this.bg);
+}
+
+/// A dashboard card: the picture, and the two things touch expects of it.
+///
+/// A ripple is the usual answer, but these cards are photographs -- a ripple
+/// spreading over a photo is nearly invisible, so the press had no feedback at
+/// all. Scaling the whole card instead reads as something physical being
+/// pushed, and it works regardless of what the picture underneath looks like.
+class _ActionCard extends StatefulWidget {
+  const _ActionCard({required this.action, required this.index});
+
+  final _Action action;
+
+  /// Position in the list, used to stagger the entrance so the four cards
+  /// arrive in sequence rather than all at once.
+  final int index;
+
+  @override
+  State<_ActionCard> createState() => _ActionCardState();
+}
+
+class _ActionCardState extends State<_ActionCard> {
+  bool _down = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final a = widget.action;
+    final reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+
+    Widget card = AnimatedScale(
+      scale: _down && !reduced ? 0.94 : 1.0,
+      duration: Duration(milliseconds: _down ? 110 : 300),
+      curve: _down ? Curves.easeOut : Curves.easeOutBack,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          // Lifts off the page, and settles closer to it while held -- the
+          // shadow is what makes the scale read as depth rather than as the
+          // card simply shrinking.
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: _down ? 0.06 : 0.20),
+              blurRadius: _down ? 5 : 22,
+              offset: Offset(0, _down ? 2 : 9),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: AspectRatio(
+            aspectRatio: 1536 / 1024,
+            child: Image.asset(
+              'assets/images/${a.img}',
+              fit: BoxFit.contain,
+              errorBuilder: (_, _, _) => Container(
+                color: C.surface,
+                alignment: Alignment.center,
+                child: Text(a.titleKey.tr(),
+                    style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink)),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    if (!reduced) {
+      // Fade up on first paint, one after another. Runs once: the builder is
+      // driven by a Tween that has already reached its end on any rebuild.
+      card = TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0.0, end: 1.0),
+        duration: Duration(milliseconds: 520 + widget.index * 150),
+        curve: Curves.easeOutCubic,
+        builder: (_, t, child) {
+          // Hold each card still until its turn, then run its own 60%.
+          final start = widget.index * 0.16;
+          final p = ((t - start) / (1 - start)).clamp(0.0, 1.0);
+          return Opacity(
+            opacity: p,
+            child: Transform.translate(offset: Offset(0, (1 - p) * 28), child: child),
+          );
+        },
+        child: card,
+      );
+    }
+
+    return Semantics(
+      button: true,
+      // The words live inside the JPEG, where a screen reader cannot reach
+      // them. These keys are the same strings the artwork shows.
+      label: '${a.titleKey.tr()}. ${a.descKey.tr()}',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (_) => setState(() => _down = true),
+        onTapUp: (_) => setState(() => _down = false),
+        onTapCancel: () => setState(() => _down = false),
+        onTap: () => context.push(a.route),
+        child: card,
+      ),
+    );
+  }
 }

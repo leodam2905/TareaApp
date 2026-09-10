@@ -8,6 +8,15 @@ import 'my_jobs_screen.dart';
 import 'messages_screen.dart';
 import 'requests_screen.dart';
 
+/// Two lines at fontSize 11, height 1.15, plus a hair of slack.
+const double _kLabelHeight = 27;
+
+/// Break a label at its last space so it renders on two lines.
+String _twoLine(String s) {
+  final i = s.lastIndexOf(' ');
+  return i <= 0 ? s : '${s.substring(0, i)}\n${s.substring(i + 1)}';
+}
+
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
   @override
@@ -64,12 +73,20 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
           children: [
             Icon(icon, color: active ? C.blue : C.muted, size: 24),
             const SizedBox(height: 2),
-            FittedBox(
-              fit: BoxFit.scaleDown,
+            // Two lines' worth of room for every tab, whether it uses it or
+            // not: "My Requests" needs the second line, and reserving the
+            // space for all five keeps the icons on one baseline instead of
+            // letting the long label shove its own icon upward.
+            SizedBox(
+              height: _kLabelHeight,
               child: Text(label,
-                  maxLines: 1,
-                  softWrap: false,
-                  style: TextStyle(fontSize: 11, color: active ? C.blue : C.muted, fontWeight: FontWeight.w700)),
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 11,
+                      height: 1.15,
+                      color: active ? C.blue : C.muted,
+                      fontWeight: FontWeight.w700)),
             ),
           ],
         ),
@@ -100,18 +117,23 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
                       child: const Icon(Icons.add, color: Colors.white, size: 30),
                     ),
                     const SizedBox(height: 2),
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
+                    SizedBox(
+                      height: _kLabelHeight,
                       child: Text('nav.postJob'.tr(),
-                          maxLines: 1,
-                          softWrap: false,
-                          style: const TextStyle(fontSize: 11, color: C.blue, fontWeight: FontWeight.w700)),
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 11, height: 1.15, color: C.blue, fontWeight: FontWeight.w700)),
                     ),
                   ]),
                 ),
               ),
               _navItem(Icons.chat_bubble_outline, 'nav.messages'.tr(), 2),
-              _navItem(Icons.description_outlined, 'nav.myRequests'.tr(), 3),
+              // Broken explicitly: the label FITS on one line, so maxLines
+              // alone would never have wrapped it. Splits on the last space,
+              // so "My Requests" / "Mes demandes" / "Mis solicitudes" each
+              // break sensibly, and Arabic (no space) simply stays as it is.
+              _navItem(Icons.description_outlined, _twoLine('nav.myRequests'.tr()), 3),
             ],
           ),
         ),
