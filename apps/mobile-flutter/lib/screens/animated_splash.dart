@@ -1,3 +1,5 @@
+import 'dart:async' show Completer;
+
 import 'package:flutter/material.dart';
 
 import '../flavor.dart';
@@ -20,6 +22,17 @@ import '../flavor.dart';
 /// -- they cannot drift out of step.
 const Duration _kDuration = Duration(milliseconds: 5000);
 
+/// The artwork for this flavour's launch screen.
+///
+/// Top-level because bootstrap() has to decode it BEFORE it takes the native
+/// splash down. Decoding a 2MB PNG is not instant, and the first Flutter frame
+/// paints whether or not the picture is ready -- so without that warm-up the
+/// user gets one bare frame of ground colour with the progress bar floating on
+/// it, between the native splash and the artwork.
+String splashBackdropAsset() => isPro
+    ? 'assets/images/splash-pro-backdrop.png'
+    : 'assets/images/splash-home-backdrop.png';
+
 class AnimatedSplash extends StatefulWidget {
   const AnimatedSplash({super.key, required this.onDone});
 
@@ -35,6 +48,7 @@ class _AnimatedSplashState extends State<AnimatedSplash>
   late final AnimationController _c;
   late final Animation<double> _exitFade;
   late final Animation<double> _progress;
+  bool _ready = false;
 
 
   // "Tarea Home" / "Tarea Pro" -- deliberately NOT translated. It is the app's
@@ -65,9 +79,24 @@ class _AnimatedSplashState extends State<AnimatedSplash>
   Color get _barFill  => isPro ? const Color(0xFFFC6122) : const Color(0xFFFD6629);
   Color get _barTrack => isPro ? const Color(0xFFC3B9B5) : const Color(0xFFADB0B8);
 
-  String get _backdrop => isPro
-      ? 'assets/images/splash-pro-backdrop.png'
-      : 'assets/images/splash-home-backdrop.png';
+  String get _backdrop => splashBackdropAsset();
+
+  /// Completes once the backdrop is decoded and in the image cache -- or on
+  /// error, so a missing asset falls through to the errorBuilder rather than
+  /// hanging the launch screen forever.
+  Future<void> _awaitArtwork() {
+    final completer = Completer<void>();
+    final stream = AssetImage(_backdrop).resolve(ImageConfiguration.empty);
+    late final ImageStreamListener listener;
+    void finish() {
+      stream.removeListener(listener);
+      if (!completer.isCompleted) completer.complete();
+    }
+
+    listener = ImageStreamListener((_, _) => finish(), onError: (_, _) => finish());
+    stream.addListener(listener);
+    return completer.future;
+  }
 
   @override
   void initState() {
@@ -88,7 +117,17 @@ class _AnimatedSplashState extends State<AnimatedSplash>
     _c.addStatusListener((s) {
       if (s == AnimationStatus.completed) widget.onDone();
     });
-    _c.forward();
+
+    // Do not start until the picture can actually be painted. The bar is drawn
+    // ON the artwork -- start the clock before the PNG is decoded and the first
+    // frames put a bar on bare ground, which is the one thing this screen must
+    // never show. A frame of plain ground is fine: it is the exact colour the
+    // native splash was already showing, so it is invisible.
+    _awaitArtwork().then((_) {
+      if (!mounted) return;
+      setState(() => _ready = true);
+      _c.forward();
+    });
   }
 
   @override
@@ -102,6 +141,10 @@ class _AnimatedSplashState extends State<AnimatedSplash>
     // Someone who asked for less motion gets the finished frame, held for the
     // same beat, rather than a logo springing at them.
     final reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+
+    // Ground only, matching the native splash exactly, so this frame cannot be
+    // told apart from the one already on screen.
+    if (!_ready) return Material(color: _ground);
 
     return AnimatedBuilder(
       animation: _c,
