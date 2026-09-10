@@ -1,8 +1,8 @@
 # Pro (Tarea Pro) splash — logo + "Grow your business, on your schedule".
 # Android-only here; iOS is a single shared Runner handled by the base config.
 flutter_native_splash:
-  color: "#FFFFFF"
-  color_dark: "#FFFFFF"
+  color: "#CCE8FD"
+  color_dark: "#CCE8FD"
   image: assets/images/splash-pro-logo.png
   image_dark: assets/images/splash-pro-logo.png
 

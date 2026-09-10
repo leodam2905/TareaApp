@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../flavor.dart';
 
 /// The animated launch screen: the logo settles in, then the app name types
@@ -14,6 +15,11 @@ import '../flavor.dart';
 /// spent on this instead. The ground colour matches the native splash exactly
 /// (#263238 home, #FFFFFF pro), so the hand-over is invisible -- get those out
 /// of step and the app appears to flash on every launch.
+/// How long the whole sequence runs. Every interval below is a FRACTION of
+/// this, so changing it here re-paces the logo, the typing and the bar together
+/// -- they cannot drift out of step.
+const Duration _kDuration = Duration(milliseconds: 5000);
+
 class AnimatedSplash extends StatefulWidget {
   const AnimatedSplash({super.key, required this.onDone});
 
@@ -27,36 +33,54 @@ class AnimatedSplash extends StatefulWidget {
 class _AnimatedSplashState extends State<AnimatedSplash>
     with SingleTickerProviderStateMixin {
   late final AnimationController _c;
-  late final Animation<double> _logoFade;
-  late final Animation<double> _logoScale;
-  late final Animation<int> _typed;
   late final Animation<double> _exitFade;
+  late final Animation<double> _progress;
+
 
   // "Tarea Home" / "Tarea Pro" -- deliberately NOT translated. It is the app's
   // name in the stores, and a name is not a string to localise.
-  String get _word => isPro ? 'Tarea Pro' : 'Tarea Home';
 
-  Color get _ground => isPro ? const Color(0xFFFFFFFF) : const Color(0xFF263238);
-  Color get _ink => isPro ? const Color(0xFF263238) : Colors.white;
+
+  // Matches the top band of each artwork AND the native launch background,
+  // so launch -> picture is one continuous colour with no flash between.
+  Color get _ground => isPro ? const Color(0xFFCCE8FD) : const Color(0xFFFBFAF9);
   String get _logo => isPro
       ? 'assets/images/splash-pro-logo.png'
       : 'assets/images/splash-home-white-logo.png';
 
+
+  /// Full-bleed photograph behind everything, when one exists. Drop a file at
+  /// this path and it appears; until then the flat ground shows and nothing
+  /// breaks. errorBuilder rather than a bundled placeholder, so a missing photo
+  /// degrades to the design we already have instead of a broken-image box.
+  // Measured from the artwork: the baked bar occupies these fractions of the
+  // image. The live bar is drawn exactly over it, so the static one is covered
+  // rather than sitting alongside a second copy.
+  // Both artworks put the bar at the same height, but NOT the same width --
+  // measured, not assumed: Home 0.205..0.838, Pro 0.158..0.782. Sharing one
+  // constant would have left Pro's live bar visibly offset from its painted one.
+  static const _barTop = 0.9447, _barBottom = 0.9526;
+  double get _barLeft  => isPro ? 0.1581 : 0.2051;
+  double get _barRight => isPro ? 0.7821 : 0.8376;
+  Color get _barFill  => isPro ? const Color(0xFFFC6122) : const Color(0xFFFD6629);
+  Color get _barTrack => isPro ? const Color(0xFFC3B9B5) : const Color(0xFFADB0B8);
+
+  String get _backdrop => isPro
+      ? 'assets/images/splash-pro-backdrop.png'
+      : 'assets/images/splash-home-backdrop.png';
+
   @override
   void initState() {
     super.initState();
-    _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 2300));
+    _c = AnimationController(vsync: this, duration: _kDuration);
 
-    // 0.00-0.26  logo fades and settles
-    _logoFade = CurvedAnimation(parent: _c, curve: const Interval(0.0, 0.26, curve: Curves.easeOut));
-    _logoScale = Tween(begin: 0.86, end: 1.0).animate(
-      CurvedAnimation(parent: _c, curve: const Interval(0.0, 0.32, curve: Curves.easeOutBack)),
-    );
-    // 0.30-0.74  the word types itself
-    _typed = StepTween(begin: 0, end: _word.length).animate(
-      CurvedAnimation(parent: _c, curve: const Interval(0.30, 0.74, curve: Curves.linear)),
-    );
     // 0.86-1.00  the whole thing fades to reveal the app underneath
+    // Fills the way an upload does -- quick off the mark, easing as it closes.
+    // Linear reads as a countdown; this reads as work being done.
+    _progress = CurvedAnimation(
+      parent: _c,
+      curve: const Interval(0.04, 0.94, curve: Curves.easeOutCubic),
+    );
     _exitFade = Tween(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(parent: _c, curve: const Interval(0.86, 1.0, curve: Curves.easeIn)),
     );
@@ -82,53 +106,52 @@ class _AnimatedSplashState extends State<AnimatedSplash>
     return AnimatedBuilder(
       animation: _c,
       builder: (context, _) {
-        final shown = reduced ? _word : _word.substring(0, _typed.value);
         return Opacity(
           opacity: reduced ? 1.0 : _exitFade.value,
-          child: Container(
+          child: Material(
             color: _ground,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Opacity(
-                    opacity: reduced ? 1.0 : _logoFade.value,
-                    child: Transform.scale(
-                      scale: reduced ? 1.0 : _logoScale.value,
-                      child: Image.asset(_logo, width: 200, fit: BoxFit.contain),
-                    ),
-                  ),
-                  const SizedBox(height: 22),
-                  // A fixed-height row so the column does not jump as characters
-                  // arrive, and the caret sits inline so the text does not shift
-                  // sideways when it disappears.
-                  SizedBox(
-                    height: 30,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          shown,
-                          style: TextStyle(
-                            color: _ink,
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.4,
-                          ),
+            // The supplied artwork IS the splash. It already carries the logo,
+            // the headline, the bar and the loading line, so nothing is drawn
+            // over it -- anything added here would be a second copy of
+            // something already in the picture.
+            child: LayoutBuilder(
+              builder: (context, box) {
+                final w = box.maxWidth, h = box.maxHeight;
+                return Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Image.asset(
+                        _backdrop,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => Center(
+                          child: Image.asset(_logo, width: 200, fit: BoxFit.contain),
                         ),
-                        if (!reduced && _typed.value < _word.length)
-                          Container(
-                            width: 2,
-                            height: 22,
-                            margin: const EdgeInsets.only(left: 3),
-                            color: _ink.withValues(alpha: 0.75),
-                          ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                    // The live bar, laid exactly over the painted one.
+                    Positioned(
+                      left: w * _barLeft,
+                      width: w * (_barRight - _barLeft),
+                      top: h * _barTop,
+                      height: h * (_barBottom - _barTop),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(h * (_barBottom - _barTop) / 2),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            ColoredBox(color: _barTrack),
+                            FractionallySizedBox(
+                              alignment: AlignmentDirectional.centerStart,
+                              widthFactor: reduced ? 1.0 : _progress.value.clamp(0.0, 1.0),
+                              child: ColoredBox(color: _barFill),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         );

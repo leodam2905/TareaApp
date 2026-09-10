@@ -80,7 +80,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Row(children: [
                       Image.asset('assets/images/tarea-home-mark.png', width: 34, height: 34),
                       const SizedBox(width: 8),
-                      const Text('Tarea', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Tarea', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink, height: 1)),
+                          Text(isPro ? 'Pro' : 'Home',
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFFEF795F), height: 1.15)),
+                        ],
+                      ),
                     ]),
                     const SizedBox(height: 16),
                     Row(

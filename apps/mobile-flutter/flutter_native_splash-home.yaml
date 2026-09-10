@@ -2,8 +2,8 @@
 # match the Home app icon (white house on dark). Android-only here; iOS is the
 # single shared Runner handled by the base config + swap script.
 flutter_native_splash:
-  color: "#263238"
-  color_dark: "#263238"
+  color: "#FBFAF9"
+  color_dark: "#FBFAF9"
   image: assets/images/splash-home-white-logo.png
   image_dark: assets/images/splash-home-white-logo.png
 

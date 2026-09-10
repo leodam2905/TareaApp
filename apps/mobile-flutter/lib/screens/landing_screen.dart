@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
+import '../flavor.dart';
 
 class _Feature {
   final IconData icon;
@@ -51,7 +52,19 @@ class LandingScreen extends StatelessWidget {
                   Row(children: [
                     Image.asset('assets/images/tarea-home-mark.png', width: 34, height: 34),
                     const SizedBox(width: 8),
-                    const Text('Tarea', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink)),
+                    // "Tarea Home" / "Tarea Pro", stacked the way the dashboard
+                    // header already does it. The landing page said only
+                    // "Tarea", so the first screen a visitor sees was the one
+                    // place the app did not say which app it is. Suffix in the
+                    // brand coral, echoing the script word in the lockup.
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Tarea', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: C.ink, height: 1)),
+                        Text(isPro ? 'Pro' : 'Home',
+                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFFEF795F), height: 1.15)),
+                      ],
+                    ),
                   ]),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
