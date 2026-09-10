@@ -76,7 +76,8 @@ npx prisma migrate diff \
 | 015 | Materials receipt read + verification state | **Yes** — 2026-08-31 |
 | 016 | AI reading of a credential document (proposal) | **Yes** — 2026-09-04 |
 | 017 | Rate limit counters | **Yes** — verified in production 2026-09-07 |
-| 018 | Tip payout tracking (`tips.paidOutAt`) | **NO — apply before deploying** |
+| 018 | Tip payout tracking (`tips.paidOutAt`) | **Yes** — verified in production 2026-09-09 |
+| 019 | Stripe chargeback tracking + payout hold | **Yes** — 2026-09-09 |
 
 > ⚠️ **018 is unapplied.** `schema.prisma` declares `Tip.paidOutAt`, so
 > `scripts/deploy-web.sh` will refuse the deploy until this runs — which is the
