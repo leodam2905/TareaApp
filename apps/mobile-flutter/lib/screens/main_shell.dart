@@ -6,7 +6,7 @@ import '../tab_refresh.dart';
 import 'dashboard_screen.dart';
 import 'my_jobs_screen.dart';
 import 'messages_screen.dart';
-import 'profile_screen.dart';
+import 'requests_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -41,7 +41,7 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
     DashboardScreen(),
     MyJobsScreen(),
     MessagesScreen(),
-    ProfileScreen(),
+    RequestsScreen(),
   ];
 
   @override
@@ -111,7 +111,7 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
                 ),
               ),
               _navItem(Icons.chat_bubble_outline, 'nav.messages'.tr(), 2),
-              _navItem(Icons.person_outline, 'nav.profile'.tr(), 3),
+              _navItem(Icons.description_outlined, 'nav.myRequests'.tr(), 3),
             ],
           ),
         ),

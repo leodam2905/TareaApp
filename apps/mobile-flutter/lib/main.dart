@@ -36,6 +36,7 @@ import 'screens/settings_screen.dart';
 import 'screens/booking_detail_screen.dart';
 import 'screens/track_pro_screen.dart';
 import 'screens/chat_screen.dart';
+import 'screens/profile_screen.dart';
 import 'screens/edit_profile_screen.dart';
 import 'screens/pro/pro_shell.dart';
 import 'screens/pro/pro_edit_profile.dart';
@@ -138,6 +139,7 @@ final appRouter = GoRouter(
     GoRoute(path: '/request-detail', builder: (_, s) => RequestDetailScreen(request: (s.extra as Map?)?.cast<String, dynamic>() ?? const {})),
     GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
     GoRoute(path: '/chat', builder: (_, s) => ChatScreen(data: (s.extra as Map?)?.cast<String, dynamic>() ?? const {})),
+    GoRoute(path: '/profile', builder: (_, __) => const ProfileScreen()),
     GoRoute(path: '/edit-profile', builder: (_, __) => const EditProfileScreen()),
     GoRoute(path: '/pro/edit-profile', builder: (_, __) => const ProEditProfile()),
     GoRoute(path: '/pro/services', builder: (_, __) => const ProEditServices()),

@@ -96,7 +96,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
-            Text('nav.profile'.tr(), style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink)),
+            // Profile is reached from the avatar now, not a tab, so it is
+            // always pushed -- and a pushed screen with no way back strands
+            // anyone whose phone has no back gesture.
+            Row(children: [
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => context.pop(),
+                child: const Padding(
+                  padding: EdgeInsets.only(right: 6, top: 4, bottom: 4),
+                  child: Icon(Icons.chevron_left, color: C.ink, size: 30),
+                ),
+              ),
+              Text('nav.profile'.tr(), style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: C.ink)),
+            ]),
             const SizedBox(height: 16),
             // Identity card
             GestureDetector(

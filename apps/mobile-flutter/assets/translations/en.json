@@ -29,7 +29,8 @@
     "messages": "Messages",
     "profile": "Profile",
     "findJobs": "Find Jobs",
-    "earnings": "Earnings"
+    "earnings": "Earnings",
+    "myRequests": "My Requests"
   },
   "settings": {
     "title": "Settings",

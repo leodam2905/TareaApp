@@ -85,7 +85,14 @@ class _RequestsScreenState extends State<RequestsScreen> {
       backgroundColor: C.bg,
       appBar: AppBar(
         backgroundColor: C.bg, surfaceTintColor: Colors.transparent, elevation: 0,
-        leading: IconButton(icon: const Icon(Icons.chevron_left, color: C.ink, size: 30), onPressed: () => context.pop()),
+        // This screen is BOTH a tab and a pushed route now. In the tab there
+        // is nothing on the stack, so a back chevron pops nothing and reads as
+        // a broken control -- the screen looks like a trap. Only offer it when
+        // there is somewhere to go back to.
+        automaticallyImplyLeading: false,
+        leading: context.canPop()
+            ? IconButton(icon: const Icon(Icons.chevron_left, color: C.ink, size: 30), onPressed: () => context.pop())
+            : null,
         title: Text('profile.myRequests'.tr(), style: const TextStyle(color: C.ink, fontWeight: FontWeight.w900, fontSize: 20)),
       ),
       body: _loading

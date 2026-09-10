@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../theme.dart';
+import '../widgets/unread_bell.dart';
 import '../api.dart';
 import '../avatar_util.dart';
 import '../widgets/urgent_badge.dart';
@@ -17,10 +18,10 @@ class _Action {
 }
 
 const _actions = [
-  _Action('nav.postJob', 'dashboard.postJobDesc', 'action-postjob.png', '/post-job'),
-  _Action('dashboard.findPros', 'dashboard.findProsDesc', 'action-findpros.png', '/browse'),
-  _Action('dashboard.aiDiagnose', 'dashboard.aiDiagnoseDesc', 'action-diagnose.png', '/diagnose'),
-  _Action('landing.instantQuote', 'dashboard.instantQuoteDesc', 'action-quote.png', '/instant-quote'),
+  _Action('nav.postJob', 'dashboard.postJobDesc', 'card-postjob.jpg', '/post-job'),
+  _Action('dashboard.aiDiagnose', 'dashboard.aiDiagnoseDesc', 'card-diagnose.jpg', '/diagnose'),
+  _Action('landing.instantQuote', 'dashboard.instantQuoteDesc', 'card-quote.jpg', '/instant-quote'),
+  _Action('dashboard.findPros', 'dashboard.findProsDesc', 'card-browse.jpg', '/browse'),
 ];
 
 class _Cat {
@@ -191,14 +192,14 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
                   Row(children: [
                     GestureDetector(
                       onTap: () => context.push('/notifications').then((_) { if (mounted) _load(); }),
-                      child: _bellWithBadge(),
+                      child: UnreadBell(count: _unread),
                     ),
                     const SizedBox(width: 10),
                     // The avatar looked like a control and was not one — tapping it
                     // did nothing, which is exactly where someone goes to change
                     // their picture.
                     GestureDetector(
-                      onTap: () => context.push('/edit-profile').then((_) { if (mounted) _load(); }),
+                      onTap: () => context.push('/profile').then((_) { if (mounted) _load(); }),
                       child: roundAvatar(url: _avatar, radius: 18),
                     ),
                   ]),
@@ -209,28 +210,14 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
               Text(_firstName.isEmpty ? 'dashboard.there'.tr() : _firstName,
                   style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: C.ink)),
               const SizedBox(height: 16),
-              // Action cards — content-sized rows (IntrinsicHeight keeps the two
-              // cards in a row equal height) so titles/descriptions can't
-              // overflow the cell and spill into the section below on iOS.
+              // Each card IS the picture -- title and description are part of
+              // the artwork, so nothing is drawn over it and the whole card is
+              // the tap target.
               Column(
                 children: [
-                  for (int i = 0; i < _actions.length; i += 2) ...[
-                    if (i > 0) const SizedBox(height: 14),
-                    IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          for (int j = i; j < i + 2; j++) ...[
-                            if (j > i) const SizedBox(width: 14),
-                            Expanded(
-                              child: j < _actions.length
-                                  ? _actionCard(_actions[j])
-                                  : const SizedBox.shrink(),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
+                  for (int i = 0; i < _actions.length; i++) ...[
+                    if (i > 0) const SizedBox(height: 12),
+                    _actionCard(_actions[i]),
                   ],
                 ],
               ),
@@ -304,71 +291,37 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
     );
   }
 
-  /// The bell, carrying the number of unread notifications.
-  ///
-  /// Without a count the bell says "notifications exist somewhere" — the same
-  /// thing it says when there is nothing to see, so there was never a reason
-  /// to tap it.
-  Widget _bellWithBadge() {
-    final n = _unread;
-    return Stack(clipBehavior: Clip.none, children: [
-      _circleIcon(n > 0 ? Icons.notifications : Icons.notifications_none),
-      if (n > 0)
-        Positioned(
-          right: -2,
-          top: -2,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-            constraints: const BoxConstraints(minWidth: 18),
-            decoration: BoxDecoration(
-              color: C.red,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: C.white, width: 1.5),
-            ),
-            child: Text(
-              // Past 99 the exact number stops meaning anything, and stops fitting.
-              n > 99 ? '99+' : '$n',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900, height: 1.2),
+
+  Widget _actionCard(_Action a) {
+    return Semantics(
+      button: true,
+      // The words live inside the JPEG, where a screen reader cannot reach
+      // them. These keys are the same strings the artwork shows.
+      label: '${a.titleKey.tr()}. ${a.descKey.tr()}',
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(18),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () => context.push(a.route),
+          child: AspectRatio(
+            // The art's own 3:2. Anything wider crops the top and bottom off
+            // the photo, which cut the phones in half -- these are pictures,
+            // not textures, so they get shown whole.
+            aspectRatio: 1536 / 1024,
+            child: Image.asset(
+              'assets/images/${a.img}',
+              fit: BoxFit.contain,
+              // A missing card should not blow a hole in the dashboard.
+              errorBuilder: (_, _, _) => Container(
+                color: C.surface,
+                alignment: Alignment.center,
+                child: Text(a.titleKey.tr(),
+                    style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink)),
+              ),
             ),
           ),
         ),
-    ]);
-  }
-
-  Widget _circleIcon(IconData icon) => Container(
-        width: 40, height: 40,
-        decoration: const BoxDecoration(color: C.surface, shape: BoxShape.circle),
-        child: Icon(icon, color: C.ink, size: 22),
-      );
-
-  Widget _actionCard(_Action a) {
-    return GestureDetector(
-      onTap: () => context.push(a.route),
-      child: Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: C.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: C.blue, width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(child: Image.asset('assets/images/${a.img}', height: 84, fit: BoxFit.contain)),
-          const SizedBox(height: 10),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(a.titleKey.tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.ink)),
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(a.descKey.tr(), style: const TextStyle(fontSize: 13, color: C.muted, height: 1.25)),
-        ],
-      ),
       ),
     );
   }
