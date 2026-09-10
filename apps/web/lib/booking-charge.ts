@@ -4,6 +4,7 @@ import { stripe } from "@/lib/stripe";
 import { createNotification } from "@/lib/notify";
 import { CUSTOMER_FEE_RATE, FEE_PCT } from "@/lib/fees";
 import { assertPromoUsable, hasPriorPaidOrder } from "@/lib/promo";
+import { DESCRIPTOR } from "@/lib/statement-descriptor";
 
 // What a booking costs and how it gets collected — in one place, because the
 // same amount is now taken two different ways: hosted Checkout (customer
@@ -182,6 +183,7 @@ export async function chargeSavedCardForBooking(bookingId: string): Promise<Char
       confirm: true,
       description: `${booking.service.title} — Booking #${booking.id.slice(-8).toUpperCase()}`,
       metadata: { bookingId: booking.id },
+      statement_descriptor_suffix: DESCRIPTOR.booking,
     });
 
     if (intent.status === "succeeded") {

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { createNotification } from "@/lib/notify";
 import { stripe } from "@/lib/stripe";
+import { DESCRIPTOR } from "@/lib/statement-descriptor";
 
 // PATCH — customer approves or declines the extension
 export async function PATCH(
@@ -66,6 +67,7 @@ export async function PATCH(
           quantity: 1,
         }],
         metadata: { bookingId: booking.id, type: "extension", extId: params.extId },
+        payment_intent_data: { statement_descriptor_suffix: DESCRIPTOR.extension },
         ...bookingExtraReturnUrls(target, booking.id, "extension"),
       });
       checkoutUrl = session.url;

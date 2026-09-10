@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { CUSTOMER_FEE_RATE } from "@/lib/fees";
+import { DESCRIPTOR } from "@/lib/statement-descriptor";
 
 // Uber-style payment: save the card when the customer books, place an
 // authorization hold when a Pro accepts, capture at completion.
@@ -94,6 +95,7 @@ export async function authorizeBooking(
       confirm: true,
       description: `Tarea booking ${booking.id}`,
       metadata: { bookingId: booking.id, kind: "booking_hold" },
+      statement_descriptor_suffix: DESCRIPTOR.hold,
     });
 
     if (intent.status !== "requires_capture") {
@@ -212,6 +214,7 @@ export async function chargeAddOn(
       confirm: true,
       description: `Tarea add-on — ${label} (booking ${booking.id})`,
       metadata: { bookingId: booking.id, kind: "booking_addon" },
+      statement_descriptor_suffix: DESCRIPTOR.materials,
     });
     if (intent.status !== "succeeded") {
       return { ok: false, reason: `Add-on charge not completed (${intent.status})` };

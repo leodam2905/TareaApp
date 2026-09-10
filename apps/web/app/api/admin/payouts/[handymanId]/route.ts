@@ -15,7 +15,7 @@ export async function POST(_req: NextRequest, { params }: { params: { handymanId
   }
 
   const pending = await prisma.booking.findMany({
-    where: { handymanId: params.handymanId, status: "COMPLETED", isPaid: true, handymanPaidOut: false },
+    where: { handymanId: params.handymanId, status: "COMPLETED", isPaid: true, handymanPaidOut: false, payoutHold: false },
   });
 
   if (pending.length === 0) return NextResponse.json({ message: "No pending payouts", count: 0 });

@@ -21,7 +21,7 @@ export async function GET() {
 
   const [unpaid, paid, pendingTips, activeDisputes, completedJobs] = await Promise.all([
     prisma.booking.findMany({
-      where: { handymanId: user.id, status: "COMPLETED", isPaid: true, handymanPaidOut: false },
+      where: { handymanId: user.id, status: "COMPLETED", isPaid: true, handymanPaidOut: false, payoutHold: false },
       select: { id: true, totalPrice: true, materialsEstimate: true, materialsActual: true, completedAt: true, service: { select: { title: true } } },
       orderBy: { completedAt: "desc" },
     }),
@@ -99,7 +99,7 @@ export async function POST(_req: NextRequest) {
 
   const [pending, activeDisputes, pendingTips] = await Promise.all([
     prisma.booking.findMany({
-      where: { handymanId: user.id, status: "COMPLETED", isPaid: true, handymanPaidOut: false },
+      where: { handymanId: user.id, status: "COMPLETED", isPaid: true, handymanPaidOut: false, payoutHold: false },
     }),
     prisma.booking.count({ where: { handymanId: user.id, status: "DISPUTED" } }),
     prisma.tip.findMany({

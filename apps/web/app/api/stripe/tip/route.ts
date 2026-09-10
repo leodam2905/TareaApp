@@ -3,6 +3,7 @@ import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { bookingExtraReturnUrls, returnTarget } from "@/lib/stripe-return-urls";
+import { DESCRIPTOR } from "@/lib/statement-descriptor";
 
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
@@ -54,6 +55,7 @@ export async function POST(req: NextRequest) {
         quantity: 1,
       },
     ],
+    payment_intent_data: { statement_descriptor_suffix: DESCRIPTOR.tip },
     metadata: {
       bookingId,
       type: "tip",

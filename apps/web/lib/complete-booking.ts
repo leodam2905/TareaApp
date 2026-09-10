@@ -157,6 +157,26 @@ export async function completeBooking(bookingId: string, opts?: { receiptUrl?: s
   const handymanUser = await prisma.user.findUnique({ where: { id: booking.handymanId } });
   if (booking.isPaid && !booking.handymanPaidOut) {
     const payout = proOwedFor(booking);
+    // A chargeback or early fraud warning on this job freezes its payout. The
+    // job still completes — the work happened — but the money stays put until
+    // the dispute resolves, because as merchant of record we cannot claw it
+    // back from the pro afterwards.
+    const held = await prisma.booking.findUnique({
+      where: { id: bookingId },
+      select: { payoutHold: true },
+    });
+    if (held?.payoutHold) {
+      console.warn("[completeBooking] payout held (chargeback/fraud warning):", bookingId);
+      await alertPayoutFailure({
+        handymanId: booking.handymanId,
+        amount: payout,
+        reason: "transfer_failed",
+        detail: "Payout held: a chargeback or early fraud warning is open on this booking.",
+        bookingId,
+      });
+      return prisma.booking.findUnique({ where: { id: bookingId } });
+    }
+
     const check = await checkPayoutAccount(handymanUser?.stripeAccountId);
 
     if (!check.ok) {

@@ -344,6 +344,15 @@ model Booking {
   disputeReason    String?
   disputedBy       String?
   disputedAt       DateTime?
+  // Card-network chargeback state, distinct from the in-app dispute fields
+  // above: those are a customer complaint, these are the network taking the
+  // money back. payoutHold gates every transfer path. See migration 019.
+  chargebackStatus String?
+  chargebackReason String?
+  chargebackAt     DateTime?
+  chargebackAmount Float?
+  fraudWarningAt   DateTime?
+  payoutHold       Boolean   @default(false)
   resolutionNote   String?
   resolvedAt       DateTime?
   // What this job was priced FROM, frozen at booking time (migration 010).

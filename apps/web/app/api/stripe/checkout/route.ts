@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { bookingAmounts, bookingLineItems } from "@/lib/booking-charge";
 import { checkoutReturnUrls, returnTarget } from "@/lib/stripe-return-urls";
+import { DESCRIPTOR } from "@/lib/statement-descriptor";
 
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
@@ -52,7 +53,10 @@ export async function POST(req: NextRequest) {
     mode: "payment",
     line_items: lineItems,
     metadata: { bookingId: booking.id, userId: user.id },
-    payment_intent_data: { metadata: { bookingId: booking.id } },
+    payment_intent_data: {
+      metadata: { bookingId: booking.id },
+      statement_descriptor_suffix: DESCRIPTOR.booking,
+    },
     custom_text: {
       submit: {
         message: "Your payment is held securely by Tarea and will only be transferred to the handyman once the job is marked as complete. You are protected throughout the process.",

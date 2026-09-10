@@ -19,6 +19,8 @@ export async function GET(_req: NextRequest) {
       status: "IN_PROGRESS",
       isPaid: true,
       handymanPaidOut: false,
+      // A disputed or fraud-flagged job must not auto-complete into a payout.
+      payoutHold: false,
       workDoneAt: { not: null, lte: cutoff },
     },
     select: { id: true },

@@ -5,6 +5,7 @@ import { createNotification } from "@/lib/notify";
 import { syncPayoutStatus } from "@/lib/payout-account";
 import { markBookingPaid } from "@/lib/booking-charge";
 import { materializeHire } from "@/lib/hire";
+import { onDisputeOpened, onDisputeClosed, onEarlyFraudWarning } from "@/lib/chargeback";
 import Stripe from "stripe";
 
 // Raw body needed for signature verification
@@ -219,6 +220,65 @@ export async function POST(req: NextRequest) {
           data: { isPremium: false, stripeSubStatus: sub.status },
         });
       }
+    }
+
+    // ---- Card-network disputes -------------------------------------------
+    //
+    // None of these were handled. A chargeback arrived as an email and nothing
+    // in the product knew about it, so no payout path could decline to pay —
+    // and as merchant of record the loss lands on the platform, not the pro.
+    if (event.type === "charge.dispute.created") {
+      await onDisputeOpened(event.data.object as Stripe.Dispute);
+    }
+
+    if (event.type === "charge.dispute.closed") {
+      await onDisputeClosed(event.data.object as Stripe.Dispute);
+    }
+
+    // Funds movement is reported separately from the dispute lifecycle; record
+    // the status so the admin view reflects where the money actually is.
+    if (
+      event.type === "charge.dispute.funds_withdrawn" ||
+      event.type === "charge.dispute.funds_reinstated"
+    ) {
+      const d = event.data.object as Stripe.Dispute;
+      const booking = await prisma.booking.findFirst({
+        where: { stripePaymentIntentId: typeof d.payment_intent === "string" ? d.payment_intent : d.payment_intent?.id ?? "" },
+        select: { id: true },
+      });
+      if (booking) {
+        await prisma.booking.update({
+          where: { id: booking.id },
+          data: { chargebackStatus: d.status },
+        });
+      }
+    }
+
+    // Arrives BEFORE any dispute exists. Refunding on this signal usually stops
+    // the chargeback happening at all, which keeps it off the dispute rate.
+    if (event.type === "radar.early_fraud_warning.created") {
+      await onEarlyFraudWarning(event.data.object as Stripe.Radar.EarlyFraudWarning);
+    }
+
+    // A payout to a pro's bank failed. Previously silent: the pro simply never
+    // received money and nobody found out until they asked.
+    if (event.type === "payout.failed") {
+      const payout = event.data.object as Stripe.Payout;
+      const pro = event.account
+        ? await prisma.user.findFirst({ where: { stripeAccountId: event.account }, select: { id: true, name: true } })
+        : null;
+      const amount = (payout.amount ?? 0) / 100;
+      const admins = await prisma.user.findMany({ where: { role: "ADMIN" }, select: { id: true } });
+      await Promise.allSettled(
+        admins.map((a) =>
+          createNotification({
+            userId: a.id,
+            title: "Pro payout failed at the bank",
+            body: `${pro?.name ?? event.account ?? "A pro"} did not receive $${amount.toFixed(2)}: ${payout.failure_message ?? payout.failure_code ?? "unknown reason"}.`,
+            type: "payout",
+          }),
+        ),
+      );
     }
 
     if (event.type === "charge.refunded") {

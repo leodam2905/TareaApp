@@ -23,7 +23,7 @@ export async function GET(_req: NextRequest) {
 
   // Group unpaid completed bookings by handyman
   const unpaid = await prisma.booking.findMany({
-    where: { status: "COMPLETED", isPaid: true, handymanPaidOut: false },
+    where: { status: "COMPLETED", isPaid: true, handymanPaidOut: false, payoutHold: false },
     include: {
       handyman: {
         select: {

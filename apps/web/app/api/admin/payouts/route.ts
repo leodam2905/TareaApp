@@ -9,7 +9,7 @@ export async function GET() {
 
   // Completed, paid, not yet paid out to handyman
   const pending = await prisma.booking.findMany({
-    where: { status: "COMPLETED", isPaid: true, handymanPaidOut: false },
+    where: { status: "COMPLETED", isPaid: true, handymanPaidOut: false, payoutHold: false },
     include: {
       handyman: {
         select: {
