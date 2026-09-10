@@ -1,18 +1,19 @@
-# Pro (Tarea Pro) splash — logo + "Grow your business, on your schedule".
-# Android-only here; iOS is a single shared Runner handled by the base config.
+# Pro (Tarea Pro) splash. Same rule as Home: the artwork is the whole screen,
+# so the native frame adds nothing over it. Android-only here; iOS is the single
+# shared Runner handled by the base config + tool/swap_ios_splash.sh.
 flutter_native_splash:
   color: "#CCE8FD"
   color_dark: "#CCE8FD"
   image: assets/images/splash-pro-logo.png
   image_dark: assets/images/splash-pro-logo.png
 
-  # Android 12+ clips the icon to a circle, so the wordmark/tagline can't fit —
-  # show just the Tarea house mark there.
+  # Android 12+ gives us only a centred icon on a colour -- no full-bleed art.
+  # Icon background matches Pro's artwork ground so the circle blends into it.
   android_12:
     image: assets/images/splash-logo.png
     image_dark: assets/images/splash-logo.png
-    icon_background_color: "#FFFFFF"
-    icon_background_color_dark: "#FFFFFF"
+    icon_background_color: "#CCE8FD"
+    icon_background_color_dark: "#CCE8FD"
 
   android: true
   ios: false

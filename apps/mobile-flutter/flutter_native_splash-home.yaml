@@ -1,18 +1,23 @@
-# Customer (Tarea Home) splash — white logo on the icon's dark charcoal, to
-# match the Home app icon (white house on dark). Android-only here; iOS is the
-# single shared Runner handled by the base config + swap script.
+# Customer (Tarea Home) splash. The supplied artwork is the whole screen, so
+# the native frame must not draw anything of its own on top of it: `image` is a
+# 1x1 transparent pixel and the art rides in `background_image`, filled edge to
+# edge. Android-only here; iOS is the single shared Runner handled by the base
+# config + tool/swap_ios_splash.sh.
 flutter_native_splash:
   color: "#FBFAF9"
   color_dark: "#FBFAF9"
   image: assets/images/splash-home-white-logo.png
   image_dark: assets/images/splash-home-white-logo.png
 
-  # Android 12+ clips to a circle — use the app-icon art (white house on dark).
+  # Android 12+ gives us only a centred icon on a colour -- no full-bleed art.
+  # Keeping the icon background equal to the artwork's own ground colour makes
+  # the circle disappear into it, so the handoff to the real splash reads as one
+  # continuous surface rather than a badge on a different backdrop.
   android_12:
     image: assets/images/adaptive-icon-home.png
     image_dark: assets/images/adaptive-icon-home.png
-    icon_background_color: "#263238"
-    icon_background_color_dark: "#263238"
+    icon_background_color: "#FBFAF9"
+    icon_background_color_dark: "#FBFAF9"
 
   android: true
   ios: false
