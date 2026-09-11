@@ -50,26 +50,46 @@ class _ProShellState extends State<ProShell> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: C.bg,
-      body: IndexedStack(index: _index, children: _tabs),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(color: C.white, border: Border(top: BorderSide(color: C.line))),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(children: [
-              _item(Icons.home_outlined, 'nav.home'.tr(), 0),
-              _item(Icons.search, 'nav.findJobs'.tr(), 1),
-              _item(Icons.assignment_outlined, 'nav.myJobs'.tr(), 2),
-              _item(Icons.account_balance_wallet_outlined, 'nav.earnings'.tr(), 3),
-              _item(Icons.person_outline, 'nav.profile'.tr(), 4),
-            ]),
+    return PopScope(
+      // Allowed through only on the first tab; anywhere else the pop is
+      // intercepted and turned into a tab change.
+      canPop: _index == 0,
+      onPopInvokedWithResult: _handleBack,
+      child: Scaffold(
+        backgroundColor: C.bg,
+        body: IndexedStack(index: _index, children: _tabs),
+        bottomNavigationBar: Container(
+          decoration: const BoxDecoration(color: C.white, border: Border(top: BorderSide(color: C.line))),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(children: [
+                _item(Icons.home_outlined, 'nav.home'.tr(), 0),
+                _item(Icons.search, 'nav.findJobs'.tr(), 1),
+                _item(Icons.assignment_outlined, 'nav.myJobs'.tr(), 2),
+                _item(Icons.account_balance_wallet_outlined, 'nav.earnings'.tr(), 3),
+                _item(Icons.person_outline, 'nav.profile'.tr(), 4),
+              ]),
+            ),
           ),
         ),
       ),
     );
+  }
+
+  /// Android's back button, on a tabbed shell.
+  ///
+  /// Tabs are an IndexedStack, not routes -- switching one never pushes
+  /// anything, so at the root route the system back had nothing to pop and
+  /// closed the app instead. Back now returns to the first tab, and only
+  /// leaves once you are already on it.
+  void _handleBack(bool didPop, Object? result) {
+    if (didPop) return;
+    if (_index != 0) {
+      setState(() => _index = 0);
+      TabRefresh.select(0);
+    }
   }
 
   Widget _item(IconData icon, String label, int i) {

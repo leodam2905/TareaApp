@@ -262,7 +262,10 @@
     "licensed": "Licensed",
     "insured": "Insured",
     "onTheWay": "{} on the way to your bank",
-    "onTheWayUnknown": "Paid out after each job"
+    "onTheWayUnknown": "Paid out after each job",
+    "reviewCount": "{} reviews",
+    "jobsStatus": "Jobs status",
+    "schedule": "Schedule"
   },
   "postjob": {
     "requestPro": "Request {}",

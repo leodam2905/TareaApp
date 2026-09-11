@@ -262,7 +262,10 @@
     "licensed": "Con licencia",
     "insured": "Asegurado",
     "onTheWay": "{} en camino a tu banco",
-    "onTheWayUnknown": "Se paga después de cada trabajo"
+    "onTheWayUnknown": "Se paga después de cada trabajo",
+    "reviewCount": "{} reseñas",
+    "jobsStatus": "Estado de trabajos",
+    "schedule": "Agenda"
   },
   "postjob": {
     "requestPro": "Solicitar a {}",

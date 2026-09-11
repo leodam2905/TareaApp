@@ -262,7 +262,10 @@
     "licensed": "مرخّص",
     "insured": "مؤمَّن",
     "onTheWay": "{} في الطريق إلى حسابك البنكي",
-    "onTheWayUnknown": "يُدفع بعد كل مهمة"
+    "onTheWayUnknown": "يُدفع بعد كل مهمة",
+    "reviewCount": "{} تقييم",
+    "jobsStatus": "حالة الأعمال",
+    "schedule": "الجدول"
   },
   "postjob": {
     "requestPro": "طلب من {}",

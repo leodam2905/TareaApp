@@ -262,7 +262,10 @@
     "licensed": "Licencié",
     "insured": "Assuré",
     "onTheWay": "{} en route vers votre banque",
-    "onTheWayUnknown": "Versé après chaque mission"
+    "onTheWayUnknown": "Versé après chaque mission",
+    "reviewCount": "{} avis",
+    "jobsStatus": "Statut des travaux",
+    "schedule": "Planning"
   },
   "postjob": {
     "requestPro": "Demander à {}",

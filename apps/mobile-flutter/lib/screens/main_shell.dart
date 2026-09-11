@@ -55,12 +55,34 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: C.white,
-      body: IndexedStack(index: _index, children: _tabs),
-      bottomNavigationBar: _nav(),
+    return PopScope(
+      // Allowed through only on the first tab; anywhere else the pop is
+      // intercepted and turned into a tab change.
+      canPop: _index == 0,
+      onPopInvokedWithResult: _handleBack,
+      child: Scaffold(
+        backgroundColor: C.white,
+        body: IndexedStack(index: _index, children: _tabs),
+        bottomNavigationBar: _nav(),
+      ),
     );
   }
+
+  /// Android's back button, on a tabbed shell.
+  ///
+  /// Tabs are an IndexedStack, not routes -- switching one never pushes
+  /// anything, so at the root route the system back had nothing to pop and
+  /// closed the app instead. Back now returns to the first tab, and only
+  /// leaves once you are already on it, which is what every other tabbed app
+  /// on the platform does.
+  void _handleBack(bool didPop, Object? result) {
+    if (didPop) return;
+    if (_index != 0) {
+      setState(() => _index = 0);
+      TabRefresh.select(0);
+    }
+  }
+
 
   Widget _navItem(IconData icon, String label, int i) {
     final active = _index == i;
