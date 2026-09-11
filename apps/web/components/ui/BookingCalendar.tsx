@@ -29,7 +29,7 @@ const STATUS_BADGE: Record<string, string> = {
   ACCEPTED:    "badge-sky",
   IN_PROGRESS: "badge-sky",
   COMPLETED:   "badge-green",
-  CANCELLED:   "bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full text-xs font-semibold",
+  CANCELLED:   "badge-neutral",
   DISPUTED:    "badge-red",
 };
 

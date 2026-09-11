@@ -336,6 +336,16 @@ html:not(.dark) main [class*="bg-sky-500\/"]     { background-color: rgba(3,105,
     @apply badge bg-red-100 text-red-700;
   }
 
+  /* CANCELLED is the one status with no colour of its own -- it should read as
+     "nothing is happening here". Driven by the theme variables, so it is a
+     quiet grey on BOTH grounds; the fixed bg-slate-700 it replaced stayed a
+     dark chip on the day palette. */
+  .badge-neutral {
+    background-color: var(--card-bg-alt);
+    color: var(--text-muted);
+    @apply badge;
+  }
+
   .section-title {
     color: var(--text-primary);
     @apply text-3xl font-bold;

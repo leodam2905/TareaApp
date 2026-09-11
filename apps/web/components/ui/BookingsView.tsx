@@ -92,7 +92,7 @@ export default function BookingsView({ bookings, role, emptyHref, emptyLabel, ba
                 className={cn("block border rounded-2xl p-6 transition-colors",
                   isActive ? "bg-tarea-sky/5 border-tarea-sky/20 hover:border-tarea-sky/40" : "bg-white/5 border-white/10 hover:border-tarea-sky/20")}>
                 <div className="flex flex-col md:flex-row md:items-center gap-4">
-                  <div className="w-14 h-14 bg-tarea-dark/60 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0">
+                  <div className="w-14 h-14 bg-tarea-sky/10 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0">
                     {SERVICE_CATEGORY_ICONS[b.service.category] || "🛠️"}
                   </div>
                   <div className="flex-1 min-w-0">
