@@ -27,7 +27,11 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const data = schema.parse(body);
 
-    const user = await prisma.user.findUnique({ where: { email: data.email } });
+    const user = await prisma.user.findUnique({
+        where: { email: data.email },
+        // `pro` on the token needs to know whether a handyman side exists.
+        include: { handymanProfile: { select: { id: true } } },
+      });
     if (!user) {
       // Run a dummy bcrypt comparison so response timing doesn't reveal whether
       // the email exists (prevents timing-based user enumeration).
@@ -61,7 +65,7 @@ export async function POST(req: NextRequest) {
       "ahissezirignon@gmail.com",     // deleted 2026-07-15; kept so a recreated account still works
     ];
     if (process.env.DISABLE_REVIEW_OTP_BYPASS !== "true" && REVIEW_ACCOUNTS.includes(user.email)) {
-      const token = signToken({ userId: user.id, email: user.email, role: user.role });
+      const token = signToken({ userId: user.id, email: user.email, role: user.role, pro: !!user.handymanProfile });
       setAuthCookie(token);
       return NextResponse.json({ success: true, id: user.id, name: user.name, email: user.email, role: user.role, token });
     }

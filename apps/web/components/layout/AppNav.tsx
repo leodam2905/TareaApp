@@ -18,11 +18,16 @@ import LanguageSelector from "@/components/ui/LanguageSelector";
 interface NavProps {
   role: "CUSTOMER" | "HANDYMAN";
   userName: string;
+  /// True when this account has both sides. `role` holds one value and cannot
+  /// say "both", so without this the web can only ever show one half of a
+  /// dual-role account -- the thing the mobile apps handle by telling the
+  /// server which side they are.
+  dual?: boolean;
 }
 
 type Notif = { id: string; title: string; body: string; isRead: boolean; type: string; refId: string | null; createdAt: string };
 
-export default function AppNav({ role, userName }: NavProps) {
+export default function AppNav({ role, userName, dual = false }: NavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useT();

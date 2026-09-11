@@ -1,16 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
+import { mayEnter } from "@/lib/dual-role";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 
 // Verify the JWT *signature* (not just decode the payload) so a forged cookie
 // with an arbitrary role cannot reach a protected page shell.
-async function getVerifiedRole(token: string): Promise<string | null> {
+async function getVerifiedClaims(
+  token: string,
+): Promise<{ role: string | null; pro: boolean }> {
   try {
     const { payload } = await jwtVerify(token, secret);
-    return typeof payload.role === "string" ? payload.role : null;
+    return {
+      role: typeof payload.role === "string" ? payload.role : null,
+      pro: payload.pro === true,
+    };
   } catch {
-    return null;
+    return { role: null, pro: false };
   }
 }
 
@@ -26,6 +32,20 @@ function redirectToLogin(req: NextRequest) {
   return NextResponse.redirect(url);
 }
 
+// Someone already signed in who reaches the wrong half is not a login problem:
+// sending them to /login reads as a broken session and invites them to sign in
+// as an account they do not have. Put them on their own dashboard instead.
+function denied(req: NextRequest, role: string | null) {
+  if (!role) return redirectToLogin(req);
+  const url = req.nextUrl.clone();
+  url.search = "";
+  url.pathname =
+    role === "ADMIN" ? "/admin/dashboard"
+    : role === "HANDYMAN" ? "/handyman/dashboard"
+    : "/customer/dashboard";
+  return NextResponse.redirect(url);
+}
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -37,14 +57,18 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
   const token = req.cookies.get("tarea_token")?.value;
-  const role = token ? await getVerifiedRole(token) : null;
+  const { role, pro } = token ? await getVerifiedClaims(token) : { role: null, pro: false };
 
+  // `role` holds one value, but an account with a handyman profile genuinely
+  // has two sides -- the apps already let it hire as well as be hired, and the
+  // bookings API is built for exactly that. So a pro is admitted to both
+  // halves; ADMIN is untouched and still the only way into /admin.
   if (pathname.startsWith("/admin")) {
-    if (role !== "ADMIN") return redirectToLogin(req);
+    if (!mayEnter("admin", role, pro)) return redirectToLogin(req);
   } else if (pathname.startsWith("/handyman")) {
-    if (role !== "HANDYMAN") return redirectToLogin(req);
+    if (!mayEnter("handyman", role, pro)) return denied(req, role);
   } else if (pathname.startsWith("/customer")) {
-    if (role !== "CUSTOMER") return redirectToLogin(req);
+    if (!mayEnter("customer", role, pro)) return denied(req, role);
   }
 
   return NextResponse.next();

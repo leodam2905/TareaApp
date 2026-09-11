@@ -38,12 +38,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid or expired code." }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { handymanProfile: { select: { id: true } } },
+    });
     if (!user) {
       return NextResponse.json({ error: "User not found." }, { status: 404 });
     }
 
-    const token = signToken({ userId: user.id, email: user.email, role: user.role });
+    const token = signToken({ userId: user.id, email: user.email, role: user.role, pro: !!user.handymanProfile });
     setAuthCookie(token);
 
     return NextResponse.json({ id: user.id, name: user.name, role: user.role, email: user.email, token });

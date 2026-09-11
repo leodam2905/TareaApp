@@ -11,6 +11,15 @@ export interface TokenPayload {
   userId: string;
   email: string;
   role: string;
+  /// True when this user has a handyman profile, so they can act on the pro
+  /// side as well as the customer side.
+  ///
+  /// `role` is a single value and cannot express "both". The mobile apps work
+  /// around that by telling the server which side they are -- see the `role`
+  /// query param in /api/bookings -- but the web has no such signal, so a
+  /// dual-role account could only ever reach one half. This claim is what lets
+  /// the middleware admit them to both.
+  pro?: boolean;
   iat?: number; // issued-at (seconds), set by jwt.sign
 }
 
