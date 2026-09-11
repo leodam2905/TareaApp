@@ -22,6 +22,12 @@ const KEY = '/Users/monsegueadah/TareaApp/apps/mobile/google-service-account.jso
 // is reviewable in a diff instead of being retyped at the prompt each release.
 // Keep these in step with the App Store "what's new" for the same build.
 const NOTES = {
+  '1.0.28': {
+    'com.taptarea.customer':
+      "A refreshed home screen with quick access to posting a job, AI diagnosis, instant quotes and browsing pros. Your requests now have their own tab, and your profile moved to the avatar at the top. Cleaner launch screen, and the back button now returns you to Home instead of closing the app.",
+    'com.taptarea.handyman':
+      "A redesigned dashboard showing your earnings, jobs, schedule and rating at a glance, with money still clearing shown up front. Cleaner launch screen, and the back button now returns you to Home instead of closing the app.",
+  },
   '1.0.27': {
     'com.taptarea.customer':
       "You can now open any pro who applied and see exactly what they'd charge — labour, materials and the service fee, broken down. Licence and insurance badges show on every pro who has them.",
