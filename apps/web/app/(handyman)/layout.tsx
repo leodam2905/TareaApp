@@ -1,11 +1,12 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import AppNav from "@/components/layout/AppNav";
+import { homePathFor } from "@/lib/home-path";
 
 export default async function HandymanLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  if (user.role !== "HANDYMAN") redirect("/customer/dashboard");
+  if (user.role !== "HANDYMAN") redirect(homePathFor(user.role));
 
   return (
     <div className="app-layout flex min-h-screen">

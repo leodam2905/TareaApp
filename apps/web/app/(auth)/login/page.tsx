@@ -9,6 +9,7 @@ import { z } from "zod";
 import toast from "react-hot-toast";
 import { Eye, EyeOff, Loader2, ShieldCheck, Phone, RotateCcw } from "lucide-react";
 import Logo from "@/components/ui/Logo";
+import { homePathFor } from "@/lib/home-path";
 
 // ─── Step 1: credentials ───────────────────────────────────────────────────
 const credSchema = z.object({
@@ -29,7 +30,7 @@ const OTP_LENGTH = 6;
  * browsers treat as absolute, which is why the second character is checked too.
  */
 function safeNext(next: string | null, role: string): string {
-  const fallback = role === "ADMIN" ? "/admin/dashboard" : role === "HANDYMAN" ? "/handyman/dashboard" : "/customer/dashboard";
+  const fallback = homePathFor(role);
   if (!next || !next.startsWith("/") || next.startsWith("//")) return fallback;
   // A pro sent to a customer page (or vice versa) just bounces back here.
   if (role === "CUSTOMER" && (next.startsWith("/handyman") || next.startsWith("/admin"))) return fallback;
