@@ -20,6 +20,18 @@ class Api {
 
   // "Remember me" — the email to prefill on the login screen. Cleared when the
   // user unchecks the box.
+  /// Whether the Pro dashboard masks its money figures.
+  ///
+  /// Persisted, because the point of hiding earnings is that they stay hidden
+  /// -- a toggle that reset on every launch would expose the number exactly
+  /// when someone is glancing over your shoulder. Stored alongside the token
+  /// rather than in a new plugin: adding shared_preferences would force a Pods
+  /// reinstall for a single boolean.
+  static Future<bool> earningsHidden() async =>
+      (await _storage.read(key: 'tarea_hide_earnings')) == '1';
+  static Future<void> setEarningsHidden(bool v) =>
+      _storage.write(key: 'tarea_hide_earnings', value: v ? '1' : '0');
+
   static Future<String?> rememberedEmail() => _storage.read(key: 'tarea_remember_email');
   static Future<void> setRememberedEmail(String? email) => (email == null || email.isEmpty)
       ? _storage.delete(key: 'tarea_remember_email')

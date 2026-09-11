@@ -265,7 +265,10 @@
     "onTheWayUnknown": "يُدفع بعد كل مهمة",
     "reviewCount": "{} تقييم",
     "jobsStatus": "حالة الأعمال",
-    "schedule": "الجدول"
+    "schedule": "الجدول",
+    "earningsHidden": "مخفي",
+    "hideEarnings": "إخفاء الأرباح",
+    "showEarnings": "إظهار الأرباح"
   },
   "postjob": {
     "requestPro": "طلب من {}",

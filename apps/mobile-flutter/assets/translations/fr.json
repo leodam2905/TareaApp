@@ -265,7 +265,10 @@
     "onTheWayUnknown": "Versé après chaque mission",
     "reviewCount": "{} avis",
     "jobsStatus": "Statut des travaux",
-    "schedule": "Planning"
+    "schedule": "Planning",
+    "earningsHidden": "Masqué",
+    "hideEarnings": "Masquer les revenus",
+    "showEarnings": "Afficher les revenus"
   },
   "postjob": {
     "requestPro": "Demander à {}",

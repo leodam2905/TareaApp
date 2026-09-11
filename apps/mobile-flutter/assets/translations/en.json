@@ -265,7 +265,10 @@
     "onTheWayUnknown": "Paid out after each job",
     "reviewCount": "{} reviews",
     "jobsStatus": "Jobs status",
-    "schedule": "Schedule"
+    "schedule": "Schedule",
+    "earningsHidden": "Hidden",
+    "hideEarnings": "Hide earnings",
+    "showEarnings": "Show earnings"
   },
   "postjob": {
     "requestPro": "Request {}",

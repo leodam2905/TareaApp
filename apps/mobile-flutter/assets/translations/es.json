@@ -265,7 +265,10 @@
     "onTheWayUnknown": "Se paga después de cada trabajo",
     "reviewCount": "{} reseñas",
     "jobsStatus": "Estado de trabajos",
-    "schedule": "Agenda"
+    "schedule": "Agenda",
+    "earningsHidden": "Oculto",
+    "hideEarnings": "Ocultar ganancias",
+    "showEarnings": "Mostrar ganancias"
   },
   "postjob": {
     "requestPro": "Solicitar a {}",

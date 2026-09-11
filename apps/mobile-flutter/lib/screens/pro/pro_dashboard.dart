@@ -36,6 +36,7 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
   int _pct = 0;
   /// Unread notifications, for the badge on the bell.
   int _unread = 0;
+  bool _hideEarnings = false;
   // Licence and insurance are separate credentials, separately reviewed with
   // separate expiry dates. The dashboard used to show ONE hardcoded
   // "Licensed & Insured" pill to every pro — unconditionally, whether or not
@@ -56,6 +57,9 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
   @override
   void initState() {
     super.initState();
+    // Restore the masking choice before the first paint where possible, so
+    // a hidden balance never flashes visible on launch.
+    Api.earningsHidden().then((v) { if (mounted && v) setState(() => _hideEarnings = true); });
     WidgetsBinding.instance.addObserver(this);
     _load();
     _startPolling();
@@ -374,14 +378,24 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
               tint: const Color(0xFFEFFCF5),
               accent: const Color(0xFF16A34A),
               icon: Icons.attach_money,
-              value: '\$${_totalEarnings.round()}',
+              value: _hideEarnings ? '••••' : '\$${_totalEarnings.round()}',
               title: 'pro.earningsOverview'.tr(),
+              // Only this card offers masking: it is the one figure someone
+              // might not want read off their screen in a customer's kitchen.
+              masked: _hideEarnings,
+              onToggleMask: () {
+                final v = !_hideEarnings;
+                setState(() => _hideEarnings = v);
+                Api.setEarningsHidden(v);
+              },
               // Was 'All time'. The Earnings Overview panel below used to be
               // the only place that showed money still clearing, so that line
               // moves up here rather than being lost with the panel.
-              sub: _clearingSoon == null
-                  ? 'pro.onTheWayUnknown'.tr()
-                  : 'pro.onTheWay'.tr(args: ['\$${_clearingSoon!.round()}']),
+              sub: _hideEarnings
+                  ? 'pro.earningsHidden'.tr()
+                  : (_clearingSoon == null
+                      ? 'pro.onTheWayUnknown'.tr()
+                      : 'pro.onTheWay'.tr(args: ['\$${_clearingSoon!.round()}'])),
               art: 'assets/images/pro-earned.png',
               onTap: () => ProShell.go?.call(3),
             ),
@@ -625,6 +639,8 @@ class _ProStatCard extends StatefulWidget {
     required this.onTap,
     this.art,
     this.stars,
+    this.masked = false,
+    this.onToggleMask,
   });
 
   final int index;
@@ -642,6 +658,11 @@ class _ProStatCard extends StatefulWidget {
 
   /// Rating out of 5, when this card should show stars.
   final double? stars;
+
+  /// Whether the figure is currently masked, and how to flip it. Null means
+  /// this card has nothing worth hiding.
+  final bool masked;
+  final VoidCallback? onToggleMask;
 
   @override
   State<_ProStatCard> createState() => _ProStatCardState();
@@ -725,7 +746,7 @@ class _ProStatCardState extends State<_ProStatCard> {
 
     return Semantics(
       button: true,
-      label: '${widget.value} ${widget.title}. ${widget.sub}',
+      label: '${widget.title}. ${widget.value} ${widget.sub}',
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTapDown: (_) => setState(() => _down = true),
@@ -775,6 +796,24 @@ class _ProStatCardState extends State<_ProStatCard> {
                                     fontSize: 28, fontWeight: FontWeight.w900, color: C.ink, height: 1.05)),
                           ),
                         ),
+                        if (widget.onToggleMask != null)
+                          // Its own gesture detector, so tapping the eye does
+                          // not also open Earnings behind it.
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: widget.onToggleMask,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 6, 4, 6),
+                              child: Icon(
+                                widget.masked ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                size: 20,
+                                color: C.muted,
+                                semanticLabel: widget.masked
+                                    ? 'pro.showEarnings'.tr()
+                                    : 'pro.hideEarnings'.tr(),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                     const SizedBox(height: 4),
