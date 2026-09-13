@@ -353,6 +353,14 @@ model Booking {
   chargebackAmount Float?
   fraudWarningAt   DateTime?
   payoutHold       Boolean   @default(false)
+
+  /// Which Stripe transfer paid this booking, when, and this booking's share
+  /// of it. One transfer usually covers several bookings, so payoutAmount is
+  /// the per-booking split -- without it a transfer cannot be attributed back
+  /// to the jobs it settled. NULL on anything paid before migration 020.
+  payoutTransferId String?
+  payoutAt         DateTime?
+  payoutAmount     Float?
   resolutionNote   String?
   resolvedAt       DateTime?
   // What this job was priced FROM, frozen at booking time (migration 010).

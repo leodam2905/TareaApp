@@ -9,6 +9,7 @@ import { chargeSavedCardForBooking } from "@/lib/booking-charge";
 import { canCall, releaseProxySessions } from "@/lib/voice";
 import { handymanNet, CUSTOMER_FEE_RATE } from "@/lib/fees";
 import { validateMaterials } from "@/lib/materials-policy";
+import { payoutIdempotencyKey } from "@/lib/pro-payout";
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const user = await getCurrentUser();
@@ -432,12 +433,25 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
               // fee would silently miss this payout. No materials: the job never
               // happened, so the pro bought nothing to be reimbursed for.
               const handymanAmount = Math.round(handymanNet(booking.totalPrice) * 0.50 * 100);
-            await stripe.transfers.create({
-              amount: handymanAmount,
-              currency: "usd",
-              destination: handymanUser.stripeAccountId,
-              transfer_group: booking.id,
-            });
+            // Keyed like every other payout path. A retried PATCH -- a flaky
+              // connection, an impatient tap -- meant a second transfer.
+              const lateCancelTransfer = await stripe.transfers.create(
+                {
+                  amount: handymanAmount,
+                  currency: "usd",
+                  destination: handymanUser.stripeAccountId,
+                  transfer_group: booking.id,
+                },
+                { idempotencyKey: payoutIdempotencyKey([booking.id], "late-cancel") },
+              );
+              await prisma.booking.update({
+                where: { id: booking.id },
+                data: {
+                  payoutTransferId: lateCancelTransfer.id,
+                  payoutAt: new Date(),
+                  payoutAmount: handymanAmount / 100,
+                },
+              });
           } catch (err) {
             console.error("[bookings/PATCH] Late-cancel handyman transfer failed:", err);
           }

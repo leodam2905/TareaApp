@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { createNotification } from "@/lib/notify";
 import { handymanNet } from "@/lib/fees";
+import { payoutIdempotencyKey } from "@/lib/pro-payout";
 
 // POST /api/admin/disputes/[id]/resolve  body: { decision: "refund" | "release", note }
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
@@ -39,12 +40,27 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const h = booking.handyman;
     if (h.stripeAccountId && h.stripeAccountStatus === "active") {
       try {
-        await stripe.transfers.create({
-          amount: Math.round((handymanNet(booking.totalPrice) + (booking.materialsEstimate ?? 0)) * 100),
-          currency: "usd",
-          destination: h.stripeAccountId,
-          transfer_group: booking.id,
-        });
+        const releaseAmount = Math.round(
+            (handymanNet(booking.totalPrice) + (booking.materialsEstimate ?? 0)) * 100,
+          );
+          // An admin resolving the same dispute twice released the money twice.
+          const releaseTransfer = await stripe.transfers.create(
+            {
+              amount: releaseAmount,
+              currency: "usd",
+              destination: h.stripeAccountId,
+              transfer_group: booking.id,
+            },
+            { idempotencyKey: payoutIdempotencyKey([booking.id], "dispute-release") },
+          );
+          await prisma.booking.update({
+            where: { id: booking.id },
+            data: {
+              payoutTransferId: releaseTransfer.id,
+              payoutAt: new Date(),
+              payoutAmount: releaseAmount / 100,
+            },
+          });
       } catch (err) {
         console.error("[disputes/resolve] Transfer failed:", err);
       }

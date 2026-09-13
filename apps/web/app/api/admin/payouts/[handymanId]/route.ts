@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
-import { proOwedForAll } from "@/lib/pro-payout";
+import { proOwedFor, proOwedForAll, payoutIdempotencyKey } from "@/lib/pro-payout";
 
 // POST — trigger payout for all pending bookings for this handyman
 export async function POST(_req: NextRequest, { params }: { params: { handymanId: string } }) {
@@ -22,17 +22,44 @@ export async function POST(_req: NextRequest, { params }: { params: { handymanId
 
   const totalAmount = proOwedForAll(pending);
 
-  await stripe.transfers.create({
-    amount: Math.round(totalAmount * 100),
-    currency: "usd",
-    destination: handyman.stripeAccountId,
-    description: `Payout for ${pending.length} completed bookings`,
-  });
+  const payoutIds = pending.map(b => b.id);
 
-  await prisma.booking.updateMany({
-    where: { id: { in: pending.map(b => b.id) } },
-    data: { handymanPaidOut: true },
-  });
+  // This button is clicked by a human, and a double click used to mean a second
+  // transfer. The other payout paths -- weekly cron, instant cashout, booking
+  // completion -- have always keyed these; this one was missed. Stripe returns
+  // the FIRST transfer for a repeated key rather than making another.
+  const transfer = await stripe.transfers.create(
+    {
+      amount: Math.round(totalAmount * 100),
+      currency: "usd",
+      destination: handyman.stripeAccountId,
+      description: `Payout for ${pending.length} completed bookings`,
+    },
+    { idempotencyKey: payoutIdempotencyKey(payoutIds, "admin") },
+  );
 
-  return NextResponse.json({ message: "Payout sent", count: pending.length, amount: totalAmount });
+  // Record WHICH transfer paid each booking. One transfer covers several, so
+  // each row keeps its own share -- the transfer itself only carries the total,
+  // and without the split it cannot be attributed back to the jobs it settled.
+  const paidAt = new Date();
+  await prisma.$transaction(
+    pending.map(b =>
+      prisma.booking.update({
+        where: { id: b.id },
+        data: {
+          handymanPaidOut: true,
+          payoutTransferId: transfer.id,
+          payoutAt: paidAt,
+          payoutAmount: proOwedFor(b),
+        },
+      }),
+    ),
+  );
+
+  return NextResponse.json({
+    message: "Payout sent",
+    count: pending.length,
+    amount: totalAmount,
+    transferId: transfer.id,
+  });
 }
