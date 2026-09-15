@@ -11,7 +11,7 @@ import '../../avatar_util.dart';
 import '../../pro_online.dart';
 import 'pro_setup_steps.dart';
 import 'pro_shell.dart';
-import '../../widgets/pro_stat_card.dart';
+import 'pro_availability.dart';
 
 class ProDashboard extends StatefulWidget {
   const ProDashboard({super.key});
@@ -37,6 +37,13 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
   int _pct = 0;
   /// Unread notifications, for the badge on the bell.
   int _unread = 0;
+  String _city = '';
+
+  void _toggleHideEarnings() {
+    final v = !_hideEarnings;
+    setState(() => _hideEarnings = v);
+    Api.setEarningsHidden(v);
+  }
   bool _hideEarnings = false;
   // Licence and insurance are separate credentials, separately reviewed with
   // separate expiry dates. The dashboard used to show ONE hardcoded
@@ -121,6 +128,9 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
         final pj = jsonDecode(p.body) as Map<String, dynamic>;
         _name = (pj['name'] ?? '').toString();
         _avatar = (pj['avatarUrl'] ?? '').toString();
+        final city = (pj['city'] ?? '').toString().trim();
+        final st = (pj['state'] ?? '').toString().trim();
+        _city = city.isEmpty ? '' : (st.isEmpty ? city : '$city, $st');
         final hp = pj['handymanProfile'] ?? {};
         // Server-computed (lib/credentials.ts): approved by an admin AND not
         // past its expiry date. Never inferred from a document existing.
@@ -302,23 +312,55 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
           children: [
             // Header
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              // The Pro dashboard was the one main screen with no mark on it
-              // -- just the words "Tarea Pro". The mark is shared, not
-              // Home-specific despite the filename: the landing screen already
-              // draws it for both flavours. Stacked lockup with the suffix in
-              // the brand coral, matching landing and register.
+              // Mark, wordmark and strapline, matching the customer dashboard.
+              // The mark is shared, not Home-specific despite the filename --
+              // the landing screen already draws it for both flavours.
+              Flexible(
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  Image.asset('assets/images/tarea-home-mark.png', width: 32, height: 32),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('Tarea Pro',
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink, height: 1)),
+                        Text('pro.tagline'.tr(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                fontSize: 11, fontWeight: FontWeight.w600, color: C.muted, height: 1.3)),
+                      ],
+                    ),
+                  ),
+                ]),
+              ),
               Row(children: [
-                Image.asset('assets/images/tarea-home-mark.png', width: 32, height: 32),
-                const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('Tarea', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink, height: 1)),
-                    Text('Pro', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFFEF795F), height: 1.15)),
-                  ],
+                // Always shown: someone who has not set a service area is
+                // exactly who needs the control. Opens where it is set.
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => context.push('/pro/service-area').then((_) { if (mounted) _load(); }),
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      const Icon(Icons.place_outlined, size: 15, color: C.muted),
+                      const SizedBox(width: 3),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 92),
+                        child: Text(_city.isEmpty ? 'dashboard.setLocation'.tr() : _city,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: _city.isEmpty ? C.muted : C.ink)),
+                      ),
+                      const Icon(Icons.expand_more, size: 15, color: C.muted),
+                    ]),
+                  ),
                 ),
-              ]),
-              Row(children: [
                 GestureDetector(
                   // Coming back from the list with everything read should clear
                   // the badge; without this it keeps the stale count until the
@@ -385,74 +427,153 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
               ],
             ]),
             const SizedBox(height: 16),
-            // Stat cards. The numbers are read from state, never painted into
-            // the art: the source images carried 4.9 stars, 24 jobs and $1,280,
-            // and shipping those would have told every pro someone else's
-            // earnings and rating.
-            ProStatCard(
-              index: 0,
-              tint: const Color(0xFFEFFCF5),
-              accent: const Color(0xFF16A34A),
-              icon: Icons.attach_money,
-              value: _hideEarnings ? '••••' : '\$${_totalEarnings.round()}',
-              title: 'pro.earningsOverview'.tr(),
-              // Only this card offers masking: it is the one figure someone
-              // might not want read off their screen in a customer's kitchen.
-              masked: _hideEarnings,
-              onToggleMask: () {
-                final v = !_hideEarnings;
-                setState(() => _hideEarnings = v);
-                Api.setEarningsHidden(v);
-              },
-              // Was 'All time'. The Earnings Overview panel below used to be
-              // the only place that showed money still clearing, so that line
-              // moves up here rather than being lost with the panel.
-              sub: _hideEarnings
-                  ? 'pro.earningsHidden'.tr()
-                  : (_clearingSoon == null
-                      ? 'pro.onTheWayUnknown'.tr()
-                      : 'pro.onTheWay'.tr(args: ['\$${_clearingSoon!.round()}'])),
-              art: 'assets/images/pro-earned.png',
-              onTap: () => ProShell.go?.call(3),
+            // Hero. The photograph IS the card's background; the copy sits on
+            // it behind a scrim. Text stays native rather than baked in, so it
+            // still translates -- the customer hero is a supplied banner with
+            // English inside it, which FR/ES/AR users cannot read.
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => ProShell.go?.call(1),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: SizedBox(
+                  height: 208,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      // Aligned right: he is on the right of the frame, and a
+                      // centre crop would cut him in half.
+                      Image.asset('assets/images/pro-hero-photo.jpg',
+                          fit: BoxFit.cover,
+                          alignment: const Alignment(0.45, -0.25),
+                          errorBuilder: (_, _, _) =>
+                              const ColoredBox(color: Color(0xFFF3F7FC))),
+                      // Opaque enough on the left to carry dark text, clear on
+                      // the right so the photograph is not wasted.
+                      const DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              Color(0xF2F6F9FC),
+                              Color(0xD9F6F9FC),
+                              Color(0x00F6F9FC),
+                            ],
+                            stops: [0.0, 0.42, 0.78],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(18, 18, 120, 18),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('pro.heroEyebrow'.tr(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontSize: 9, fontWeight: FontWeight.w900,
+                                    color: C.blue, letterSpacing: 0.7)),
+                            const SizedBox(height: 6),
+                            Text.rich(
+                              TextSpan(children: [
+                                TextSpan(text: 'pro.heroTitle'.tr()),
+                                TextSpan(
+                                    text: 'pro.heroTitleAccent'.tr(),
+                                    style: const TextStyle(color: C.blue)),
+                              ]),
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w900, color: C.ink, height: 1.15),
+                            ),
+                            const SizedBox(height: 6),
+                            Text('pro.heroSub'.tr(),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 11.5, height: 1.3, color: C.muted)),
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                              decoration: BoxDecoration(
+                                  color: C.ink, borderRadius: BorderRadius.circular(30)),
+                              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                                Text('pro.heroCta'.tr(),
+                                    style: const TextStyle(
+                                        color: Colors.white, fontWeight: FontWeight.w800, fontSize: 12.5)),
+                                const SizedBox(width: 6),
+                                const Icon(Icons.arrow_forward, color: Colors.white, size: 14),
+                              ]),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
+            const SizedBox(height: 16),
+            // Four things a pro does, not four numbers. The figures moved
+            // down to Your Performance: an action is what you open a dashboard
+            // to take, and a number is what you glance at on the way past.
+            Row(children: [
+              Expanded(child: _ProAction(
+                icon: Icons.search, tint: const Color(0xFFEAF2FE), accent: C.blue,
+                title: 'nav.findJobs'.tr(), sub: 'pro.findJobsDesc'.tr(),
+                onTap: () => ProShell.go?.call(1))),
+              const SizedBox(width: 12),
+              Expanded(child: _ProAction(
+                icon: Icons.assignment_outlined, tint: const Color(0xFFFDF1E7), accent: const Color(0xFFEA7A22),
+                title: 'nav.myJobs'.tr(), sub: 'pro.myJobsDesc'.tr(),
+                onTap: () => ProShell.go?.call(2))),
+            ]),
             const SizedBox(height: 12),
-            ProStatCard(
-              index: 1,
-              tint: const Color(0xFFEDF5FE),
-              accent: C.blue,
-              icon: Icons.check_circle,
-              value: '$_completed',
-              title: 'pro.jobsStatus'.tr(),
-              sub: 'pro.jobsDone'.tr(),
-              art: 'assets/images/pro-completed.png',
-              onTap: () => ProShell.go?.call(2),
-            ),
-            const SizedBox(height: 12),
-            ProStatCard(
-              index: 2,
-              tint: const Color(0xFFFEF6EC),
-              accent: const Color(0xFFEA7A22),
-              icon: Icons.calendar_month,
-              value: '$_upcoming7',
-              title: 'pro.schedule'.tr(),
-              sub: 'pro.next7days'.tr(),
-              art: 'assets/images/pro-upcoming.png',
-              onTap: () => ProShell.go?.call(2),
-            ),
-            const SizedBox(height: 12),
-            ProStatCard(
-              index: 3,
-              tint: const Color(0xFFF5F1FE),
-              accent: const Color(0xFF7C3AED),
-              icon: Icons.star,
-              value: _rating > 0 ? _rating.toStringAsFixed(1) : '—',
-              title: 'pro.rating'.tr(),
-              sub: 'pro.reviewCount'.tr(args: ['$_reviews']),
-              // Stars are DRAWN from the real rating rather than cropped from
-              // the artwork -- the art shows five gold stars, which would be a
-              // claim about the pro, not a decoration.
-              stars: _rating,
-              onTap: () => context.push('/pro/reviews'),
+            Row(children: [
+              Expanded(child: _ProAction(
+                icon: Icons.bar_chart, tint: const Color(0xFFE9F8EF), accent: const Color(0xFF16A34A),
+                title: 'nav.earnings'.tr(), sub: 'pro.earningsDesc'.tr(),
+                onTap: () => ProShell.go?.call(3))),
+              const SizedBox(width: 12),
+              Expanded(child: _ProAction(
+                icon: Icons.event_available_outlined, tint: const Color(0xFFF1EDFD), accent: const Color(0xFF7C3AED),
+                title: 'pro.availability'.tr(), sub: 'pro.availabilityDesc'.tr(),
+                // Availability has no named route -- the setup checklist pushes
+                // it directly, so this does the same.
+                onTap: () => Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => const ProAvailability()))
+                    .then((_) { if (mounted) _load(); }))),
+            ]),
+            const SizedBox(height: 22),
+            _sectionHead('pro.performance'.tr(), () => ProShell.go?.call(3)),
+            const SizedBox(height: 10),
+            // The numbers that used to be the cards. The eye lives here now,
+            // because this is where money is displayed.
+            SizedBox(
+              height: 92,
+              child: Row(children: [
+                Expanded(child: _ProStat(
+                  icon: Icons.account_balance_wallet, tint: const Color(0xFFE9F8EF),
+                  accent: const Color(0xFF16A34A),
+                  value: _hideEarnings ? '••••' : '\$${_totalEarnings.round()}',
+                  label: 'pro.allTime'.tr(),
+                  masked: _hideEarnings,
+                  onToggleMask: _toggleHideEarnings)),
+                const SizedBox(width: 10),
+                Expanded(child: _ProStat(
+                  icon: Icons.schedule, tint: const Color(0xFFFDF1E7), accent: const Color(0xFFEA7A22),
+                  value: '$_upcoming7', label: 'pro.next7days'.tr())),
+                const SizedBox(width: 10),
+                Expanded(child: _ProStat(
+                  icon: Icons.check_circle, tint: const Color(0xFFEAF2FE), accent: C.blue,
+                  value: '$_completed', label: 'pro.jobsDone'.tr())),
+                const SizedBox(width: 10),
+                Expanded(child: _ProStat(
+                  icon: Icons.star, tint: const Color(0xFFFEF6EC), accent: const Color(0xFFFBBF24),
+                  value: _rating > 0 ? _rating.toStringAsFixed(1) : '—',
+                  label: 'pro.reviewCount'.tr(args: ['$_reviews']))),
+              ]),
             ),
             const SizedBox(height: 24),
             _sectionHead('pro.upcomingJobs'.tr(), () => ProShell.go?.call(2)),
@@ -632,6 +753,134 @@ class _WavingHandState extends State<WavingHand> with SingleTickerProviderStateM
         angle: (_c.value - 0.5) * 0.5, // ~ -0.25 to +0.25 rad
         alignment: Alignment.bottomCenter,
         child: const Icon(Icons.waving_hand, size: 22, color: Color(0xFFF59E0B)),
+      ),
+    );
+  }
+}
+
+/// One of the four things a pro does from the dashboard.
+///
+/// Deliberately plain: an icon badge, a title, a line of explanation and a
+/// chevron. These replaced four cards that showed numbers, and the point of the
+/// swap is that an action should look like a button rather than a readout.
+class _ProAction extends StatelessWidget {
+  const _ProAction({
+    required this.icon,
+    required this.tint,
+    required this.accent,
+    required this.title,
+    required this.sub,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color tint, accent;
+  final String title, sub;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: tint,
+      borderRadius: BorderRadius.circular(18),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 14, 10, 14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40, height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: accent, size: 22),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w900, color: C.ink)),
+                    const SizedBox(height: 2),
+                    Text(sub,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 11.5, height: 1.25, color: C.muted)),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, size: 18, color: C.muted),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A single performance figure.
+///
+/// The eye appears only where money is displayed -- that is the rule, and it is
+/// why the rating and job counts carry no toggle: nobody minds a stranger
+/// reading those over their shoulder.
+class _ProStat extends StatelessWidget {
+  const _ProStat({
+    required this.icon,
+    required this.tint,
+    required this.accent,
+    required this.value,
+    required this.label,
+    this.masked = false,
+    this.onToggleMask,
+  });
+
+  final IconData icon;
+  final Color tint, accent;
+  final String value, label;
+  final bool masked;
+  final VoidCallback? onToggleMask;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 10, 8, 10),
+      decoration: BoxDecoration(color: tint, borderRadius: BorderRadius.circular(16)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(children: [
+            Icon(icon, size: 18, color: accent),
+            const Spacer(),
+            if (onToggleMask != null)
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: onToggleMask,
+                child: Icon(masked ? Icons.visibility_off : Icons.visibility,
+                    size: 16, color: accent),
+              ),
+          ]),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(value,
+                style: const TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.w900, color: C.ink, height: 1.05)),
+          ),
+          Text(label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 10.5, color: C.muted, fontWeight: FontWeight.w600)),
+        ],
       ),
     );
   }

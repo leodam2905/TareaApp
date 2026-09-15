@@ -160,7 +160,11 @@
     "stExtensionRequested": "EXTENSION REQUESTED",
     "stConfirmCompletion": "CONFIRM COMPLETION",
     "stCompleted": "COMPLETED",
-    "stCancelled": "CANCELLED"
+    "stCancelled": "CANCELLED",
+    "tagline": "Home issues. Handled.",
+    "heroTitle": "A better home starts here.",
+    "heroSub": "Find skilled handymen, get instant quotes, and book with confidence.",
+    "setLocation": "Set location"
   },
   "categories": {
     "plumbing": "Plumbing",
@@ -268,7 +272,19 @@
     "schedule": "Schedule",
     "earningsHidden": "Hidden",
     "hideEarnings": "Hide earnings",
-    "showEarnings": "Show earnings"
+    "showEarnings": "Show earnings",
+    "tagline": "Get local jobs.",
+    "heroEyebrow": "SKILLED PROS. STRONGER HOMES.",
+    "heroTitle": "Manage your jobs ",
+    "heroTitleAccent": "like a pro.",
+    "heroSub": "Find nearby jobs, stay organized and grow your business.",
+    "heroCta": "View Jobs",
+    "findJobsDesc": "Browse nearby jobs that match your skills.",
+    "myJobsDesc": "View and manage your active jobs.",
+    "earningsDesc": "Track your income and payment history.",
+    "availability": "Availability",
+    "availabilityDesc": "Set when clients can book you.",
+    "performance": "Your Performance"
   },
   "postjob": {
     "requestPro": "Request {}",

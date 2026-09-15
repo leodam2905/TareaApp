@@ -160,7 +160,11 @@
     "stExtensionRequested": "طلب تمديد",
     "stConfirmCompletion": "أكّد الإنجاز",
     "stCompleted": "مكتمل",
-    "stCancelled": "ملغى"
+    "stCancelled": "ملغى",
+    "tagline": "مشاكل المنزل، تم حلها.",
+    "heroTitle": "منزل أفضل يبدأ من هنا.",
+    "heroSub": "اعثر على حرفيين مهرة، واحصل على عروض أسعار فورية، واحجز بثقة.",
+    "setLocation": "تحديد الموقع"
   },
   "categories": {
     "plumbing": "سباكة",
@@ -268,7 +272,19 @@
     "schedule": "الجدول",
     "earningsHidden": "مخفي",
     "hideEarnings": "إخفاء الأرباح",
-    "showEarnings": "إظهار الأرباح"
+    "showEarnings": "إظهار الأرباح",
+    "tagline": "احصل على أعمال قريبة.",
+    "heroEyebrow": "حرفيون مهرة. منازل أقوى.",
+    "heroTitle": "أدر أعمالك ",
+    "heroTitleAccent": "كالمحترفين.",
+    "heroSub": "اعثر على أعمال قريبة، ونظّم وقتك، ونمِّ نشاطك.",
+    "heroCta": "عرض الأعمال",
+    "findJobsDesc": "تصفح الأعمال القريبة المناسبة لمهاراتك.",
+    "myJobsDesc": "اعرض أعمالك الجارية وأدرها.",
+    "earningsDesc": "تابع دخلك وسجل مدفوعاتك.",
+    "availability": "التوفر",
+    "availabilityDesc": "حدد متى يمكن للعملاء حجزك.",
+    "performance": "أداؤك"
   },
   "postjob": {
     "requestPro": "طلب من {}",

@@ -160,7 +160,11 @@
     "stExtensionRequested": "EXTENSIÓN SOLICITADA",
     "stConfirmCompletion": "CONFIRMAR FINALIZACIÓN",
     "stCompleted": "COMPLETADO",
-    "stCancelled": "CANCELADO"
+    "stCancelled": "CANCELADO",
+    "tagline": "Problemas del hogar, resueltos.",
+    "heroTitle": "Un hogar mejor empieza aquí.",
+    "heroSub": "Encuentra profesionales, obtén presupuestos al instante y reserva con confianza.",
+    "setLocation": "Elegir ubicación"
   },
   "categories": {
     "plumbing": "Plomería",
@@ -268,7 +272,19 @@
     "schedule": "Agenda",
     "earningsHidden": "Oculto",
     "hideEarnings": "Ocultar ganancias",
-    "showEarnings": "Mostrar ganancias"
+    "showEarnings": "Mostrar ganancias",
+    "tagline": "Consigue trabajos cerca.",
+    "heroEyebrow": "PROFESIONALES EXPERTOS. HOGARES MÁS FUERTES.",
+    "heroTitle": "Gestiona tus trabajos ",
+    "heroTitleAccent": "como un profesional.",
+    "heroSub": "Encuentra trabajos cerca, mantente organizado y haz crecer tu negocio.",
+    "heroCta": "Ver trabajos",
+    "findJobsDesc": "Explora trabajos cercanos para tu perfil.",
+    "myJobsDesc": "Consulta y gestiona tus trabajos activos.",
+    "earningsDesc": "Sigue tus ingresos y tus pagos.",
+    "availability": "Disponibilidad",
+    "availabilityDesc": "Indica cuándo pueden reservarte.",
+    "performance": "Tu rendimiento"
   },
   "postjob": {
     "requestPro": "Solicitar a {}",

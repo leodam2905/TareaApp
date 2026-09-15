@@ -14,14 +14,33 @@ class _Action {
   // titleKey/descKey are translation keys; route is the navigation target
   // (kept separate so display text can be localized without breaking routing).
   final String titleKey, descKey, img, route;
-  const _Action(this.titleKey, this.descKey, this.img, this.route);
+
+  /// Card background, icon-badge colour, and the badge glyph. Each card is
+  /// colour-coded so the four are told apart at a glance rather than by
+  /// reading them.
+  final Color tint, accent;
+  final IconData icon;
+
+  const _Action(
+    this.titleKey,
+    this.descKey,
+    this.img,
+    this.route, {
+    required this.tint,
+    required this.accent,
+    required this.icon,
+  });
 }
 
 const _actions = [
-  _Action('nav.postJob', 'dashboard.postJobDesc', 'card-postjob.jpg', '/post-job'),
-  _Action('dashboard.aiDiagnose', 'dashboard.aiDiagnoseDesc', 'card-diagnose.jpg', '/diagnose'),
-  _Action('landing.instantQuote', 'dashboard.instantQuoteDesc', 'card-quote.jpg', '/instant-quote'),
-  _Action('dashboard.findPros', 'dashboard.findProsDesc', 'card-browse.jpg', '/browse'),
+  _Action('nav.postJob', 'dashboard.postJobDesc', 'tile-postjob.jpg', '/post-job',
+      tint: Color(0xFFFDF1E7), accent: Color(0xFFEA7A22), icon: Icons.description_outlined),
+  _Action('dashboard.aiDiagnose', 'dashboard.aiDiagnoseDesc', 'tile-diagnose.jpg', '/diagnose',
+      tint: Color(0xFFEAF2FE), accent: Color(0xFF2563EB), icon: Icons.auto_awesome),
+  _Action('landing.instantQuote', 'dashboard.instantQuoteDesc', 'tile-quote.jpg', '/instant-quote',
+      tint: Color(0xFFE9F8EF), accent: Color(0xFF16A34A), icon: Icons.sell_outlined),
+  _Action('dashboard.findPros', 'dashboard.findProsDesc', 'tile-browse.jpg', '/browse',
+      tint: Color(0xFFF1EDFD), accent: Color(0xFF7C3AED), icon: Icons.groups_outlined),
 ];
 
 class _Cat {
@@ -63,6 +82,7 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
   String _avatar = '';
   /// Unread notifications, for the badge on the bell.
   int _unread = 0;
+  String _city = '';
   List<dynamic> _pros = [];
   List<dynamic> _recent = [];
 
@@ -178,18 +198,60 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Flexible(
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      Image.asset('assets/images/tarea-home-mark.png', width: 32, height: 32),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('Tarea',
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: C.ink, height: 1)),
+                            // The strapline from the launch artwork, which the
+                            // dashboard never carried.
+                            Text('dashboard.tagline'.tr(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontSize: 11, fontWeight: FontWeight.w600, color: C.muted, height: 1.3)),
+                          ],
+                        ),
+                      ),
+                    ]),
+                  ),
                   Row(children: [
-                    Image.asset('assets/images/tarea-home-mark.png', width: 30, height: 30),
-                    const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text('Tarea', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: C.blue, height: 1)),
-                        Text('Home', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: C.ink, height: 1.1)),
-                      ],
-                    ),
-                  ]),
-                  Row(children: [
+                    // Live, not decorative: it shows the city on the profile
+                    // and opens the screen where that city is changed. A chip
+                    // that looked like a picker and did nothing would be worse
+                    // than no chip at all.
+                    // Always shown. It used to render only when the profile
+                    // already had a city, which meant the one person who most
+                    // needs it -- someone who has not set a location -- saw
+                    // nothing at all.
+                    GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => context.push('/edit-profile').then((_) { if (mounted) _load(); }),
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                            const Icon(Icons.place_outlined, size: 15, color: C.muted),
+                            const SizedBox(width: 3),
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 92),
+                              child: Text(_city.isEmpty ? 'dashboard.setLocation'.tr() : _city,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                      color: _city.isEmpty ? C.muted : C.ink)),
+                            ),
+                            const Icon(Icons.expand_more, size: 15, color: C.muted),
+                          ]),
+                        ),
+                      ),
                     GestureDetector(
                       onTap: () => context.push('/notifications').then((_) { if (mounted) _load(); }),
                       child: UnreadBell(count: _unread),
@@ -210,14 +272,43 @@ class _DashboardScreenState extends State<DashboardScreen> with RouteAware, TabR
               Text(_firstName.isEmpty ? 'dashboard.there'.tr() : _firstName,
                   style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: C.ink)),
               const SizedBox(height: 16),
-              // Each card IS the picture -- title and description are part of
-              // the artwork, so nothing is drawn over it and the whole card is
-              // the tap target.
+              // The hero IS the supplied artwork. Its headline, subtitle, pill
+              // and the handwritten "More time for what matters" are painted
+              // into the image, so nothing is drawn over it and the whole
+              // banner is the tap target -- the same rule the action cards
+              // followed before they went back to a grid.
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => context.push('/post-job'),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: AspectRatio(
+                    aspectRatio: 752 / 318,
+                    child: Image.asset('assets/images/hero-home.png',
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => const SizedBox.shrink()),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 14),
+              // Two by two. IntrinsicHeight keeps the pair in a row the same
+              // height, so a longer description cannot make one card taller
+              // than its neighbour.
               Column(
                 children: [
-                  for (int i = 0; i < _actions.length; i++) ...[
+                  for (int i = 0; i < _actions.length; i += 2) ...[
                     if (i > 0) const SizedBox(height: 12),
-                    _actionCard(_actions[i], i),
+                    IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (int j = i; j < i + 2 && j < _actions.length; j++) ...[
+                            if (j > i) const SizedBox(width: 12),
+                            Expanded(child: _actionCard(_actions[j], j)),
+                          ],
+                        ],
+                      ),
+                    ),
                   ],
                 ],
               ),
@@ -508,38 +599,86 @@ class _ActionCardState extends State<_ActionCard> {
     final reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
 
     Widget card = AnimatedScale(
-      scale: _down && !reduced ? 0.94 : 1.0,
+      scale: _down && !reduced ? 0.96 : 1.0,
       duration: Duration(milliseconds: _down ? 110 : 300),
       curve: _down ? Curves.easeOut : Curves.easeOutBack,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         decoration: BoxDecoration(
+          color: a.tint,
           borderRadius: BorderRadius.circular(18),
-          // Lifts off the page, and settles closer to it while held -- the
-          // shadow is what makes the scale read as depth rather than as the
-          // card simply shrinking.
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: _down ? 0.06 : 0.20),
-              blurRadius: _down ? 5 : 22,
-              offset: Offset(0, _down ? 2 : 9),
+              color: Colors.black.withValues(alpha: _down ? 0.04 : 0.07),
+              blurRadius: _down ? 4 : 12,
+              offset: Offset(0, _down ? 1 : 4),
             ),
           ],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(18),
-          child: AspectRatio(
-            aspectRatio: 1536 / 1024,
-            child: Image.asset(
-              'assets/images/${a.img}',
-              fit: BoxFit.contain,
-              errorBuilder: (_, _, _) => Container(
-                color: C.surface,
-                alignment: Alignment.center,
-                child: Text(a.titleKey.tr(),
-                    style: const TextStyle(fontWeight: FontWeight.w900, color: C.ink)),
+          child: Stack(
+            children: [
+              // The photo bleeds off the top-right corner, behind the text.
+              // Only the LEFT half of each source is used -- the right half
+              // carries baked-in marketing text that would be unreadable at
+              // this size and wrong next to the real title.
+              Positioned(
+                right: 0, top: 0, bottom: 0, width: 96,
+                child: ShaderMask(
+                  // Fades into the tint so there is no hard seam where the
+                  // photograph meets the flat colour.
+                  shaderCallback: (r) => LinearGradient(
+                    begin: Alignment.centerRight,
+                    end: Alignment.centerLeft,
+                    colors: [Colors.white, Colors.white.withValues(alpha: 0)],
+                    stops: const [0.45, 1.0],
+                  ).createShader(r),
+                  blendMode: BlendMode.dstIn,
+                  child: Image.asset(
+                    'assets/images/${a.img}',
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                  ),
+                ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 38, height: 38,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.85),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(a.icon, color: a.accent, size: 21),
+                    ),
+                    const SizedBox(height: 40),
+                    Text(a.titleKey.tr(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w900, color: C.ink)),
+                    const SizedBox(height: 2),
+                    Text(a.descKey.tr(),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 12, height: 1.25, color: C.muted)),
+                  ],
+                ),
+              ),
+              Positioned(
+                right: 10, bottom: 10,
+                child: Container(
+                  width: 28, height: 28,
+                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                  child: Icon(Icons.chevron_right, size: 18, color: a.accent),
+                ),
+              ),
+            ],
           ),
         ),
       ),

@@ -160,7 +160,11 @@
     "stExtensionRequested": "PROLONGATION DEMANDÉE",
     "stConfirmCompletion": "À CONFIRMER",
     "stCompleted": "TERMINÉ",
-    "stCancelled": "ANNULÉ"
+    "stCancelled": "ANNULÉ",
+    "tagline": "Vos soucis maison, réglés.",
+    "heroTitle": "Une maison meilleure commence ici.",
+    "heroSub": "Trouvez des artisans qualifiés, obtenez un devis instantané et réservez en confiance.",
+    "setLocation": "Définir le lieu"
   },
   "categories": {
     "plumbing": "Plomberie",
@@ -268,7 +272,19 @@
     "schedule": "Planning",
     "earningsHidden": "Masqué",
     "hideEarnings": "Masquer les revenus",
-    "showEarnings": "Afficher les revenus"
+    "showEarnings": "Afficher les revenus",
+    "tagline": "Des chantiers près de chez vous.",
+    "heroEyebrow": "DES PROS QUALIFIÉS. DES MAISONS SOLIDES.",
+    "heroTitle": "Gérez vos chantiers ",
+    "heroTitleAccent": "comme un pro.",
+    "heroSub": "Trouvez des chantiers près de chez vous, restez organisé et développez votre activité.",
+    "heroCta": "Voir les chantiers",
+    "findJobsDesc": "Parcourez les chantiers près de chez vous.",
+    "myJobsDesc": "Consultez et gérez vos chantiers en cours.",
+    "earningsDesc": "Suivez vos revenus et vos paiements.",
+    "availability": "Disponibilités",
+    "availabilityDesc": "Indiquez quand les clients peuvent vous réserver.",
+    "performance": "Vos performances"
   },
   "postjob": {
     "requestPro": "Demander à {}",
