@@ -22,6 +22,12 @@ const KEY = '/Users/monsegueadah/TareaApp/apps/mobile/google-service-account.jso
 // is reviewable in a diff instead of being retyped at the prompt each release.
 // Keep these in step with the App Store "what's new" for the same build.
 const NOTES = {
+  '1.0.29': {
+    'com.taptarea.customer':
+      "A redesigned home screen: a new banner, clearer shortcuts to posting a job, AI diagnosis, instant quotes and browsing pros, and your location at the top.",
+    'com.taptarea.handyman':
+      "A redesigned dashboard: shortcuts to find jobs, manage work, check earnings and set your availability, with your performance at a glance. You can now hide your earnings figure with a tap.",
+  },
   '1.0.28': {
     'com.taptarea.customer':
       "A refreshed home screen with quick access to posting a job, AI diagnosis, instant quotes and browsing pros. Your requests now have their own tab, and your profile moved to the avatar at the top. Cleaner launch screen, and the back button now returns you to Home instead of closing the app.",
