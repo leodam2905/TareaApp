@@ -1,9 +1,31 @@
-name: Deploy to Cloud Run
+# ⚠️ DOES NOT RUN THE SCHEMA-DRIFT GATE.
+#
+# This builds a Docker image and deploys it straight to Cloud Run. It does not
+# check whether the Prisma schema the image carries matches the live database.
+# That check lives in scripts/deploy-web.sh, and it is not decoration: a deploy
+# that ships columns the database lacks 500s every endpoint reading that model
+# the moment it starts, and skipping it once cost roughly fifteen hours of
+# downtime. The gate caught a wrong-order deploy again on 2026-09-13.
+#
+# It used to fire on every push to main, which meant a merge deployed
+# production with no gate and nobody deciding to. The trigger is now manual so
+# that cannot happen by accident.
+#
+# THE ROUTINE PATH IS:
+#
+#     bash scripts/deploy-web.sh --yes
+#
+# Use this workflow only when that is impossible, and only knowing the schema
+# has already been verified against production.
+#
+# To make CI deploys safe, this should call scripts/deploy-web.sh rather than
+# rebuild its steps -- two copies of the gate would drift. That needs the CI
+# service account to read the DATABASE_URL secret and cloud-sql-proxy on the
+# runner; neither is set up today.
+name: Deploy to Cloud Run (manual, UNGATED)
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -13,6 +35,11 @@ jobs:
       id-token: write
 
     steps:
+      - name: Warn that this path is ungated
+        run: |
+          echo "::warning::This workflow does NOT run the schema-drift gate."
+          echo "::warning::The routine path is: bash scripts/deploy-web.sh --yes"
+
       - name: Checkout
         uses: actions/checkout@v4
 
