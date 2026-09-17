@@ -85,17 +85,33 @@ void main() {
     await tester.pumpAndSettle();
     expect(result, isNull, reason: 'cancel must abort finishing the job');
 
-    // --- and the amount typed must reach the caller: this drives the refund ---
+    // --- a typed amount alone must NOT finish the job ---
+    //
+    // This half of the test used to type an amount, tap Finish and assert the
+    // value came back. That stopped being true when the receipt requirement
+    // landed: materials are now reimbursed against a receipt, not against what
+    // the pro types, so Finish stays disabled until one is attached
+    // (materials_sheet.dart -- `uploadedUrl == null || reading`).
+    //
+    // The test kept asserting the old contract and had been failing silently
+    // ever since, which is worse than having no test: it is a guard on the
+    // refund path that nobody could trust.
     await tester.tap(find.text('finish'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), '5');
     await tester.pumpAndSettle();
+
+    // FilledButton, not ElevatedButton -- the sheet uses the filled style.
+    final finish = tester.widget<FilledButton>(
+      find.widgetWithText(FilledButton, 'Finish job'),
+    );
+    expect(finish.onPressed, isNull,
+        reason: 'Finish must stay disabled until a receipt is attached — the '
+            'typed figure alone cannot drive a refund');
+
     await tester.tap(find.text('Finish job'));
     await tester.pumpAndSettle();
-
-    expect(result, isNotNull, reason: 'the sheet returned nothing');
-    expect(result!['materialsActual'], 5,
-        reason: 'the typed amount must reach the caller — this is the value '
-            'that drives the refund');
+    expect(result, isNull,
+        reason: 'tapping a disabled Finish must not return a result');
   });
 }
