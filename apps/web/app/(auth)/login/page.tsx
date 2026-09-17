@@ -203,7 +203,18 @@ export default function LoginPage() {
           Verified professionals ready to help with any home repair or maintenance task.
         </p>
         <div className="space-y-4">
-          {["Available in all 50 states", "Background-checked professionals", "Secure, insured payments"].map((item) => (
+          {/* Each of these was a claim the product contradicted.
+               "Available in all 50 states" -- registration REJECTS 48 of them:
+               app/api/auth/register/route.ts checks the state against
+               active_states, and only California is served. Someone in Texas
+               could read this, sign up, and be refused on the next screen.
+               "Secure, insured payments" -- /guarantee says in bold that
+               ZenTarea is NOT insurance and does not replace anyone's cover.
+               Saying "insured" here contradicts the page written to be careful
+               about precisely that.
+               "Background-checked" -- checks cannot currently complete: the
+               paid path returns 503 without Checkr credentials. */}
+          {["Serving California", "Verified professionals", "Secure payments, protected by ZenTarea"].map((item) => (
             <div key={item} className="flex items-center gap-3">
               <div className="w-5 h-5 bg-tarea-sky rounded-full flex items-center justify-center">
                 <span className="text-white text-xs">✓</span>
