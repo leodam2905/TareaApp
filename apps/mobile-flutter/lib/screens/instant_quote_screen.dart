@@ -30,6 +30,21 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
   List<dynamic> get _taskDetails => (_task?['details'] as List?) ?? const [];
   bool get _allFilled => _taskDetails.every((d) => _details.containsKey(d['key']));
 
+  /// What to put in the job description when handing off to Post a Job.
+  ///
+  /// The task label alone is thin, and the detail answers are re-asked by the
+  /// guided questions on the next screen, so only the task and the customer's
+  /// own notes carry: those are the words they chose, and retyping them is the
+  /// annoyance worth removing.
+  String get _postDescription {
+    final parts = <String>[];
+    final label = (_task?['label'] ?? '').toString().trim();
+    if (label.isNotEmpty) parts.add(label);
+    final notes = _notes.text.trim();
+    if (notes.isNotEmpty) parts.add(notes);
+    return parts.join('. ');
+  }
+
   Future<void> _calculate() async {
     if (_cat == null || _task == null) return;
     setState(() => _loading = true);
@@ -264,7 +279,16 @@ class _InstantQuoteScreenState extends State<InstantQuoteScreen> {
           child: FilledButton(
             style: FilledButton.styleFrom(backgroundColor: C.blue, padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-            onPressed: () => context.push('/post-job'),
+            // Carry what the customer already told us. This pushed to /post-job
+            // with nothing attached, so someone who had just picked a category,
+            // chosen a task and answered its questions arrived at an empty form
+            // and started again -- on the screen whose whole pitch is that it
+            // already knows the job. AI Diagnose has passed its category across
+            // all along; this one never did.
+            onPressed: () => context.push('/post-job', extra: {
+              if (_cat != null) 'category': _cat!.name,
+              if (_postDescription.isNotEmpty) 'description': _postDescription,
+            }),
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Flexible(child: Text('instantQuote.postThisJobArrow'.tr(), textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white))),
               const SizedBox(width: 8),
