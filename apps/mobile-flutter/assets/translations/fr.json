@@ -284,7 +284,8 @@
     "earningsDesc": "Suivez vos revenus et vos paiements.",
     "availability": "Disponibilités",
     "availabilityDesc": "Indiquez quand les clients peuvent vous réserver.",
-    "performance": "Vos performances"
+    "performance": "Vos performances",
+    "onTheWayShort": "{} en route"
   },
   "postjob": {
     "requestPro": "Demander à {}",

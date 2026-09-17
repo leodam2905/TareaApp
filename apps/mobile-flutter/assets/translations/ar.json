@@ -284,7 +284,8 @@
     "earningsDesc": "تابع دخلك وسجل مدفوعاتك.",
     "availability": "التوفر",
     "availabilityDesc": "حدد متى يمكن للعملاء حجزك.",
-    "performance": "أداؤك"
+    "performance": "أداؤك",
+    "onTheWayShort": "{} في الطريق"
   },
   "postjob": {
     "requestPro": "طلب من {}",

@@ -284,7 +284,8 @@
     "earningsDesc": "Track your income and payment history.",
     "availability": "Availability",
     "availabilityDesc": "Set when clients can book you.",
-    "performance": "Your Performance"
+    "performance": "Your Performance",
+    "onTheWayShort": "{} on the way"
   },
   "postjob": {
     "requestPro": "Request {}",

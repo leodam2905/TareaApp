@@ -1,0 +1,66 @@
+# Runs the test suites on every push and pull request.
+#
+# This exists because nothing ran them. test/materials_sheet_test.dart --
+# the guard on the materials refund path, written after that path failed three
+# times with real money -- sat red through several releases and nobody saw it.
+# A suite nobody runs is not a safety net, it is a comment.
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  web:
+    name: Web (vitest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      # `npm ci` rather than `npm install`: it honours the lockfile exactly, so
+      # CI cannot pass against a dependency tree the repo has never seen.
+      - name: Install
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Test
+        working-directory: apps/web
+        run: npm test
+
+  mobile:
+    name: Mobile (flutter test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          # Pinned to the version the app is built with. Floating to `stable`
+          # means a Flutter release can turn CI red with no commit behind it.
+          flutter-version: 3.44.8
+          channel: stable
+          cache: true
+
+      - name: Install
+        working-directory: apps/mobile-flutter
+        run: flutter pub get
+
+      - name: Test
+        working-directory: apps/mobile-flutter
+        run: flutter test
+
+      # Errors and warnings only. The tree carries pre-existing infos
+      # (deprecated withOpacity, null-aware style lints) and failing on those
+      # would make this red on day one, which is how a check gets ignored.
+      - name: Analyze
+        working-directory: apps/mobile-flutter
+        # Scoped to source: an unscoped run also walks build/, which carries
+        # 13k generated-code infos and turns the step red on a machine that has
+        # built locally.
+        run: flutter analyze lib test --no-fatal-infos

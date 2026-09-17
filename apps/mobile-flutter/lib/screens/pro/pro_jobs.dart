@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../theme.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../api.dart';
 
 // [translation key, textColor, bgColor]

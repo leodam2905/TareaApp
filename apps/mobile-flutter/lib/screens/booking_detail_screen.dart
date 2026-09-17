@@ -251,6 +251,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
     }
   }
 
+  /// ⚠️ NOT REACHABLE. Nothing calls this, so the "no card on file" fallback
+  /// described above does not actually exist: such a booking has no way to pay
+  /// from the app. Kept rather than deleted because the path is written and
+  /// correct -- it needs a button, not a rewrite.
+  // ignore: unused_element
   Future<void> _payNow() async {
     if (_busy) return;
     setState(() => _busy = true);

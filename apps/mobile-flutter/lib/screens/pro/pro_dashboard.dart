@@ -24,7 +24,6 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
   String _avatar = '';
   double _rating = 0;
   num _totalEarnings = 0;
-  num _pendingEarnings = 0;
   // Stripe's pending balance — money that has left Tarea and is settling
   // towards the pro's bank. This is what a pro means by "pending"; the field
   // above means "Tarea has not sent it", which is now an error state.
@@ -147,7 +146,6 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
       if (e.statusCode == 200) {
         final ej = jsonDecode(e.body) as Map<String, dynamic>;
         _totalEarnings = (ej['totalEarnings'] ?? 0) as num;
-        _pendingEarnings = (ej['pendingEarnings'] ?? 0) as num;
         _clearingSoon = ej['clearingSoon'] as num?;
       }
     } catch (_) {}
@@ -557,7 +555,12 @@ class _ProDashboardState extends State<ProDashboard> with WidgetsBindingObserver
                   icon: Icons.account_balance_wallet, tint: const Color(0xFFE9F8EF),
                   accent: const Color(0xFF16A34A),
                   value: _hideEarnings ? '••••' : '\$${_totalEarnings.round()}',
-                  label: 'pro.allTime'.tr(),
+                  // Money already earned but not yet in the bank is the one
+                  // figure a pro cannot find anywhere else, so it takes the
+                  // label when there is any. Short form: the chip is one line.
+                  label: (_clearingSoon != null && _clearingSoon! > 0 && !_hideEarnings)
+                      ? 'pro.onTheWayShort'.tr(args: ['\$${_clearingSoon!.round()}'])
+                      : 'pro.allTime'.tr(),
                   masked: _hideEarnings,
                   onToggleMask: _toggleHideEarnings)),
                 const SizedBox(width: 10),
