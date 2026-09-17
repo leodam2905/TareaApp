@@ -186,8 +186,15 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
   ///
   /// Uses the card already on file, so there is no browser round trip: the
   /// customer saved it when they requested this pro, precisely so approving
-  /// would be one tap. _payNow (the hosted checkout) stays for bookings that
-  /// have no card on file.
+  /// would be one tap.
+  ///
+  /// A missing card is handled below rather than by a separate route: the
+  /// server answers `reason: no_card`, the sheet opens, and this retries. The
+  /// hosted-checkout fallback that used to sit here was never wired to
+  /// anything, so it was not a fallback at all -- and posting a job already
+  /// requires a card (post_job_screen calls ensureCardOnFile before creating
+  /// the request), so the case it claimed to cover cannot arise unposted.
+  /// The web still uses /api/stripe/checkout; only this client's copy is gone.
   Future<void> _approvePrice() async {
     if (_busy) return;
     setState(() => _busy = true);
@@ -251,32 +258,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> with WidgetsB
     }
   }
 
-  /// ⚠️ NOT REACHABLE. Nothing calls this, so the "no card on file" fallback
-  /// described above does not actually exist: such a booking has no way to pay
-  /// from the app. Kept rather than deleted because the path is written and
-  /// correct -- it needs a button, not a rewrite.
-  // ignore: unused_element
-  Future<void> _payNow() async {
-    if (_busy) return;
-    setState(() => _busy = true);
-    try {
-      // 'app' returns through the deep-link bridge instead of leaving the
-      // customer stranded on the website after paying.
-      final res = await Api.post('/stripe/checkout', {'bookingId': _id, 'platform': 'app'});
-      final data = jsonDecode(res.body);
-      final url = (data is Map ? data['url'] : null)?.toString();
-      if (res.statusCode >= 200 && res.statusCode < 300 && url != null && url.startsWith('http')) {
-        _awaitingPayment = true;
-        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-      } else {
-        _toast((data is Map ? data['error'] : null)?.toString() ?? 'booking.payFailed'.tr());
-      }
-    } catch (_) {
-      _toast('common.connectionRetry'.tr());
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
 
   Future<void> _leaveTip() async {
     final amt = await showModalBottomSheet<double>(
